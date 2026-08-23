@@ -25,6 +25,9 @@
       "esbuild",
       "@biomejs/biome",
       "@shopify/react-native-skia"
-    ]
+    ],
+    "patchedDependencies": {
+      "react-native-readium": "patches/react-native-readium.patch"
+    }
   }
 }

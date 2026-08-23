@@ -10,9 +10,13 @@ export default function TelaJardim() {
         superficie="mesa"
         titulo="Seu jardim ainda não brotou"
         explicacao="Leia hoje para plantar o primeiro dia da sua ofensiva."
-        // Arnês de validação manual do Estágio 6 — abre o painel de debug da máquina de estados
-        // em vez do leitor de verdade (Estágio 7). Remover junto do resto do arnês.
-        saida={{ rotulo: 'Abrir leitor (debug Estágio 6)', aoTocar: () => router.push('/leitor') }}
+        // Arnês de validação manual do Estágio 6 — abre o painel de debug da máquina de estados,
+        // não o leitor de verdade (esse mora na Biblioteca, `RN-02.8`). Remover junto do resto do
+        // arnês quando os 7 cenários do plano tiverem cobertura equivalente pelo leitor real.
+        saida={{
+          rotulo: 'Abrir leitor (debug Estágio 6)',
+          aoTocar: () => router.push('/leitor-debug'),
+        }}
       />
     </BwFolha>
   );

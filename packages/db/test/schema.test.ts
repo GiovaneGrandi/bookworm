@@ -96,6 +96,40 @@ describe('mvp.md §7 — "Previstas mas vazias" nascem modeladas', () => {
   });
 });
 
+describe('RN-02.6/RN-02.6b — item_biblioteca tem estado e o fato permanente da estante', () => {
+  it('tem as cinco colunas: estado (5 valores), estante_desde e os dois carimbos', () => {
+    const config = getTableConfig(schema.itemBiblioteca);
+    const nomes = config.columns.map((c) => c.name);
+    expect(nomes).toEqual(
+      expect.arrayContaining([
+        'id',
+        'usuario_id',
+        'obra_id',
+        'estado',
+        'estante_desde',
+        'adicionado_em',
+        'atualizado_em',
+      ])
+    );
+  });
+
+  it('estado aceita os cinco valores de RN-02.6', () => {
+    const colunaEstado = getTableConfig(schema.itemBiblioteca).columns.find(
+      (c) => c.name === 'estado'
+    );
+    expect(colunaEstado?.enumValues?.sort()).toEqual(
+      ['abandonado', 'concluido', 'em_pausa', 'lendo', 'quero_ler'].sort()
+    );
+  });
+
+  it('estante_desde é opcional — nasce nulo, nunca obrigatório na criação (RN-02.6b)', () => {
+    const colunaEstanteDesde = getTableConfig(schema.itemBiblioteca).columns.find(
+      (c) => c.name === 'estante_desde'
+    );
+    expect(colunaEstanteDesde?.notNull).toBe(false);
+  });
+});
+
 describe('RN-02.1d — obra importada é privada desde a primeira linha', () => {
   it('obra tem as colunas origem e privada, não um campo a acrescentar depois', () => {
     const nomes = getTableConfig(schema.obra).columns.map((c) => c.name);

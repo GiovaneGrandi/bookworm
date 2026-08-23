@@ -9,6 +9,6 @@
     "android": {
       "package": "com.bookworm.app"
     },
-    "plugins": ["expo-router", "expo-font"]
+    "plugins": ["expo-router", "expo-font", "./plugins/withReadiumAndroidBuildFixes.js"]
   }
 }

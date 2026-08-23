@@ -18,8 +18,10 @@ CREATE TABLE `item_biblioteca` (
 	`id` text PRIMARY KEY NOT NULL,
 	`usuario_id` text DEFAULT 'local' NOT NULL,
 	`obra_id` text NOT NULL,
-	`secao` text NOT NULL,
+	`estado` text NOT NULL,
+	`estante_desde` integer,
 	`adicionado_em` integer NOT NULL,
+	`atualizado_em` integer NOT NULL,
 	FOREIGN KEY (`obra_id`) REFERENCES `obra`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint

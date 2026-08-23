@@ -26,10 +26,21 @@ export const itemBiblioteca = sqliteTable('item_biblioteca', {
   obraId: text('obra_id')
     .notNull()
     .references(() => obra.id),
-  // RN-02.6a — Backlog em leitura e Estante de concluídas são duas divisórias internas da mesma
-  // biblioteca, não duas telas com dado próprio.
-  secao: text('secao', { enum: ['backlog', 'estante'] }).notNull(),
+  // RN-02.6 — os cinco estados. A transição para `lendo` é automática na primeira sessão; as
+  // demais são manuais, exceto `concluido`, sugerido a 100% de progresso e confirmado pelo
+  // usuário. Biblioteca (RN-02.6a) é a consulta `estado IN (lendo, quero_ler, em_pausa)`
+  // — `abandonado` fica de fora da visão padrão (alcançável só por filtro explícito) e
+  // `concluido` não aparece aqui: quem mostra obra concluída é `estanteDesde`, não este campo.
+  estado: text('estado', {
+    enum: ['quero_ler', 'lendo', 'concluido', 'abandonado', 'em_pausa'],
+  }).notNull(),
+  // RN-02.6b — fato permanente, nunca apagado: a obra entrou na Estante quando foi concluída
+  // pela primeira vez. Reler muda `estado` de volta para `lendo` (e a obra volta à Biblioteca)
+  // sem tocar aqui — "a estante só cresce; nada sai dela" (RN-02.22a). Superfície derivada,
+  // nunca a fonte: Estante é a consulta `estanteDesde IS NOT NULL`.
+  estanteDesde: integer('estante_desde', { mode: 'timestamp_ms' }),
   adicionadoEm: integer('adicionado_em', { mode: 'timestamp_ms' }).notNull(),
+  atualizadoEm: integer('atualizado_em', { mode: 'timestamp_ms' }).notNull(),
 });
 
 export const progressoLeitura = sqliteTable(

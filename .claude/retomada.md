@@ -10,12 +10,105 @@
 
 ## Operação em curso — Plano do primeiro protótipo (`planos/2026-08-23-primeiro-prototipo-mvp.md`)
 
-**Estágios 0–6 concluídos e commitados.** Próxima ação: abrir sessão nova e executar o
-**Estágio 7** (`apps/app`: biblioteca, importação e o leitor — pré-requisito Estágio 6, cumprido).
+**Estágios 0–6 concluídos e commitados. Estágio 7 — fundação (Readium + importação + leitor
+mínimo) validada no emulador, código ainda não commitado.** O plano definiu o passo 1
+(importação), o essencial do passo 4/leitor (RN-02.13 parcial) e o início do 8 (posição local);
+os passos 2 (acervo embarcado), 3 (Biblioteca/Estante completas — hoje só Biblioteca existe),
+5 (painel de 10 controles), 6 (destaques/anotações/dicionário) e 7 (resposta a gesto) **ficam
+para a próxima rodada**, por decisão explícita do usuário ("fundação primeiro").
 
-O arnês de validação manual do Estágio 6 (`app/leitor.tsx` + botão em `app/(tabs)/index.tsx`)
-entrou no commit e deve ser **removido** quando o Estágio 7 ligar o leitor real (Readium) à
-máquina de estados — os comentários nos dois arquivos já marcam isso.
+### Estágio 7 — o que existe e foi validado ao vivo no emulador
+
+- **`react-native-readium@5.0.0`** instalado e funcionando: EPUB abre, pagina, mostra texto real
+  (testado com `probe/assets/livros/alice.epub`, 83 páginas). Os quatro ajustes nativos do
+  Estágio 2/medição (`specs/medicao-app-de-prova.md` §0) foram reaplicados de forma **durável**:
+  - Kotlin compiler flags + desugaring (2.1.5) + `network_security_config.xml` (libera
+    `10.0.2.2`) → `apps/app/plugins/withReadiumAndroidBuildFixes.js`, um Expo config plugin
+    (necessário porque `android/` é gerado por `expo prebuild` e não é versionado — uma edição
+    direta se perderia no próximo prebuild).
+  - `abiFilters` restrito a `x86_64` (dentro de `node_modules/react-native-readium`) →
+    `patches/react-native-readium.patch` via **`pnpm patch`/`pnpm patch-commit`** (não
+    `patch-package`: essa ferramenta não suporta pnpm nesta versão — só detecta
+    `package-lock.json`/`yarn.lock` — ver achado abaixo).
+- **Pipeline de importação** (`apps/app/src/importacao/importarObra.ts`): `expo-document-picker`
+  → `expo-file-system` (API nova, `File`/`Directory`/`Paths`, não a legada) → `montarIndiceEpub`
+  do Estágio 2 (reuso direto, sem alteração) → cópia para `Paths.document/obras/<id>.epub` →
+  grava `obra` + `item_biblioteca`. **PDF é recusado explicitamente** (`motivo:
+  'pdf_nao_suportado'`) — `pdfjs-dist` precisaria de `DOMMatrix`/Web Worker que o Hermes não tem
+  prontos, e resolver isso ficou fora do escopo desta rodada; `Q-ST.8a` continua aberta.
+- **`packages/db`**: `item_biblioteca` evoluiu de `secao: enum[backlog,estante]` (simplificação do
+  Estágio 6, insuficiente para RN-02.6) para `estado: enum[quero_ler,lendo,concluido,abandonado,
+  em_pausa]` + `estanteDesde: timestamp|null` (fato permanente, nunca limpo — RN-02.6b: reler leva
+  `estado` de volta a `lendo` sem tirar a obra da Estante). Migração squashada (histórico
+  incremental do drizzle-kit não importa neste estágio pré-release — `packages/db/drizzle/` foi
+  regerado do zero, não incrementado).
+- **`apps/app/src/biblioteca/consultas.ts`**: `listarBiblioteca`/`listarEstante` (duas consultas
+  sobre a mesma tabela, RN-02.6a), `marcarComoLendo`/`marcarComoConcluido`.
+- **`apps/app/app/leitor.tsx`** — reescrito para o leitor real: `ReadiumView` + `onLocationChange`
+  → `posicaoEmCaracteres` (Estágio 2) → `sinalPosicao` (máquina do Estágio 6). Abre/fecha a
+  sessão junto com a tela. O arnês de debug do Estágio 6 foi preservado como
+  **`app/leitor-debug.tsx`** (rota irmã), não apagado — continua útil para validar a máquina de
+  estados sem precisar de um EPUB de verdade.
+- **Validado ao vivo, fim a fim**: importar `alice.epub` → aparece na Biblioteca → abrir → Readium
+  renderiza a capa e a página de licença do Gutenberg → passar página funciona → fechar sem erro
+  no logcat.
+
+### Achado — `CREATE TABLE IF NOT EXISTS` não migra; banco velho no aparelho quebra silenciosamente
+
+O SQLite do emulador já tinha `item_biblioteca` criada pelo Estágio 6 com o schema antigo
+(`secao`). Mudar `packages/db/src/schema/biblioteca.ts` e `ddl.ts` não alterou a tabela já
+existente no aparelho — `CREATE TABLE IF NOT EXISTS` é no-op quando a tabela já existe. Sintoma:
+tela em branco sem nenhum erro visível na UI; só apareceu no `logcat`
+(`no such column: item_biblioteca.estado`), depois de `Uncaught (in promise) ... NativeDatabase.
+prepareSync`. **Fix usado**: `adb shell pm clear com.bookworm.app` (apaga dados do app, banco
+incluído) — aceitável agora porque não há dado de usuário real a preservar. **Lição para quando
+houver usuários de verdade**: este projeto não tem migração incremental ainda (`ddl.ts` é
+"aplicar tudo, sempre" — decisão documentada desde o Estágio 6); qualquer mudança de schema depois
+do Estágio 9 (Postgres) exige migração de verdade, não `CREATE TABLE IF NOT EXISTS`.
+
+### Achado — `patch-package` não suporta pnpm nesta versão (8.0.1)
+
+`detectPackageManager` só reconhece `package-lock.json`/`npm-shrinkwrap.json`/`yarn.lock` —
+sem nenhum dos três, `npx patch-package <pacote>` morre com "No package-lock.json,
+npm-shrinkwrap.json, or yarn.lock file", mesmo com `pnpm-lock.yaml` presente. Criar um
+`yarn.lock` vazio como contorno também falha (`TypeError` ao tentar ler resoluções de um
+lockfile yarn que não existe de verdade). **Resolvido usando o mecanismo nativo do próprio pnpm**
+— `pnpm patch <pacote>` (extrai uma cópia editável), editar, `pnpm patch-commit <caminho>` (gera
+o `.patch` e registra em `pnpm.patchedDependencies` do `package.json` raiz). Não instalar
+`patch-package` neste monorepo — é redundante e, pior, o `postinstall: patch-package` dele tenta
+"aplicar" os patches do pnpm no formato errado e emite um aviso confuso
+("Unrecognized patch file").
+
+### Achado — `uiautomator dump` mentiu (path do MSYS, não bug do RN)
+
+Boa parte do tempo desta sessão foi perdida investigando por que toques no rodapé de abas
+pareciam não registrar, comparando com `uiautomator dump`. A causa real: o comando
+`adb shell uiautomator dump /sdcard/ui.xml` **também** precisa do contorno de path do Git Bash
+(achado #14 do Estágio 5 — `MSYS_NO_PATHCONV=1` ou `//sdcard/...`), e sem ele o dump falhava
+silenciosamente (`AccessibilityNodeInfoDumper: FileNotFoundException`) — o arquivo lido por
+`adb pull` era um dump **antigo**, de uma tela anterior, fazendo os bounds parecerem certos mas
+already errados. **Lição**: neste ambiente, para achar coordenada de toque, usar sempre
+`adb exec-out screencap -p` (não precisa de path no dispositivo, não sofre desse problema) e medir
+visualmente na captura — nunca confiar em `uiautomator dump` sem confirmar que o comando
+`adb shell` em si também está livre da reescrita de path.
+
+### Achado fechado — toque direto no rodapé de abas: peculiaridade do `adb`, não bug de produto
+
+Depois de corrigir o problema do `uiautomator dump` acima, toques via `adb shell input tap` bem
+calculados nos rótulos BIBLIOTECA/CADERNO/DESEMPENHO do rodapé não mudavam de tela, em várias
+tentativas — mas o usuário confirmou com toque real (mouse na janela do emulador) que **o rodapé
+troca de aba normalmente**. Não é bug de `BwAbasFichario` nem de navegação; é alguma peculiaridade
+da entrega de eventos sintéticos do `adb`/emulador especificamente para aquela `Pressable`, não
+investigada a fundo (não vale o tempo — o produto funciona). O atalho temporário ("Ir para
+Biblioteca") foi removido de `app/(tabs)/index.tsx`. **Lição prática**: quando um toque via `adb`
+não registrar num componente que já funcionou antes, testar com clique de mouse na janela do
+emulador antes de investigar como bug — é mais rápido que qualquer diagnóstico de coordenada.
+
+### Próxima ação concreta
+
+Pedir confirmação e commitar o Estágio 7 (fundação). Próxima rodada: os passos 2 (acervo
+embarcado), 3 (Estante — Biblioteca já existe), 5 (painel de 10 controles), 6
+(destaques/anotações/dicionário) e 7 (resposta a gesto) do Estágio 7.
 
 ### O que já foi verificado — não repetir
 
