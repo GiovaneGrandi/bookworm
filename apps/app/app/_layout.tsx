@@ -2,6 +2,12 @@
 // `StyleSheet.create` do resto da árvore (import por efeito colateral, primeira linha), carrega
 // as fontes da marca (stack.md §3) e só então monta a navegação. O leitor fica fora do grupo de
 // abas — RN-DS.18: é modo, não destino — por isso é uma rota irmã de `(tabs)`, não filha.
+//
+// `react-native-get-random-values` precisa ser importado antes de qualquer uso de `criarUlid`
+// (RN-ST.9) — `ulidx` resolve para o build "browser" no Metro e espera `crypto.getRandomValues`
+// global, que o Hermes não tem sem este polyfill instalado como efeito colateral.
+import 'react-native-get-random-values';
+
 import '../src/tema/unistyles.js';
 
 import { Stack } from 'expo-router';

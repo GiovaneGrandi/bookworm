@@ -21,9 +21,13 @@ config.resolver.nodeModulesPaths = [
 // trata uma extensão explícita como definitiva e nunca tenta `.ts`/`.tsx` no lugar dela. Sem
 // este resolver, todo `import '../x.js'` que aponta para um `x.ts` real falha com
 // `UnableToResolveError`.
+// A mesma convenção vale para imports profundos entre pacotes do workspace (ex.:
+// `@bookworm/core/src/sessao/index.js`, usado para evitar puxar `indice/` — `htmlparser2`/
+// `fflate` — por quem só precisa de `sessao/`; ver `apps/app/src/sessao/*.ts`) — por isso o
+// prefixo `.` não é mais condição, só o sufixo `.js` importa.
 const resolveRequestPadrao = config.resolver.resolveRequest;
 config.resolver.resolveRequest = (context, moduleName, platform) => {
-  if (moduleName.startsWith('.') && moduleName.endsWith('.js')) {
+  if (moduleName.endsWith('.js')) {
     try {
       return context.resolveRequest(context, moduleName.replace(/\.js$/, ''), platform);
     } catch {

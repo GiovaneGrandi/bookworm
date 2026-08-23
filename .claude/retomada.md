@@ -10,9 +10,138 @@
 
 ## Operação em curso — Plano do primeiro protótipo (`planos/2026-08-23-primeiro-prototipo-mvp.md`)
 
-**Estágios 0–5 concluídos** (Estágio 5 = `apps/app`: fundação visual e navegação). Falta só o
-commit — pedir confirmação ao usuário antes. Próxima ação depois disso: abrir sessão nova e
-executar o **Estágio 6** (`apps/app`: persistência e a máquina de estados da sessão).
+**Estágios 0–5 concluídos e commitados. Estágio 6 validado em dispositivo real, não commitado.**
+Código verde (typecheck/lint/`pnpm test` limpos) e os 7 cenários manuais do plano já rodaram no
+emulador (`BookWorm_API34`) — ver seção própria abaixo. Falta só a confirmação do usuário e o
+commit.
+
+### Estágio 6 — código, testes e validação manual completos
+
+- **`packages/db`**: schema completo (18 tabelas — `obra`, `item_biblioteca`, `progresso_leitura`,
+  `sessao_leitura`, `intervalo_inatividade`, `destaque`, `anotacao`, `consulta_dicionario`,
+  `agregado_diario`, `meta_diaria`, `dia_ofensiva`, `ofensiva`, `congelamento`, `carteira`,
+  `lancamento_ledger`, `item_outbox`, `sessao_em_curso`, `evento_bruto_sessao`), `ddl.ts` (DDL
+  `CREATE TABLE IF NOT EXISTS` derivado à mão de `drizzle-kit generate`, aplicado por
+  `apps/app/src/persistencia/db.ts` na abertura), 11 testes de introspecção de schema
+  (`getTableConfig`, sem SQLite real — ver achado abaixo). **Confirmado rodando de verdade no
+  emulador**: as 18 tabelas foram criadas e usadas (insert/select/update/delete) sem erro.
+- **`packages/core/src/ulid.ts`**: `criarUlid()` via `ulidx` `monotonicFactory()` (RN-ST.9/RN-TEL.32).
+- **Módulo nativo `apps/app/modules/bookworm-relogio/`** (Kotlin, `create-expo-module --local`):
+  expõe `elapsedRealtime()`/`uptimeMillis()` (`SystemClock`). **Rebuildado e confirmado**:
+  autolinka e `elapsedRealtime()` devolve valores reais e crescentes no emulador.
+- **`apps/app/src/sessao/`**: `relogio.ts` (carimbo `{parede, mono}`), `persistenciaSessao.ts`
+  (CRUD de `sessao_em_curso`/`evento_bruto_sessao`), `transicoes.ts` (núcleo **puro** da máquina —
+  `decidirParaBackground`/`decidirParaForeground`/`decidirIdle`, sem I/O, testável sem SQLite),
+  `maquina.ts` (store Zustand `useMaquinaSessao`, casca fina sobre `transicoes.ts` +
+  persistência — RN-TEL.2: sempre `await` a gravação antes do `set()`), `apuracaoEFinalizacao.ts`
+  (roda as funções puras do Estágio 3 sobre o traço local e grava `sessao_leitura`, com
+  `deriva_relogio_ms` calculado sobre o traço inteiro), `outbox.ts` (heartbeat a cada 30s de tempo
+  *ativo*, gatilho vem de recalcular `apurarTempoAtivo`, não de contar ticks), `sinais.ts`
+  (`AppState` → `paraBackground`/`paraForeground`; dois `setInterval` só como checadores —
+  idle a cada 15s, heartbeat a cada 30s).
+- **Arnês de validação manual `apps/app/app/leitor.tsx`** (substitui a casca do Estágio 5) +
+  botão temporário "Abrir leitor (debug Estágio 6)" em `app/(tabs)/index.tsx`: expõe todas as
+  ações da máquina (`abrirObra`, `sinalPosicao`, `sinalInteracaoQualitativa`, `verificarIdle`,
+  `paraBackground`, `paraForeground`, `encerrar`) como botões, com log das últimas 12 ações e os
+  três campos (`estado`/`sessão`/`último sinal`) em tempo real. **Remover no Estágio 7**, quando o
+  leitor de verdade (Readium) passar a chamar os sinais a partir de eventos reais em vez de botão.
+- **Testes**: `test/sessao/transicoes.test.ts` (15 casos incluindo um teste de costura que monta
+  um traço via as transições puras e confere `apurarTempoAtivo` do Estágio 3 sobre ele — graça de
+  pausa de sistema descartada, idle detectado), `test/sessao/sem-acumulador-de-duracao.test.ts`
+  (varredura RN-TEL.9: nenhum `setInterval`/`setTimeout` em `src/sessao/` incrementa contador).
+- **`pnpm test`/`lint`/`typecheck` limpos na raiz** (Turborepo, 5 pacotes; 179 testes: 97
+  `packages/core` + 11 `packages/db` + 9 `packages/design` + 62 `apps/app`/Jest — 15 novos do
+  Estágio 6 estão inclusos nesse total).
+
+### Estágio 6 — os 7 cenários manuais, resultado no emulador `BookWorm_API34`
+
+Todos rodados via os botões do arnês + `adb` (força-parada, `cmd alarm set-time` para mudar o
+relógio, logcat para conferir ausência de erro). Sessão de teste: obra `obra-teste-estagio-6`
+(semeada pelo próprio arnês), sessão `3E83Z2EB`.
+
+1. **Ida a segundo plano → pausa imediata**: `ativa` → `pausada_sistema` no toque, sem espera. ✅
+2. **Volta rápida (< 30 min)**: `pausada_sistema` → `ativa`, mesma sessão, `pausa_encerrada`
+   gravado. ✅
+3. **Idle ≥ 90 s**: esperado 95 s reais sem sinal, então `verificarIdle` → `pausada_idle`, sem
+   evento explícito gravado (RN-TEL.12/13 — só o estado muda). ✅
+4. **Blip curto de segundo plano (< 3 s)**: `paraBackground` seguido de `paraForeground` quase
+   imediato — sessão sobrevive sem corrupção; o descarte da pausa curta (RN-TEL.14) é
+   responsabilidade da apuração (`apurarTempoAtivo`, já coberto pelo teste de costura), não da
+   máquina. ✅ (o gesto exato de puxar/dispensar a barra de notificações não foi reproduzido via
+   `adb` — a lógica testada é a mesma que qualquer transição rápida `background`→`active`
+   exercita.)
+5. **App morto pelo sistema, sessão recuperada ao reabrir**: `adb shell am force-stop` com a
+   sessão `ativa`, relançar o app → `inicializar()` **retomou a mesma sessão** (`3E83Z2EB`, mesmo
+   `último sinal` mono) a partir de `sessao_em_curso` no SQLite — RN-TEL.42 confirmado ponta a
+   ponta com processo real morto e banco real. ✅ **A validação mais importante do estágio.**
+6. **Relógio do aparelho mudado no meio da sessão**: `adb shell cmd alarm set-time` (+2h) com a
+   sessão em curso, então um sinal de posição e `encerrar` — nenhum erro no logcat, `estado`
+   voltou a `ociosa` normalmente (a apuração e o cálculo de `deriva_relogio_ms` rodaram sem
+   exceção). Bônus: o checador de idle (que usa `mono`, não `parede`) não reagiu ao salto de
+   relógio — confirma a separação RN-TEL.6/7 na prática, não só em teste unitário. ✅ (o valor de
+   `deriva_relogio_ms` gravado não foi inspecionado diretamente no banco — não há leitor de SQLite
+   no arnês; a fórmula é trivial e revisada em código.) Relógio devolvido ao horário real com
+   `cmd alarm set-time` ao final.
+7. **Timeout de segundo plano ≥ 30 min**: **não executado ao vivo** — `elapsedRealtime()` é
+   imune a mudança de relógio de parede (correto, é o ponto do design) e não há como
+   adiantá-lo sem esperar 30 minutos reais ou reiniciar o aparelho (o que zeraria o próprio
+   relógio monotônico). Coberto por teste determinístico exato em
+   `test/sessao/transicoes.test.ts` ("segundo plano >= SESSAO_TIMEOUT_MINUTOS: encerra usando o
+   instante em que começou").
+
+**Achado — `adb shell input tap` e `uiautomator dump`/`screencap` não usam o mesmo referencial de
+coordenada Y neste emulador.** Um toque em `(x, y_dump)` repetidamente acertou o botão ~160px
+**acima** do esperado (ex.: mirar no botão "voltar ao primeiro plano" acionava "ida a segundo
+plano"). Não é erro de app — é do par emulador/`adb` desta máquina. Contorno usado: focar no
+**resultado logado no próprio arnês** (cada botão grava sua ação no log em tela) em vez de confiar
+cegamente na coordenada; quando precisar de coordenada certa, somar ~160px ao Y do centro
+reportado por `uiautomator dump` antes de tocar, e sempre confirmar via screenshot pós-toque.
+
+**Achado — `expo-sqlite`/`drizzle-orm`/`react-native-get-random-values` nunca tinham sido
+declarados em `apps/app/package.json`** apesar de já estarem em `node_modules` (hoisted) — típico
+de terem sido instalados uma vez no root do workspace numa sessão anterior sem persistir no
+`package.json` do app. Sintoma: typecheck/Jest passavam (Node resolve por `node_modules`
+hoisted), mas o build nativo (`expo run:android`) não autolinkava `ExpoSQLite` — erro só aparece
+em runtime no dispositivo ("Cannot find native module 'ExpoSQLite'"), não em nenhuma checagem
+estática. **Lição**: dependência nativa Expo tem que estar no `package.json` do app que a usa,
+autolinking não é transitivo por hoisting do pnpm. Corrigido adicionando as três ao
+`dependencies` de `apps/app/package.json` e rebuildando nativo.
+
+**Achado — `ulidx` (via `packages/core`) resolve para o build "browser" no Metro**, que espera
+`crypto.getRandomValues` global — ausente no Hermes sem polyfill. Corrigido com
+`import 'react-native-get-random-values'` como primeira linha de `app/_layout.tsx` (efeito
+colateral, precisa rodar antes de qualquer `criarUlid()`).
+
+**Achado — `metro.config.js` do Estágio 5 só reescrevia import `.js`→sem-extensão para imports
+relativos (`moduleName.startsWith('.')`)**. Os imports profundos usados para evitar o barrel do
+Jest (`@bookworm/core/src/sessao/index.js`) não são relativos e quebravam o bundle Metro
+("Unable to resolve"). Corrigido removendo a condição `startsWith('.')` — agora qualquer
+`moduleName` terminado em `.js` passa pela tentativa de resolução sem extensão antes do
+fallback. Precisou de `expo start --clear` (Metro não recarrega `metro.config.js` sozinho —
+achado #12 do Estágio 5, se repete).
+
+**Achado — mesma limitação do `packages/db` se propaga para `apps/app`.** Sem `better-sqlite3`
+compilável nesta máquina (Visual Studio Build Tools ausentes), não há como rodar SQLite de verdade
+em Jest. Decisão: extrair toda decisão de transição para `transicoes.ts` (puro, sem I/O) e testar
+**isso**, deixando a integração real com `expo-sqlite`/o módulo nativo só para validação manual no
+emulador — inclusive o teste de sobrevivência (b) do plano ("matar a store, reconstruir do
+SQLite") não tem como rodar em Jest aqui; é o cenário manual 6 (app morto pelo sistema) que cobre
+esse caso na prática.
+
+**Achado — barrel `@bookworm/core` quebra o Jest.** `@bookworm/core`'s `src/index.ts` reexporta
+`indice/` (ESM puro via `htmlparser2`/`fflate`) que o preset `jest-expo` não transforma por
+padrão. **Não mexer em `transformIgnorePatterns`** (already-documented achado #6 do Estágio 5:
+sobrescrever quebra o preset inteiro). Em vez disso, todo arquivo de `apps/app/src/sessao/` importa
+direto de `@bookworm/core/src/sessao/index.js` / `@bookworm/core/src/ulid.js`, nunca do barrel —
+e `apps/app/package.json`'s `jest.moduleNameMapper` ganhou `"^(@bookworm/core/src/.*)\\.js$": "$1"`
+para o Jest resolver esses imports profundos (mesma lógica do mapper já existente para imports
+relativos `.js`→`.ts`).
+
+**Próxima ação concreta:** pedir confirmação ao usuário e commitar o Estágio 6 (mesmo padrão dos
+estágios anteriores — `AskUserQuestion` antes de `git commit`). Não há mais trabalho de código
+pendente; a única decisão em aberto é se o arnês de debug (`app/leitor.tsx` +
+`app/(tabs)/index.tsx`) entra no commit como está (documentado para remoção no Estágio 7) ou se o
+usuário prefere removê-lo antes.
 
 ### Estágio 5 — o que existe, validado no emulador, pronto para commit
 
@@ -144,8 +273,7 @@ navegam e renderizam corretamente; capturas em `specs/medicao/estagio5/aba-{1..4
 
 ### O que já foi verificado — não repetir
 
-- `git log` tem cinco commits: estado zero, Estágio 1, Estágio 2, Estágio 3, Estágio 4. O do
-  Estágio 5 falta fazer (ver Pendências).
+- `git log` tem seis commits: estado zero, Estágio 1, Estágio 2, Estágio 3, Estágio 4, Estágio 5.
 - Monorepo existe e funciona: `apps/app` (agora com fundação visual completa — abas, os 15
   componentes do inventário, Unistyles, fontes — ver seção do Estágio 5 acima) e `apps/api`
   (scaffold vazio), `packages/core` (índice de caracteres —
@@ -309,13 +437,6 @@ mesmo sintoma.
 
 ### Pendências abertas desta operação
 
-- **Commit do Estágio 5 ainda não feito** — pedir confirmação ao usuário antes. Escopo: todo
-  `apps/app/**` (novo), `packages/design/src/{corComAlfa,papelSemantico}.ts` (novos) +
-  `packages/design/src/superficies.ts` (campos novos + fix de `tintaFraca`) +
-  `packages/design/test/papelSemantico.test.ts` (novo), `packages/design/assets/pauta.png`
-  (novo), `.claude/skills/bookworm-design-system/SKILL.md` (novo), `specs/medicao/estagio5/*.png`
-  (novo — capturas de tela), `package.json`/`pnpm-lock.yaml` da raiz (`@shopify/react-native-skia`
-  em `onlyBuiltDependencies`).
 - **`corepack enable`/`corepack prepare pnpm@latest` falham nesta máquina**: `EPERM` ao tentar
   escrever em `C:\Program Files\nodejs` (falta de elevação) e, à parte, erro de verificação de
   assinatura (`Cannot find matching keyid`) — parece bug do corepack embutido nesta versão do

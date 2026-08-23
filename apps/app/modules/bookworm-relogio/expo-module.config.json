@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android", "web"],
+  "apple": {
+    "modules": ["BookwormRelogioModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.bookwormrelogio.BookwormRelogioModule"]
+  }
+}
