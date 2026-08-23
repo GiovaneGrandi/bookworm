@@ -15,6 +15,11 @@ config.resolver.nodeModulesPaths = [
   path.resolve(workspaceRoot, 'node_modules'),
 ];
 
+// Estágio 7 — o acervo de domínio público embarcado (`assets/acervo/*.epub`,
+// `specs/acervo-inicial.md`) precisa ser um asset do Metro (`require(...)` + `expo-asset`) para
+// ser lido como bytes locais em runtime; `.epub` não está entre as extensões de asset padrão.
+config.resolver.assetExts = [...config.resolver.assetExts, 'epub'];
+
 // Todo import interno deste monorepo usa extensão `.js` sobre fonte `.ts`/`.tsx` (convenção
 // TypeScript `moduleResolution: bundler`/NodeNext, a mesma que `packages/core` e
 // `packages/design` já usam com Vitest). O `tsc` entende isso nativamente; o Metro não — ele

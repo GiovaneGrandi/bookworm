@@ -68,6 +68,17 @@ export async function marcarComoLendo(obraId: string): Promise<void> {
     .where(and(eq(itemBiblioteca.usuarioId, USUARIO_LOCAL), eq(itemBiblioteca.obraId, obraId)));
 }
 
+/** Títulos já presentes na biblioteca com origem "dominio_publico" — usado para não repetir uma
+ * entrada do acervo embarcado (`catalogo.ts`) que a pessoa já adicionou. */
+export async function tituloJaNoAcervoDaBiblioteca(): Promise<Set<string>> {
+  const db = abrirBanco();
+  const linhas = await db
+    .select({ titulo: tabelaObra.titulo })
+    .from(tabelaObra)
+    .where(eq(tabelaObra.origem, 'dominio_publico'));
+  return new Set(linhas.map((l) => l.titulo));
+}
+
 /** RN-02.6/RN-02.22a — `estanteDesde` só é gravado a primeira vez; conclusões seguintes da mesma
  * obra (releitura completa) não reescrevem a data de entrada na Estante. */
 export async function marcarComoConcluido(obraId: string): Promise<void> {

@@ -10,12 +10,28 @@
 
 ## Operação em curso — Plano do primeiro protótipo (`planos/2026-08-23-primeiro-prototipo-mvp.md`)
 
-**Estágios 0–6 concluídos e commitados. Estágio 7 — fundação (Readium + importação + leitor
-mínimo) validada no emulador, código ainda não commitado.** O plano definiu o passo 1
-(importação), o essencial do passo 4/leitor (RN-02.13 parcial) e o início do 8 (posição local);
-os passos 2 (acervo embarcado), 3 (Biblioteca/Estante completas — hoje só Biblioteca existe),
-5 (painel de 10 controles), 6 (destaques/anotações/dicionário) e 7 (resposta a gesto) **ficam
-para a próxima rodada**, por decisão explícita do usuário ("fundação primeiro").
+**Estágios 0–6 commitados. Estágio 7 fundação (Readium + importação + leitor mínimo, commit
+`9040ffa`) commitado. Passo 2 (acervo de domínio público embarcado) implementado e validado ao
+vivo no emulador, ainda não commitado.** Faltam do Estágio 7: passo 3 completo (Estante — hoje só
+Biblioteca existe), passo 5 (painel de 10 controles), passo 6 (destaques/anotações/dicionário),
+passo 7 (resposta a gesto).
+
+### Passo 2 — acervo de domínio público embarcado
+
+Cinco EPUBs de domínio público baixados do Project Gutenberg, verificados contra
+`montarIndiceEpub` antes de entrar no repo, documentados em `specs/acervo-inicial.md` (proveniência
++ licença + as 3 propostas de obra de onboarding para `RN-01.5b`, não decididas). Vivem em
+`apps/app/assets/acervo/*.epub`, registrados como assets do Metro (`.epub` entrou em
+`resolver.assetExts` — precisou de `expo-asset` explícito + rebuild nativo, o pacote tem módulo
+Android próprio). `apps/app/src/importacao/persistirObra.ts` extraiu o núcleo comum entre
+importação do usuário e adição do acervo (só origem/privacidade mudam, RN-02.1d);
+`apps/app/src/importacao/catalogo.ts` resolve o asset (`Asset.fromModule(...).downloadAsync()`),
+lê bytes e reusa esse núcleo. Biblioteca ganhou a seção "Acervo de domínio público" — toca, adiciona
+e abre o leitor na hora (RN-02.3), e o item some da seção assim que entra na biblioteca
+(`tituloJaNoAcervoDaBiblioteca`, filtro por título exato — funciona porque o catálogo é pequeno e
+curado; não é uma solução geral). **Validado ao vivo**: tocar em "Alice's Adventures in
+Wonderland" no Acervo adicionou à Biblioteca, abriu o leitor renderizando a capa de verdade, e ao
+fechar o item migrou da seção Acervo para a lista principal da Biblioteca, sem erro no logcat.
 
 ### Estágio 7 — o que existe e foi validado ao vivo no emulador
 
@@ -106,9 +122,9 @@ emulador antes de investigar como bug — é mais rápido que qualquer diagnóst
 
 ### Próxima ação concreta
 
-Pedir confirmação e commitar o Estágio 7 (fundação). Próxima rodada: os passos 2 (acervo
-embarcado), 3 (Estante — Biblioteca já existe), 5 (painel de 10 controles), 6
-(destaques/anotações/dicionário) e 7 (resposta a gesto) do Estágio 7.
+Pedir confirmação e commitar o passo 2 (acervo embarcado). Próxima rodada: passos 3 (Estante —
+Biblioteca já existe), 5 (painel de 10 controles), 6 (destaques/anotações/dicionário) e 7
+(resposta a gesto) do Estágio 7.
 
 ### O que já foi verificado — não repetir
 
