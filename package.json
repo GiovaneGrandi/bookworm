@@ -23,7 +23,8 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "esbuild",
-      "@biomejs/biome"
+      "@biomejs/biome",
+      "@shopify/react-native-skia"
     ]
   }
 }

@@ -1,0 +1,31 @@
+// Casca do app (`bw-shell`, design-system.md §6.2). Configura o Unistyles antes de qualquer
+// `StyleSheet.create` do resto da árvore (import por efeito colateral, primeira linha), carrega
+// as fontes da marca (stack.md §3) e só então monta a navegação. O leitor fica fora do grupo de
+// abas — RN-DS.18: é modo, não destino — por isso é uma rota irmã de `(tabs)`, não filha.
+import '../src/tema/unistyles.js';
+
+import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useSuperficie } from '../src/componentes/useSuperficie.js';
+import { useFontesDaMarca } from '../src/tema/fontes.js';
+
+export default function LayoutRaiz() {
+  const [fontesCarregadas] = useFontesDaMarca();
+  const sup = useSuperficie('mesa');
+
+  if (!fontesCarregadas) {
+    return <View style={{ flex: 1, backgroundColor: sup.fundo }} />;
+  }
+
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <StatusBar style="light" />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="leitor" options={{ presentation: 'fullScreenModal' }} />
+      </Stack>
+    </GestureHandlerRootView>
+  );
+}
