@@ -1,0 +1,46 @@
+{
+  "fuso": "America/Sao_Paulo",
+  "descricao": "Releio um capítulo já conhecido a ritmo rápido (1.000 caracteres/min, abaixo do teto físico de 2.500) — RN-03.24: ritmo alto não torna a sessão suspeita nem afeta validade.",
+  "eventos": [
+    {
+      "tipo": "sessao_iniciada",
+      "parede": 1700000000000,
+      "mono": 0,
+      "caracteres": 0
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1700000030000,
+      "mono": 30000,
+      "caracteres": 500
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1700000060000,
+      "mono": 60000,
+      "caracteres": 1000
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1700000090000,
+      "mono": 90000,
+      "caracteres": 1500
+    },
+    {
+      "tipo": "sessao_encerrada",
+      "parede": 1700000090000,
+      "mono": 90000
+    }
+  ],
+  "esperado": {
+    "particoes": [
+      {
+        "tempoAtivoS": 90,
+        "tempoBrutoS": 90,
+        "volumeCaracteres": 1500,
+        "volumeSuspeita": false,
+        "status": "valida"
+      }
+    ]
+  }
+}

@@ -10,20 +10,54 @@
 
 ## Operação em curso — Plano do primeiro protótipo (`planos/2026-08-23-primeiro-prototipo-mvp.md`)
 
-**Estágios 0, 1 e 2 concluídos.** Próxima ação: abrir sessão nova e executar o **Estágio 3**
-(`packages/core`: apuração da sessão). Ler a seção "Estágio 3" do plano antes de começar; não
-reler o restante.
+**Estágios 0, 1, 2 e 3 concluídos.** Próxima ação: abrir sessão nova e executar o **Estágio 4**
+(`packages/core`: meta, ofensiva, agregados e jardim). Ler a seção "Estágio 4" do plano antes de
+começar; não reler o restante.
 
 ### O que já foi verificado — não repetir
 
-- `git log` tem três commits: estado zero, Estágio 1, Estágio 2.
+- `git log` tem quatro commits: estado zero, Estágio 1, Estágio 2, e o commit do Estágio 3 (a
+  fazer nesta sessão — ver Pendências).
 - Monorepo existe e funciona: `apps/app` e `apps/api` (scaffolds vazios), `packages/core`
-  (índice de caracteres, RN-02.10/RN-03.2/RN-03.3/RN-02.1f/RN-ST.8/RN-TEL.27/RN-ST.7, todos com
-  teste nomeado pelo ID), `packages/db` (vazio até Estágio 6), `packages/design` (pigmentos,
+  (índice de caracteres — RN-02.10/RN-03.2/RN-03.3/RN-02.1f/RN-ST.8/RN-TEL.27/RN-ST.7 — e, desde
+  o Estágio 3, `src/sessao/` com as sete funções puras de `RN-TEL.48`: `apurarTempoAtivo`,
+  `apurarBlocosDeFoco`, `apurarVolume`, `dividirNaViradaDoDia` (+ `apurarTempoAtivoDividido`, ver
+  achado abaixo), `calcularLeituraConsciente`, `classificarEstilo`, `classificarSessao`; todo `RN-`
+  com teste nomeado pelo ID), `packages/db` (vazio até Estágio 6), `packages/design` (pigmentos,
   superfícies, escala de espaçamento, escala tipográfica, gerador de CSS + teste de comparação
   automatizada, `assets/grao-7.png` já copiado de `probe/`).
 - **`pnpm test`, `pnpm lint`, `pnpm typecheck` rodam limpos na raiz agora** (Turborepo, 5
-  pacotes). `pnpm design:tokens` gera `packages/design/dist/tokens.css`.
+  pacotes; `pnpm lint` reporta só warnings de `noNonNullAssertion`, consistentes com o resto do
+  repo, sem erro). `pnpm design:tokens` gera `packages/design/dist/tokens.css`.
+- `@vitest/coverage-v8@3.2.7` instalado como devDependency da raiz nesta rodada (Estágio 3, para
+  reportar cobertura de `src/sessao/`: 96,45% statements — `npx vitest run --coverage
+  --coverage.include='src/sessao/**'` dentro de `packages/core`). Não configurado como padrão no
+  `package.json` (rodar sob demanda); considerar promover a script `test:coverage` se algum
+  estágio futuro quiser isso em CI.
+
+### Achado do Estágio 3 — arredondamento de traço dividido na virada do dia precisa de coordenação
+
+`RN-TEL.11` manda arredondar uma única vez, na apuração final — mas quando `dividirNaViradaDoDia`
+parte um traço em duas sessões, cada `apurarTempoAtivo` independente arredonda a própria parte, e
+a soma dos arredondamentos não bate necessariamente com o arredondamento do traço inteiro (erro de
+até ±1s por fronteira — problema clássico de "quem absorve o resto do arredondamento"). `RN-TEL.50`
+exige soma exata, então `dividirNaViradaDoDia.ts` ganhou um segundo export,
+`apurarTempoAtivoDividido(traco)`, que aplica o mesmo método de "maior resto" usado em totais
+financeiros: arredonda cada parte normalmente e empurra a diferença para a última. Qualquer
+consumidor futuro (Estágio 9, servidor) que precise dos números por dia de uma sessão dividida deve
+usar essa função, não recompor `apurarTempoAtivo` por parte manualmente.
+
+### Achado do Estágio 3 (2) — segmento de volume que atravessa uma pausa não pode ser comparado ao teto físico
+
+Primeira versão de `apurarVolume` comparava o delta de caracteres de **todo** o intervalo entre
+duas leituras de posição contra o teto físico daquele intervalo — inclusive quando o intervalo
+atravessava uma pausa (sistema ou idle). Como o tempo ativo dentro do intervalo colapsa para ~0
+quando a pausa ocupa quase tudo, qualquer avanço de posição depois da pausa disparava
+`suspeita: true` por engano, mesmo em ritmo de leitura normal (achado ao gerar o traço
+`SES-04-via-interacao.json` e ver `suspeita: true` onde não devia haver nada de suspeito). Corrigido
+fazendo `apurarVolume` quebrar a cadeia de movimento em qualquer pausa, do mesmo jeito que já
+quebrava em `salto: true` — a retomada depois de uma pausa começa uma cadeia nova, sem comparar
+contra a posição de antes dela.
 - `probe/` (app de prova do Estágio 1) **descartável** — nada mais depende dele, o grão já foi
   copiado. Pode ser apagado num estágio futuro se atrapalhar; não precisa ser agora.
 - AVD funcional: `BookWorm_API34` (Pixel 6, API 34, `google_apis_playstore/x86_64`),
@@ -118,6 +152,12 @@ mesmo sintoma.
 
 ### Pendências abertas desta operação
 
+- **Commit do Estágio 3 ainda não feito** — pedir confirmação ao usuário antes (regra de trabalho
+  do `CLAUDE.md`: só commitar quando pedido explicitamente). Escopo do commit:
+  `packages/core/src/sessao/**`, `packages/core/test/sessao-*.test.ts`,
+  `packages/core/test/tracos/*.json`, `packages/core/test/arquitetura/relogio-como-parametro.test.ts`,
+  `packages/core/src/index.ts` (novo export), `package.json`/`pnpm-lock.yaml` da raiz
+  (`@vitest/coverage-v8` novo).
 - **`corepack enable`/`corepack prepare pnpm@latest` falham nesta máquina**: `EPERM` ao tentar
   escrever em `C:\Program Files\nodejs` (falta de elevação) e, à parte, erro de verificação de
   assinatura (`Cannot find matching keyid`) — parece bug do corepack embutido nesta versão do

@@ -1,0 +1,21 @@
+{
+  "fuso": "America/Sao_Paulo",
+  "descricao": "Estou em sessão ativa, o app vai para segundo plano por 5 minutos e eu retorno e volto a ler — RN-03.11: o tempo ativo é pausado no instante do sinal de segundo plano, sem esperar os 90s de idle (contraste com SES-02, onde a mesma duração de silêncio é subtraída retroativamente porque não há sinal nenhum — RN-TEL.13).",
+  "eventos": [
+    { "tipo": "sessao_iniciada", "parede": 1700000000000, "mono": 0, "caracteres": 0 },
+    { "tipo": "posicao_alterada", "parede": 1700000001000, "mono": 1000, "caracteres": 500 },
+    { "tipo": "pausa_iniciada", "parede": 1700000002000, "mono": 2000, "pausa": "sistema" },
+    { "tipo": "pausa_encerrada", "parede": 1700000302000, "mono": 302000 },
+    { "tipo": "posicao_alterada", "parede": 1700000303000, "mono": 303000, "caracteres": 1500 },
+    { "tipo": "sessao_encerrada", "parede": 1700000304000, "mono": 304000 }
+  ],
+  "esperado": {
+    "particoes": [
+      {
+        "tempoAtivoS": 4,
+        "tempoBrutoS": 304,
+        "pausas": [{ "tipo": "sistema", "duracaoS": 300 }]
+      }
+    ]
+  }
+}

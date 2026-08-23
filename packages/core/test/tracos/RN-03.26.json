@@ -1,0 +1,34 @@
+{
+  "fuso": "America/Sao_Paulo",
+  "descricao": "Abro uma obra e avanço 200 páginas canônicas (300.000 caracteres) em 90 segundos — RN-03.26: o volume creditado é limitado ao teto físico e a sessão é marcada como suspeita, mas ainda conta para a meta.",
+  "eventos": [
+    {
+      "tipo": "sessao_iniciada",
+      "parede": 1700000000000,
+      "mono": 0,
+      "caracteres": 0
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1700000090000,
+      "mono": 90000,
+      "caracteres": 300000
+    },
+    {
+      "tipo": "sessao_encerrada",
+      "parede": 1700000090000,
+      "mono": 90000
+    }
+  ],
+  "esperado": {
+    "particoes": [
+      {
+        "tempoAtivoS": 90,
+        "tempoBrutoS": 90,
+        "volumeCaracteres": 3750,
+        "volumeSuspeita": true,
+        "status": "suspeita"
+      }
+    ]
+  }
+}

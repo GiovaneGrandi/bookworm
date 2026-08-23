@@ -1,0 +1,18 @@
+{
+  "fuso": "America/Sao_Paulo",
+  "descricao": "Estou lendo e deixo o app aberto sem interagir por 20 minutos — SES-02: o tempo ativo exclui o intervalo de inatividade, retroativo desde a última interação (RN-03.10, RN-TEL.13), e o tempo bruto interno permanece maior que o tempo ativo.",
+  "eventos": [
+    { "tipo": "sessao_iniciada", "parede": 1700000000000, "mono": 0, "caracteres": 0 },
+    { "tipo": "posicao_alterada", "parede": 1700000005000, "mono": 5000, "caracteres": 1000 },
+    { "tipo": "sessao_encerrada", "parede": 1700001205000, "mono": 1205000 }
+  ],
+  "esperado": {
+    "particoes": [
+      {
+        "tempoAtivoS": 5,
+        "tempoBrutoS": 1205,
+        "pausas": [{ "tipo": "idle", "duracaoS": 1200 }]
+      }
+    ]
+  }
+}

@@ -1,0 +1,211 @@
+{
+  "fuso": "America/Sao_Paulo",
+  "descricao": "Começo a ler às 23:40 no meu fuso e sigo até 00:20, com sinais a cada 80s (abaixo do timeout de idle) — RN-03.6: a sessão é dividida em duas na meia-noite local, uma encerrada às 23:59:59 e outra iniciada às 00:00:00, sem perder nem ganhar um segundo (RN-TEL.50) e cada parte contando para a ofensiva do próprio dia.",
+  "eventos": [
+    {
+      "tipo": "sessao_iniciada",
+      "parede": 1787539200000,
+      "mono": 0,
+      "caracteres": 0
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1787539280000,
+      "mono": 80000,
+      "caracteres": 100
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1787539360000,
+      "mono": 160000,
+      "caracteres": 200
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1787539440000,
+      "mono": 240000,
+      "caracteres": 300
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1787539520000,
+      "mono": 320000,
+      "caracteres": 400
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1787539600000,
+      "mono": 400000,
+      "caracteres": 500
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1787539680000,
+      "mono": 480000,
+      "caracteres": 600
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1787539760000,
+      "mono": 560000,
+      "caracteres": 700
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1787539840000,
+      "mono": 640000,
+      "caracteres": 800
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1787539920000,
+      "mono": 720000,
+      "caracteres": 900
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1787540000000,
+      "mono": 800000,
+      "caracteres": 1000
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1787540080000,
+      "mono": 880000,
+      "caracteres": 1100
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1787540160000,
+      "mono": 960000,
+      "caracteres": 1200
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1787540240000,
+      "mono": 1040000,
+      "caracteres": 1300
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1787540320000,
+      "mono": 1120000,
+      "caracteres": 1400
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1787540400000,
+      "mono": 1200000,
+      "caracteres": 1500
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1787540480000,
+      "mono": 1280000,
+      "caracteres": 1600
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1787540560000,
+      "mono": 1360000,
+      "caracteres": 1700
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1787540640000,
+      "mono": 1440000,
+      "caracteres": 1800
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1787540720000,
+      "mono": 1520000,
+      "caracteres": 1900
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1787540800000,
+      "mono": 1600000,
+      "caracteres": 2000
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1787540880000,
+      "mono": 1680000,
+      "caracteres": 2100
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1787540960000,
+      "mono": 1760000,
+      "caracteres": 2200
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1787541040000,
+      "mono": 1840000,
+      "caracteres": 2300
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1787541120000,
+      "mono": 1920000,
+      "caracteres": 2400
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1787541200000,
+      "mono": 2000000,
+      "caracteres": 2500
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1787541280000,
+      "mono": 2080000,
+      "caracteres": 2600
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1787541360000,
+      "mono": 2160000,
+      "caracteres": 2700
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1787541440000,
+      "mono": 2240000,
+      "caracteres": 2800
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1787541520000,
+      "mono": 2320000,
+      "caracteres": 2900
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1787541600000,
+      "mono": 2400000,
+      "caracteres": 3000
+    },
+    {
+      "tipo": "sessao_encerrada",
+      "parede": 1787541600000,
+      "mono": 2400000
+    }
+  ],
+  "esperado": {
+    "particoes": [
+      {
+        "dia": "2026-08-23",
+        "tempoAtivoS": 1200,
+        "tempoBrutoS": 1200
+      },
+      {
+        "dia": "2026-08-24",
+        "tempoAtivoS": 1200,
+        "tempoBrutoS": 1200
+      }
+    ]
+  }
+}

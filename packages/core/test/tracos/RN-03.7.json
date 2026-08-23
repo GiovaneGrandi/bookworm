@@ -1,0 +1,33 @@
+{
+  "fuso": "America/Sao_Paulo",
+  "descricao": "Leio duas páginas (3.000 caracteres) por 40 segundos antes de dormir — RN-03.7: sessão curta, mas o volume ainda conta para a meta.",
+  "eventos": [
+    {
+      "tipo": "sessao_iniciada",
+      "parede": 1700000000000,
+      "mono": 0,
+      "caracteres": 0
+    },
+    {
+      "tipo": "posicao_alterada",
+      "parede": 1700000040000,
+      "mono": 40000,
+      "caracteres": 3000
+    },
+    {
+      "tipo": "sessao_encerrada",
+      "parede": 1700000040000,
+      "mono": 40000
+    }
+  ],
+  "esperado": {
+    "particoes": [
+      {
+        "tempoAtivoS": 40,
+        "tempoBrutoS": 40,
+        "volumeCaracteres": 1667,
+        "status": "curta"
+      }
+    ]
+  }
+}
