@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## O que é este projeto
 
-BookWorm é uma plataforma gamificada de leitura e escrita ("fitness para a mente"). **Estado atual: fase de especificação — não há código de produto ainda.** O repositório contém specs funcionais, análises críticas e mockups estáticos em HTML.
+BookWorm é uma plataforma gamificada de leitura e escrita ("fitness para a mente"). **Estado atual: primeiro protótipo em construção**, seguindo `planos/2026-08-23-primeiro-prototipo-mvp.md` (Estágios 0–2 concluídos). O repositório contém specs funcionais, análises críticas, mockups estáticos em HTML e, a partir do Estágio 2, o monorepo de código de produto.
 
 - `BookWorm.md` — rascunho original (pitch). Documento-fonte histórico, **mantido intocado**.
 - `README.md` — mapa da documentação e estado do projeto.
@@ -20,7 +20,30 @@ BookWorm é uma plataforma gamificada de leitura e escrita ("fitness para a ment
 - `analise-game-design/` e `analise-monetizacao/` — análises críticas das specs, cada uma terminando em uma folha de decisão (`04-decisoes.md` / `04-recomendacao.md`).
 - `mockups/*.html` — protótipos visuais estáticos e autocontidos (sem build step). `design-system.html` é o **catálogo e a referência normativa** — é dele que uma peça nova herda. `leitor-papel.html`, `telas-papel.html` e `widgets-story.html` são evidência histórica, em débito declarado (`AJ-13`); `leitor-noturno.html`, `leitor-instrumento.html`, `telas-noturno.html` e `comparativo.html` são as direções descartadas.
 
-Não há comandos de build/lint/test porque não há código-fonte de aplicação — apenas Markdown e HTML estático. Quando o código de produto começar (ver `specs/mvp.md` §3, ordem de dependência), este arquivo deve ser atualizado com os comandos reais.
+## Código de produto — monorepo
+
+Estrutura (pnpm workspaces + Turborepo, `specs/stack.md` §5):
+
+- `apps/app` — Expo (RN 0.86, Expo SDK 57). Scaffold vazio desde o Estágio 2; navegação e design system entram no Estágio 5, o leitor no Estágio 7.
+- `apps/api` — Fastify. Scaffold vazio desde o Estágio 2; rotas de produto e Better Auth entram no Estágio 9.
+- `packages/core` — TypeScript puro, sem RN/Postgres/I/O (`RN-ST.7`). Hoje: o índice de caracteres (`stack.md` §6). A apuração de sessão, ofensiva e Ghost Reader entram nos Estágios 3–4.
+- `packages/db` — schema Drizzle. Vazio até o Estágio 6.
+- `packages/design` — tokens (pigmento → superfície → papel semântico, `design-system.md` §2) como TypeScript, fonte única de verdade; `pnpm design:tokens` gera o `:root` CSS para os mockups.
+- `probe/` — app de prova descartável do Estágio 1 (medição do Anexo A e do Readium em Android real). Não é parte do produto; ver `specs/medicao-app-de-prova.md`.
+
+**`.npmrc` da raiz fixa `node-linker=hoisted`** — obrigatório para builds Android no Windows não estourarem `CMAKE_OBJECT_PATH_MAX` (achado do Estágio 1, detalhe em `.claude/retomada.md`). Não remover nem reverter para o padrão do pnpm.
+
+Comandos (raiz do monorepo):
+
+```bash
+pnpm install                       # node-linker=hoisted já configurado em .npmrc
+pnpm test                          # Vitest, todos os pacotes (via Turborepo)
+pnpm lint                          # Biome, todos os pacotes
+pnpm typecheck                     # tsc --noEmit, todos os pacotes
+pnpm design:tokens                 # regenera packages/design/dist/tokens.css
+```
+
+Todo `RN-` de `packages/core` tem teste nomeado pelo próprio ID (`RN-ST.6`) — ver `packages/core/test/`.
 
 ## Convenções das specs
 

@@ -1,0 +1,28 @@
+{
+  "name": "bookworm",
+  "private": true,
+  "engines": {
+    "node": ">=20.19.4"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "design:tokens": "pnpm --filter @bookworm/design run gerar-css"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.10",
+    "@types/node": "^26.2.0",
+    "turbo": "^2.10.11",
+    "typescript": "^7.0.2",
+    "vitest": "3.2.7"
+  },
+  "packageManager": "pnpm@10.34.5",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "@biomejs/biome"
+    ]
+  }
+}

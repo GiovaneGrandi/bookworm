@@ -10,27 +10,44 @@
 
 ## Operação em curso — Plano do primeiro protótipo (`planos/2026-08-23-primeiro-prototipo-mvp.md`)
 
-**Estágios 0 e 1 concluídos.** Próxima ação: abrir sessão nova e executar o **Estágio 2**
-(monorepo + índice de caracteres). Ler a seção "Estágio 2" do plano antes de começar; não reler
-o restante. `specs/medicao-app-de-prova.md` (replicado no vault) tem o relatório completo do
-Estágio 1, com veredito por primitiva e resposta a `Q-ST.1/2/5/8`, `Q-TEL.1/14` — ler antes de
-decidir o pipeline de leitor/PDF do Estágio 2, não redescobrir por tentativa.
+**Estágios 0, 1 e 2 concluídos.** Próxima ação: abrir sessão nova, **commitar o Estágio 2**
+(working tree tem tudo pronto, só falta `git commit` — ver Pendências) e executar o **Estágio 3**
+(`packages/core`: apuração da sessão). Ler a seção "Estágio 3" do plano antes de começar; não
+reler o restante.
 
 ### O que já foi verificado — não repetir
 
-- `git log` mostra o commit inicial (specs, análises, mockups, `.claude/`) rastreado. O commit do
-  Estágio 1 (`probe/`, `specs/medicao-app-de-prova.md`, Anexo A atualizado) **ainda não foi
-  feito** — ver Pendências.
-- Toolchain confirmada por execução real: app Expo compila nativamente e roda no emulador.
+- `git log` tem dois commits (estado zero; Estágio 1). O Estágio 2 está pronto no working tree,
+  **ainda não commitado**.
+- Monorepo existe e funciona: `apps/app` e `apps/api` (scaffolds vazios), `packages/core`
+  (índice de caracteres, RN-02.10/RN-03.2/RN-03.3/RN-02.1f/RN-ST.8/RN-TEL.27/RN-ST.7, todos com
+  teste nomeado pelo ID), `packages/db` (vazio até Estágio 6), `packages/design` (pigmentos,
+  superfícies, escala de espaçamento, escala tipográfica, gerador de CSS + teste de comparação
+  automatizada, `assets/grao-7.png` já copiado de `probe/`).
+- **`pnpm test`, `pnpm lint`, `pnpm typecheck` rodam limpos na raiz agora** (Turborepo, 5
+  pacotes). `pnpm design:tokens` gera `packages/design/dist/tokens.css`.
+- `probe/` (app de prova do Estágio 1) **descartável** — nada mais depende dele, o grão já foi
+  copiado. Pode ser apagado num estágio futuro se atrapalhar; não precisa ser agora.
 - AVD funcional: `BookWorm_API34` (Pixel 6, API 34, `google_apis_playstore/x86_64`),
   em `C:\Users\Giovane\.android\avd\BookWorm_API34.avd`. **Cai sozinho depois de ~1h ocioso** —
   se `adb devices` vier vazio, religar com
   `emulator.exe -avd BookWorm_API34 -no-snapshot -gpu swiftshader_indirect` (usar `nohup ... &
-  disown` para sobreviver ao fim do shell que o lançou).
-- `probe/` (app de prova do Estágio 1, fora do monorepo) está com as três telas funcionando —
-  primitivas, Readium (EPUB+PDF), sinais de sistema. **Descartável** a partir de agora, exceto
-  `probe/assets/grao-7.png`: copiar para `packages/design/assets/` quando o Estágio 2 criar o
-  monorepo (ainda não feito).
+  disown` para sobreviver ao fim do shell que o lançou). Não é necessário para o Estágio 3
+  (`packages/core` é puro, sem RN).
+
+### Achado do Estágio 2 — Vitest 4 quebrado nesta máquina
+
+`vitest@4.x` puxa `rolldown-vite` e falha com `Cannot find native binding` /
+`Cannot find module '@rolldown/binding-wasm32-wasi'` ao rodar — bug de resolução de dependência
+opcional específico desta plataforma (Windows + pnpm hoisted), não do projeto. **Fixado em
+`vitest@3.2.7`** no `package.json` da raiz. Não tentar atualizar para 4.x sem testar primeiro se
+o bug foi corrigido rio acima.
+
+### Ferramentas novas instaladas nesta rodada
+
+TypeScript ^7.0.2, Turborepo ^2.10.11, Biome ^2.5.10, Vitest 3.2.7 (não 4.x, ver acima),
+`@types/node` na raiz (`tsconfig.base.json` tem `"types": ["node"]`). `fast-check` como
+devDependency de `packages/core`, ainda não usado (entra nos testes de propriedade do Estágio 3).
 
 ### Achado que muda o Estágio 2, além do `node-linker` — react-native-readium precisa de patches de build
 
@@ -103,9 +120,6 @@ mesmo sintoma.
 
 ### Pendências abertas desta operação
 
-- **Commit do Estágio 1 pendente.** `probe/`, `specs/medicao-app-de-prova.md`,
-  `specs/design-system.md` (Anexo A atualizado) e `specs/medicao/*.png` estão no working tree,
-  não commitados — fazer o commit é a primeira ação de uma sessão nova, antes do Estágio 2.
 - **`corepack enable`/`corepack prepare pnpm@latest` falham nesta máquina**: `EPERM` ao tentar
   escrever em `C:\Program Files\nodejs` (falta de elevação) e, à parte, erro de verificação de
   assinatura (`Cannot find matching keyid`) — parece bug do corepack embutido nesta versão do

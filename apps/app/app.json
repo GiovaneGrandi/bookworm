@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "name": "BookWorm",
+    "slug": "bookworm",
+    "version": "1.0.0",
+    "orientation": "default",
+    "userInterfaceStyle": "automatic",
+    "android": {
+      "package": "com.bookworm.app"
+    }
+  }
+}
