@@ -8,6 +8,13 @@
       "when": 1787519997593,
       "tag": "0000_slimy_absorbing_man",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1787526429001,
+      "tag": "0001_tough_zaran",
+      "breakpoints": true
     }
   ]
 }

@@ -12,6 +12,7 @@ const TABELAS_ESPERADAS = [
   'obra',
   'item_biblioteca',
   'progresso_leitura',
+  'preferencia_leitura',
   'sessao_leitura',
   'intervalo_inatividade',
   'destaque',

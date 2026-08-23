@@ -4,19 +4,30 @@
 // encerra a sessão. RN-02.6 (passo 3): ao fechar perto do fim da obra, sugere marcar como
 // concluída — a transição em si é sempre confirmada pelo usuário, nunca automática.
 //
-// RN-02.13 (modo imersivo) — implementado parcialmente nesta rodada: o "Fechar" fica atrás de um
-// toque na faixa superior da tela em vez de cobrir toda a área central, para não competir com os
-// gestos de virar página do próprio Readium (a biblioteca não expõe um evento de toque bruto
-// separado do de navegação). A âncora de posição permanente (`RN-02.13a`) e a ocultação
-// automática após 3s continuam pendentes — entram com o painel de leitura (Estágio 7, rodada
-// seguinte), quando o resto do modo imersivo for construído junto.
+// RN-02.13 (modo imersivo) — implementado parcialmente nesta rodada: "Fechar" e "Preferências"
+// ficam atrás de toques na faixa superior da tela em vez de um toque na área central, para não
+// competir com os gestos de virar página do próprio Readium (a biblioteca não expõe um evento de
+// toque bruto separado do de navegação). A âncora de posição permanente (`RN-02.13a`) continua
+// pendente — o indicador nativo do react-native-readium não expõe prop para os 3 níveis, decisão
+// do usuário via `AskUserQuestion` de adiar só esse controle (ver `.claude/retomada.md`). A
+// ocultação automática após 3s do resto do modo imersivo também segue pendente.
 import { type IndiceDeCaracteres, posicaoEmCaracteres } from '@bookworm/core/src/indice/index.js';
+import {
+  PREFERENCIAS_LEITURA_PADRAO,
+  type PreferenciasDeLeitura,
+  paraPreferenciasDeNavegador,
+} from '@bookworm/core/src/leitor/index.js';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { Locator } from 'react-native-readium';
 import { ReadiumView } from 'react-native-readium';
 import { marcarComoConcluido, marcarComoLendo } from '../src/biblioteca/consultas.js';
+import { PainelDeLeitura } from '../src/leitor/PainelDeLeitura.js';
+import {
+  obterPreferenciasDeLeitura,
+  salvarPreferenciasDeLeitura,
+} from '../src/leitor/preferencias.js';
 import { useCarregarObra } from '../src/leitor/useCarregarObra.js';
 import { avaliarEAtualizarHoje } from '../src/ofensiva/servico.js';
 import { useMaquinaSessao } from '../src/sessao/maquina.js';
@@ -47,6 +58,21 @@ export default function Leitor() {
   const sinalPosicao = useMaquinaSessao((s) => s.sinalPosicao);
   const abriuSessaoPara = useRef<string | null>(null);
   const progressoRef = useRef(0);
+  const [prefs, setPrefs] = useState<PreferenciasDeLeitura>(PREFERENCIAS_LEITURA_PADRAO);
+  const [painelAberto, setPainelAberto] = useState(false);
+
+  useEffect(() => {
+    void obterPreferenciasDeLeitura().then(setPrefs);
+  }, []);
+
+  // RN-02.16e — pré-visualização ao vivo: todo ajuste chega aqui e recalcula o objeto que a
+  // Readium recebe, sem tocar em posição, sessão ou reiniciar a leitura.
+  const preferenciasDeNavegador = useMemo(() => paraPreferenciasDeNavegador(prefs), [prefs]);
+
+  const aoSoltarPreferencia = useCallback((novasPrefs: PreferenciasDeLeitura) => {
+    setPrefs(novasPrefs);
+    void salvarPreferenciasDeLeitura(novasPrefs);
+  }, []);
 
   useEffect(() => {
     let pararSinais: (() => void) | null = null;
@@ -116,10 +142,23 @@ export default function Leitor() {
     <View style={styles.raiz}>
       <ReadiumView
         file={{ url: obra.caminhoArquivo }}
-        preferences={{ theme: 'light' }}
+        preferences={preferenciasDeNavegador}
         onLocationChange={aoMudarLocalizacao}
         style={styles.leitor}
       />
+      {/* RN-02.16b — brilho in-app: nunca sobe acima do que o sistema já permite, só escurece por
+          cima com um véu; opacidade zero em brilho máximo. `pointerEvents="none"` para nunca
+          bloquear o toque de virar página nem os botões da faixa superior por baixo dele. */}
+      <View pointerEvents="none" style={[styles.veuDeBrilho, { opacity: 1 - prefs.brilho }]} />
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Preferências de leitura"
+        style={styles.faixaPreferencias}
+        onPress={() => setPainelAberto((aberto) => !aberto)}
+        hitSlop={8}
+      >
+        <Text style={styles.iconeFaixa}>Aa</Text>
+      </Pressable>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="Fechar leitor"
@@ -129,6 +168,9 @@ export default function Leitor() {
       >
         <Text style={styles.fechar}>✕</Text>
       </Pressable>
+      {painelAberto && (
+        <PainelDeLeitura prefs={prefs} aoMudarAoVivo={setPrefs} aoSoltar={aoSoltarPreferencia} />
+      )}
     </View>
   );
 }
@@ -136,6 +178,14 @@ export default function Leitor() {
 const styles = StyleSheet.create({
   raiz: { flex: 1, backgroundColor: '#ffffff' },
   leitor: { flex: 1 },
+  veuDeBrilho: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#000000',
+  },
   faixaSuperior: {
     position: 'absolute',
     top: 0,
@@ -145,5 +195,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  faixaPreferencias: {
+    position: 'absolute',
+    top: 0,
+    right: 54,
+    width: 54,
+    height: 54,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconeFaixa: { fontSize: 15, color: 'rgba(0,0,0,0.55)' },
   fechar: { fontSize: 18, color: 'rgba(0,0,0,0.55)' },
 });
