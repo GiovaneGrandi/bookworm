@@ -3,7 +3,7 @@
 // fora da visão padrão (RN-02.6a) e `concluido` não aparece aqui, porque quem mostra "já lido" é
 // `estanteDesde`, não `estado`. Estante: `estanteDesde IS NOT NULL`, fato que nunca é apagado.
 import { itemBiblioteca, obra as tabelaObra, USUARIO_LOCAL } from '@bookworm/db';
-import { and, eq, inArray, isNotNull } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNotNull } from 'drizzle-orm';
 import { abrirBanco } from '../persistencia/db.js';
 
 export type ItemDaBiblioteca = {
@@ -14,6 +14,8 @@ export type ItemDaBiblioteca = {
   formato: 'epub' | 'pdf';
   estado: 'quero_ler' | 'lendo' | 'concluido' | 'abandonado' | 'em_pausa';
 };
+
+export type ItemDaEstante = ItemDaBiblioteca & { estanteDesde: Date };
 
 const ESTADOS_BIBLIOTECA = ['lendo', 'quero_ler', 'em_pausa'] as const;
 
@@ -39,7 +41,8 @@ export async function listarBiblioteca(): Promise<ItemDaBiblioteca[]> {
   return linhas;
 }
 
-export async function listarEstante(): Promise<ItemDaBiblioteca[]> {
+/** RN-02.22a — ordenada por data de conclusão, mais recente primeiro; a estante só cresce. */
+export async function listarEstante(): Promise<ItemDaEstante[]> {
   const db = abrirBanco();
   const linhas = await db
     .select({
@@ -49,13 +52,13 @@ export async function listarEstante(): Promise<ItemDaBiblioteca[]> {
       titulo: tabelaObra.titulo,
       autor: tabelaObra.autor,
       formato: tabelaObra.formato,
+      estanteDesde: itemBiblioteca.estanteDesde,
     })
     .from(itemBiblioteca)
     .innerJoin(tabelaObra, eq(itemBiblioteca.obraId, tabelaObra.id))
-    .where(
-      and(eq(itemBiblioteca.usuarioId, USUARIO_LOCAL), isNotNull(itemBiblioteca.estanteDesde))
-    );
-  return linhas;
+    .where(and(eq(itemBiblioteca.usuarioId, USUARIO_LOCAL), isNotNull(itemBiblioteca.estanteDesde)))
+    .orderBy(desc(itemBiblioteca.estanteDesde));
+  return linhas as ItemDaEstante[];
 }
 
 /** RN-02.6/RN-02.6b — chamado ao abrir uma sessão de leitura. Devolve `concluido` a `lendo` e à

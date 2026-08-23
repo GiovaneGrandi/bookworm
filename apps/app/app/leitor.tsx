@@ -1,7 +1,8 @@
 // O leitor é modo, não destino (RN-DS.18) — por isso vive fora de `(tabs)`, como rota irmã
 // apresentada em tela cheia. Estágio 7: react-native-readium ligado à máquina de estados do
 // Estágio 6 — abrir a rota inicia a sessão, cada mudança de locator vira `sinalPosicao`, fechar
-// encerra a sessão.
+// encerra a sessão. RN-02.6 (passo 3): ao fechar perto do fim da obra, sugere marcar como
+// concluída — a transição em si é sempre confirmada pelo usuário, nunca automática.
 //
 // RN-02.13 (modo imersivo) — implementado parcialmente nesta rodada: o "Fechar" fica atrás de um
 // toque na faixa superior da tela em vez de cobrir toda a área central, para não competir com os
@@ -12,20 +13,40 @@
 import { type IndiceDeCaracteres, posicaoEmCaracteres } from '@bookworm/core/src/indice/index.js';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useRef } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { Locator } from 'react-native-readium';
 import { ReadiumView } from 'react-native-readium';
-import { marcarComoLendo } from '../src/biblioteca/consultas.js';
+import { marcarComoConcluido, marcarComoLendo } from '../src/biblioteca/consultas.js';
 import { useCarregarObra } from '../src/leitor/useCarregarObra.js';
 import { avaliarEAtualizarHoje } from '../src/ofensiva/servico.js';
 import { useMaquinaSessao } from '../src/sessao/maquina.js';
 import { iniciarSinaisDeSessao } from '../src/sessao/sinais.js';
+
+/** RN-02.6 — "sugerido ao atingir 100% de progresso". O índice indexa todo o spine, inclusive
+ * capa e ficha catalográfica (RN-02.10 excluiria esses recursos do progresso "de verdade", mas o
+ * índice não os separa ainda) — por isso a margem prática de 98%, não 100% exato. */
+const LIMIAR_SUGESTAO_CONCLUSAO = 0.98;
+
+function perguntarSeConcluiu(): Promise<boolean> {
+  return new Promise((resolve) => {
+    Alert.alert(
+      'Você concluiu esta obra?',
+      'Parece que você chegou ao fim da leitura.',
+      [
+        { text: 'Agora não', style: 'cancel', onPress: () => resolve(false) },
+        { text: 'Marcar como concluída', onPress: () => resolve(true) },
+      ],
+      { cancelable: true, onDismiss: () => resolve(false) }
+    );
+  });
+}
 
 export default function Leitor() {
   const { obraId } = useLocalSearchParams<{ obraId: string }>();
   const { obra, carregando } = useCarregarObra(obraId);
   const sinalPosicao = useMaquinaSessao((s) => s.sinalPosicao);
   const abriuSessaoPara = useRef<string | null>(null);
+  const progressoRef = useRef(0);
 
   useEffect(() => {
     let pararSinais: (() => void) | null = null;
@@ -60,6 +81,10 @@ export default function Leitor() {
   const aoFecharComResumo = useCallback(async () => {
     const tinhaSessao = useMaquinaSessao.getState().sessaoId !== null;
     await useMaquinaSessao.getState().encerrar('fechado_pelo_leitor');
+    if (obraId && progressoRef.current >= LIMIAR_SUGESTAO_CONCLUSAO) {
+      const confirmou = await perguntarSeConcluiu();
+      if (confirmou) await marcarComoConcluido(obraId);
+    }
     const { pendente } = tinhaSessao ? await avaliarEAtualizarHoje('leitura') : { pendente: false };
     router.replace({
       pathname: '/resumo',
@@ -73,6 +98,7 @@ export default function Leitor() {
       const indice = obra.indiceCaracteres as IndiceDeCaracteres;
       try {
         const caracteres = posicaoEmCaracteres(indice, locator.href, locator.locations.progression);
+        progressoRef.current = indice.total > 0 ? caracteres / indice.total : 0;
         void sinalPosicao(Math.round(caracteres));
       } catch {
         // href fora do índice (ex.: recurso não-linear do spine) — sem posição de caracteres

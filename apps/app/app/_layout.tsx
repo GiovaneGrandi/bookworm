@@ -14,6 +14,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useSuperficie } from '../src/componentes/useSuperficie.js';
 import { useFontesDaMarca } from '../src/tema/fontes.js';
 
@@ -27,15 +28,17 @@ export default function LayoutRaiz() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <StatusBar style="light" />
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="leitor" options={{ presentation: 'fullScreenModal' }} />
-        <Stack.Screen name="resumo" options={{ presentation: 'fullScreenModal' }} />
-        {/* Arnês de validação manual da máquina de estados do Estágio 6 — remover quando o
-            leitor real (acima) tiver cobertura equivalente nos 7 cenários do plano. */}
-        <Stack.Screen name="leitor-debug" options={{ presentation: 'fullScreenModal' }} />
-      </Stack>
+      <SafeAreaProvider>
+        <StatusBar style="light" />
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="leitor" options={{ presentation: 'fullScreenModal' }} />
+          <Stack.Screen name="resumo" options={{ presentation: 'fullScreenModal' }} />
+          {/* Arnês de validação manual da máquina de estados do Estágio 6 — remover quando o
+              leitor real (acima) tiver cobertura equivalente nos 7 cenários do plano. */}
+          <Stack.Screen name="leitor-debug" options={{ presentation: 'fullScreenModal' }} />
+        </Stack>
+      </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 }

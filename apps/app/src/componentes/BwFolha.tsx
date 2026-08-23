@@ -1,8 +1,13 @@
 // `bw-folha` — superfície de conteúdo (design-system.md §6.1). Estados: repouso, carregando,
 // vazio, offline. `carregando` nunca é giro genérico (RN-DS.16): a superfície permanece e o dado
 // chega — este componente só monta o palco; quem preenche decide o que aparece dentro.
+//
+// Aplica o inset superior de área segura aqui, uma única vez: as telas de `(tabs)/` não têm
+// cabeçalho do React Navigation (`headerShown: false`) nem SafeAreaView próprio, então sem isso
+// o primeiro filho renderiza sob a status bar (achado ao construir a Estante — Estágio 7 passo 3).
 import type { PropsWithChildren } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Grao } from '../primitivas/Grao.js';
 import type { EstadoContrato } from '../tema/estados.js';
 import { type ComSuperficie, useSuperficie } from './useSuperficie.js';
@@ -19,12 +24,13 @@ type Props = PropsWithChildren<
 
 export function BwFolha({ superficie = 'papel', estado = 'repouso', anuncio, children }: Props) {
   const sup = useSuperficie(superficie);
+  const insets = useSafeAreaInsets();
 
   return (
     <View
       accessibilityRole="summary"
       accessibilityLabel={anuncio}
-      style={[styles.raiz, { backgroundColor: sup.fundo }]}
+      style={[styles.raiz, { backgroundColor: sup.fundo, paddingTop: insets.top }]}
     >
       <Grao style={styles.grao}>{children}</Grao>
       {estado === 'offline' && <AvisoOffline sup={sup} />}

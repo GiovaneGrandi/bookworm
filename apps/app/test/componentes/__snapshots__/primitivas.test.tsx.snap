@@ -1308,6 +1308,7 @@ exports[`bw-folha estado carregando 1`] = `
       },
       {
         "backgroundColor": "#f3ead9",
+        "paddingTop": 0,
       },
     ]
   }
@@ -1366,6 +1367,7 @@ exports[`bw-folha estado offline 1`] = `
       },
       {
         "backgroundColor": "#f3ead9",
+        "paddingTop": 0,
       },
     ]
   }
@@ -1443,6 +1445,7 @@ exports[`bw-folha estado repouso 1`] = `
       },
       {
         "backgroundColor": "#f3ead9",
+        "paddingTop": 0,
       },
     ]
   }
@@ -1501,6 +1504,7 @@ exports[`bw-folha estado vazio 1`] = `
       },
       {
         "backgroundColor": "#f3ead9",
+        "paddingTop": 0,
       },
     ]
   }

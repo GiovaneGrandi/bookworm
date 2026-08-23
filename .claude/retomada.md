@@ -10,55 +10,69 @@
 
 ## Operação em curso — Plano do primeiro protótipo (`planos/2026-08-23-primeiro-prototipo-mvp.md`)
 
-**Estágios 0–7 commitados** (`git log`: até `88bb7d4`, Estágio 7 passo 2 — acervo embarcado).
-Faltam do Estágio 7, deferidos para rodada futura: passo 3 completo (Estante — hoje só
-Biblioteca existe), passo 5 (painel de 10 controles), passo 6 (destaques/anotações/dicionário),
-passo 7 (resposta a gesto).
+**Estágios 0–7-fundação e Estágio 8-fundação commitados** (`git log`: até `913ec66`). Por pedido
+explícito do usuário ("Pode voltar ao que faltou do estágio 7, depois concluímos o 8"), a sessão
+atual voltou ao Estágio 7 antes de continuar o 8.
 
-**Estágio 8 — fundação (R-3 + resumo + Jardim funcional) implementada e validada ao vivo no
-emulador, ainda não commitada.** Escopo escolhido pelo usuário via `AskUserQuestion`: "Fundação
-primeiro" — **excluídos desta rodada**: arte completa do Jardim em Skia (5 estágios ilustrados),
-vida ambiente (J-11), 4 cosméticos de marco, notificações locais (`expo-notifications`), tela de
-edição de meta, concessão/consumo automático de congelamento na virada do dia, e a fronteira de
-fim-de-capítulo de RN-04.10b (celebração só dispara no fechamento da sessão, não em fim de
-capítulo — painel de leitura ainda não existe).
+**Estágio 7 passo 3 (Estante) implementado e validado ao vivo no emulador, ainda não commitado.**
+Faltam do Estágio 7, deferidos para rodada futura (escolha do usuário via `AskUserQuestion`:
+"Estante primeiro, sozinha"): passo 5 (painel de 10 controles), passo 6
+(destaques/anotações/dicionário), passo 7 (resposta a gesto — `R-2` avisa que isso **é** o
+produto, não pode ser apressado).
 
-### O que foi construído
+### O que foi construído (passo 3 — Estante)
 
-- **`apps/app/src/ofensiva/servico.ts`** (novo) — integra `packages/core/src/ofensiva/` (Estágio
-  4, já testado) com o banco local: `avaliarEAtualizarHoje` recalcula o agregado do dia, avalia a
-  meta (`avaliarMeta`, pegajoso — RN-04.10f), grava `celebracaoEstado` (`pendente` só na transição
-  cumprida-agora; mantém o valor anterior caso contrário) e recalcula `ofensiva` via
-  `recalcularOfensiva` sobre um histórico sem lacunas sintetizado em memória (só dias com sessão
-  real são persistidos em `dia_ofensiva`). `consumirCelebracaoPendente` marca `exibida`.
-  `obterOfensivaAtual`/`obterProgressoDeHoje` alimentam a UI.
-- **`apps/app/app/leitor.tsx`** — o botão "Fechar" agora chama `avaliarEAtualizarHoje` e navega
-  para `/resumo` com `celebracaoPendente` como param. O efeito de limpeza no unmount (saída sem
-  passar pelo botão — ex.: botão físico voltar) continua recalculando a ofensiva como rede de
-  segurança, mas **não navega para o resumo** — limitação aceita desta rodada, não discutida com o
-  usuário.
-- **`apps/app/app/resumo.tsx`** (novo) — tela de resumo de sessão; se `celebracaoPendente==='1'`,
-  abre pela celebração (`BwCelebracao`) antes dos números, e consome a celebração pendente uma
-  única vez.
-- **`apps/app/app/(tabs)/index.tsx`** (Jardim, reescrito) — estado real via `useFocusEffect`:
-  `nunca_leu` (nunca leu nada), `dormente` (`BwDormencia`), `vivo` (contagem, estágio via
-  `estadoDoJardim`, progresso do dia). **Removeu o link para `/leitor-debug`** que existia antes —
-  essa rota ainda existe no código mas não tem mais entrada de UI (não decidido com o usuário se
-  deve ganhar uma de volta).
-- Lint/typecheck/test rodam limpos (`pnpm lint`/`typecheck`/`test` na raiz) — só os warnings
-  `noNonNullAssertion` já aceitos de antes.
+- **`apps/app/app/(tabs)/biblioteca.tsx`** — Biblioteca e Estante viraram duas divisórias da
+  mesma aba (`RN-02.6a`), toggle no topo da tela (não reusa `BwAbasFichario` — esse componente é
+  a navegação de primeiro nível, fixa no rodapé; o toggle é local, mesmo padrão visual de rótulo
+  em versalete mono). Estante lista via `listarEstante` (nova, em
+  `src/biblioteca/consultas.ts`), ordenada por `estanteDesde` desc, com estado vazio próprio
+  (`BwVazio`, nunca lacuna — `RN-02.22a`).
+- **`apps/app/app/leitor.tsx`** — `RN-02.6`: "concluído é sugerido ao atingir 100%, confirmado
+  pelo usuário". Rastreia a razão `caracteres/índice.total` a cada `onLocationChange`; ao fechar
+  com progresso ≥ 98% (constante `LIMIAR_SUGESTAO_CONCLUSAO` — margem prática porque o índice
+  ainda inclui capa/ficha catalográfica no total, `RN-02.10` os excluiria de verdade), pergunta
+  via `Alert.alert` antes de navegar para o resumo. Só chama `marcarComoConcluido` se confirmado.
+- Reler (abrir uma obra `concluido` a partir da Estante) já funcionava — `marcarComoLendo` é
+  chamado incondicionalmente na abertura do leitor desde o Estágio 7 fundação, sem tocar em
+  `estanteDesde`. Validado ao vivo: a obra reaparece na Biblioteca **e permanece** na Estante —
+  única sobreposição admitida (`RN-02.6b`).
 
-### Validado ao vivo no emulador — fluxo completo de R-3
+### Achado — `BwFolha` não tinha inset de área segura; ninguém tinha notado porque nada mais tocava o topo da tela
 
-Meta temporariamente baixada para 1 min (`META_PADRAO_MINUTOS`) só para o teste, **revertida para
-20 antes deste registro** — não há vestígio da mudança temporária no working tree. Sequência
-confirmada: ler `alice.epub` → fechar pelo botão ✕ → resumo mostra números corretos da sessão
-(tempo ativo, páginas canônicas, estilo) → uma **segunda** sessão, mesmo dia, mesmo curta (abaixo
-de `SESSAO_MINIMA_SEGUNDOS`) → resumo abre com `BwCelebracao` ("1 · dias de ofensiva · Meta do dia
-cumprida.") **antes** dos números — confirma que o estado pendente sobrevive entre sessões e só é
-consumido no resumo, e que a celebração independe do status da sessão que a revelou. Jardim
-(`(tabs)/index.tsx`) refletiu em seguida: contagem 1, estágio "Broto", progresso do dia coerente
-com o agregado.
+Nenhuma tela de `(tabs)/` usa `SafeAreaView`, e o `Tabs` do expo-router (`headerShown: false`)
+não aplica inset de status bar sozinho. Isso ficou invisível até agora porque `BwImportar` (o
+primeiro elemento da Biblioteca) tem padding próprio grande o bastante para nunca ter colidido
+visivelmente com a status bar — mas o toggle Biblioteca/Estante, sendo o novo primeiro elemento,
+renderizou por baixo dela. **Fix (não é gambiarra local, é infraestrutura compartilhada)**:
+`<SafeAreaProvider>` acrescentado em `app/_layout.tsx` (envolvendo o `GestureHandlerRootView`
+existente) e `BwFolha` passou a aplicar `paddingTop: useSafeAreaInsets().top` — conserta a classe
+inteira de tela, não só a Biblioteca. Precisou de `jest.mock('react-native-safe-area-context', …)`
+em `jest.setup.js` (o mock oficial do pacote só expõe `export default {...}`, não exports
+nomeados — a factory do `jest.mock` precisa desembrulhar `.default` manualmente ou
+`useSafeAreaInsets` some do módulo mockado com `TypeError: ... is not a function`). Snapshot de
+`bw-folha` foi atualizado (`paddingTop: 0` a mais, insets zerados no mock).
+
+### Achado (2) — toques via `adb` continuam não confiáveis em telas `fullScreenModal`, mesmo com coordenada certa
+
+Confirmado de novo nesta sessão, agora também no botão "Continuar" de `resumo.tsx` (não só no
+"Fechar" do leitor, achado de sessão anterior): coordenada calculada via PIL na screenshot nativa,
+exatamente sobre o centro do alvo, e o toque simplesmente não registra — sem erro, tela
+inalterada. **O que funciona de forma confiável nessas telas**: `adb shell input swipe X Y X Y
+150` (toque parado, ~150ms de duração) no lugar de `input tap`. Em telas normais (Tabs, Stack sem
+`fullScreenModal`) `input tap` funciona sem problema. Não investigado a fundo — suspeita é que o
+`ReadiumView` ou a apresentação modal interceptam o toque instantâneo em algum nível nativo; não
+vale o tempo de diagnosticar, já que toque real de usuário nunca teve esse problema (achado já
+registrado para o rodapé de abas numa sessão anterior).
+
+### Validado ao vivo no emulador — fluxo completo do passo 3
+
+Leitura de `alice.epub` do início ao fim (83/83 páginas, ~130 swipes) → fechar → prompt "Você
+concluiu esta obra?" apareceu exatamente no limiar → confirmado → resumo (sem celebração pendente
+desta vez) → Biblioteca não lista mais "alice" → Estante lista "alice — concluída em 23 de ago.
+de 2026" → reabrir pela Estante → fechar sem confirmar conclusão de novo (progresso zerado, abaixo
+do limiar) → Biblioteca volta a listar "alice" **e** Estante continua listando — confirma
+`RN-02.6a`/`RN-02.6b` de ponta a ponta.
 
 ### Achado — coordenada de toque via `adb shell input tap` não é a mesma escala da imagem "mostrada"
 
@@ -75,10 +89,10 @@ imagem renderizada no chat, aplicar o fator informado antes de montar o `adb she
 
 ### Próxima ação concreta
 
-Pedir confirmação e commitar a fundação do Estágio 8. Depois, perguntar ao usuário se
-`leitor-debug.tsx` deve ganhar uma entrada de UI de volta ou ficar sem uma por enquanto. Rodada
-seguinte: o restante do Estágio 8 (arte do Jardim, notificações, congelamento automático, edição
-de meta) ou o restante do Estágio 7 — a decidir com o usuário.
+Pedir confirmação e commitar o Estágio 7 passo 3 (Estante). Usuário já indicou a ordem: terminar
+o restante do Estágio 7 (passos 5, 6, 7) antes de voltar a concluir o Estágio 8. Ainda pendente,
+não decidido: se `leitor-debug.tsx` deve ganhar uma entrada de UI de volta (perdeu a que tinha na
+rescrita do Jardim, Estágio 8 fundação) ou ficar sem uma por enquanto.
 
 ### O que já foi verificado — não repetir
 
