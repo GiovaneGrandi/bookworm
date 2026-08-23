@@ -10,30 +10,53 @@
 
 ## Operação em curso — Plano do primeiro protótipo (`planos/2026-08-23-primeiro-prototipo-mvp.md`)
 
-**Estágios 0, 1, 2 e 3 concluídos.** Próxima ação: abrir sessão nova e executar o **Estágio 4**
-(`packages/core`: meta, ofensiva, agregados e jardim). Ler a seção "Estágio 4" do plano antes de
-começar; não reler o restante.
+**Estágios 0, 1, 2, 3 e 4 concluídos.** Próxima ação: abrir sessão nova e executar o **Estágio 5**
+(`apps/app`: fundação visual e navegação). Ler a seção "Estágio 5" do plano antes de começar; não
+reler o restante.
 
 ### O que já foi verificado — não repetir
 
-- `git log` tem quatro commits: estado zero, Estágio 1, Estágio 2, e o commit do Estágio 3 (a
+- `git log` tem cinco commits: estado zero, Estágio 1, Estágio 2, Estágio 3, e o do Estágio 4 (a
   fazer nesta sessão — ver Pendências).
 - Monorepo existe e funciona: `apps/app` e `apps/api` (scaffolds vazios), `packages/core`
-  (índice de caracteres — RN-02.10/RN-03.2/RN-03.3/RN-02.1f/RN-ST.8/RN-TEL.27/RN-ST.7 — e, desde
-  o Estágio 3, `src/sessao/` com as sete funções puras de `RN-TEL.48`: `apurarTempoAtivo`,
-  `apurarBlocosDeFoco`, `apurarVolume`, `dividirNaViradaDoDia` (+ `apurarTempoAtivoDividido`, ver
-  achado abaixo), `calcularLeituraConsciente`, `classificarEstilo`, `classificarSessao`; todo `RN-`
-  com teste nomeado pelo ID), `packages/db` (vazio até Estágio 6), `packages/design` (pigmentos,
-  superfícies, escala de espaçamento, escala tipográfica, gerador de CSS + teste de comparação
-  automatizada, `assets/grao-7.png` já copiado de `probe/`).
+  (índice de caracteres — RN-02.10/RN-03.2/RN-03.3/RN-02.1f/RN-ST.8/RN-TEL.27/RN-ST.7 —,
+  `src/sessao/` desde o Estágio 3 (as sete funções puras de `RN-TEL.48`: `apurarTempoAtivo`,
+  `apurarBlocosDeFoco`, `apurarVolume`, `dividirNaViradaDoDia` + `apurarTempoAtivoDividido`,
+  `calcularLeituraConsciente`, `classificarEstilo`, `classificarSessao`), e `src/ofensiva/` desde o
+  Estágio 4 (`avaliarMeta`, `alterarMeta`, `recalcularOfensiva`, `aplicarCongelamento` +
+  `concederCongelamentoMensal`, `avaliarMarcos`, `estadoDoJardim`, `recalcularAgregados` +
+  `mesclarAgregados`, `fechamentoSemanal` — todo `RN-` com teste nomeado pelo ID), `packages/db`
+  (vazio até Estágio 6), `packages/design` (pigmentos, superfícies, escala de espaçamento, escala
+  tipográfica, gerador de CSS + teste de comparação automatizada, `assets/grao-7.png` já copiado de
+  `probe/`).
 - **`pnpm test`, `pnpm lint`, `pnpm typecheck` rodam limpos na raiz agora** (Turborepo, 5
   pacotes; `pnpm lint` reporta só warnings de `noNonNullAssertion`, consistentes com o resto do
-  repo, sem erro). `pnpm design:tokens` gera `packages/design/dist/tokens.css`.
-- `@vitest/coverage-v8@3.2.7` instalado como devDependency da raiz nesta rodada (Estágio 3, para
-  reportar cobertura de `src/sessao/`: 96,45% statements — `npx vitest run --coverage
-  --coverage.include='src/sessao/**'` dentro de `packages/core`). Não configurado como padrão no
-  `package.json` (rodar sob demanda); considerar promover a script `test:coverage` se algum
-  estágio futuro quiser isso em CI.
+  repo, sem erro; 94 testes em `packages/core`). `pnpm design:tokens` gera
+  `packages/design/dist/tokens.css`.
+- `@vitest/coverage-v8@3.2.7` instalado como devDependency da raiz desde o Estágio 3. Cobertura de
+  `src/sessao/` + `src/ofensiva/` juntas: 96,51% statements — `npx vitest run --coverage
+  --coverage.include='src/sessao/**' --coverage.include='src/ofensiva/**'` dentro de
+  `packages/core`. Não configurado como script padrão (rodar sob demanda).
+
+### Achado do Estágio 4 — `EstiloDeLeitura` não pode ser redeclarado em `ofensiva/tipos.ts`
+
+`packages/core/src/index.ts` reexporta `sessao/index.js` e `ofensiva/index.js` com `export *`.
+Como `SessaoParaAgregado.estilo` (ofensiva) e o resultado de `classificarEstilo` (sessão) são o
+mesmo conceito, a primeira versão redeclarava `EstiloDeLeitura` em `ofensiva/tipos.ts` — e o
+`export *` duplo quebra o build da raiz (`tsc` acusa export ambíguo), mesmo as duas declarações
+sendo estruturalmente idênticas. Corrigido importando o tipo de `../sessao/tipos.js` em todo
+arquivo de `ofensiva/` que precisa dele, **sem reexportá-lo** — `ofensiva/tipos.ts` não tem export
+de `EstiloDeLeitura`, só usa o tipo internamente. Vale para qualquer tipo futuro compartilhado
+entre os dois módulos: import direto do módulo dono, nunca redeclaração.
+
+### Achado do Estágio 4 (2) — regex `g` reutilizado num loop esconde violações
+
+O teste de arquitetura `relogio-como-parametro.test.ts` (Estágio 3) tinha um regex com flag `g`
+chamado via `.test()` dentro de um `for` sobre vários arquivos — `lastIndex` fica sujo entre
+iterações e pode fazer a checagem silenciosamente não detectar uma violação num arquivo que não
+seja o primeiro a bater o padrão. Corrigido removendo a flag `g` (o teste só precisa saber *se*
+o padrão aparece, não iterar ocorrências). Vale para os dois testes de arquitetura novos do
+Estágio 4 (`ofensiva-sem-acumulador.test.ts`) — nenhum usa `g` com `.test()` em loop.
 
 ### Achado do Estágio 3 — arredondamento de traço dividido na virada do dia precisa de coordenação
 
@@ -152,12 +175,11 @@ mesmo sintoma.
 
 ### Pendências abertas desta operação
 
-- **Commit do Estágio 3 ainda não feito** — pedir confirmação ao usuário antes (regra de trabalho
-  do `CLAUDE.md`: só commitar quando pedido explicitamente). Escopo do commit:
-  `packages/core/src/sessao/**`, `packages/core/test/sessao-*.test.ts`,
-  `packages/core/test/tracos/*.json`, `packages/core/test/arquitetura/relogio-como-parametro.test.ts`,
-  `packages/core/src/index.ts` (novo export), `package.json`/`pnpm-lock.yaml` da raiz
-  (`@vitest/coverage-v8` novo).
+- **Commit do Estágio 4 ainda não feito** — pedir confirmação ao usuário antes. Escopo:
+  `packages/core/src/ofensiva/**`, `packages/core/test/ofensiva/**`,
+  `packages/core/test/arquitetura/ofensiva-sem-acumulador.test.ts`, o fix de
+  `relogio-como-parametro.test.ts` (regex sem `g`, e passa a varrer `sessao/` e `ofensiva/`),
+  `packages/core/src/index.ts` (novo export).
 - **`corepack enable`/`corepack prepare pnpm@latest` falham nesta máquina**: `EPERM` ao tentar
   escrever em `C:\Program Files\nodejs` (falta de elevação) e, à parte, erro de verificação de
   assinatura (`Cannot find matching keyid`) — parece bug do corepack embutido nesta versão do
