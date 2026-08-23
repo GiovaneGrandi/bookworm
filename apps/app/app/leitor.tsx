@@ -17,6 +17,7 @@ import type { Locator } from 'react-native-readium';
 import { ReadiumView } from 'react-native-readium';
 import { marcarComoLendo } from '../src/biblioteca/consultas.js';
 import { useCarregarObra } from '../src/leitor/useCarregarObra.js';
+import { avaliarEAtualizarHoje } from '../src/ofensiva/servico.js';
 import { useMaquinaSessao } from '../src/sessao/maquina.js';
 import { iniciarSinaisDeSessao } from '../src/sessao/sinais.js';
 
@@ -43,11 +44,28 @@ export default function Leitor() {
   }, [obraId]);
 
   useEffect(() => {
-    // RN-03.6 — fechar o leitor é a fronteira natural de encerramento da sessão.
+    // RN-03.6 — fechar o leitor é a fronteira natural de encerramento da sessão. Rede de
+    // segurança para saídas que não passam pelo botão "Fechar" (ex.: botão físico de voltar do
+    // Android) — a ofensiva ainda é recalculada, só não há tela de resumo/celebração neste
+    // caminho (limitação conhecida desta rodada, ver .claude/retomada.md).
     return () => {
-      void useMaquinaSessao.getState().encerrar('fechado_pelo_leitor');
+      void (async () => {
+        const tinhaSessao = useMaquinaSessao.getState().sessaoId !== null;
+        await useMaquinaSessao.getState().encerrar('fechado_pelo_leitor');
+        if (tinhaSessao) await avaliarEAtualizarHoje('leitura');
+      })();
     };
   }, []);
+
+  const aoFecharComResumo = useCallback(async () => {
+    const tinhaSessao = useMaquinaSessao.getState().sessaoId !== null;
+    await useMaquinaSessao.getState().encerrar('fechado_pelo_leitor');
+    const { pendente } = tinhaSessao ? await avaliarEAtualizarHoje('leitura') : { pendente: false };
+    router.replace({
+      pathname: '/resumo',
+      params: { obraId: obraId ?? '', celebracaoPendente: pendente ? '1' : '0' },
+    });
+  }, [obraId]);
 
   const aoMudarLocalizacao = useCallback(
     (locator: Locator) => {
@@ -80,7 +98,7 @@ export default function Leitor() {
         accessibilityRole="button"
         accessibilityLabel="Fechar leitor"
         style={styles.faixaSuperior}
-        onPress={() => router.back()}
+        onPress={() => void aoFecharComResumo()}
         hitSlop={8}
       >
         <Text style={styles.fechar}>✕</Text>
