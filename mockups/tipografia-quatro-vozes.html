@@ -1,0 +1,869 @@
+<title>Quatro Vozes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=EB+Garamond:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Caveat:wght@400;600&family=Public+Sans:wght@400;500;600&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════════════════
+   BookWorm · Sistema tipográfico A — QUATRO VOZES (grupo de controle)
+   Formaliza o sistema já existente nos mockups "Papel": cada função de
+   texto tem sua própria família. Escopado inteiramente sob .mk-tipo-a.
+   Identidade fixa (papel sobre mesa verde-escura), não segue o tema do
+   visualizador — mesma convenção dos mockups-irmãos leitor-papel.html
+   e widgets-story.html, com os quais este arquivo precisa conviver.
+   ══════════════════════════════════════════════════════════════════════ */
+
+.mk-tipo-a {
+  /* tintas e papéis — direcao-visual.md §3 */
+  --tinta:        #241f19;
+  --tinta-70:     rgba(36,31,25,.72);
+  --tinta-50:     rgba(36,31,25,.52);
+  --tinta-32:     rgba(36,31,25,.34);
+  --tinta-16:     rgba(36,31,25,.16);
+  --papel:        #f3ead9;
+  --papel-fundo:  #efe3ce;
+  --grafite:      #6f6858;
+
+  /* acento — a identidade (verde substitui oxblood, §2) */
+  --verde-tinta:  #2f5d3a;
+  --verde-70:     rgba(47,93,58,.72);
+  --verde-50:     rgba(47,93,58,.52);
+  --ambar:        #e6c15c;
+  --mesa:         #1e2320;
+
+  /* 4 pigmentos de grifo — ferramenta da leitora, não da marca */
+  --pig-ambar:  #e7c25e;
+  --pig-oliva:  #a8b07a;
+  --pig-tinta:  #93a9c0;
+  --pig-carmim: #d79aa2;
+
+  /* quatro vozes */
+  --serif:    'Spectral', 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  --garamond: 'EB Garamond', 'Spectral', Garamond, Georgia, serif;
+  --mono:     'Courier Prime', 'Courier New', Courier, monospace;
+  --lapis:    'Caveat', 'Segoe Script', 'Bradley Hand', cursive;
+  --sans:     'Public Sans', -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --atkinson: 'Atkinson Hyperlegible', Verdana, Arial, sans-serif;
+
+  font-family: var(--serif);
+  color: #ded4bd;
+  background-color: var(--mesa);
+  background-image:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.020) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(0deg,  rgba(0,0,0,.16) 0 1px, transparent 1px 3px),
+    radial-gradient(120% 90% at 50% -10%, rgba(190,170,130,.14), transparent 60%),
+    radial-gradient(140% 120% at 50% 110%, rgba(0,0,0,.55), transparent 65%);
+  min-height: 100vh;
+  padding-bottom: 10px;
+  -webkit-font-smoothing: antialiased;
+}
+.mk-tipo-a *, .mk-tipo-a *::before, .mk-tipo-a *::after { box-sizing: border-box; }
+.mk-tipo-a p, .mk-tipo-a h1, .mk-tipo-a h2, .mk-tipo-a h3, .mk-tipo-a figure, .mk-tipo-a table { margin: 0; }
+.mk-tipo-a b, .mk-tipo-a strong { font-weight: 600; }
+.mk-tipo-a em, .mk-tipo-a i { font-style: italic; }
+.mk-tipo-a ::selection { background: rgba(230,193,92,.4); }
+
+/* utilitários de papel / assinatura mecânica */
+.mk-tipo-a .ta-grao {
+  background-image: radial-gradient(rgba(96,74,46,.075) .5px, transparent .6px);
+  background-size: 7px 7px;
+}
+.mk-tipo-a .ta-scroll { overflow-x: auto; overflow-y: hidden; }
+.mk-tipo-a .ta-scroll::-webkit-scrollbar { height: 9px; }
+.mk-tipo-a .ta-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,.3); }
+.mk-tipo-a .ta-scroll::-webkit-scrollbar-thumb { background: rgba(201,168,106,.4); border-radius: 6px; }
+
+/* ── as quatro vozes: classes utilitárias de escala ───────────────── */
+
+/* voz 1 — Spectral, corpo e display */
+.mk-tipo-a .ta-corpo {
+  font-family: var(--serif); font-size: 16px; line-height: 27px; font-weight: 400;
+  text-align: justify; hyphens: auto; -webkit-hyphens: auto; color: var(--tinta);
+}
+.mk-tipo-a .ta-corpo--pequeno { font-size: 12px; line-height: 20px; }
+.mk-tipo-a .ta-corpo--grande  { font-size: 20px; line-height: 34px; }
+.mk-tipo-a .ta-par { text-indent: 1.15em; }
+.mk-tipo-a .ta-par + .ta-par { margin-top: 0; }
+.mk-tipo-a .ta-par--sem-indent { text-indent: 0; }
+.mk-tipo-a .ta-versal { font-variant: small-caps; letter-spacing: .055em; }
+.mk-tipo-a .ta-fala { text-indent: 1.15em; margin-top: .55em; }
+.mk-tipo-a .ta-capitular {
+  float: left; font-family: var(--serif); font-weight: 500; font-size: 64px; line-height: .78;
+  padding: 3px 8px 0 0; color: var(--tinta);
+}
+.mk-tipo-a .ta-num-grande {
+  font-family: var(--serif); font-weight: 600; font-variant-numeric: tabular-nums;
+  color: var(--tinta); line-height: 1;
+}
+.mk-tipo-a .ta-consulta { border-bottom: 1px dashed rgba(111,104,88,.62); padding-bottom: .5px; }
+.mk-tipo-a .ta-microcopy { font-family: var(--serif); font-style: italic; font-weight: 300; font-size: 17px; line-height: 24px; color: var(--tinta-70); }
+
+/* voz 2 — EB Garamond, citação e peça editorial */
+.mk-tipo-a .ta-cit { font-family: var(--garamond); font-style: italic; font-weight: 400; font-size: 23px; line-height: 36px; color: var(--tinta); }
+.mk-tipo-a .ta-cit--curta { font-size: 19px; line-height: 30px; }
+.mk-tipo-a .ta-carta { font-family: var(--garamond); font-style: italic; font-weight: 400; font-size: 17px; line-height: 27px; color: var(--tinta); }
+.mk-tipo-a .ta-grifo {
+  background-image:
+    linear-gradient(180deg, rgba(230,193,92,0) 10%, rgba(230,193,92,.62) 10%, rgba(230,193,92,.70) 90%, rgba(230,193,92,0) 90%),
+    linear-gradient(90deg, rgba(230,193,92,.30), rgba(214,172,66,.12) 40%, rgba(230,193,92,.34));
+  mix-blend-mode: multiply; box-decoration-break: clone; -webkit-box-decoration-break: clone;
+  padding: .04em .16em; border-radius: 3px 7px 4px 6px;
+}
+
+/* voz 3 — Courier Prime, chrome, rótulos, kickers (piso real: 7,5px) */
+.mk-tipo-a .ta-k-micro   { font-family: var(--mono); font-size: 7.5px;  line-height: 12px; letter-spacing: .20em; text-transform: uppercase; font-weight: 400; }
+.mk-tipo-a .ta-k         { font-family: var(--mono); font-size: 8.5px;  line-height: 13px; letter-spacing: .26em; text-transform: uppercase; font-weight: 700; }
+.mk-tipo-a .ta-k-display { font-family: var(--mono); font-size: 10.5px; line-height: 16px; letter-spacing: .34em; text-transform: uppercase; font-weight: 700; }
+.mk-tipo-a .ta-mono { font-family: var(--mono); }
+
+/* voz 4 — Caveat, manuscrito */
+.mk-tipo-a .ta-lapis-p { font-family: var(--lapis); font-size: 16px; line-height: 18px; font-weight: 400; }
+.mk-tipo-a .ta-lapis-m { font-family: var(--lapis); font-size: 22px; line-height: 24px; font-weight: 600; }
+.mk-tipo-a .ta-lapis-g { font-family: var(--lapis); font-size: 34px; line-height: 36px; font-weight: 600; }
+
+/* estado selecionado universal — regra 7 */
+.mk-tipo-a .ta-sel { box-shadow: 0 0 0 1px rgba(47,93,58,.7); background: rgba(230,193,92,.16) !important; }
+
+/* ══ CABEÇA ═════════════════════════════════════════════════════════ */
+.mk-tipo-a .ta-cabeca { position: relative; max-width: 1220px; margin: 0 auto; padding: 56px 48px 30px; }
+.mk-tipo-a .ta-carimbo-sys {
+  position: absolute; top: 46px; right: 48px; width: 156px; height: 98px;
+  border: 2px solid rgba(72,124,86,.55); border-radius: 50%;
+  box-shadow: inset 0 0 0 3px rgba(72,124,86,.16);
+  transform: rotate(-9deg);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  font-family: var(--mono); color: rgba(84,140,96,.78); text-align: center; opacity: .92;
+}
+.mk-tipo-a .ta-carimbo-sys b { font-size: 12.5px; letter-spacing: .16em; font-weight: 700; }
+.mk-tipo-a .ta-carimbo-sys span { font-size: 8px; letter-spacing: .2em; }
+.mk-tipo-a .ta-carimbo-sys hr { width: 62px; border: 0; border-top: 1px solid rgba(72,124,86,.45); margin: 2px 0; }
+.mk-tipo-a .ta-eyebrow { font-family: var(--mono); font-size: 10.5px; letter-spacing: .34em; text-transform: uppercase; color: rgba(230,193,92,.85); }
+.mk-tipo-a .ta-h1 { font-family: var(--serif); font-weight: 300; font-size: 50px; line-height: 1.04; letter-spacing: .01em; color: #f0e7d2; margin-top: 12px; max-width: 15ch; text-wrap: balance; }
+.mk-tipo-a .ta-tese { font-family: var(--garamond); font-style: italic; font-size: 20px; line-height: 1.5; color: rgba(222,212,189,.82); max-width: 62ch; margin-top: 18px; }
+.mk-tipo-a .ta-tese b { font-style: normal; color: var(--ambar); font-weight: 400; }
+.mk-tipo-a .ta-linha { height: 1px; margin: 26px 0 30px; background: linear-gradient(90deg, rgba(222,212,189,.5), rgba(222,212,189,.06) 78%, transparent); }
+
+/* quatro faces em espécime grande */
+.mk-tipo-a .ta-vozes4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.mk-tipo-a .ta-voz-card {
+  background: var(--papel); background-image: radial-gradient(rgba(96,74,46,.08) .5px, transparent .6px);
+  background-size: 7px 7px;
+  border: 1px solid rgba(124,98,58,.4);
+  box-shadow: 0 12px 24px rgba(48,32,16,.34), inset 0 0 0 1px rgba(255,255,255,.2);
+  padding: 20px 18px 16px;
+  border-radius: 4px 7px 5px 8px / 6px 4px 7px 5px;
+}
+.mk-tipo-a .ta-voz-card:nth-child(2) { transform: rotate(.5deg); }
+.mk-tipo-a .ta-voz-card:nth-child(3) { transform: rotate(-.4deg); }
+.mk-tipo-a .ta-voz-card:nth-child(4) { transform: rotate(.3deg); }
+.mk-tipo-a .ta-voz-especime { font-size: 38px; line-height: 1.05; color: var(--tinta); }
+.mk-tipo-a .ta-voz-card:nth-child(1) .ta-voz-especime { font-family: var(--serif); font-weight: 500; }
+.mk-tipo-a .ta-voz-card:nth-child(2) .ta-voz-especime { font-family: var(--garamond); font-style: italic; }
+.mk-tipo-a .ta-voz-card:nth-child(3) .ta-voz-especime { font-family: var(--mono); font-size: 28px; font-weight: 700; }
+.mk-tipo-a .ta-voz-card:nth-child(4) .ta-voz-especime { font-family: var(--lapis); font-size: 40px; font-weight: 600; }
+.mk-tipo-a .ta-voz-nome { font-family: var(--mono); font-size: 8.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--verde-tinta); margin-top: 12px; font-weight: 700; }
+.mk-tipo-a .ta-voz-papel { font-family: var(--serif); font-style: italic; font-size: 12px; color: var(--tinta-70); margin-top: 3px; }
+
+/* ══ CORPO / SEÇÕES ═════════════════════════════════════════════════ */
+.mk-tipo-a .ta-corpo-pagina { max-width: 1220px; margin: 0 auto; padding: 6px 48px 40px; }
+.mk-tipo-a .ta-secao { padding: 54px 0 8px; border-top: 1px solid rgba(222,212,189,.14); }
+.mk-tipo-a .ta-secao:first-child { border-top: none; }
+.mk-tipo-a .ta-secao-kicker { font-family: var(--mono); font-size: 10px; letter-spacing: .3em; text-transform: uppercase; color: rgba(230,193,92,.85); }
+.mk-tipo-a .ta-secao-titulo { font-family: var(--serif); font-size: 28px; font-weight: 400; color: #f0e7d2; margin-top: 7px; }
+.mk-tipo-a .ta-secao-prova { font-family: var(--mono); font-size: 8px; letter-spacing: .18em; text-transform: uppercase; color: rgba(222,212,189,.4); float: right; margin-top: 6px; }
+
+/* legenda tipo etiqueta datilografada — reaproveita o vocabulário de widgets-story.html */
+.mk-tipo-a .ta-legenda {
+  position: relative; max-width: 700px; margin: 22px 0 26px;
+  background: #ece2cc;
+  background-image: radial-gradient(rgba(90,70,45,.055) .5px, transparent .6px), linear-gradient(180deg, rgba(255,255,255,.4), rgba(0,0,0,.02));
+  background-size: 7px 7px, 100% 100%;
+  padding: 15px 20px 16px;
+  box-shadow: 0 10px 22px rgba(48,32,16,.34), inset 0 0 0 1px rgba(120,95,60,.18);
+  transform: rotate(-.5deg);
+}
+.mk-tipo-a .ta-secao:nth-child(even) .ta-legenda { transform: rotate(.5deg); }
+.mk-tipo-a .ta-legenda::before {
+  content: ""; position: absolute; top: -12px; left: 34px; width: 84px; height: 23px;
+  background: linear-gradient(180deg, rgba(226,208,168,.8), rgba(206,184,140,.72));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.28); transform: rotate(-2.4deg); opacity: .92;
+}
+.mk-tipo-a .ta-legenda-num { font-family: var(--mono); font-size: 9.5px; font-weight: 700; letter-spacing: .26em; color: var(--verde-tinta); text-transform: uppercase; }
+.mk-tipo-a .ta-legenda-nome { font-family: var(--serif); font-size: 20px; font-weight: 500; margin-top: 4px; color: var(--tinta); }
+.mk-tipo-a .ta-legenda-linha { font-family: var(--mono); font-size: 9.5px; color: var(--tinta-70); margin-top: 9px; line-height: 1.7; }
+.mk-tipo-a .ta-legenda-linha b { font-weight: 700; color: var(--tinta); }
+.mk-tipo-a .ta-legenda-racional { font-family: var(--serif); font-size: 13px; font-style: italic; font-weight: 300; color: var(--tinta-70); margin-top: 9px; line-height: 1.5; border-top: 1px dashed rgba(124,98,58,.35); padding-top: 8px; }
+
+/* ── aparelho (moldura 393×852) ────────────────────────────────────── */
+.mk-tipo-a .ta-fone { width: 411px; height: 870px; padding: 9px; border-radius: 30px; flex: 0 0 auto;
+  background: linear-gradient(160deg, #34322c 0%, #16150f 46%, #2b2922 100%);
+  box-shadow: 0 34px 60px rgba(0,0,0,.62), 0 4px 10px rgba(0,0,0,.5), inset 0 0 0 1px rgba(255,255,255,.075), inset 0 1px 0 rgba(255,255,255,.14);
+  position: relative;
+}
+.mk-tipo-a .ta-tela { position: relative; overflow: hidden; width: 393px; height: 852px; border-radius: 22px;
+  background-color: var(--papel);
+  background-image: radial-gradient(circle at 16% 10%, rgba(255,255,255,.5), transparent 46%), radial-gradient(rgba(96,74,46,.075) .5px, transparent .6px);
+  background-size: 100% 100%, 7px 7px;
+}
+.mk-tipo-a .ta-status { position: absolute; left: 26px; right: 26px; top: 14px; display: flex; justify-content: space-between;
+  font-family: var(--mono); font-size: 9px; letter-spacing: .18em; color: var(--tinta-32); z-index: 2;
+}
+.mk-tipo-a .ta-folio { position: absolute; bottom: 20px; left: 0; right: 0; text-align: center; font-family: var(--serif); font-size: 12px; letter-spacing: .16em; color: var(--tinta-50); z-index: 2; }
+
+/* ── prancha de espécime sobre papel, com miras de registro ────────── */
+.mk-tipo-a .ta-prancha {
+  position: relative; background: #e9ded0;
+  background-image: radial-gradient(rgba(96,74,46,.06) .5px, transparent .6px); background-size: 7px 7px;
+  border: 1px solid rgba(124,98,58,.32);
+  box-shadow: 0 16px 34px rgba(48,32,16,.32), inset 0 0 0 1px rgba(255,255,255,.2);
+  padding: 40px 40px 34px; flex: 0 0 auto;
+}
+.mk-tipo-a .ta-prancha-mira { position: absolute; width: 12px; height: 12px; }
+.mk-tipo-a .ta-prancha-mira::before, .mk-tipo-a .ta-prancha-mira::after { content: ""; position: absolute; background: rgba(58,46,32,.5); }
+.mk-tipo-a .ta-prancha-mira::before { left: 5.5px; top: 0; width: 1px; height: 12px; }
+.mk-tipo-a .ta-prancha-mira::after { top: 5.5px; left: 0; height: 1px; width: 12px; }
+.mk-tipo-a .ta-prancha-mira.tl { top: 9px; left: 9px; } .mk-tipo-a .ta-prancha-mira.tr { top: 9px; right: 9px; }
+.mk-tipo-a .ta-prancha-mira.bl { bottom: 9px; left: 9px; } .mk-tipo-a .ta-prancha-mira.br { bottom: 9px; right: 9px; }
+.mk-tipo-a .ta-prancha-dim { font-family: var(--mono); font-size: 8.5px; letter-spacing: .08em; color: rgba(58,46,32,.55); text-align: center; margin-top: 16px; }
+.mk-tipo-a .ta-prancha-dim b { color: rgba(47,93,58,.85); }
+
+/* ── dicionário sobreposto (situação 1) ─────────────────────────────── */
+.mk-tipo-a .ta-dic { position: absolute; left: 0; right: 0; bottom: 0; height: 258px; z-index: 3;
+  background: #f8f1e2; background-image: radial-gradient(rgba(96,74,46,.06) .5px, transparent .6px), linear-gradient(180deg, rgba(255,255,255,.5), rgba(0,0,0,.015));
+  background-size: 7px 7px, 100% 100%;
+  box-shadow: 0 -22px 44px rgba(48,32,16,.34);
+  padding: 16px 24px 0 26px;
+}
+.mk-tipo-a .ta-dic::before { content: ""; position: absolute; top: -7px; left: 0; right: 0; height: 8px; background: #f8f1e2;
+  -webkit-mask-image: radial-gradient(circle at 4px 8px, #000 3.5px, transparent 3.7px);
+  mask-image: radial-gradient(circle at 4px 8px, #000 3.5px, transparent 3.7px);
+  -webkit-mask-size: 8px 8px; mask-size: 8px 8px; -webkit-mask-repeat: repeat-x; mask-repeat: repeat-x;
+}
+.mk-tipo-a .ta-dic-corrente { display: flex; justify-content: space-between; align-items: baseline; font-family: var(--mono);
+  font-size: 7.5px; letter-spacing: .2em; text-transform: uppercase; color: rgba(36,31,25,.45);
+  border-bottom: 1px solid rgba(36,31,25,.3); padding-bottom: 6px;
+}
+.mk-tipo-a .ta-verbete { font-family: var(--serif); font-size: 24px; font-weight: 600; line-height: 28px; margin-top: 8px; color: #241f19; }
+.mk-tipo-a .ta-verbete sup { font-size: 12px; font-weight: 400; color: rgba(36,31,25,.5); }
+.mk-tipo-a .ta-fonetica { font-family: var(--mono); font-size: 10px; color: rgba(36,31,25,.6); margin-top: 3px; }
+.mk-tipo-a .ta-classe { font-family: var(--serif); font-style: italic; font-size: 12.5px; color: rgba(36,31,25,.72); margin-top: 5px; border-bottom: 1px solid rgba(36,31,25,.16); padding-bottom: 6px; }
+.mk-tipo-a .ta-acepcoes { margin-top: 7px; }
+.mk-tipo-a .ta-acepcao { font-family: var(--serif); font-size: 12.5px; line-height: 18px; color: #2c261f; padding-left: 18px; text-indent: -18px; margin-bottom: 3px; }
+.mk-tipo-a .ta-acepcao b { font-weight: 600; margin-right: 6px; }
+.mk-tipo-a .ta-acepcao em { color: rgba(36,31,25,.6); }
+.mk-tipo-a .ta-etimologia { font-family: var(--serif); font-style: italic; font-size: 10.5px; line-height: 15px; color: rgba(36,31,25,.6); border-top: 1px solid rgba(36,31,25,.16); padding-top: 6px; margin-top: 6px; }
+
+/* ── situação 2: título e display ──────────────────────────────────── */
+.mk-tipo-a .ta-s2-wrap { display: flex; flex-direction: column; align-items: center; gap: 34px; }
+.mk-tipo-a .ta-s2-cap { text-align: center; }
+.mk-tipo-a .ta-s2-cap-num { font-family: var(--mono); font-size: 10.5px; font-weight: 700; letter-spacing: .34em; text-transform: uppercase; color: var(--tinta-50); }
+.mk-tipo-a .ta-s2-cap-nome { font-family: var(--serif); font-style: italic; font-weight: 300; font-size: 27px; line-height: 32px; letter-spacing: .01em; margin-top: 9px; color: var(--tinta); }
+.mk-tipo-a .ta-s2-fleuron { margin: 15px auto 0; display: block; }
+.mk-tipo-a .ta-s2-celebracao { text-align: center; border-top: 1px dashed rgba(124,98,58,.4); padding-top: 30px; width: 100%; }
+.mk-tipo-a .ta-s2-celebracao .ta-num-grande { font-size: 96px; }
+.mk-tipo-a .ta-s2-celebracao-rot { font-family: var(--mono); font-size: 8.5px; letter-spacing: .26em; text-transform: uppercase; color: var(--verde-tinta); font-weight: 700; margin-top: 8px; }
+
+/* ── situação 3: número e dado ──────────────────────────────────────── */
+.mk-tipo-a .ta-semana { display: flex; gap: 3px; }
+.mk-tipo-a .ta-semana-col { width: 62px; text-align: center; }
+.mk-tipo-a .ta-semana-dia { font-family: var(--mono); font-size: 7.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--tinta-50); }
+.mk-tipo-a .ta-semana-cel { margin-top: 8px; height: 62px; display: flex; align-items: flex-end; justify-content: center; border-bottom: 1px solid var(--tinta-32); padding-bottom: 6px; }
+.mk-tipo-a .ta-semana-val { font-family: var(--serif); font-weight: 600; font-size: 22px; line-height: 27px; font-variant-numeric: tabular-nums; color: var(--tinta); width: 3ch; text-align: center; display: inline-block; }
+.mk-tipo-a .ta-semana-val--zero { color: var(--tinta-32); }
+.mk-tipo-a .ta-semana-min { font-family: var(--mono); font-size: 6.8px; letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-32); margin-top: 6px; }
+.mk-tipo-a .ta-semana-col--hoje .ta-semana-dia { color: var(--verde-tinta); font-weight: 700; }
+.mk-tipo-a .ta-semana-col--hoje .ta-semana-cel { border-bottom-color: var(--verde-tinta); }
+.mk-tipo-a .ta-dignidade { display: flex; gap: 40px; margin-top: 36px; padding-top: 26px; border-top: 1px dashed rgba(124,98,58,.4); }
+.mk-tipo-a .ta-dignidade-item { text-align: center; }
+.mk-tipo-a .ta-dignidade-item .ta-num-grande { font-size: 34px; }
+.mk-tipo-a .ta-dignidade-rot { font-family: var(--mono); font-size: 7.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--tinta-50); margin-top: 6px; }
+
+/* ── situação 4: rótulo e chrome ────────────────────────────────────── */
+.mk-tipo-a .ta-chrome-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px 30px; width: 100%; }
+.mk-tipo-a .ta-chrome-item { text-align: left; }
+.mk-tipo-a .ta-chrome-amostra { color: var(--tinta); }
+.mk-tipo-a .ta-chrome-fonte { font-family: var(--mono); font-size: 7px; letter-spacing: .04em; color: var(--tinta-32); margin-top: 7px; text-transform: none; }
+.mk-tipo-a .ta-chrome-amostra.ta-k-micro { color: var(--tinta-70); }
+.mk-tipo-a .ta-chrome-amostra.ta-k { color: var(--tinta); }
+.mk-tipo-a .ta-chrome-amostra.ta-k-display { color: var(--verde-tinta); }
+.mk-tipo-a .ta-chrome-badge { display: inline-block; border: 1px solid rgba(47,93,58,.6); padding: 4px 8px; border-radius: 2px 4px 2px 4px / 3px 2px 4px 2px; }
+
+/* ── situação 5: citação compartilhável ────────────────────────────── */
+.mk-tipo-a .ta-s5-card {
+  width: 480px; padding: 40px 38px 32px; text-align: left;
+  background:
+    radial-gradient(circle at 18% 10%, rgba(255,255,255,.30), transparent 52%),
+    radial-gradient(rgba(96,74,46,.10) .5px, transparent .6px),
+    linear-gradient(162deg, #f6f1e5 0%, #e6dabd 48%, #cdbfa0 100%);
+  background-size: 100% 100%, 7px 7px, 100% 100%;
+  border: 1px solid rgba(124,98,58,.4);
+  border-radius: 5px 8px 6px 9px / 7px 5px 8px 6px;
+  box-shadow: 0 18px 40px rgba(28,16,6,.4);
+}
+.mk-tipo-a .ta-s5-kicker { font-family: var(--mono); font-size: 8.5px; letter-spacing: .26em; text-transform: uppercase; color: var(--tinta-50); text-align: center; }
+.mk-tipo-a .ta-s5-fio { width: 34px; height: 1px; background: var(--tinta-32); margin: 10px auto 0; }
+.mk-tipo-a .ta-s5-atrib { margin-top: 24px; padding-top: 15px; border-top: 1px solid var(--tinta-32); text-align: center; }
+.mk-tipo-a .ta-s5-obra { font-family: var(--serif); font-size: 13px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--tinta-70); }
+.mk-tipo-a .ta-s5-autor { font-family: var(--garamond); font-size: 13px; font-style: italic; color: var(--tinta-50); margin-top: 4px; }
+
+/* ── situação 6: manuscrito ─────────────────────────────────────────── */
+.mk-tipo-a .ta-s6-wrap { display: flex; align-items: flex-start; gap: 44px; }
+.mk-tipo-a .ta-s6-texto { width: 300px; }
+.mk-tipo-a .ta-s6-margem { width: 190px; position: relative; padding-top: 42px; }
+.mk-tipo-a .ta-s6-marginalia { color: rgba(90,84,70,.85); transform: rotate(-3.5deg); display: block; }
+.mk-tipo-a .ta-s6-traco { width: 2px; height: 22px; margin: 6px 0 6px 4px;
+  background: linear-gradient(180deg, rgba(111,104,88,0), rgba(111,104,88,.62) 14%, rgba(111,104,88,.55) 86%, rgba(111,104,88,0));
+  display: inline-block; transform: rotate(2deg);
+}
+.mk-tipo-a .ta-etiqueta-herb {
+  margin-top: 22px; background: #f3ead9; background-image: radial-gradient(rgba(96,74,46,.08) .5px, transparent .6px); background-size: 7px 7px;
+  border: 1px solid rgba(124,98,58,.4); box-shadow: 0 9px 18px rgba(48,32,16,.32), inset 0 0 0 1px rgba(255,255,255,.25);
+  padding: 14px 16px 13px; transform: rotate(-1.6deg); width: 220px;
+}
+.mk-tipo-a .ta-etiqueta-herb .ta-k-micro { color: var(--verde-tinta); }
+.mk-tipo-a .ta-etiqueta-herb .ta-lapis-m { color: var(--tinta); margin-top: 6px; display: block; }
+
+/* ── situação 7: microcopy e carta ─────────────────────────────────── */
+.mk-tipo-a .ta-s7-saudacao { padding: 30px 28px 0; }
+.mk-tipo-a .ta-s7-saudacao-nome { font-family: var(--serif); font-weight: 400; font-size: 25px; color: var(--tinta); }
+.mk-tipo-a .ta-s7-saudacao-data { font-family: var(--mono); font-size: 8.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--tinta-50); margin-top: 6px; }
+.mk-tipo-a .ta-s7-micro-lista { padding: 22px 28px 0; display: flex; flex-direction: column; gap: 13px; }
+.mk-tipo-a .ta-s7-micro-item { border-left: 2px solid rgba(47,93,58,.4); padding-left: 12px; }
+.mk-tipo-a .ta-s7-micro-escala { font-family: var(--mono); font-size: 7.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--tinta-50); margin-top: 5px; }
+.mk-tipo-a .ta-s7-carta {
+  margin: 22px 24px 0; padding: 22px 22px 20px;
+  background: #f8f1e2; background-image: linear-gradient(180deg, transparent 0 26px, rgba(147,169,192,.24) 26px 27px);
+  background-size: 100% 27px; background-repeat: repeat-y;
+  border: 1px solid rgba(124,98,58,.35); box-shadow: 0 10px 20px rgba(48,32,16,.28);
+}
+.mk-tipo-a .ta-s7-carta-assina { font-family: var(--lapis); font-size: 20px; color: var(--tinta-70); margin-top: 10px; transform: rotate(-1deg); display: inline-block; }
+
+/* ── situação 8: lista densa ───────────────────────────────────────── */
+.mk-tipo-a .ta-lista { padding: 26px 24px 0; display: flex; flex-direction: column; }
+.mk-tipo-a .ta-lista-item { display: flex; align-items: baseline; gap: 10px; padding: 13px 0; border-bottom: 1px solid rgba(36,31,25,.14); }
+.mk-tipo-a .ta-lista-txt { flex: 1; min-width: 0; }
+.mk-tipo-a .ta-lista-titulo { font-family: var(--serif); font-size: 15.5px; font-weight: 500; color: var(--tinta); line-height: 20px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.mk-tipo-a .ta-lista-autor { font-family: var(--mono); font-size: 7.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--tinta-50); margin-top: 3px; }
+.mk-tipo-a .ta-lista-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; flex: 0 0 108px; width: 108px; }
+.mk-tipo-a .ta-lista-estado { font-family: var(--mono); font-size: 7px; letter-spacing: .1em; text-transform: uppercase; color: var(--verde-tinta); white-space: nowrap; }
+.mk-tipo-a .ta-lista-origem { font-family: var(--mono); font-size: 6.6px; letter-spacing: .08em; text-transform: uppercase; color: var(--tinta-32); white-space: nowrap; }
+
+/* ── painel de leitura (5 faces) ────────────────────────────────────── */
+.mk-tipo-a .ta-painel-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 22px; margin-top: 10px; }
+.mk-tipo-a .ta-face-card { background: var(--papel); background-image: radial-gradient(rgba(96,74,46,.07) .5px, transparent .6px); background-size: 7px 7px;
+  border: 1px solid rgba(124,98,58,.36); box-shadow: 0 10px 22px rgba(48,32,16,.3);
+  padding: 18px 18px 16px; border-radius: 3px 6px 4px 7px / 5px 3px 6px 4px;
+}
+.mk-tipo-a .ta-face-card.ta-face-card--sel { border: 1px solid rgba(47,93,58,.7); background-color: #f2e4c5; }
+.mk-tipo-a .ta-face-nome { font-family: var(--mono); font-size: 8.5px; letter-spacing: .18em; text-transform: uppercase; color: var(--verde-tinta); font-weight: 700; display: flex; justify-content: space-between; align-items: baseline; }
+.mk-tipo-a .ta-face-selo { font-size: 7px; letter-spacing: .1em; color: var(--tinta-50); border: 1px solid rgba(124,98,58,.4); padding: 2px 5px; border-radius: 2px; }
+.mk-tipo-a .ta-face-texto { color: var(--tinta); text-align: justify; hyphens: auto; margin-top: 10px; }
+
+/* ── prova de estresse ───────────────────────────────────────────────── */
+.mk-tipo-a .ta-estresse-wrap { display: flex; gap: 26px; flex-wrap: wrap; }
+.mk-tipo-a .ta-estresse-col { flex: 1 1 320px; background: var(--papel); background-image: radial-gradient(rgba(96,74,46,.07) .5px, transparent .6px); background-size: 7px 7px;
+  border: 1px solid rgba(124,98,58,.36); box-shadow: 0 10px 22px rgba(48,32,16,.3); padding: 20px 22px; }
+.mk-tipo-a .ta-estresse-rot { font-family: var(--mono); font-size: 8.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--verde-tinta); font-weight: 700; margin-bottom: 10px; }
+.mk-tipo-a .ta-estresse-col .ta-corpo { color: var(--tinta); }
+
+/* ── ficha técnica ───────────────────────────────────────────────────── */
+.mk-tipo-a .ta-ficha-tabela { width: 100%; border-collapse: collapse; font-family: var(--serif); font-size: 13px; color: rgba(222,212,189,.86); }
+.mk-tipo-a .ta-ficha-tabela caption { text-align: left; font-family: var(--mono); font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: rgba(222,212,189,.42); padding-bottom: 12px; }
+.mk-tipo-a .ta-ficha-tabela th { font-family: var(--mono); font-size: 8px; letter-spacing: .14em; text-transform: uppercase; color: rgba(230,193,92,.85); text-align: left; padding: 0 14px 10px 0; border-bottom: 1px solid rgba(222,212,189,.28); font-weight: 700; }
+.mk-tipo-a .ta-ficha-tabela td { padding: 9px 14px 9px 0; border-bottom: 1px solid rgba(222,212,189,.1); vertical-align: baseline; }
+.mk-tipo-a .ta-ficha-tabela tr:last-child td { border-bottom: none; }
+.mk-tipo-a .ta-ficha-tabela .ta-ft-voz { font-family: var(--mono); font-size: 10px; letter-spacing: .06em; color: rgba(230,193,92,.7); white-space: nowrap; }
+.mk-tipo-a .ta-ficha-tabela .ta-ft-num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.mk-tipo-a .ta-ficha-tabela .ta-ft-uso { font-style: italic; color: #f0e7d2; }
+.mk-tipo-a .ta-ficha-grupo td { padding-top: 22px; font-family: var(--mono); font-size: 8px; letter-spacing: .22em; text-transform: uppercase; color: rgba(47,150,86,.7); border-bottom: 1px solid rgba(222,212,189,.1); }
+
+/* ── colofão ─────────────────────────────────────────────────────────── */
+.mk-tipo-a .ta-colofao { max-width: 1220px; margin: 0 auto; padding: 30px 48px 64px; color: rgba(222,212,189,.5); font-family: var(--mono); font-size: 10px; line-height: 1.9; letter-spacing: .03em; border-top: 1px solid rgba(222,212,189,.16); padding-top: 30px; }
+.mk-tipo-a .ta-colofao h3 { font-family: var(--mono); font-size: 9.5px; letter-spacing: .22em; text-transform: uppercase; color: rgba(230,193,92,.9); margin: 22px 0 8px; }
+.mk-tipo-a .ta-colofao h3:first-child { margin-top: 0; }
+.mk-tipo-a .ta-colofao em { font-family: var(--garamond); font-size: 13.5px; font-style: italic; letter-spacing: 0; color: rgba(222,212,189,.72); }
+.mk-tipo-a .ta-colofao b { color: rgba(201,168,106,.9); font-weight: 700; letter-spacing: .1em; }
+.mk-tipo-a .ta-colofao p { margin-bottom: 12px; }
+
+@media (max-width: 980px) {
+  .mk-tipo-a .ta-cabeca, .mk-tipo-a .ta-corpo-pagina, .mk-tipo-a .ta-colofao { padding-left: 22px; padding-right: 22px; }
+  .mk-tipo-a .ta-carimbo-sys { display: none; }
+  .mk-tipo-a .ta-vozes4 { grid-template-columns: repeat(2, 1fr); }
+  .mk-tipo-a .ta-chrome-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+
+<div class="mk-tipo-a">
+
+  <!-- ══════════════════════════ CABEÇA ══════════════════════════ -->
+  <header class="ta-cabeca">
+    <div class="ta-carimbo-sys"><b>SISTEMA A</b><hr><span>CONTROLE</span></div>
+    <div class="ta-eyebrow">Comparativo tipográfico · direcao-visual.md §3–4</div>
+    <h1 class="ta-h1">Quatro vozes</h1>
+    <p class="ta-tese">A tese é <b>máxima diferenciação</b>: o app é uma mesa com instrumentos distintos, e cada um fala com a própria voz. Spectral lê; EB Garamond cita; Courier Prime rotula; Caveat anota à mão. Este sistema não redesenha — <b>formaliza</b> o que os mockups aprovados já fazem, e o mostra no melhor que ele pode ser.</p>
+    <div class="ta-linha"></div>
+
+    <div class="ta-vozes4">
+      <div class="ta-voz-card">
+        <div class="ta-voz-especime">Aa Rf 1</div>
+        <div class="ta-voz-nome">Spectral</div>
+        <div class="ta-voz-papel">corpo &amp; display</div>
+      </div>
+      <div class="ta-voz-card">
+        <div class="ta-voz-especime">Aa Rf</div>
+        <div class="ta-voz-nome">EB Garamond</div>
+        <div class="ta-voz-papel">citação &amp; peça editorial</div>
+      </div>
+      <div class="ta-voz-card">
+        <div class="ta-voz-especime">Aa Rf</div>
+        <div class="ta-voz-nome">Courier Prime</div>
+        <div class="ta-voz-papel">chrome, rótulos &amp; kickers</div>
+      </div>
+      <div class="ta-voz-card">
+        <div class="ta-voz-especime">Aa Rf</div>
+        <div class="ta-voz-nome">Caveat</div>
+        <div class="ta-voz-papel">manuscrito</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="ta-corpo-pagina">
+
+    <!-- ══════════════════ SITUAÇÃO 1 — TEXTO CORRIDO ══════════════════ -->
+    <section class="ta-secao">
+      <div class="ta-secao-kicker">Situação 1 · 393×852</div>
+      <h2 class="ta-secao-titulo">Texto corrido do livro</h2>
+      <div class="ta-legenda">
+        <div class="ta-legenda-num">01 · Leitura</div>
+        <div class="ta-legenda-nome">Corpo justificado + dicionário</div>
+        <div class="ta-legenda-linha">Faces em uso: <b>Spectral</b> (corpo, capitular, versalete, itálico) · <b>Courier Prime</b> (corrente, fólio)</div>
+        <div class="ta-legenda-linha">Escala: <b>16px / 27px</b> · justificado · hifenização automática</div>
+        <p class="ta-legenda-racional">Corrigido: os mockups variam a entrelinha entre 1.5, 1.6 e 1.68 dentro do mesmo arquivo. Aqui ela é uma só — 27px, o inteiro mais próximo de 16×1.68 — porque um leitor que muda de passo entre capítulos está mentindo sobre a própria régua.</p>
+      </div>
+
+      <div class="ta-scroll">
+      <div class="ta-fone">
+        <div class="ta-tela">
+          <div class="ta-status"><span>21:47</span><span>78%</span></div>
+
+          <div style="position:absolute; left:30px; right:30px; top:36px; text-align:center;">
+            <div class="ta-k-display" style="color:var(--tinta-50);">Capítulo primeiro</div>
+            <div style="font-family:var(--serif); font-style:italic; font-weight:300; font-size:20px; margin-top:6px; color:var(--tinta);">Do título</div>
+            <svg width="88" height="8" viewBox="0 0 118 9" aria-hidden="true" style="margin:8px auto 0; display:block;">
+              <path d="M2 4.5h44M72 4.5h44" stroke="rgba(36,31,25,.34)" stroke-width="1"/>
+              <path d="M59 .8 63.4 4.5 59 8.2 54.6 4.5Z" fill="rgba(36,31,25,.42)"/>
+            </svg>
+          </div>
+
+          <div class="ta-corpo" style="position:absolute; left:30px; right:30px; top:132px;">
+            <p class="ta-par ta-par--sem-indent"><span class="ta-capitular">U</span><span class="ta-versal">ma noite destas,</span> vindo da cidade para o Engenho Novo, encontrei num trem da Central um rapaz aqui do bairro, que eu conheço de vista e de chapéu. Cumprimentou-me, sentou-se ao pé de mim, falou da lua e dos ministros, e acabou recitando-me versos. A viagem era curta, e os versos pode ser que não fossem inteiramente maus. Sucedeu, porém, que, como eu estava cansado, fechei os olhos três ou quatro vezes; tanto bastou para que ele interrompesse a leitura e metesse os versos no bolso.</p>
+            <p class="ta-par" style="margin-top:.55em;">No dia seguinte entrou a dizer de mim nomes feios, e acabou alcunhando-me <em>Dom <span class="ta-consulta">Casmurro</span></em>. Os vizinhos, que não gostam dos meus hábitos reclusos e calados, deram curso à alcunha, que afinal pegou.</p>
+          </div>
+
+          <div class="ta-folio">31</div>
+
+          <!-- painel de dicionário sobreposto, RN-02.17d -->
+          <div class="ta-dic">
+            <div class="ta-dic-corrente"><span>Dicionário · sobre a página</span><span>fol. 31</span></div>
+            <div class="ta-verbete">cas·mur·ro<sup>1</sup></div>
+            <div class="ta-fonetica">[kaz.ˈmu.ʁu]</div>
+            <div class="ta-classe">adjetivo e substantivo masculino</div>
+            <div class="ta-acepcoes">
+              <p class="ta-acepcao"><b>1.</b> Que ou aquele que é teimoso, obstinado; cabeçudo.</p>
+              <p class="ta-acepcao"><b>2.</b> Ensimesmado, calado, avesso ao convívio; taciturno. <em>“os meus hábitos reclusos e calados”</em></p>
+              <p class="ta-acepcao"><b>3.</b> <em>Bras.</em> Sorumbático, de humor melancólico e fechado.</p>
+            </div>
+            <p class="ta-etimologia">Etim. controversa; a explicação corrente na obra desfaz o sentido dicionarizado — o narrador adverte que o apelido não veio do dicionário, mas dos vizinhos.</p>
+          </div>
+        </div>
+      </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════ SITUAÇÃO 2 — TÍTULO E DISPLAY ══════════════════ -->
+    <section class="ta-secao">
+      <div class="ta-secao-kicker">Situação 2 · prancha de espécime</div>
+      <h2 class="ta-secao-titulo">Título e display</h2>
+      <div class="ta-legenda">
+        <div class="ta-legenda-num">02 · Display</div>
+        <div class="ta-legenda-nome">Abertura de capítulo + número de marco</div>
+        <div class="ta-legenda-linha">Faces em uso: <b>Spectral</b> (capitular 64px/500, título 27px itálico/300, número 96px/600) · <b>Courier Prime</b> (kicker do capítulo)</div>
+        <div class="ta-legenda-racional">A única voz nesta prancha é Spectral em três pesos — a maquete que prova que "display" não precisa de uma quinta família: 300 abre, 500 inicia, 600 celebra.</div>
+      </div>
+
+      <div class="ta-scroll">
+      <div class="ta-prancha" style="width:640px;">
+        <div class="ta-prancha-mira tl"></div><div class="ta-prancha-mira tr"></div>
+        <div class="ta-prancha-mira bl"></div><div class="ta-prancha-mira br"></div>
+        <div class="ta-s2-wrap">
+          <div class="ta-s2-cap">
+            <div class="ta-s2-cap-num">Capítulo primeiro</div>
+            <div class="ta-s2-cap-nome">Do título</div>
+            <svg class="ta-s2-fleuron" width="140" height="10" viewBox="0 0 118 9" aria-hidden="true">
+              <path d="M2 4.5h44M72 4.5h44" stroke="rgba(36,31,25,.34)" stroke-width="1"/>
+              <path d="M59 .8 63.4 4.5 59 8.2 54.6 4.5Z" fill="rgba(36,31,25,.42)"/>
+            </svg>
+          </div>
+          <div class="ta-s2-celebracao">
+            <div class="ta-num-grande">100</div>
+            <div class="ta-s2-celebracao-rot">Marco de leitura</div>
+          </div>
+        </div>
+      </div>
+      </div>
+      <div class="ta-prancha-dim">Prancha · 640×360 · corpo capitular <b>64px/500</b> · corpo celebração <b>96px/600</b> · tabular-nums</div>
+    </section>
+
+    <!-- ══════════════════ SITUAÇÃO 3 — NÚMERO E DADO ══════════════════ -->
+    <section class="ta-secao">
+      <div class="ta-secao-kicker">Situação 3 · prancha de espécime</div>
+      <h2 class="ta-secao-titulo">Número e dado</h2>
+      <div class="ta-legenda">
+        <div class="ta-legenda-num">03 · Tabela</div>
+        <div class="ta-legenda-nome">Semana + a régua da dignidade</div>
+        <div class="ta-legenda-linha">Faces em uso: <b>Spectral 600</b> (valores, tabular-nums) · <b>Courier Prime</b> (dias da semana)</div>
+        <div class="ta-legenda-racional">Corrigido: o travessão de dia sem leitura não tenta imitar a largura do dígito por métrica de glifo — Spectral não é monoespaçada e a promessa quebraria. A célula tem largura fixa (3ch) e centraliza o conteúdo; é o travessão que se comporta como número, não o número que se disfarça de travessão.</div>
+      </div>
+
+      <div class="ta-scroll">
+      <div class="ta-prancha" style="width:640px;">
+        <div class="ta-prancha-mira tl"></div><div class="ta-prancha-mira tr"></div>
+        <div class="ta-prancha-mira bl"></div><div class="ta-prancha-mira br"></div>
+        <div style="width:100%;">
+          <div class="ta-semana">
+            <div class="ta-semana-col"><div class="ta-semana-dia">Seg</div><div class="ta-semana-cel"><span class="ta-semana-val">24</span></div><div class="ta-semana-min">min</div></div>
+            <div class="ta-semana-col"><div class="ta-semana-dia">Ter</div><div class="ta-semana-cel"><span class="ta-semana-val ta-semana-val--zero">—</span></div><div class="ta-semana-min">&nbsp;</div></div>
+            <div class="ta-semana-col"><div class="ta-semana-dia">Qua</div><div class="ta-semana-cel"><span class="ta-semana-val">31</span></div><div class="ta-semana-min">min</div></div>
+            <div class="ta-semana-col"><div class="ta-semana-dia">Qui</div><div class="ta-semana-cel"><span class="ta-semana-val">29</span></div><div class="ta-semana-min">min</div></div>
+            <div class="ta-semana-col"><div class="ta-semana-dia">Sex</div><div class="ta-semana-cel"><span class="ta-semana-val ta-semana-val--zero">—</span></div><div class="ta-semana-min">&nbsp;</div></div>
+            <div class="ta-semana-col"><div class="ta-semana-dia">Sáb</div><div class="ta-semana-cel"><span class="ta-semana-val">38</span></div><div class="ta-semana-min">min</div></div>
+            <div class="ta-semana-col ta-semana-col--hoje"><div class="ta-semana-dia">Dom</div><div class="ta-semana-cel"><span class="ta-semana-val">26</span></div><div class="ta-semana-min">min · hoje</div></div>
+          </div>
+
+          <div class="ta-dignidade">
+            <div class="ta-dignidade-item"><div class="ta-num-grande">11 min</div><div class="ta-dignidade-rot">sessão breve</div></div>
+            <div class="ta-dignidade-item"><div class="ta-num-grande">2h14</div><div class="ta-dignidade-rot">sessão longa</div></div>
+            <div class="ta-dignidade-item"><div class="ta-num-grande">3</div><div class="ta-dignidade-rot">ofensiva jovem</div></div>
+            <div class="ta-dignidade-item"><div class="ta-num-grande">127</div><div class="ta-dignidade-rot">ofensiva longeva</div></div>
+          </div>
+        </div>
+      </div>
+      </div>
+      <div class="ta-prancha-dim">Prancha · 640×300 · a régua da dignidade: <b>mesmo corpo, mesmo peso</b> de 11&nbsp;min a 2h14, de 3 a 127</div>
+    </section>
+
+    <!-- ══════════════════ SITUAÇÃO 4 — RÓTULO E CHROME ══════════════════ -->
+    <section class="ta-secao">
+      <div class="ta-secao-kicker">Situação 4 · prancha de espécime</div>
+      <h2 class="ta-secao-titulo">Rótulo e chrome</h2>
+      <div class="ta-legenda">
+        <div class="ta-legenda-num">04 · Chrome</div>
+        <div class="ta-legenda-nome">A máquina de escrever em julgamento</div>
+        <div class="ta-legenda-linha">Face em uso: <b>Courier Prime</b> — três degraus só, <b>7,5 / 8,5 / 10,5px</b>, tracking <b>.20 / .26 / .34em</b></div>
+        <p class="ta-legenda-racional">Corrigido: doze combinações de corpo e tracking viram três. O piso real é 7,5px — os 6,2px que apareciam em mockup foram descartados por ilegíveis, não arredondados. Nenhum rótulo do produto usa uma quarta combinação.</p>
+      </div>
+
+      <div class="ta-scroll">
+      <div class="ta-prancha" style="width:720px; justify-content:flex-start;">
+        <div class="ta-prancha-mira tl"></div><div class="ta-prancha-mira tr"></div>
+        <div class="ta-prancha-mira bl"></div><div class="ta-prancha-mira br"></div>
+        <div class="ta-chrome-grid">
+          <div class="ta-chrome-item"><div class="ta-chrome-amostra ta-k-micro">domínio público</div><div class="ta-chrome-fonte">micro · 7,5px · .20em</div></div>
+          <div class="ta-chrome-item"><div class="ta-chrome-amostra ta-k-micro">epub importado</div><div class="ta-chrome-fonte">micro · 7,5px · .20em</div></div>
+          <div class="ta-chrome-item"><div class="ta-chrome-amostra ta-k-micro">lendo agora · 34%</div><div class="ta-chrome-fonte">micro · 7,5px · .20em</div></div>
+          <div class="ta-chrome-item"><div class="ta-chrome-amostra ta-k">dias seguidos</div><div class="ta-chrome-fonte">padrão · 8,5px · .26em</div></div>
+          <div class="ta-chrome-item"><div class="ta-chrome-amostra ta-k">min ativos</div><div class="ta-chrome-fonte">padrão · 8,5px · .26em</div></div>
+          <div class="ta-chrome-item"><div class="ta-chrome-amostra ta-k">estilo · focado</div><div class="ta-chrome-fonte">padrão · 8,5px · .26em</div></div>
+          <div class="ta-chrome-item"><div class="ta-chrome-amostra ta-k">páginas canônicas</div><div class="ta-chrome-fonte">padrão, minúsculas · 8,5px · .26em</div></div>
+          <div class="ta-chrome-item"><div class="ta-chrome-amostra ta-k">leitura consciente</div><div class="ta-chrome-fonte">padrão, minúsculas · 8,5px · .26em</div></div>
+          <div class="ta-chrome-item"><div class="ta-chrome-amostra ta-k">guardados</div><div class="ta-chrome-fonte">padrão · 8,5px · .26em</div></div>
+          <div class="ta-chrome-item"><div class="ta-chrome-amostra ta-k-display">leitura registrada</div><div class="ta-chrome-fonte">abertura · 10,5px · .34em</div></div>
+          <div class="ta-chrome-item"><div class="ta-chrome-amostra ta-k-display">recorde <span style="font-variant-numeric:tabular-nums;">41</span></div><div class="ta-chrome-fonte">abertura · 10,5px · .34em</div></div>
+        </div>
+      </div>
+      </div>
+      <div class="ta-prancha-dim">Prancha · 720×280 · doze combinações dos mockups reduzidas a <b>três</b></div>
+    </section>
+
+    <!-- ══════════════════ SITUAÇÃO 5 — CITAÇÃO COMPARTILHÁVEL ══════════════════ -->
+    <section class="ta-secao">
+      <div class="ta-secao-kicker">Situação 5 · prancha de espécime</div>
+      <h2 class="ta-secao-titulo">Citação compartilhável</h2>
+      <div class="ta-legenda">
+        <div class="ta-legenda-num">05 · Citação</div>
+        <div class="ta-legenda-nome">A régua de qualidade do catálogo</div>
+        <div class="ta-legenda-linha">Face em uso: <b>EB Garamond</b> itálico, <b>23px/36px</b> · grifo em <code>--pig-ambar</code>, <code>mix-blend-mode: multiply</code></div>
+        <div class="ta-legenda-linha">RN-08.14: obra e autor obrigatórios na peça</div>
+        <p class="ta-legenda-racional">É a peça mais bem resolvida do catálogo existente — direcao-visual.md §6.4 já a aponta como régua. Aqui ela ganha o único papel que EB Garamond precisava provar: que o corpo de leitura (Spectral) e a voz de citação (Garamond) realmente soam diferentes lado a lado.</p>
+      </div>
+
+      <div class="ta-scroll">
+      <div class="ta-prancha" style="width:600px;">
+        <div class="ta-prancha-mira tl"></div><div class="ta-prancha-mira tr"></div>
+        <div class="ta-prancha-mira bl"></div><div class="ta-prancha-mira br"></div>
+        <div class="ta-s5-card">
+          <div class="ta-s5-kicker">Citação</div>
+          <div class="ta-s5-fio"></div>
+          <p class="ta-cit" style="margin-top:18px;">Quando certa manhã Gregor Samsa acordou de sonhos intranquilos, encontrou-se em sua cama <span class="ta-grifo">metamorfoseado num inseto monstruoso</span>.</p>
+          <div class="ta-s5-atrib">
+            <div class="ta-s5-obra">A Metamorfose</div>
+            <div class="ta-s5-autor">Franz Kafka</div>
+          </div>
+        </div>
+      </div>
+      </div>
+      <div class="ta-prancha-dim">Prancha · 600×420 · citação <b>23px/36px</b>, itálico real (não sintético)</div>
+    </section>
+
+    <!-- ══════════════════ SITUAÇÃO 6 — MANUSCRITO ══════════════════ -->
+    <section class="ta-secao">
+      <div class="ta-secao-kicker">Situação 6 · prancha de espécime</div>
+      <h2 class="ta-secao-titulo">Manuscrito</h2>
+      <div class="ta-legenda">
+        <div class="ta-legenda-num">06 · Manuscrito</div>
+        <div class="ta-legenda-nome">Marginália + etiqueta de herbário</div>
+        <div class="ta-legenda-linha">Face em uso: <b>Caveat</b> — marginália 16px/400, etiqueta 22px/600</div>
+        <p class="ta-legenda-racional">O único lugar do sistema em que a mão da leitora aparece. Caveat só ganha o lugar dela porque nunca compete com Spectral pelo mesmo espaço — vive na margem, nunca no corpo.</p>
+      </div>
+
+      <div class="ta-scroll">
+      <div class="ta-prancha" style="width:660px; justify-content:flex-start;">
+        <div class="ta-prancha-mira tl"></div><div class="ta-prancha-mira tr"></div>
+        <div class="ta-prancha-mira bl"></div><div class="ta-prancha-mira br"></div>
+        <div class="ta-s6-wrap">
+          <div class="ta-s6-texto">
+            <p class="ta-corpo" style="color:var(--tinta); font-size:15px; line-height:24px;">Vi-lhe fazer um gesto para tirá-los outra vez do bolso, mas não passou do gesto; estava <span class="ta-grifo">amuado</span>.</p>
+          </div>
+          <div class="ta-s6-margem">
+            <span class="ta-s6-traco"></span>
+            <span class="ta-lapis-p ta-s6-marginalia">a frase que já é a história inteira</span>
+          </div>
+        </div>
+        <div class="ta-etiqueta-herb">
+          <div class="ta-k-micro">Espécime nº 23</div>
+          <span class="ta-lapis-m">o apelido que virou o livro</span>
+        </div>
+      </div>
+      </div>
+      <div class="ta-prancha-dim">Prancha · 660×340 · marginália <b>rotate(-3.5°)</b>, herbário <b>rotate(-1.6°)</b></div>
+    </section>
+
+    <!-- ══════════════════ SITUAÇÃO 7 — MICROCOPY E CARTA ══════════════════ -->
+    <section class="ta-secao">
+      <div class="ta-secao-kicker">Situação 7 · 393×852</div>
+      <h2 class="ta-secao-titulo">Microcopy e carta editorial</h2>
+      <div class="ta-legenda">
+        <div class="ta-legenda-num">07 · Prosa</div>
+        <div class="ta-legenda-nome">Duas escalas de prosa</div>
+        <div class="ta-legenda-linha">Faces em uso: <b>Spectral itálico 300</b> (microcopy, 17px/24px) · <b>EB Garamond itálico</b> (carta, 17px/27px)</div>
+        <p class="ta-legenda-racional">Corrigido: a régua de fichário (passo de 20px) foi trocada por 27px, o mesmo inteiro do corpo de leitura — a carta senta na mesma pauta do livro que ela comenta, cumprindo a regra 11.</p>
+      </div>
+
+      <div class="ta-scroll">
+      <div class="ta-fone">
+        <div class="ta-tela">
+
+          <div class="ta-s7-saudacao">
+            <div class="ta-s7-saudacao-nome">Bom domingo, Marina.</div>
+            <div class="ta-s7-saudacao-data">22 de agosto</div>
+          </div>
+
+          <div class="ta-s7-micro-lista">
+            <div class="ta-s7-micro-item"><p class="ta-microcopy">Este espécime está descansando. As raízes seguem inteiras — é só retomar.</p><div class="ta-s7-micro-escala">dormência</div></div>
+            <div class="ta-s7-micro-item"><p class="ta-microcopy">Duas páginas, e já é a segunda vitória do dia: você começou.</p><div class="ta-s7-micro-escala">início de sessão</div></div>
+            <div class="ta-s7-micro-item"><p class="ta-microcopy">Continue quando quiser — o marcador guarda o lugar exato onde você parou.</p><div class="ta-s7-micro-escala">retomada</div></div>
+            <div class="ta-s7-micro-item"><p class="ta-microcopy">Sessão de imersão: 34 minutos sem levantar os olhos.</p><div class="ta-s7-micro-escala">leitura consciente</div></div>
+            <div class="ta-s7-micro-item"><p class="ta-microcopy">18 minutos de foco hoje. Seu jardim agradece.</p><div class="ta-s7-micro-escala">fechamento do dia</div></div>
+            <div class="ta-s7-micro-item"><p class="ta-microcopy">Da última vez que você abriu <em>A Metamorfose</em>, foram 21 minutos. Hoje, 26 — e mais tempo em blocos de foco contínuo.</p><div class="ta-s7-micro-escala">comparação de sessão</div></div>
+            <div class="ta-s7-micro-item"><p class="ta-microcopy">Comparado só com você: a semana anterior teve 2h34 de leitura.</p><div class="ta-s7-micro-escala">comparação semanal</div></div>
+            <div class="ta-s7-micro-item"><p class="ta-microcopy">Seu jardim floresceu cem vezes seguidas. A marca fica guardada — mesmo se um dia a sequência descansar.</p><div class="ta-s7-micro-escala">marco de 100</div></div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="ta-fone">
+        <div class="ta-tela">
+
+          <div class="ta-s7-saudacao">
+            <div class="ta-s7-saudacao-nome">Carta de domingo</div>
+            <div class="ta-s7-saudacao-data">EB Garamond itálico · 17px / 27px</div>
+          </div>
+
+          <div class="ta-s7-carta">
+            <p class="ta-carta">Querida Marina,<br>esta semana você abriu o livro em cinco dos sete dias — e não foi qualquer leitura: quase meia hora por sessão, quase sempre voltando para <em>A Metamorfose</em>, do jeito de quem não está com pressa de terminar.<br>Faltam sete dias para o seu próximo marco, os 30. A ofensiva segue em 23, e o recorde de 41 está logo ali, à vista.<br>Até semana que vem.</p>
+            <span class="ta-s7-carta-assina">— o seu jardim</span>
+          </div>
+        </div>
+      </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════ SITUAÇÃO 8 — LISTA DENSA ══════════════════ -->
+    <section class="ta-secao">
+      <div class="ta-secao-kicker">Situação 8 · 393×852</div>
+      <h2 class="ta-secao-titulo">Lista densa</h2>
+      <div class="ta-legenda">
+        <div class="ta-legenda-num">08 · Biblioteca</div>
+        <div class="ta-legenda-nome">Título, autor, estado e origem</div>
+        <div class="ta-legenda-linha">Faces em uso: <b>Spectral 500</b> (título, 15,5px) · <b>Courier Prime</b> (autor, estado, origem — 7 / 7,5px)</div>
+        <p class="ta-legenda-racional">O título longo de Brás Cubas trunca com reticências antes de forçar quebra de linha — a lista precisa caber em uma linha por item mesmo quando o livro não cabe.</p>
+      </div>
+
+      <div class="ta-scroll">
+      <div class="ta-fone">
+        <div class="ta-tela">
+          <div class="ta-status"><span>21:58</span><span>76%</span></div>
+          <div class="ta-lista">
+            <div class="ta-lista-item">
+              <div class="ta-lista-txt"><div class="ta-lista-titulo">Dom Casmurro</div><div class="ta-lista-autor">Machado de Assis</div></div>
+              <div class="ta-lista-meta"><span class="ta-lista-estado">lendo agora · 34%</span><span class="ta-lista-origem">domínio público</span></div>
+            </div>
+            <div class="ta-lista-item">
+              <div class="ta-lista-txt"><div class="ta-lista-titulo">Memórias Póstumas de Brás Cubas</div><div class="ta-lista-autor">Machado de Assis</div></div>
+              <div class="ta-lista-meta"><span class="ta-lista-estado">guardados</span><span class="ta-lista-origem">domínio público</span></div>
+            </div>
+            <div class="ta-lista-item">
+              <div class="ta-lista-txt"><div class="ta-lista-titulo">O Cortiço</div><div class="ta-lista-autor">Aluísio Azevedo</div></div>
+              <div class="ta-lista-meta"><span class="ta-lista-estado">guardados</span><span class="ta-lista-origem">domínio público</span></div>
+            </div>
+            <div class="ta-lista-item">
+              <div class="ta-lista-txt"><div class="ta-lista-titulo">A Metamorfose</div><div class="ta-lista-autor">Franz Kafka</div></div>
+              <div class="ta-lista-meta"><span class="ta-lista-estado">guardados</span><span class="ta-lista-origem">epub importado</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════ PAINEL DE LEITURA — 5 FACES ══════════════════ -->
+    <section class="ta-secao">
+      <div class="ta-secao-kicker">Painel de leitura · RN-02.16d / RN-02.16e</div>
+      <h2 class="ta-secao-titulo">Cinco faces, o mesmo trecho</h2>
+      <div class="ta-legenda">
+        <div class="ta-legenda-nome">Nenhuma paga; todas sobre o texto real</div>
+        <p class="ta-legenda-racional">Corrigido: o painel hoje oferece Spectral, Garamond e Monoespaço — duas old-style quase idênticas e uma curiosidade. Aqui entram uma sans neutra (Public Sans) e a face de alta legibilidade obrigatória (Atkinson Hyperlegible, porque OpenDyslexic não está no Google Fonts e o CSP a bloqueia). As cinco leem visivelmente diferente umas das outras — esse era o requisito que faltava, não o número de opções.</p>
+      </div>
+
+      <div class="ta-painel-grid">
+        <div class="ta-face-card ta-face-card--sel">
+          <div class="ta-face-nome">Spectral<span class="ta-face-selo">padrão</span></div>
+          <p class="ta-face-texto" style="font-family:var(--serif); font-size:16px; line-height:27px;">Uma noite destas, vindo da cidade para o Engenho Novo, encontrei num trem da Central um rapaz aqui do bairro, que eu conheço de vista e de chapéu.</p>
+        </div>
+        <div class="ta-face-card">
+          <div class="ta-face-nome">EB Garamond<span class="ta-face-selo">old-style</span></div>
+          <p class="ta-face-texto" style="font-family:var(--garamond); font-size:17px; line-height:27px;">Uma noite destas, vindo da cidade para o Engenho Novo, encontrei num trem da Central um rapaz aqui do bairro, que eu conheço de vista e de chapéu.</p>
+        </div>
+        <div class="ta-face-card">
+          <div class="ta-face-nome">Public Sans<span class="ta-face-selo">sem serifa</span></div>
+          <p class="ta-face-texto" style="font-family:var(--sans); font-size:15.5px; line-height:26px;">Uma noite destas, vindo da cidade para o Engenho Novo, encontrei num trem da Central um rapaz aqui do bairro, que eu conheço de vista e de chapéu.</p>
+        </div>
+        <div class="ta-face-card">
+          <div class="ta-face-nome">Atkinson Hyperlegible<span class="ta-face-selo">alta legibilidade</span></div>
+          <p class="ta-face-texto" style="font-family:var(--atkinson); font-size:17px; line-height:28px;">Uma noite destas, vindo da cidade para o Engenho Novo, encontrei num trem da Central um rapaz aqui do bairro, que eu conheço de vista e de chapéu.</p>
+        </div>
+        <div class="ta-face-card">
+          <div class="ta-face-nome">Courier Prime<span class="ta-face-selo">monoespaço</span></div>
+          <p class="ta-face-texto" style="font-family:var(--mono); font-size:13.5px; line-height:24px;">Uma noite destas, vindo da cidade para o Engenho Novo, encontrei num trem da Central um rapaz aqui do bairro, que eu conheço de vista e de chapéu.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════ PROVA DE ESTRESSE ══════════════════ -->
+    <section class="ta-secao">
+      <div class="ta-secao-kicker">Prova de estresse</div>
+      <h2 class="ta-secao-titulo">12pt · 20pt · Atkinson no leitor real</h2>
+      <div class="ta-legenda">
+        <div class="ta-legenda-racional">Os extremos do controle de corpo, mais a face de acessibilidade aplicada de verdade — não a uma amostra solta, mas ao parágrafo inteiro, no lugar do leitor.</div>
+      </div>
+
+      <div class="ta-estresse-wrap">
+        <div class="ta-estresse-col">
+          <div class="ta-estresse-rot">12px / 20px — extremo pequeno</div>
+          <p class="ta-corpo ta-corpo--pequeno">Uma noite destas, vindo da cidade para o Engenho Novo, encontrei num trem da Central um rapaz aqui do bairro, que eu conheço de vista e de chapéu. Cumprimentou-me, sentou-se ao pé de mim, falou da lua e dos ministros, e acabou recitando-me versos.</p>
+        </div>
+        <div class="ta-estresse-col" style="flex-basis:420px;">
+          <div class="ta-estresse-rot">20px / 34px — extremo grande</div>
+          <p class="ta-corpo ta-corpo--grande">Uma noite destas, vindo da cidade para o Engenho Novo, encontrei num trem da Central um rapaz aqui do bairro, que eu conheço de vista e de chapéu.</p>
+        </div>
+        <div class="ta-estresse-col">
+          <div class="ta-estresse-rot">Atkinson Hyperlegible / 17px / 28px — leitor real</div>
+          <p class="ta-corpo" style="font-family:var(--atkinson); font-size:17px; line-height:28px;">Vi-lhe fazer um gesto para tirá-los outra vez do bolso, mas não passou do gesto; estava amuado. No dia seguinte entrou a dizer de mim nomes feios, e acabou alcunhando-me Dom Casmurro.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════ FICHA TÉCNICA ══════════════════ -->
+    <section class="ta-secao">
+      <div class="ta-secao-kicker">Ficha técnica</div>
+      <h2 class="ta-secao-titulo">A escala completa</h2>
+
+      <div class="ta-scroll">
+      <table class="ta-ficha-tabela">
+        <caption>Índice de usos — vira direcao-visual.md §3 se este sistema vencer</caption>
+        <thead>
+          <tr><th>Uso</th><th>Voz</th><th>Corpo</th><th>Peso</th><th>Entrelinha</th><th>Tracking</th><th>OpenType / recursos</th></tr>
+        </thead>
+        <tbody>
+          <tr class="ta-ficha-grupo"><td colspan="7">Spectral — corpo e display</td></tr>
+          <tr><td class="ta-ft-uso">Corpo de leitura</td><td class="ta-ft-voz">Spectral</td><td class="ta-ft-num">16px</td><td>400</td><td class="ta-ft-num">27px</td><td class="ta-ft-num">0</td><td>hifenização automática, justificado</td></tr>
+          <tr><td class="ta-ft-uso">Corpo, extremo pequeno</td><td class="ta-ft-voz">Spectral</td><td class="ta-ft-num">12px</td><td>400</td><td class="ta-ft-num">20px</td><td class="ta-ft-num">0</td><td>idem</td></tr>
+          <tr><td class="ta-ft-uso">Corpo, extremo grande</td><td class="ta-ft-voz">Spectral</td><td class="ta-ft-num">20px</td><td>400</td><td class="ta-ft-num">34px</td><td class="ta-ft-num">0</td><td>idem</td></tr>
+          <tr><td class="ta-ft-uso">Capitular</td><td class="ta-ft-voz">Spectral</td><td class="ta-ft-num">64px</td><td>500</td><td class="ta-ft-num">display</td><td class="ta-ft-num">0</td><td>—</td></tr>
+          <tr><td class="ta-ft-uso">Versalete de abertura</td><td class="ta-ft-voz">Spectral</td><td class="ta-ft-num">16px</td><td>400</td><td class="ta-ft-num">27px</td><td class="ta-ft-num">.055em</td><td>font-variant: small-caps</td></tr>
+          <tr><td class="ta-ft-uso">Título de capítulo</td><td class="ta-ft-voz">Spectral</td><td class="ta-ft-num">27px</td><td>300 itálico</td><td class="ta-ft-num">32px</td><td class="ta-ft-num">.01em</td><td>itálico real</td></tr>
+          <tr><td class="ta-ft-uso">Número de celebração</td><td class="ta-ft-voz">Spectral</td><td class="ta-ft-num">96px</td><td>600</td><td class="ta-ft-num">display</td><td class="ta-ft-num">0</td><td>tabular-nums</td></tr>
+          <tr><td class="ta-ft-uso">Dado tabular (semana)</td><td class="ta-ft-voz">Spectral</td><td class="ta-ft-num">22px</td><td>600</td><td class="ta-ft-num">27px</td><td class="ta-ft-num">0</td><td>tabular-nums, célula de largura fixa</td></tr>
+          <tr><td class="ta-ft-uso">Verbete de dicionário</td><td class="ta-ft-voz">Spectral</td><td class="ta-ft-num">26px</td><td>600</td><td class="ta-ft-num">32px</td><td class="ta-ft-num">.01em</td><td>—</td></tr>
+          <tr><td class="ta-ft-uso">Microcopy (frase única)</td><td class="ta-ft-voz">Spectral</td><td class="ta-ft-num">17px</td><td>300 itálico</td><td class="ta-ft-num">24px</td><td class="ta-ft-num">0</td><td>itálico real</td></tr>
+
+          <tr class="ta-ficha-grupo"><td colspan="7">EB Garamond — citação e peça editorial</td></tr>
+          <tr><td class="ta-ft-uso">Citação compartilhável</td><td class="ta-ft-voz">EB Garamond</td><td class="ta-ft-num">23px</td><td>400 itálico</td><td class="ta-ft-num">36px</td><td class="ta-ft-num">0</td><td>itálico real</td></tr>
+          <tr><td class="ta-ft-uso">Citação, variante curta</td><td class="ta-ft-voz">EB Garamond</td><td class="ta-ft-num">19px</td><td>400 itálico</td><td class="ta-ft-num">30px</td><td class="ta-ft-num">0</td><td>itálico real</td></tr>
+          <tr><td class="ta-ft-uso">Carta editorial (corpo)</td><td class="ta-ft-voz">EB Garamond</td><td class="ta-ft-num">17px</td><td>400 itálico</td><td class="ta-ft-num">27px</td><td class="ta-ft-num">0</td><td>itálico real, pauta = passo 27px</td></tr>
+
+          <tr class="ta-ficha-grupo"><td colspan="7">Courier Prime — chrome, rótulos, kickers</td></tr>
+          <tr><td class="ta-ft-uso">Kicker micro</td><td class="ta-ft-voz">Courier Prime</td><td class="ta-ft-num">7,5px</td><td>400</td><td class="ta-ft-num">12px</td><td class="ta-ft-num">.20em</td><td>uppercase</td></tr>
+          <tr><td class="ta-ft-uso">Kicker padrão</td><td class="ta-ft-voz">Courier Prime</td><td class="ta-ft-num">8,5px</td><td>700</td><td class="ta-ft-num">13px</td><td class="ta-ft-num">.26em</td><td>uppercase</td></tr>
+          <tr><td class="ta-ft-uso">Kicker de abertura / carimbo</td><td class="ta-ft-voz">Courier Prime</td><td class="ta-ft-num">10,5px</td><td>700</td><td class="ta-ft-num">16px</td><td class="ta-ft-num">.34em</td><td>uppercase</td></tr>
+
+          <tr class="ta-ficha-grupo"><td colspan="7">Caveat — manuscrito</td></tr>
+          <tr><td class="ta-ft-uso">Marginália</td><td class="ta-ft-voz">Caveat</td><td class="ta-ft-num">16px</td><td>400</td><td class="ta-ft-num">18px</td><td class="ta-ft-num">0</td><td>rotate(-3.5°)</td></tr>
+          <tr><td class="ta-ft-uso">Etiqueta manuscrita</td><td class="ta-ft-voz">Caveat</td><td class="ta-ft-num">22px</td><td>600</td><td class="ta-ft-num">24px</td><td class="ta-ft-num">.01em</td><td>rotate(-1.6°)</td></tr>
+          <tr><td class="ta-ft-uso">Manuscrito de destaque</td><td class="ta-ft-voz">Caveat</td><td class="ta-ft-num">34px</td><td>600</td><td class="ta-ft-num">36px</td><td class="ta-ft-num">.01em</td><td>—</td></tr>
+
+          <tr class="ta-ficha-grupo"><td colspan="7">Painel de leitura — faces oferecidas à leitora, mesmo trecho</td></tr>
+          <tr><td class="ta-ft-uso">Spectral (padrão)</td><td class="ta-ft-voz">Spectral</td><td class="ta-ft-num">16px</td><td>400</td><td class="ta-ft-num">27px</td><td class="ta-ft-num">0</td><td>—</td></tr>
+          <tr><td class="ta-ft-uso">EB Garamond</td><td class="ta-ft-voz">EB Garamond</td><td class="ta-ft-num">17px</td><td>400</td><td class="ta-ft-num">27px</td><td class="ta-ft-num">0</td><td>—</td></tr>
+          <tr><td class="ta-ft-uso">Public Sans</td><td class="ta-ft-voz">Public Sans</td><td class="ta-ft-num">15,5px</td><td>400</td><td class="ta-ft-num">26px</td><td class="ta-ft-num">0</td><td>sans obrigatória</td></tr>
+          <tr><td class="ta-ft-uso">Atkinson Hyperlegible</td><td class="ta-ft-voz">Atkinson Hyperlegible</td><td class="ta-ft-num">17px</td><td>400</td><td class="ta-ft-num">28px</td><td class="ta-ft-num">0</td><td>acessibilidade obrigatória, RN-02.16d/e</td></tr>
+          <tr><td class="ta-ft-uso">Courier Prime (monoespaço)</td><td class="ta-ft-voz">Courier Prime</td><td class="ta-ft-num">13,5px</td><td>400</td><td class="ta-ft-num">24px</td><td class="ta-ft-num">0</td><td>—</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ══════════════════════════ COLOFÃO ══════════════════════════ -->
+  <footer class="ta-colofao">
+    <h3>Colofão</h3>
+    <p>Composto em <em>Spectral</em> (corpo e display), <em>EB Garamond</em> (citação e peça editorial), <em>Courier Prime</em> (chrome, rótulos, kickers) e <em>Caveat</em> (manuscrito) — as quatro vozes já presentes nos mockups aprovados, aqui formalizadas em uma escala única. <em>Public Sans</em> e <em>Atkinson Hyperlegible</em> entram apenas no painel de leitura, como opções oferecidas à leitora, não como uma quinta voz do sistema.</p>
+
+    <h3>O que foi corrigido</h3>
+    <p><b>Entrelinha do corpo:</b> de 1.5 / 1.6 / 1.68 (às vezes dentro do mesmo arquivo) para <b>27px</b> fixos — o inteiro mais próximo de 16×1.68, obrigatório pela regra 11. <b>Kickers:</b> de doze combinações de corpo/tracking (5,4 a 12px, .04 a .30em) para <b>três</b> (7,5 / 8,5 / 10,5px). O piso real é 7,5px; os 6,2px vistos em mockup foram descartados, não arredondados — abaixo disso o traço de Courier Prime perde a máquina de escrever e vira ruído. <b>Corpo Spectral:</b> de 14/15/17/17,5px conforme o arquivo para <b>16px</b> único no corpo de leitura, com variantes de 12 e 20px só nos extremos declarados da prova de estresse. <b>Carta editorial:</b> a pauta de fichário (passo 20px, alheia ao texto) foi trocada por passo <b>27px</b> — a mesma entrelinha do corpo de leitura, para que a carta assente na régua do livro que ela comenta. <b>Travessão da tabela:</b> em vez de perseguir a largura do dígito por métrica de glifo (Spectral não é monoespaçada), a célula ganhou largura fixa — o travessão nunca quebra a coluna porque a coluna nunca dependeu da largura do glifo.</p>
+
+    <h3>Onde o sistema resistiu</h3>
+    <p>A situação 4 — rótulo e chrome — é onde as quatro vozes deveriam brigar mais e, na prática, nem aparecem: é uma prancha inteiramente em Courier Prime. Isso expõe uma tensão real da tese. "Quatro vozes" promete que cada função tem sua própria face, mas o chrome do produto inteiro — todo rótulo, todo kicker, toda etiqueta de estado — é uma função só, e ela é só uma voz. As outras três vozes nunca aparecem lado a lado com ela na mesma superfície; elas se alternam por tela, não por elemento. A "máxima diferenciação" da tese é entre telas, não dentro de uma tela — o que é uma tese mais modesta do que o nome do sistema sugere.</p>
+    <p>A segunda tensão é a citação. EB Garamond só ganha o lugar dela porque nunca compete por espaço com Spectral na mesma superfície — na situação 5 ela está sozinha no cartão. Onde os dois textos precisariam conviver de perto (a carta editorial da situação 7, que cita <em>A Metamorfose</em> em itálico dentro de um parágrafo que já é Garamond itálico), a diferença entre as duas old-style quase desaparece: o itálico de Garamond dentro do itálico de Garamond não comunica nada, é apenas convenção tipográfica sem sinal visual. Se a citação precisar aparecer <em>dentro</em> de prosa e não isolada num cartão, a face própria da citação é a peça mais frágil da tese — ela resolve bem o card de compartilhamento e mal a prosa corrida.</p>
+    <p>Honestamente: com quatro vozes reais em uso, o sistema depende de as situações nunca colidirem. Elas não colidem nos mockups atuais porque cada tela tem um papel — mas é uma dependência estrutural, não uma vitória de desenho, e a próxima tela que peça duas vozes no mesmo parágrafo vai testar isso de verdade.</p>
+
+    <h3>Identidade</h3>
+    <p>Acento <b>--verde-tinta #2f5d3a</b> sobre papel, nunca sobre a mesa. Grão de papel 7×7px em toda superfície de papel. Bordas <b>rgba(124,98,58,.28–.45)</b>, nunca cinza. Sombras marrom-quentes, nunca preto neutro. Rotações de imperfeição alternando sinal. Estado selecionado: borda verde-tinta + fundo âmbar 16%. Números em PT-BR — milhar com ponto, decimal com vírgula, ponto médio como separador, tabular-nums em toda coluna.</p>
+
+    <p style="margin-top:20px; opacity:.7;">Um dos três sistemas tipográficos comparados para BookWorm · grupo de controle, não redesenho · <em>Dom Casmurro</em>, Machado de Assis, Capítulo I — texto-espécime idêntico nos três sistemas.</p>
+  </footer>
+
+</div>

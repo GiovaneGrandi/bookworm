@@ -1,0 +1,1008 @@
+<title>BookWorm — as telas de Papel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=EB+Garamond:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Caveat:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════════
+   BookWorm · Telas do MVP · direção estética "PAPEL"
+   A mesa de trabalho da leitora — herbário, fichas, carimbos, régua.
+   TODO o CSS escopado sob .mk-papel — nada vaza.
+   Peça de identidade própria: não segue o tema do visualizador.
+   ══════════════════════════════════════════════════════════════ */
+
+html, body { margin: 0; padding: 0; background: #1e2320; }
+
+.mk-papel {
+  --tinta:        #241f19;
+  --tinta-70:     rgba(36,31,25,.72);
+  --tinta-50:     rgba(36,31,25,.52);
+  --tinta-32:     rgba(36,31,25,.34);
+  --tinta-16:     rgba(36,31,25,.16);
+  --papel:        #f3ead9;
+  --papel-fundo:  #efe3ce;
+  --grafite:      #6f6858;
+  --oxblood:      #8e2f26;
+  --ambar:        #e6c15c;
+
+  --pig-ambar:  #e7c25e;
+  --pig-oliva:  #a8b07a;
+  --pig-tinta:  #93a9c0;
+  --pig-carmim: #d79aa2;
+
+  --mesa:       #1e2320;
+
+  --serif: 'Spectral', 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, 'Times New Roman', serif;
+  --garamond: 'EB Garamond', 'Spectral', Garamond, Georgia, 'Times New Roman', serif;
+  --mono: 'Courier Prime', 'Courier New', Courier, 'Nimbus Mono PS', monospace;
+  --lapis: 'Caveat', 'Segoe Script', 'Bradley Hand', cursive;
+
+  font-family: var(--serif);
+  color: var(--tinta);
+  background-color: var(--mesa);
+  background-image:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.020) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(0deg,  rgba(0,0,0,.16) 0 1px, transparent 1px 3px),
+    radial-gradient(120% 90% at 50% -10%, rgba(190,170,130,.14), transparent 60%),
+    radial-gradient(140% 120% at 50% 110%, rgba(0,0,0,.55), transparent 65%);
+  min-height: 100vh;
+  padding: 0 0 8px;
+  -webkit-font-smoothing: antialiased;
+}
+.mk-papel *, .mk-papel *::before, .mk-papel *::after { box-sizing: border-box; }
+.mk-papel p, .mk-papel h1, .mk-papel h2, .mk-papel h3, .mk-papel figure { margin: 0; }
+.mk-papel ::selection { background: rgba(230,193,92,.4); }
+
+/* superfície de papel — mixin reaproveitado em toda tela */
+.tp-papel-sup {
+  background-color: var(--papel);
+  background-image:
+    radial-gradient(circle at 16% 10%, rgba(255,255,255,.55), transparent 46%),
+    radial-gradient(circle at 86% 82%, rgba(163,130,84,.13), transparent 52%),
+    radial-gradient(rgba(96,74,46,.075) .5px, transparent .6px),
+    repeating-linear-gradient(96deg, rgba(120,95,60,.028) 0 1px, transparent 1px 3px);
+  background-size: 100% 100%, 100% 100%, 7px 7px, 100% 100%;
+}
+.tp-papel-sup--sepia {
+  background-color: #e7d5b4;
+  background-image:
+    radial-gradient(circle at 16% 10%, rgba(255,255,255,.35), transparent 46%),
+    radial-gradient(circle at 86% 82%, rgba(120,84,40,.16), transparent 52%),
+    radial-gradient(rgba(90,60,30,.09) .5px, transparent .6px),
+    repeating-linear-gradient(96deg, rgba(100,70,40,.035) 0 1px, transparent 1px 3px);
+  background-size: 100% 100%, 100% 100%, 7px 7px, 100% 100%;
+}
+
+/* ── cabeça da prancha ─────────────────────────────────────── */
+.mk-papel .tp-cabeca {
+  position: relative;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 56px 48px 30px;
+  color: #ded4bd;
+}
+.mk-papel .tp-titulo {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: 44px;
+  letter-spacing: .08em;
+  line-height: 1.08;
+  color: #f0e7d2;
+  max-width: 16ch;
+}
+.mk-papel .tp-titulo em { font-style: italic; font-weight: 300; color: #c9a86a; }
+.mk-papel .tp-sub {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .30em;
+  text-transform: uppercase; color: rgba(222,212,189,.62); margin-top: 16px;
+}
+.mk-papel .tp-linha {
+  height: 1px; margin: 18px 0 14px;
+  background: linear-gradient(90deg, rgba(222,212,189,.55), rgba(222,212,189,.06) 78%, transparent);
+}
+.mk-papel .tp-nota {
+  font-size: 14.5px; font-style: italic; font-weight: 300;
+  color: rgba(222,212,189,.62); max-width: 68ch; line-height: 1.65;
+}
+.mk-papel .tp-carimbo {
+  position: absolute; top: 46px; right: 48px;
+  width: 150px; height: 94px;
+  border: 2px solid rgba(176,72,58,.55);
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 3px rgba(176,72,58,.16);
+  transform: rotate(-9deg);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  font-family: var(--mono); color: rgba(196,84,68,.72); text-align: center; opacity: .9;
+}
+.mk-papel .tp-carimbo b { font-size: 12px; letter-spacing: .15em; font-weight: 700; }
+.mk-papel .tp-carimbo span { font-size: 7.5px; letter-spacing: .2em; }
+.mk-papel .tp-carimbo hr { width: 60px; border: 0; border-top: 1px solid rgba(176,72,58,.45); margin: 2px 0; }
+
+/* amostras de paleta */
+.mk-papel .tp-paleta { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 26px; }
+.mk-papel .tp-amostra { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; width: 92px; }
+.mk-papel .tp-amostra i {
+  display: block; width: 92px; height: 46px;
+  border: 1px solid rgba(255,255,255,.14);
+  box-shadow: 0 3px 8px rgba(0,0,0,.35);
+  border-radius: 3px 6px 4px 7px / 5px 3px 6px 4px;
+}
+.mk-papel .tp-amostra b { font-family: var(--mono); font-size: 8px; letter-spacing: .1em; color: rgba(222,212,189,.78); }
+.mk-papel .tp-amostra span { font-family: var(--mono); font-size: 8px; color: rgba(222,212,189,.42); }
+
+/* ── corpo: seções por tela ───────────────────────────────── */
+.mk-papel .tp-corpo { max-width: 1280px; margin: 0 auto; padding: 6px 48px 40px; }
+.mk-papel .tp-secao { padding: 46px 0 8px; border-top: 1px solid rgba(222,212,189,.14); }
+.mk-papel .tp-secao:first-child { border-top: none; }
+
+/* legenda / rótulo de cada tela — ficha datilografada */
+.mk-papel .tp-legenda {
+  position: relative;
+  max-width: 620px; margin: 0 0 30px;
+  background: #ece2cc;
+  background-image:
+    radial-gradient(rgba(90,70,45,.055) .5px, transparent .6px),
+    linear-gradient(180deg, rgba(255,255,255,.4), rgba(0,0,0,.02));
+  background-size: 7px 7px, 100% 100%;
+  padding: 16px 20px 17px;
+  box-shadow: 0 10px 22px rgba(48,32,16,.34), inset 0 0 0 1px rgba(120,95,60,.18);
+  transform: rotate(-.6deg);
+}
+.mk-papel .tp-secao:nth-child(even) .tp-legenda { transform: rotate(.6deg); }
+.mk-papel .tp-legenda::before {
+  content: ""; position: absolute; top: -12px; left: 40px;
+  width: 88px; height: 24px;
+  background: linear-gradient(180deg, rgba(226,208,168,.80), rgba(206,184,140,.72));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.28);
+  transform: rotate(-2deg); opacity: .92;
+}
+.mk-papel .tp-legenda-num {
+  font-family: var(--mono); font-size: 9.5px; font-weight: 700;
+  letter-spacing: .28em; color: var(--oxblood); text-transform: uppercase;
+}
+.mk-papel .tp-legenda-nome {
+  font-family: var(--serif); font-size: 21px; font-weight: 500;
+  margin-top: 3px; color: var(--tinta);
+}
+.mk-papel .tp-legenda-rn {
+  font-family: var(--mono); font-size: 9px; letter-spacing: .05em;
+  color: var(--tinta-50); margin-top: 7px;
+}
+.mk-papel .tp-legenda-racional {
+  font-size: 13px; font-style: italic; font-weight: 300;
+  color: var(--tinta-70); margin-top: 8px; line-height: 1.5;
+  border-top: 1px dashed rgba(124,98,58,.35); padding-top: 8px;
+}
+
+/* fileira de molduras */
+.mk-papel .tp-frames { display: flex; flex-wrap: wrap; gap: 44px; align-items: flex-start; }
+.mk-papel .tp-frame-col { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.mk-papel .tp-frame-tag {
+  font-family: var(--mono); font-size: 9px; letter-spacing: .16em;
+  text-transform: uppercase; color: rgba(222,212,189,.56); text-align: center; max-width: 340px; line-height: 1.6;
+}
+.mk-papel .tp-frame-tag b { color: rgba(201,168,106,.92); font-weight: 700; }
+
+/* ── aparelho ──────────────────────────────────────────────── */
+.mk-papel .tp-fone {
+  width: 411px; height: 870px; padding: 9px; border-radius: 30px;
+  background: linear-gradient(160deg, #34322c 0%, #16150f 46%, #2b2922 100%);
+  box-shadow: 0 34px 60px rgba(0,0,0,.62), 0 4px 10px rgba(0,0,0,.5),
+    inset 0 0 0 1px rgba(255,255,255,.075), inset 0 1px 0 rgba(255,255,255,.14);
+  position: relative; flex: 0 0 auto;
+}
+.mk-papel .tp-tela {
+  position: relative; overflow: hidden;
+  width: 393px; height: 852px; border-radius: 22px;
+  color: var(--tinta);
+}
+.mk-papel .tp-tela--sepia { color: #3a2e20; }
+
+/* barra de status impressa */
+.mk-papel .tp-status {
+  position: absolute; left: 26px; right: 24px; top: 12px; z-index: 5;
+  display: flex; justify-content: space-between;
+  font-family: var(--mono); font-size: 9px; letter-spacing: .16em; color: var(--tinta-32);
+}
+.mk-papel .tp-tela--sepia .tp-status { color: rgba(58,46,32,.42); }
+
+/* etiqueta corrente (obra · seção) */
+.mk-papel .tp-corrente {
+  position: absolute; left: 28px; right: 28px; top: 38px; z-index: 5;
+  font-family: var(--mono); font-size: 8.5px; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--tinta-32);
+}
+
+/* botão de papel — relevo sólido, sem gradiente */
+.mk-papel .tp-botao {
+  display: inline-block; font-family: var(--mono); font-size: 9.5px; letter-spacing: .18em;
+  text-transform: uppercase; color: #f4e7d2; background: #8e2f26;
+  padding: 12px 20px; border-radius: 2px;
+  box-shadow: 0 2px 0 rgba(94,29,22,.9), 0 6px 12px rgba(48,32,16,.25);
+  transform: rotate(-.5deg);
+}
+.mk-papel .tp-botao--fantasma {
+  background: transparent; color: var(--tinta-70);
+  box-shadow: none; border: 1px solid rgba(36,31,25,.28);
+}
+
+/* fleuron reaproveitado */
+.mk-papel .tp-fleuron path { stroke-linecap: round; }
+
+/* pente rasgado no topo de um painel */
+.mk-papel .tp-rasgo::before {
+  content: ""; position: absolute; top: -7px; left: 0; right: 0; height: 8px;
+  background: inherit;
+  -webkit-mask-image: radial-gradient(circle at 4px 8px, #000 3.5px, transparent 3.7px);
+  mask-image: radial-gradient(circle at 4px 8px, #000 3.5px, transparent 3.7px);
+  -webkit-mask-size: 8px 8px; mask-size: 8px 8px;
+  -webkit-mask-repeat: repeat-x; mask-repeat: repeat-x;
+}
+
+/* ════════════ TELA 1 — herbário / jardim ════════════ */
+.mk-papel .tp-herb { position: absolute; inset: 0; padding: 66px 26px 0; }
+.mk-papel .tp-herb-saud { font-family: var(--serif); font-size: 21px; font-weight: 400; font-style: italic; color: var(--tinta); }
+.mk-papel .tp-herb-data { font-family: var(--mono); font-size: 8.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--tinta-50); margin-top: 5px; }
+
+.mk-papel .tp-folha {
+  position: relative; margin-top: 18px;
+  background: #f8f1e2;
+  background-image: radial-gradient(rgba(96,74,46,.06) .5px, transparent .6px);
+  background-size: 7px 7px;
+  border: 1px solid rgba(124,98,58,.32);
+  box-shadow: 0 10px 26px rgba(48,32,16,.28), inset 0 0 0 1px rgba(255,255,255,.3);
+  padding: 20px 18px 18px;
+  transform: rotate(-.4deg);
+}
+.mk-papel .tp-folha--seca { background: #ecdcb8; border-color: rgba(124,90,45,.4); }
+.mk-papel .tp-cantoneira {
+  position: absolute; width: 20px; height: 20px;
+  border-top: 1px solid rgba(124,98,58,.5); border-left: 1px solid rgba(124,98,58,.5);
+}
+.mk-papel .tp-cantoneira--tl { top: 6px; left: 6px; }
+.mk-papel .tp-cantoneira--tr { top: 6px; right: 6px; transform: rotate(90deg); }
+.mk-papel .tp-cantoneira--bl { bottom: 6px; left: 6px; transform: rotate(-90deg); }
+.mk-papel .tp-cantoneira--br { bottom: 6px; right: 6px; transform: rotate(180deg); }
+
+.mk-papel .tp-especime-caixa { display: flex; justify-content: center; padding: 4px 0 2px; }
+
+.mk-papel .tp-estagios { display: flex; justify-content: center; gap: 5px; margin-top: 8px; }
+.mk-papel .tp-estagio {
+  font-family: var(--mono); font-size: 6.6px; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--tinta-32); padding: 3px 6px; border: 1px solid rgba(36,31,25,.16);
+}
+.mk-papel .tp-estagio--sel { color: var(--oxblood); border-color: rgba(142,47,38,.6); background: rgba(230,193,92,.16); font-weight: 700; }
+
+.mk-papel .tp-rotulo-lapis { font-family: var(--lapis); font-size: 19px; color: rgba(58,46,32,.85); text-align: center; margin-top: 10px; line-height: 1.2; transform: rotate(-.8deg); }
+.mk-papel .tp-rotulo-mono { font-family: var(--mono); font-size: 7.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--tinta-50); text-align: center; margin-top: 4px; }
+
+/* carimbo de ofensiva */
+.mk-papel .tp-ofensiva-carimbo {
+  position: absolute; top: 54px; right: 6px; width: 112px; height: 112px; z-index: 4;
+  border: 2px solid rgba(142,47,38,.55); border-radius: 50%;
+  background: rgba(248,241,226,.96);
+  box-shadow: inset 0 0 0 3px rgba(142,47,38,.14), 0 10px 20px rgba(48,32,16,.3);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-family: var(--mono); color: rgba(142,47,38,.78); text-align: center;
+  transform: rotate(8deg);
+}
+.mk-papel .tp-ofensiva-carimbo b { font-family: var(--serif); font-size: 27px; font-weight: 600; line-height: 1; }
+.mk-papel .tp-ofensiva-carimbo span { font-size: 6.6px; letter-spacing: .16em; margin-top: 3px; }
+.mk-papel .tp-ofensiva-carimbo hr { width: 40px; border: 0; border-top: 1px solid rgba(142,47,38,.4); margin: 4px 0; }
+.mk-papel .tp-ofensiva-carimbo em { font-style: normal; font-size: 6.2px; letter-spacing: .08em; }
+
+/* selo semanal — dias carimbados */
+.mk-papel .tp-semana { display: flex; gap: 5px; justify-content: center; margin-top: 14px; }
+.mk-papel .tp-dia-sel {
+  width: 34px; padding: 5px 0 4px; text-align: center;
+  border: 1px solid rgba(142,47,38,.4); border-radius: 2px;
+  font-family: var(--mono); font-size: 7px; letter-spacing: .04em; color: rgba(142,47,38,.55);
+  transform: rotate(-1.2deg);
+}
+.mk-papel .tp-dia-sel:nth-child(2n) { transform: rotate(1.1deg); }
+.mk-papel .tp-dia-sel b { display: block; font-family: var(--serif); font-size: 12px; color: rgba(142,47,38,.35); font-weight: 500; }
+.mk-papel .tp-dia-sel--feito { background: rgba(142,47,38,.12); }
+.mk-papel .tp-dia-sel--feito b { color: var(--oxblood); }
+.mk-papel .tp-dia-sel--hoje { background: rgba(142,47,38,.86); border-color: rgba(142,47,38,.86); color: #f4e7d2; }
+.mk-papel .tp-dia-sel--hoje b { color: #f4e7d2; }
+
+/* jarra graduada — progresso do dia, instrumento de laboratório */
+.mk-papel .tp-jarra-linha { display: flex; align-items: center; gap: 16px; justify-content: center; margin-top: 18px; }
+.mk-papel .tp-jarra-legenda { font-family: var(--mono); font-size: 8.5px; letter-spacing: .08em; color: var(--tinta-70); text-align: left; }
+.mk-papel .tp-jarra-legenda b { display: block; font-family: var(--serif); font-size: 18px; font-weight: 600; letter-spacing: 0; color: var(--tinta); margin-bottom: 2px; }
+
+/* prensa botânica — estado de dormência */
+.mk-papel .tp-prensa { display: flex; flex-direction: column; align-items: center; gap: 2px; margin-top: 6px; }
+.mk-papel .tp-prensa-texto { font-family: var(--serif); font-style: italic; font-size: 14px; color: rgba(58,46,32,.85); text-align: center; margin-top: 12px; line-height: 1.5; max-width: 280px; }
+.mk-papel .tp-prensa-nota { font-family: var(--mono); font-size: 8px; letter-spacing: .1em; color: rgba(58,46,32,.55); text-align: center; margin-top: 8px; }
+.mk-papel .tp-prensa-cta { display: flex; justify-content: center; margin-top: 16px; }
+
+/* ════════════ TELA 2 — resumo de sessão ════════════ */
+.mk-papel .tp-resumo { position: absolute; inset: 0; padding: 84px 28px 0; text-align: center; }
+.mk-papel .tp-meta-carimbo {
+  display: inline-block; border: 2px solid rgba(142,47,38,.6); border-radius: 50%;
+  width: 148px; height: 148px; transform: rotate(-8deg);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  box-shadow: inset 0 0 0 3px rgba(142,47,38,.14); color: rgba(142,47,38,.82); margin: 0 auto;
+}
+.mk-papel .tp-meta-carimbo b { font-family: var(--serif); font-size: 15px; letter-spacing: .1em; }
+.mk-papel .tp-meta-carimbo span { font-family: var(--mono); font-size: 7.5px; letter-spacing: .18em; }
+.mk-papel .tp-resumo-titulo { font-family: var(--serif); font-size: 22px; font-weight: 400; margin-top: 22px; line-height: 1.32; }
+.mk-papel .tp-resumo-kicker { font-family: var(--mono); font-size: 8.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--tinta-50); margin-top: 8px; }
+
+.mk-papel .tp-numeros { display: flex; margin-top: 26px; border-top: 2px solid var(--tinta); border-bottom: 1px solid rgba(36,31,25,.2); padding: 16px 0; }
+.mk-papel .tp-numero { flex: 1; border-left: 1px solid rgba(36,31,25,.18); padding: 0 4px; }
+.mk-papel .tp-numero:first-child { border-left: none; }
+.mk-papel .tp-numero b { display: block; font-family: var(--serif); font-size: 32px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1; }
+.mk-papel .tp-numero span { display: block; font-family: var(--mono); font-size: 6.8px; letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-50); margin-top: 6px; line-height: 1.4; }
+
+.mk-papel .tp-estilo-tag {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 20px;
+  border: 1px solid rgba(142,47,38,.5); padding: 6px 14px; transform: rotate(-1deg);
+  font-family: var(--mono); font-size: 9px; letter-spacing: .16em; color: var(--oxblood); text-transform: uppercase;
+}
+.mk-papel .tp-estilo-nota { font-family: var(--serif); font-style: italic; font-size: 12px; color: var(--tinta-70); margin-top: 8px; }
+
+.mk-papel .tp-ghost { margin-top: 28px; text-align: left; border-top: 1px dashed rgba(124,98,58,.4); padding-top: 16px; }
+.mk-papel .tp-ghost-kicker { font-family: var(--mono); font-size: 7.6px; letter-spacing: .22em; text-transform: uppercase; color: var(--tinta-50); }
+.mk-papel .tp-ghost-txt { font-family: var(--garamond); font-size: 13.5px; line-height: 1.55; color: var(--tinta); margin-top: 8px; }
+.mk-papel .tp-ghost-cols { display: flex; gap: 14px; margin-top: 14px; }
+.mk-papel .tp-ghost-col { flex: 1; border: 1px solid rgba(36,31,25,.18); padding: 10px 8px; text-align: center; }
+.mk-papel .tp-ghost-col--hoje { border-color: rgba(142,47,38,.55); background: rgba(230,193,92,.14); }
+.mk-papel .tp-ghost-col span { display: block; font-family: var(--mono); font-size: 6.6px; letter-spacing: .12em; text-transform: uppercase; color: var(--tinta-50); }
+.mk-papel .tp-ghost-col b { display: block; font-family: var(--serif); font-size: 20px; margin-top: 4px; }
+.mk-papel .tp-ghost-nota { font-family: var(--mono); font-size: 7px; letter-spacing: .06em; color: var(--tinta-32); margin-top: 10px; text-align: center; }
+
+/* ════════════ TELA 3 — biblioteca ════════════ */
+.mk-papel .tp-biblio { position: absolute; inset: 0; padding: 64px 22px 0; overflow: hidden; }
+.mk-papel .tp-biblio-cabeca { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid var(--tinta); padding-bottom: 8px; }
+.mk-papel .tp-biblio-titulo { font-family: var(--serif); font-size: 18px; font-weight: 500; }
+.mk-papel .tp-biblio-cont { font-family: var(--mono); font-size: 8px; letter-spacing: .1em; color: var(--tinta-50); }
+.mk-papel .tp-grade { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 18px; }
+.mk-papel .tp-livro { position: relative; }
+.mk-papel .tp-capa {
+  position: relative; height: 158px; padding: 12px 10px 8px;
+  box-shadow: -3px 0 0 rgba(0,0,0,.14) inset, 0 6px 14px rgba(48,32,16,.28), inset 0 0 0 1px rgba(255,255,255,.1);
+  display: flex; flex-direction: column; justify-content: flex-end;
+  background-blend-mode: multiply;
+}
+.mk-papel .tp-capa-obra1 { background: linear-gradient(155deg, #6f7c68, #4f5a49), var(--papel-fundo); }
+.mk-papel .tp-capa-obra2 { background: linear-gradient(155deg, #8a4136, #6b2f26), var(--papel-fundo); }
+.mk-papel .tp-capa-obra3 { background: linear-gradient(155deg, #c69a45, #a3792f), var(--papel-fundo); }
+.mk-papel .tp-capa-obra4 { background: linear-gradient(155deg, #7f8f63, #5f6d47), var(--papel-fundo); }
+.mk-papel .tp-capa-titulo { font-family: var(--serif); font-style: italic; font-size: 14px; color: #f4ecd8; line-height: 1.22; }
+.mk-papel .tp-capa-autor { font-family: var(--mono); font-size: 7px; letter-spacing: .05em; color: rgba(244,236,216,.72); margin-top: 4px; }
+.mk-papel .tp-fita-mini {
+  position: absolute; top: -4px; right: 14px; width: 11px; height: 30px;
+  background: linear-gradient(90deg, #6f231d, #9c352b 38%, #7d271f 100%);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 84%, 0 100%);
+}
+.mk-papel .tp-dobra {
+  position: absolute; right: 0; bottom: 0; width: 0; height: 0;
+  border-style: solid; border-width: 0 0 22px 22px; border-color: transparent transparent rgba(243,234,217,.92) transparent;
+  filter: drop-shadow(-1px -1px 2px rgba(48,32,16,.35));
+}
+.mk-papel .tp-selo-mini {
+  position: absolute; top: 8px; right: 8px; width: 34px; height: 34px; border-radius: 50%;
+  border: 1.5px solid rgba(142,47,38,.7); box-shadow: inset 0 0 0 2px rgba(142,47,38,.16);
+  display: flex; align-items: center; justify-content: center; transform: rotate(-10deg);
+  background: rgba(248,241,226,.4);
+}
+.mk-papel .tp-selo-mini span { font-family: var(--mono); font-size: 5.4px; letter-spacing: .04em; color: rgba(142,47,38,.85); text-align: center; line-height: 1.1; }
+.mk-papel .tp-etiq-import {
+  position: absolute; top: 6px; right: -4px; background: #f8f1e2; border: 1px solid rgba(124,98,58,.5);
+  padding: 3px 6px 2px; transform: rotate(6deg); box-shadow: 0 2px 5px rgba(48,32,16,.3);
+}
+.mk-papel .tp-etiq-import span { font-family: var(--lapis); font-size: 12px; color: rgba(58,46,32,.85); }
+.mk-papel .tp-livro-meta { margin-top: 8px; }
+.mk-papel .tp-livro-origem { font-family: var(--mono); font-size: 6.6px; letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-32); }
+.mk-papel .tp-livro-estado { font-family: var(--serif); font-style: italic; font-size: 11px; color: var(--tinta-70); margin-top: 2px; }
+
+/* ════════════ TELA 4 — onboarding ════════════ */
+.mk-papel .tp-onb-marca { position: absolute; left: 28px; right: 28px; top: 38px; text-align: center; font-family: var(--mono); font-size: 7.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--tinta-32); }
+.mk-papel .tp-onb-corpo { position: absolute; left: 30px; right: 40px; top: 92px; font-size: 15.5px; line-height: 1.66; text-align: justify; }
+.mk-papel .tp-onb-par { text-indent: 1.15em; }
+.mk-papel .tp-onb-seta { position: absolute; font-family: var(--lapis); font-size: 16px; color: rgba(90,84,70,.8); transform: rotate(-4deg); }
+.mk-papel .tp-onb-cronometro { position: absolute; left: 30px; bottom: 30px; font-family: var(--mono); font-size: 8px; letter-spacing: .12em; color: var(--tinta-32); }
+
+.mk-papel .tp-vitoria-carimbo {
+  position: absolute; top: 108px; left: 50%; transform: translateX(-50%) rotate(-6deg);
+  border: 2px solid rgba(142,47,38,.6); border-radius: 50%; width: 128px; height: 128px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  box-shadow: inset 0 0 0 3px rgba(142,47,38,.14); color: rgba(142,47,38,.82); text-align: center; gap: 2px;
+}
+.mk-papel .tp-vitoria-carimbo b { font-family: var(--serif); font-size: 26px; }
+.mk-papel .tp-vitoria-carimbo span { font-family: var(--mono); font-size: 6.6px; letter-spacing: .14em; padding: 0 8px; }
+.mk-papel .tp-vitoria-titulo { text-align: center; font-family: var(--serif); font-size: 19px; margin-top: 258px; padding: 0 30px; line-height: 1.4; }
+.mk-papel .tp-vitoria-ficha {
+  position: absolute; left: 0; right: 0; bottom: 0; background: #f8f1e2;
+  border-top: 1px solid rgba(124,98,58,.45); box-shadow: 0 -18px 34px rgba(48,32,16,.28);
+  padding: 22px 26px 28px; text-align: center;
+}
+.mk-papel .tp-vitoria-ficha p { font-family: var(--garamond); font-style: italic; font-size: 13.5px; color: var(--tinta-70); line-height: 1.5; margin-bottom: 16px; }
+.mk-papel .tp-vitoria-sec { display: block; margin-top: 12px; font-family: var(--mono); font-size: 8.5px; letter-spacing: .08em; color: var(--tinta-50); text-decoration: underline; text-underline-offset: 3px; }
+
+/* ════════════ TELA 5 — caderno de destaques ════════════ */
+.mk-papel .tp-caderno { position: absolute; inset: 0; padding: 64px 24px 0; }
+.mk-papel .tp-caderno-titulo { font-family: var(--serif); font-size: 19px; font-weight: 500; }
+.mk-papel .tp-abas-filtro { display: flex; gap: 6px; margin-top: 14px; }
+.mk-papel .tp-aba-filtro {
+  flex: 1; text-align: center; padding: 7px 4px; border: 1px solid rgba(36,31,25,.22);
+  font-family: var(--mono); font-size: 7.4px; letter-spacing: .08em; text-transform: uppercase; color: var(--tinta-70);
+  background: rgba(255,255,255,.32);
+}
+.mk-papel .tp-aba-filtro--sel { border-color: rgba(142,47,38,.7); background: rgba(230,193,92,.18); color: var(--oxblood); font-weight: 700; }
+
+.mk-papel .tp-verbete-item { margin-top: 20px; padding-bottom: 16px; border-bottom: 1px solid rgba(124,98,58,.22); display: flex; gap: 10px; }
+.mk-papel .tp-verbete-item:last-child { border-bottom: none; }
+.mk-papel .tp-pig-col { flex: 0 0 auto; width: 5px; border-radius: 3px; margin-top: 3px; }
+.mk-papel .tp-verbete-corpo { flex: 1; }
+.mk-papel .tp-verbete-fonte { font-family: var(--mono); font-size: 6.8px; letter-spacing: .12em; text-transform: uppercase; color: var(--tinta-32); }
+.mk-papel .tp-verbete-trecho { font-family: var(--serif); font-style: italic; font-size: 13.5px; line-height: 1.5; margin-top: 5px; }
+.mk-papel .tp-grifo-in {
+  mix-blend-mode: multiply; box-decoration-break: clone; -webkit-box-decoration-break: clone;
+  padding: .04em .12em; border-radius: 3px 6px 4px 5px;
+}
+.mk-papel .tp-grifo-ambar { background-image: linear-gradient(180deg, rgba(231,194,94,0) 8%, rgba(231,194,94,.55) 8%, rgba(231,194,94,.62) 92%, rgba(231,194,94,0) 92%); }
+.mk-papel .tp-grifo-oliva { background-image: linear-gradient(180deg, rgba(168,176,122,0) 8%, rgba(168,176,122,.55) 8%, rgba(168,176,122,.62) 92%, rgba(168,176,122,0) 92%); }
+.mk-papel .tp-grifo-tinta { background-image: linear-gradient(180deg, rgba(147,169,192,0) 8%, rgba(147,169,192,.55) 8%, rgba(147,169,192,.62) 92%, rgba(147,169,192,0) 92%); }
+.mk-papel .tp-grifo-carmim { background-image: linear-gradient(180deg, rgba(215,154,162,0) 8%, rgba(215,154,162,.55) 8%, rgba(215,154,162,.62) 92%, rgba(215,154,162,0) 92%); }
+.mk-papel .tp-verbete-nota { font-family: var(--lapis); font-size: 15px; color: rgba(90,84,70,.85); margin-top: 6px; transform: rotate(-1.2deg); display: inline-block; }
+
+/* ════════════ TELA 6 — meu desempenho ════════════ */
+.mk-papel .tp-almanaque { position: absolute; inset: 0; padding: 62px 24px 0; }
+.mk-papel .tp-periodo { display: flex; gap: 5px; }
+.mk-papel .tp-periodo-op {
+  flex: 1; text-align: center; padding: 7px 2px; border: 1px solid rgba(36,31,25,.22);
+  font-family: var(--mono); font-size: 7.6px; letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-70);
+}
+.mk-papel .tp-periodo-op--sel { border-color: rgba(142,47,38,.7); background: rgba(230,193,92,.18); color: var(--oxblood); font-weight: 700; }
+
+.mk-papel .tp-headline { margin-top: 22px; text-align: center; }
+.mk-papel .tp-headline b { display: block; font-family: var(--serif); font-size: 42px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1; }
+.mk-papel .tp-headline span { display: block; font-family: var(--mono); font-size: 8px; letter-spacing: .16em; text-transform: uppercase; color: var(--tinta-50); margin-top: 8px; }
+
+.mk-papel .tp-regua-graf { position: relative; height: 90px; margin: 26px 4px 0; border-bottom: 1px solid rgba(36,31,25,.4); }
+.mk-papel .tp-tick-dia { position: absolute; bottom: 0; width: 1px; background: rgba(36,31,25,.55); }
+.mk-papel .tp-tick-dia-legenda { position: absolute; bottom: -16px; transform: translateX(-50%); font-family: var(--mono); font-size: 7px; letter-spacing: .06em; color: var(--tinta-50); }
+.mk-papel .tp-tick-dia-marca { position: absolute; transform: translateX(-50%); font-family: var(--mono); font-size: 7.5px; color: var(--oxblood); font-weight: 700; }
+.mk-papel .tp-tick-hoje { background: var(--oxblood); width: 2px; }
+
+.mk-papel .tp-tabela { margin-top: 34px; border-top: 2px solid var(--tinta); }
+.mk-papel .tp-tab-linha { display: flex; justify-content: space-between; padding: 9px 2px; border-bottom: 1px solid rgba(36,31,25,.16); font-family: var(--serif); font-size: 13px; }
+.mk-papel .tp-tab-linha span:first-child { color: var(--tinta-70); }
+.mk-papel .tp-tab-linha b { font-variant-numeric: tabular-nums; font-weight: 600; }
+
+/* ════════════ TELA 7 — carta de domingo ════════════ */
+.mk-papel .tp-carta { position: absolute; inset: 0; padding: 56px 30px 0; }
+.mk-papel .tp-carta-selo { display: flex; justify-content: center; }
+.mk-papel .tp-carta-selo-circ {
+  width: 58px; height: 58px; border-radius: 50%; border: 1.5px solid rgba(142,47,38,.55);
+  box-shadow: inset 0 0 0 2px rgba(142,47,38,.14); display: flex; align-items: center; justify-content: center;
+}
+.mk-papel .tp-carta-saud { font-family: var(--garamond); font-style: italic; font-size: 17px; margin-top: 20px; }
+.mk-papel .tp-carta-corpo { font-family: var(--garamond); font-size: 14.5px; line-height: 1.68; margin-top: 14px; text-align: justify; }
+.mk-papel .tp-carta-corpo p { margin-bottom: 12px; text-indent: 1.2em; }
+.mk-papel .tp-carta-assinatura { font-family: var(--lapis); font-size: 22px; color: rgba(58,46,32,.85); margin-top: 4px; transform: rotate(-1deg); }
+.mk-papel .tp-carta-selos { display: flex; gap: 5px; justify-content: center; margin-top: 20px; }
+.mk-papel .tp-carta-rodape { display: flex; justify-content: space-between; margin-top: 18px; border-top: 1px dashed rgba(124,98,58,.4); padding-top: 12px; }
+.mk-papel .tp-carta-rodape-item { text-align: center; flex: 1; }
+.mk-papel .tp-carta-rodape-item b { display: block; font-family: var(--serif); font-size: 19px; font-weight: 600; }
+.mk-papel .tp-carta-rodape-item span { display: block; font-family: var(--mono); font-size: 6.6px; letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-50); margin-top: 3px; }
+
+/* ── colofão ───────────────────────────────────────────────── */
+.mk-papel .tp-colofao {
+  max-width: 1280px; margin: 0 auto; padding: 30px 48px 64px; color: rgba(222,212,189,.46);
+  font-family: var(--mono); font-size: 10px; line-height: 1.9; letter-spacing: .04em;
+  border-top: 1px solid rgba(222,212,189,.14); padding-top: 28px;
+}
+.mk-papel .tp-colofao b { color: rgba(201,168,106,.85); font-weight: 700; letter-spacing: .16em; }
+.mk-papel .tp-colofao em { font-family: var(--serif); font-size: 13px; font-style: italic; letter-spacing: 0; }
+
+@media (max-width: 900px) {
+  .mk-papel .tp-cabeca, .mk-papel .tp-corpo, .mk-papel .tp-colofao { padding-left: 22px; padding-right: 22px; }
+  .mk-papel .tp-carimbo { display: none; }
+}
+</style>
+
+<div class="mk-papel">
+
+  <header class="tp-cabeca">
+    <div class="tp-carimbo"><b>PROVA</b><hr><span>NÃO DISTRIBUIR</span></div>
+    <h1 class="tp-titulo">BookWorm <em>— a mesa de trabalho</em></h1>
+    <div class="tp-sub">Direção “Papel” · sete telas do MVP · mood, alta fidelidade, estático</div>
+    <div class="tp-linha"></div>
+    <p class="tp-nota">O app inteiro como objetos de papelaria sobre uma mesa verde-escura: fichas de fichário, herbário prensado, carimbos de tinta oxblood, etiquetas datilografadas, marginália a lápis. O jardim não é uma cena de jogo — é uma prensa botânica. A métrica não é um dashboard — é tipografia e régua desenhada. Nada aqui compete: tudo aqui compara Marina com Marina.</p>
+
+    <div class="tp-paleta">
+      <div class="tp-amostra"><i style="background:#f3ead9"></i><b>PAPEL</b><span>#f3ead9</span></div>
+      <div class="tp-amostra"><i style="background:#241f19"></i><b>TINTA</b><span>#241f19</span></div>
+      <div class="tp-amostra"><i style="background:#8e2f26"></i><b>OXBLOOD</b><span>#8e2f26</span></div>
+      <div class="tp-amostra"><i style="background:#e6c15c"></i><b>ÂMBAR</b><span>#e6c15c</span></div>
+      <div class="tp-amostra"><i style="background:#6f6858"></i><b>GRAFITE</b><span>#6f6858</span></div>
+      <div class="tp-amostra"><i style="background:#1e2320"></i><b>MESA</b><span>#1e2320</span></div>
+      <div class="tp-amostra"><i style="background:#e7c25e"></i><b>PIG. ÂMBAR</b><span>#e7c25e</span></div>
+      <div class="tp-amostra"><i style="background:#a8b07a"></i><b>PIG. OLIVA</b><span>#a8b07a</span></div>
+      <div class="tp-amostra"><i style="background:#93a9c0"></i><b>PIG. TINTA</b><span>#93a9c0</span></div>
+      <div class="tp-amostra"><i style="background:#d79aa2"></i><b>PIG. CARMIM</b><span>#d79aa2</span></div>
+    </div>
+  </header>
+
+  <div class="tp-corpo">
+
+    <!-- ══════════════════════ TELA 1 — HOME / JARDIM ══════════════════════ -->
+    <section class="tp-secao">
+      <div class="tp-legenda">
+        <div class="tp-legenda-num">Tela 1</div>
+        <div class="tp-legenda-nome">Home / Jardim</div>
+        <div class="tp-legenda-rn">RN-04.22 – RN-04.29</div>
+        <p class="tp-legenda-racional">O jardim é uma folha de herbário, não uma cena de jogo: a recompensa é contemplativa. A dormência precisa convidar — nunca punir — por isso ela ganha o mesmo cuidado estético do estado ativo.</p>
+      </div>
+
+      <div class="tp-frames">
+
+        <!-- (a) ofensiva ativa -->
+        <div class="tp-frame-col">
+          <div class="tp-frame-tag"><b>(a) Ofensiva ativa</b><br>estágio 3 de 5 · dia corrente, meta em curso</div>
+          <div class="tp-fone"><div class="tp-tela tp-papel-sup">
+            <div class="tp-status"><span>08:14</span><span>91%</span></div>
+            <div class="tp-herb">
+              <div class="tp-herb-saud">Bom domingo, Marina.</div>
+              <div class="tp-herb-data">22 de agosto</div>
+
+              <div class="tp-ofensiva-carimbo">
+                <b>23</b><span>DIAS SEGUIDOS</span><hr><em>RECORDE 41</em>
+              </div>
+
+              <div class="tp-folha">
+                <div class="tp-cantoneira tp-cantoneira--tl"></div>
+                <div class="tp-cantoneira tp-cantoneira--tr"></div>
+                <div class="tp-cantoneira tp-cantoneira--bl"></div>
+                <div class="tp-cantoneira tp-cantoneira--br"></div>
+
+                <div class="tp-especime-caixa">
+                  <svg width="130" height="188" viewBox="0 0 130 188" aria-hidden="true">
+                    <path d="M65 182 C61 150,70 110,64 70 C60 46,68 30,66 14" fill="none" stroke="rgba(36,31,25,.55)" stroke-width="2"/>
+                    <ellipse cx="44" cy="150" rx="19" ry="9" fill="#a8b07a" opacity=".8" transform="rotate(-28 44 150)"/>
+                    <ellipse cx="88" cy="128" rx="19" ry="9" fill="#a8b07a" opacity=".8" transform="rotate(24 88 128)"/>
+                    <ellipse cx="42" cy="98" rx="17" ry="8" fill="#a8b07a" opacity=".72" transform="rotate(-20 42 98)"/>
+                    <ellipse cx="86" cy="78" rx="16" ry="7.5" fill="#a8b07a" opacity=".72" transform="rotate(18 86 78)"/>
+                    <g transform="translate(66 20)">
+                      <ellipse cx="0" cy="-16" rx="6.5" ry="15" fill="#d79aa2"/>
+                      <ellipse cx="0" cy="-16" rx="6.5" ry="15" fill="#e7c25e" opacity=".85" transform="rotate(51)"/>
+                      <ellipse cx="0" cy="-16" rx="6.5" ry="15" fill="#d79aa2" transform="rotate(102)"/>
+                      <ellipse cx="0" cy="-16" rx="6.5" ry="15" fill="#e7c25e" opacity=".85" transform="rotate(153)"/>
+                      <ellipse cx="0" cy="-16" rx="6.5" ry="15" fill="#d79aa2" transform="rotate(204)"/>
+                      <ellipse cx="0" cy="-16" rx="6.5" ry="15" fill="#e7c25e" opacity=".85" transform="rotate(255)"/>
+                      <ellipse cx="0" cy="-16" rx="6.5" ry="15" fill="#d79aa2" transform="rotate(306)"/>
+                      <circle cx="0" cy="0" r="7" fill="#8e2f26" opacity=".8"/>
+                    </g>
+                  </svg>
+                </div>
+
+                <div class="tp-estagios">
+                  <span class="tp-estagio">broto</span>
+                  <span class="tp-estagio">muda</span>
+                  <span class="tp-estagio tp-estagio--sel">florida</span>
+                  <span class="tp-estagio">árvore</span>
+                  <span class="tp-estagio">bosque</span>
+                </div>
+
+                <div class="tp-rotulo-lapis">Espécime N.º 23 — em floração</div>
+                <div class="tp-rotulo-mono">herbário de Marina · estágio 3 de 5</div>
+              </div>
+
+              <div class="tp-semana">
+                <div class="tp-dia-sel tp-dia-sel--feito"><b>S</b>24m</div>
+                <div class="tp-dia-sel"><b>T</b>—</div>
+                <div class="tp-dia-sel tp-dia-sel--feito"><b>Q</b>31m</div>
+                <div class="tp-dia-sel tp-dia-sel--feito"><b>Q</b>29m</div>
+                <div class="tp-dia-sel"><b>S</b>—</div>
+                <div class="tp-dia-sel tp-dia-sel--feito"><b>S</b>38m</div>
+                <div class="tp-dia-sel tp-dia-sel--hoje"><b>D</b>9m</div>
+              </div>
+
+              <div class="tp-jarra-linha">
+                <svg width="30" height="58" viewBox="0 0 30 58" aria-hidden="true">
+                  <rect x="6" y="4" width="18" height="50" fill="none" stroke="rgba(36,31,25,.4)" stroke-width="1.5"/>
+                  <rect x="7" y="31" width="16" height="22.5" fill="#93a9c0" opacity=".55"/>
+                  <line x1="6" y1="14" x2="10" y2="14" stroke="rgba(36,31,25,.35)" stroke-width="1"/>
+                  <line x1="6" y1="24" x2="10" y2="24" stroke="rgba(36,31,25,.35)" stroke-width="1"/>
+                  <line x1="6" y1="34" x2="10" y2="34" stroke="rgba(36,31,25,.35)" stroke-width="1"/>
+                  <line x1="6" y1="44" x2="10" y2="44" stroke="rgba(36,31,25,.35)" stroke-width="1"/>
+                </svg>
+                <div class="tp-jarra-legenda"><b>9 de 20 min</b>o dia ainda está aberto</div>
+              </div>
+            </div>
+          </div></div>
+        </div>
+
+        <!-- (b) dormência -->
+        <div class="tp-frame-col">
+          <div class="tp-frame-tag"><b>(b) Dormência</b><br>ilustrativo — a mesma Home depois de uma ofensiva quebrada</div>
+          <div class="tp-fone"><div class="tp-tela tp-tela--sepia tp-papel-sup--sepia">
+            <div class="tp-status"><span>08:14</span><span>91%</span></div>
+            <div class="tp-herb">
+              <div class="tp-herb-saud" style="color:#3a2e20">Bom domingo, Marina.</div>
+              <div class="tp-herb-data" style="color:rgba(58,46,32,.55)">22 de agosto</div>
+
+              <div class="tp-ofensiva-carimbo" style="border-color:rgba(120,90,50,.4);background:rgba(236,220,184,.96);box-shadow:inset 0 0 0 3px rgba(120,90,50,.12), 0 10px 20px rgba(48,32,16,.28);color:rgba(120,90,50,.7)">
+                <b style="color:rgba(80,60,32,.75)">23</b><span>GUARDADOS</span><hr style="border-color:rgba(120,90,50,.35)"><em>RECORDE 41</em>
+              </div>
+
+              <div class="tp-folha tp-folha--seca">
+                <div class="tp-cantoneira tp-cantoneira--tl" style="border-color:rgba(124,90,45,.4)"></div>
+                <div class="tp-cantoneira tp-cantoneira--tr" style="border-color:rgba(124,90,45,.4)"></div>
+                <div class="tp-cantoneira tp-cantoneira--bl" style="border-color:rgba(124,90,45,.4)"></div>
+                <div class="tp-cantoneira tp-cantoneira--br" style="border-color:rgba(124,90,45,.4)"></div>
+
+                <div class="tp-especime-caixa">
+                  <svg width="130" height="188" viewBox="0 0 130 188" aria-hidden="true">
+                    <path d="M65 182 C61 150,70 110,64 70 C60 46,68 30,66 14" fill="none" stroke="rgba(90,66,38,.55)" stroke-width="2"/>
+                    <ellipse cx="44" cy="150" rx="18" ry="8" fill="#b0985f" opacity=".7" transform="rotate(-40 44 150)"/>
+                    <ellipse cx="88" cy="128" rx="18" ry="8" fill="#b0985f" opacity=".7" transform="rotate(38 88 128)"/>
+                    <ellipse cx="42" cy="98" rx="16" ry="7" fill="#a68c56" opacity=".62" transform="rotate(-32 42 98)"/>
+                    <ellipse cx="86" cy="78" rx="15" ry="7" fill="#a68c56" opacity=".62" transform="rotate(30 86 78)"/>
+                    <g transform="translate(66 24) rotate(18)">
+                      <ellipse cx="0" cy="-12" rx="6" ry="12" fill="#b58a5f" opacity=".8"/>
+                      <ellipse cx="0" cy="-12" rx="6" ry="12" fill="#9c7a52" opacity=".7" transform="rotate(60)"/>
+                      <ellipse cx="0" cy="-12" rx="6" ry="12" fill="#b58a5f" opacity=".8" transform="rotate(120)"/>
+                      <ellipse cx="0" cy="-12" rx="6" ry="12" fill="#9c7a52" opacity=".7" transform="rotate(180)"/>
+                      <ellipse cx="0" cy="-12" rx="6" ry="12" fill="#b58a5f" opacity=".8" transform="rotate(240)"/>
+                      <ellipse cx="0" cy="-12" rx="6" ry="12" fill="#9c7a52" opacity=".7" transform="rotate(300)"/>
+                      <circle cx="0" cy="0" r="6" fill="#6b4a2c" opacity=".75"/>
+                    </g>
+                    <ellipse cx="52" cy="176" rx="7" ry="3.4" fill="#b0985f" opacity=".5" transform="rotate(-18 52 176)"/>
+                    <ellipse cx="78" cy="180" rx="6" ry="3" fill="#9c7a52" opacity=".45" transform="rotate(22 78 180)"/>
+                  </svg>
+                </div>
+
+                <div class="tp-prensa-texto">Este espécime está descansando.<br>As raízes seguem inteiras — é só retomar.</div>
+                <div class="tp-prensa-nota">a marca de 23 dias fica guardada aqui</div>
+
+                <div class="tp-prensa-cta">
+                  <span class="tp-botao">Retomar a leitura</span>
+                </div>
+              </div>
+            </div>
+          </div></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ══════════════════════ TELA 2 — RESUMO DE SESSÃO ══════════════════════ -->
+    <section class="tp-secao">
+      <div class="tp-legenda">
+        <div class="tp-legenda-num">Tela 2</div>
+        <div class="tp-legenda-nome">Resumo de sessão + Ghost Reader</div>
+        <div class="tp-legenda-rn">RN-04.10–10f · RN-06.12–22 · RN-03.17–22</div>
+        <p class="tp-legenda-racional">O pico de recompensa é um carimbo de tinta e três números grandes em Spectral — não confete de app. O Ghost Reader compara Marina só com a própria Marina de outra sessão.</p>
+      </div>
+
+      <div class="tp-frames">
+        <div class="tp-frame-col">
+          <div class="tp-frame-tag"><b>Meta batida agora mesmo</b><br>o instante da celebração, sem esperar o fim do dia</div>
+          <div class="tp-fone"><div class="tp-tela tp-papel-sup">
+            <div class="tp-status"><span>21:12</span><span>64%</span></div>
+            <div class="tp-resumo">
+              <div class="tp-meta-carimbo"><b>META</b><span>CUMPRIDA</span></div>
+              <div class="tp-resumo-titulo">26 minutos com<br><em style="font-style:italic">A Metamorfose</em></div>
+              <div class="tp-resumo-kicker">sessão de hoje · domingo, 22 de agosto</div>
+
+              <div class="tp-numeros">
+                <div class="tp-numero"><b>26</b><span>min ativos</span></div>
+                <div class="tp-numero"><b>18</b><span>páginas canônicas</span></div>
+                <div class="tp-numero"><b>78</b><span>leitura consciente</span></div>
+              </div>
+
+              <div class="tp-estilo-tag">estilo · focado</div>
+              <div class="tp-estilo-nota">leu em blocos longos, sem pressa</div>
+
+              <div class="tp-ghost">
+                <div class="tp-ghost-kicker">Ghost Reader · sua própria história</div>
+                <p class="tp-ghost-txt">Da última vez que você abriu <em>A Metamorfose</em>, foram 21 minutos. Hoje, 26 — e mais tempo em blocos de foco contínuo.</p>
+                <div class="tp-ghost-cols">
+                  <div class="tp-ghost-col"><span>sessão anterior</span><b>21</b></div>
+                  <div class="tp-ghost-col tp-ghost-col--hoje"><span>hoje</span><b>26</b></div>
+                </div>
+                <div class="tp-ghost-nota">comparado só com você mesma · ofensiva em 23 dias, faltam 7 para os 30</div>
+              </div>
+            </div>
+          </div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════ TELA 3 — BIBLIOTECA ══════════════════════ -->
+    <section class="tp-secao">
+      <div class="tp-legenda">
+        <div class="tp-legenda-num">Tela 3</div>
+        <div class="tp-legenda-nome">Biblioteca</div>
+        <div class="tp-legenda-rn">RN-02.6–8 · RN-02.27</div>
+        <p class="tp-legenda-racional">Uma estante, não uma vitrine: cada capa carrega seu próprio estado — fita de leitura em curso, dobra de página para offline, selo de conclusão, etiqueta manuscrita para o que a leitora trouxe de fora.</p>
+      </div>
+
+      <div class="tp-frames">
+        <div class="tp-frame-col">
+          <div class="tp-frame-tag"><b>Estante de Marina</b><br>domínio público e um EPUB importado, lado a lado</div>
+          <div class="tp-fone"><div class="tp-tela tp-papel-sup">
+            <div class="tp-status"><span>19:40</span><span>52%</span></div>
+            <div class="tp-biblio">
+              <div class="tp-biblio-cabeca">
+                <span class="tp-biblio-titulo">Biblioteca</span>
+                <span class="tp-biblio-cont">4 obras</span>
+              </div>
+
+              <div class="tp-grade">
+                <div class="tp-livro">
+                  <div class="tp-capa tp-capa-obra1">
+                    <div class="tp-fita-mini"></div>
+                    <div class="tp-capa-titulo">A Metamorfose</div>
+                    <div class="tp-capa-autor">FRANZ KAFKA</div>
+                  </div>
+                  <div class="tp-livro-meta">
+                    <div class="tp-livro-origem">domínio público</div>
+                    <div class="tp-livro-estado">lendo agora · 34%</div>
+                  </div>
+                </div>
+
+                <div class="tp-livro">
+                  <div class="tp-capa tp-capa-obra2">
+                    <div class="tp-dobra"></div>
+                    <div class="tp-capa-titulo">Dom Casmurro</div>
+                    <div class="tp-capa-autor">MACHADO DE ASSIS</div>
+                  </div>
+                  <div class="tp-livro-meta">
+                    <div class="tp-livro-origem">domínio público</div>
+                    <div class="tp-livro-estado">disponível offline</div>
+                  </div>
+                </div>
+
+                <div class="tp-livro">
+                  <div class="tp-capa tp-capa-obra3">
+                    <div class="tp-selo-mini"><span>CON-<br>CLUÍDO</span></div>
+                    <div class="tp-capa-titulo">Memórias Póstumas de Brás Cubas</div>
+                    <div class="tp-capa-autor">MACHADO DE ASSIS</div>
+                  </div>
+                  <div class="tp-livro-meta">
+                    <div class="tp-livro-origem">domínio público</div>
+                    <div class="tp-livro-estado">concluído</div>
+                  </div>
+                </div>
+
+                <div class="tp-livro">
+                  <div class="tp-capa tp-capa-obra4">
+                    <div class="tp-etiq-import"><span>seu arquivo</span></div>
+                    <div class="tp-capa-titulo">O Cortiço</div>
+                    <div class="tp-capa-autor">ALUÍSIO AZEVEDO</div>
+                  </div>
+                  <div class="tp-livro-meta">
+                    <div class="tp-livro-origem">epub importado</div>
+                    <div class="tp-livro-estado">trazido por você</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════ TELA 4 — ONBOARDING ══════════════════════ -->
+    <section class="tp-secao">
+      <div class="tp-legenda">
+        <div class="tp-legenda-num">Tela 4</div>
+        <div class="tp-legenda-nome">Onboarding — passos 1 e 2</div>
+        <div class="tp-legenda-rn">RN-01.5 – RN-01.5c</div>
+        <p class="tp-legenda-racional">O onboarding começa com a página, não com um formulário. O passo 1 é o livro puro; o passo 2 é a primeira vitória, que é o que convence a criar conta — não o contrário.</p>
+      </div>
+
+      <div class="tp-frames">
+
+        <div class="tp-frame-col">
+          <div class="tp-frame-tag"><b>Passo 1 · a primeira tela do app</b><br>lendo antes de qualquer cadastro — sob 60 segundos</div>
+          <div class="tp-fone"><div class="tp-tela tp-papel-sup">
+            <div class="tp-status"><span>08:00</span><span>100%</span></div>
+            <div class="tp-onb-marca">bookworm</div>
+            <div class="tp-onb-corpo">
+              <p class="tp-onb-par">Algum tempo hesitei se devia abrir estas memórias pelo princípio ou pelo fim, isto é, se poria em primeiro lugar o meu nascimento ou a minha morte. Suposto o uso corrente seja começar pelo nascimento, duas considerações me levaram a adotar diferente método.</p>
+              <p class="tp-onb-par" style="margin-top:14px">A primeira é que eu não sou propriamente um autor defunto, mas um defunto autor, para quem a campa foi outro berço.</p>
+            </div>
+            <div class="tp-onb-seta" style="left:250px;top:400px">deslize<br>para virar →</div>
+            <div class="tp-onb-cronometro">0:41 lendo · Memórias Póstumas de Brás Cubas</div>
+          </div></div>
+        </div>
+
+        <div class="tp-frame-col">
+          <div class="tp-frame-tag"><b>Passo 2 · ler e vencer</b><br>a primeira vitória — o motivo para criar conta, não a condição para ler</div>
+          <div class="tp-fone"><div class="tp-tela tp-papel-sup">
+            <div class="tp-status"><span>08:01</span><span>100%</span></div>
+            <div class="tp-vitoria-carimbo"><b>1ª</b><span>LEITURA REGISTRADA</span></div>
+            <div class="tp-vitoria-titulo">Duas páginas, e já é a segunda vitória do dia: você começou.</div>
+            <div style="text-align:center;margin-top:52px">
+              <svg class="tp-fleuron" width="118" height="9" viewBox="0 0 118 9" aria-hidden="true" style="margin:0 auto">
+                <path d="M2 4.5h44M72 4.5h44" stroke="rgba(36,31,25,.26)" stroke-width="1"/>
+                <path d="M59 .8 63.4 4.5 59 8.2 54.6 4.5Z" fill="rgba(36,31,25,.34)"/>
+              </svg>
+              <p style="font-family:var(--garamond);font-style:italic;font-size:13.5px;color:var(--tinta-70);margin-top:20px;padding:0 54px;line-height:1.55">Continue quando quiser — o marcador guarda o lugar exato onde você parou.</p>
+            </div>
+            <div class="tp-vitoria-ficha">
+              <p>Isso já é seu — o trecho, o tempo, o lugar onde você parou. Guarde para não perder quando fechar o app.</p>
+              <span class="tp-botao">Criar conta e continuar</span>
+              <span class="tp-vitoria-sec">continuar lendo sem conta, por enquanto</span>
+            </div>
+          </div></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ══════════════════════ TELA 5 — CADERNO DE DESTAQUES ══════════════════════ -->
+    <section class="tp-secao">
+      <div class="tp-legenda">
+        <div class="tp-legenda-num">Tela 5</div>
+        <div class="tp-legenda-nome">Caderno de destaques e anotações</div>
+        <div class="tp-legenda-rn">RN-02.18 · RN-02.19 · RN-02.21 · RN-02.22</div>
+        <p class="tp-legenda-racional">A nota mora ao lado do trecho, na caligrafia da própria leitora — não num card de citação genérico. Os quatro pigmentos do leitor voltam aqui como o único sistema de cor do caderno.</p>
+      </div>
+
+      <div class="tp-frames">
+        <div class="tp-frame-col">
+          <div class="tp-frame-tag"><b>Caderno de Marina</b><br>filtrado por obra, marginália manuscrita ao lado de cada grifo</div>
+          <div class="tp-fone"><div class="tp-tela tp-papel-sup">
+            <div class="tp-status"><span>22:03</span><span>60%</span></div>
+            <div class="tp-caderno">
+              <div class="tp-caderno-titulo">Destaques</div>
+
+              <div class="tp-abas-filtro">
+                <div class="tp-aba-filtro tp-aba-filtro--sel">Todas</div>
+                <div class="tp-aba-filtro">A Metamorfose</div>
+                <div class="tp-aba-filtro">Dom Casmurro</div>
+              </div>
+
+              <div class="tp-verbete-item">
+                <div class="tp-pig-col" style="background:#e7c25e"></div>
+                <div class="tp-verbete-corpo">
+                  <div class="tp-verbete-fonte">A Metamorfose · cap. I</div>
+                  <div class="tp-verbete-trecho">Quando certa manhã Gregor Samsa acordou de sonhos intranquilos, encontrou-se em sua cama <span class="tp-grifo-in tp-grifo-ambar">metamorfoseado num inseto monstruoso</span>.</div>
+                  <div class="tp-verbete-nota">a frase que já é a história inteira</div>
+                </div>
+              </div>
+
+              <div class="tp-verbete-item">
+                <div class="tp-pig-col" style="background:#d79aa2"></div>
+                <div class="tp-verbete-corpo">
+                  <div class="tp-verbete-fonte">Dom Casmurro · cap. I</div>
+                  <div class="tp-verbete-trecho">No dia seguinte entrou a dizer de mim nomes feios, e acabou <span class="tp-grifo-in tp-grifo-carmim">alcunhando-me Dom Casmurro</span>.</div>
+                  <div class="tp-verbete-nota">o apelido que virou o livro</div>
+                </div>
+              </div>
+
+              <div class="tp-verbete-item">
+                <div class="tp-pig-col" style="background:#a8b07a"></div>
+                <div class="tp-verbete-corpo">
+                  <div class="tp-verbete-fonte">A Metamorfose · cap. I</div>
+                  <div class="tp-verbete-trecho">Que profissão cansativa eu escolhi! <span class="tp-grifo-in tp-grifo-oliva">Viajar todo santo dia</span>. O aborrecimento de viajar é bem maior do que o trabalho em si.</div>
+                  <div class="tp-verbete-nota">isso também é sobre trabalhar demais</div>
+                </div>
+              </div>
+
+              <div class="tp-verbete-item">
+                <div class="tp-pig-col" style="background:#93a9c0"></div>
+                <div class="tp-verbete-corpo">
+                  <div class="tp-verbete-fonte">A Metamorfose · cap. II</div>
+                  <div class="tp-verbete-trecho">Ele desejava mesmo abrir a porta, desejava mostrar-se e falar com o procurador; estava curioso por saber <span class="tp-grifo-in tp-grifo-tinta">o que diriam os outros ao vê-lo</span>.</div>
+                  <div class="tp-verbete-nota">consulta ao dicionário: “procurador”</div>
+                </div>
+              </div>
+            </div>
+          </div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════ TELA 6 — MEU DESEMPENHO ══════════════════════ -->
+    <section class="tp-secao">
+      <div class="tp-legenda">
+        <div class="tp-legenda-num">Tela 6</div>
+        <div class="tp-legenda-nome">Meu desempenho</div>
+        <div class="tp-legenda-rn">RN-03.30 – RN-03.32</div>
+        <p class="tp-legenda-racional">Um almanaque tipográfico: números grandes em Spectral e uma régua de tiques desenhada à mão — nunca barra, donut ou sparkline de biblioteca de gráficos. Velocidade de leitura não aparece: quem é celebrada é a Leitura Consciente.</p>
+      </div>
+
+      <div class="tp-frames">
+        <div class="tp-frame-col">
+          <div class="tp-frame-tag"><b>Semana corrente</b><br>domingo fecha a semana de Marina</div>
+          <div class="tp-fone"><div class="tp-tela tp-papel-sup">
+            <div class="tp-status"><span>20:20</span><span>58%</span></div>
+            <div class="tp-almanaque">
+              <div class="tp-periodo">
+                <div class="tp-periodo-op">Dia</div>
+                <div class="tp-periodo-op tp-periodo-op--sel">Semana</div>
+                <div class="tp-periodo-op">Mês</div>
+                <div class="tp-periodo-op">Ano</div>
+              </div>
+
+              <div class="tp-headline"><b>2h 28min</b><span>lidos nesta semana · 22–28 de agosto</span></div>
+
+              <div class="tp-regua-graf">
+                <div class="tp-tick-dia" style="left:6%; height:29%; bottom:0"></div>
+                <div class="tp-tick-dia" style="left:20%; height:2%; bottom:0"></div>
+                <div class="tp-tick-dia" style="left:34%; height:37%; bottom:0"></div>
+                <div class="tp-tick-dia" style="left:48%; height:34%; bottom:0"></div>
+                <div class="tp-tick-dia" style="left:62%; height:2%; bottom:0"></div>
+                <div class="tp-tick-dia" style="left:76%; height:46%; bottom:0"></div>
+                <div class="tp-tick-dia tp-tick-hoje" style="left:90%; height:31%; bottom:0"></div>
+
+                <span class="tp-tick-dia-legenda" style="left:6%">SEG</span>
+                <span class="tp-tick-dia-legenda" style="left:20%">TER</span>
+                <span class="tp-tick-dia-legenda" style="left:34%">QUA</span>
+                <span class="tp-tick-dia-legenda" style="left:48%">QUI</span>
+                <span class="tp-tick-dia-legenda" style="left:62%">SEX</span>
+                <span class="tp-tick-dia-legenda" style="left:76%">SÁB</span>
+                <span class="tp-tick-dia-legenda" style="left:90%; color:var(--oxblood); font-weight:700">DOM</span>
+              </div>
+
+              <div class="tp-tabela">
+                <div class="tp-tab-linha"><span>Sessões</span><b>7</b></div>
+                <div class="tp-tab-linha"><span>Tempo ativo médio por sessão</span><b>21 min</b></div>
+                <div class="tp-tab-linha"><span>Leitura Consciente média</span><b>74</b></div>
+                <div class="tp-tab-linha"><span>Dias com meta batida</span><b>5 de 7</b></div>
+                <div class="tp-tab-linha"><span>Obra predominante</span><b style="font-family:var(--serif);font-style:italic;font-weight:400;font-size:12px">A Metamorfose</b></div>
+              </div>
+            </div>
+          </div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════ TELA 7 — FECHAMENTO SEMANAL ══════════════════════ -->
+    <section class="tp-secao">
+      <div class="tp-legenda">
+        <div class="tp-legenda-num">Tela 7</div>
+        <div class="tp-legenda-nome">Fechamento semanal — a carta de domingo</div>
+        <div class="tp-legenda-rn">RN-04.39</div>
+        <p class="tp-legenda-racional">Uma carta editorial fecha a semana como quem fecha uma carta de verdade — não um resumo de métricas. Os dois dias sem leitura não são mencionados como falha: a semana é lida pelo que foi, não pelo que faltou.</p>
+      </div>
+
+      <div class="tp-frames">
+        <div class="tp-frame-col">
+          <div class="tp-frame-tag"><b>Domingo, 22 de agosto</b><br>5 de 7 dias cumpridos nesta semana</div>
+          <div class="tp-fone"><div class="tp-tela tp-papel-sup">
+            <div class="tp-status"><span>19:00</span><span>47%</span></div>
+            <div class="tp-carta">
+              <div class="tp-carta-selo">
+                <div class="tp-carta-selo-circ">
+                  <svg width="118" height="9" viewBox="0 0 118 9" aria-hidden="true">
+                    <path d="M2 4.5h44M72 4.5h44" stroke="rgba(142,47,38,.5)" stroke-width="1"/>
+                    <path d="M59 .8 63.4 4.5 59 8.2 54.6 4.5Z" fill="rgba(142,47,38,.6)"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="tp-carta-saud">Querida Marina,</div>
+              <div class="tp-carta-corpo">
+                <p>esta semana você abriu o livro em cinco dos sete dias — e não foi qualquer leitura: quase meia hora por sessão, quase sempre voltando para <em>A Metamorfose</em>, do jeito de quem não está com pressa de terminar.</p>
+                <p>Faltam sete dias para o seu próximo marco, os 30. A ofensiva segue em 23, e o recorde de 41 está logo ali, à vista.</p>
+                <p>Até semana que vem.</p>
+              </div>
+              <div class="tp-carta-assinatura">bookworm</div>
+
+              <div class="tp-carta-rodape">
+                <div class="tp-carta-rodape-item"><b>5 / 7</b><span>dias cumpridos</span></div>
+                <div class="tp-carta-rodape-item"><b>23</b><span>ofensiva</span></div>
+                <div class="tp-carta-rodape-item"><b>30</b><span>próximo marco</span></div>
+              </div>
+            </div>
+          </div></div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <footer class="tp-colofao">
+    <b>COLOFÃO</b><br>
+    Composto em <em>Spectral</em> para números e corpo; <em>EB Garamond</em> na carta de domingo e nos textos de Ghost Reader; <em>Courier Prime</em> em etiquetas, carimbos e legendas de oficina; <em>Caveat</em> na marginália e nos rótulos do herbário. Sem imagem externa: herbário, capas e selos são CSS e SVG inline. Fixture única em toda tela: Marina · <em>A Metamorfose</em> (Kafka) · ofensiva 23 dias, recorde 41 · meta 20 min · sessão de hoje 26 min / 18 páginas canônicas / Leitura Consciente 78, estilo Focado · semana com 5 de 7 dias (Seg 24, Ter —, Qua 31, Qui 29, Sex —, Sáb 38, Dom 26 min).<br>
+    <b>ONDE A DIREÇÃO RESISTIU</b> — a Tela 6 é o maior atrito: tipografia comunica um número muito bem, mas resiste a mostrar tendência ao longo do tempo sem escorregar para gráfico de dashboard; a régua de tiques é a solução de compromisso, não uma vitória limpa. A dormência da Tela 1 também exigiu reescrita: a primeira versão da prensa botânica lia como “luto”, e teve que ser redesenhada para ler como “pausa bonita” — a regra da spec (“dormência feia pune, dormência linda convida”) é mais difícil de cumprir do que de escrever.
+  </footer>
+
+</div>

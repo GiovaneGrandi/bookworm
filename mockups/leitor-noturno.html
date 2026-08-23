@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BookWorm — Leitor · Noturno</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,400;0,7..72,500;0,7..72,600;1,7..72,400&family=Newsreader:opsz,wght@6..72,400&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════════
+   BookWorm — Leitor · direção estética "NOTURNO"
+   Todo o CSS está escopado sob .mk-noturno
+   ══════════════════════════════════════════════════════════════ */
+
+.mk-noturno {
+  /* fundação */
+  --preto: #000000;
+  --canvas: #070605;
+  --bezel-alto: #2a241a;
+  --bezel-baixo: #0a0908;
+
+  /* tinta quente (2400K) — o estado padrão desta tela */
+  --tinta: #E7D6B6;
+  --tinta-forte: #F6E7C9;
+  --tinta-fraca: rgba(231, 214, 182, 0.46);
+  --tinta-tenue: rgba(231, 214, 182, 0.20);
+
+  /* tinta fria (6500K) — usada só nas amostras comparativas */
+  --tinta-fria: #D3E2F4;
+
+  /* luz */
+  --ambar: #FFB44E;
+  --ambar-quente: #FF8F2E;
+  --ambar-claro: #FFD79B;
+  --halo: rgba(255, 168, 66, 0.14);
+
+  /* grifos */
+  --gr-ambar: #F0B44C;
+  --gr-argila: #D8785C;
+  --gr-musgo: #8FAE7A;
+  --gr-nevoa: #7FA1C4;
+
+  --serifa: "Literata", "Newsreader", Georgia, "Times New Roman", serif;
+  --titulo: "Fraunces", "Literata", Georgia, serif;
+  --meta: "Fraunces", "Literata", Georgia, serif;
+  --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding: 54px 0 72px;
+  background:
+    radial-gradient(1200px 520px at 50% -8%, rgba(255, 150, 50, 0.055), transparent 68%),
+    radial-gradient(900px 700px at 105% 110%, rgba(120, 150, 190, 0.035), transparent 70%),
+    var(--canvas);
+  color: var(--tinta);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+.mk-noturno *,
+.mk-noturno *::before,
+.mk-noturno *::after { box-sizing: border-box; }
+
+.mk-noturno p, .mk-noturno h1, .mk-noturno h2, .mk-noturno h3,
+.mk-noturno h4, .mk-noturno figure, .mk-noturno ul, .mk-noturno li {
+  margin: 0; padding: 0; list-style: none;
+}
+
+/* ─── cabeçalho do canvas ─────────────────────────────────── */
+.mk-noturno .topo {
+  max-width: 1180px;
+  margin: 0 auto 46px;
+  padding: 0 34px;
+}
+.mk-noturno .sobrenome {
+  font-family: var(--sans);
+  font-size: 10px;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: rgba(255, 180, 78, 0.62);
+  margin-bottom: 16px;
+}
+.mk-noturno .marca {
+  font-family: var(--titulo);
+  font-weight: 400;
+  font-size: 46px;
+  line-height: 1;
+  letter-spacing: -0.018em;
+  color: var(--tinta-forte);
+}
+.mk-noturno .marca em {
+  font-style: normal;
+  color: var(--ambar);
+  text-shadow: 0 0 26px rgba(255, 168, 66, 0.5);
+}
+.mk-noturno .conceito {
+  margin-top: 20px;
+  max-width: 640px;
+  font-family: var(--serifa);
+  font-size: 15px;
+  line-height: 1.68;
+  color: rgba(231, 214, 182, 0.62);
+}
+.mk-noturno .conceito b {
+  font-weight: 500;
+  color: var(--ambar-claro);
+}
+
+/* faixa espectral decorativa — o eixo da tela, declarado logo no topo */
+.mk-noturno .espectro {
+  margin-top: 26px;
+  max-width: 640px;
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg,
+    #FF7A1E 0%, #FFA845 22%, #FFCE8E 44%,
+    #F4EFE6 62%, #CFE0F7 82%, #A9C8ED 100%);
+  box-shadow: 0 0 22px 2px rgba(255, 150, 60, 0.28);
+  opacity: 0.9;
+}
+.mk-noturno .espectro-legenda {
+  display: flex;
+  justify-content: space-between;
+  max-width: 640px;
+  margin-top: 9px;
+  font-size: 9.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(231, 214, 182, 0.38);
+}
+
+/* ─── trilho de molduras ───────────────────────────────────── */
+.mk-noturno .trilho {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 8px 34px 34px;
+  scrollbar-color: rgba(255, 180, 78, 0.3) transparent;
+}
+.mk-noturno .trilho::-webkit-scrollbar { height: 9px; }
+.mk-noturno .trilho::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.03); border-radius: 9px; }
+.mk-noturno .trilho::-webkit-scrollbar-thumb { background: rgba(255, 180, 78, 0.26); border-radius: 9px; }
+
+.mk-noturno .fileira {
+  display: flex;
+  gap: 42px;
+  width: max-content;
+  margin: 0 auto;
+  align-items: flex-end;
+}
+
+.mk-noturno .peca { width: 400px; flex: 0 0 400px; }
+
+.mk-noturno .rotulo { margin-bottom: 20px; min-height: 76px; }
+.mk-noturno .rotulo .num {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: rgba(255, 180, 78, 0.75);
+  margin-bottom: 8px;
+}
+.mk-noturno .rotulo .nome {
+  font-family: var(--titulo);
+  font-size: 21px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--tinta-forte);
+  line-height: 1.2;
+}
+.mk-noturno .rotulo .desc {
+  margin-top: 7px;
+  font-size: 12px;
+  line-height: 1.55;
+  color: rgba(231, 214, 182, 0.42);
+  max-width: 340px;
+}
+
+/* ─── moldura do aparelho ─────────────────────────────────── */
+.mk-noturno .moldura {
+  width: 400px;
+  height: 860px;
+  padding: 3px;
+  border-radius: 46px;
+  background: linear-gradient(160deg, #322b1e 0%, #14110c 32%, #090807 70%, #241f16 100%);
+  box-shadow:
+    0 0 0 1px rgba(255, 190, 110, 0.07),
+    0 40px 90px -30px rgba(0, 0, 0, 0.9),
+    0 0 90px -12px rgba(255, 150, 50, 0.10);
+  position: relative;
+}
+.mk-noturno .tela {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 43px;
+  background: var(--preto);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* luz de abajur: o brilho vem de cima, como um foco sobre a página */
+.mk-noturno .abajur {
+  position: absolute;
+  top: -140px; left: 50%;
+  width: 620px; height: 420px;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at 50% 40%, rgba(255, 168, 66, 0.115), rgba(255, 140, 40, 0.04) 46%, transparent 72%);
+  pointer-events: none;
+  z-index: 1;
+}
+.mk-noturno .abajur.fria {
+  background: radial-gradient(ellipse at 50% 40%, rgba(150, 190, 245, 0.10), rgba(120, 160, 220, 0.03) 46%, transparent 72%);
+}
+
+/* barra de status do Android, quase apagada */
+.mk-noturno .status {
+  position: relative; z-index: 3;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 15px 26px 0;
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: rgba(231, 214, 182, 0.24);
+}
+.mk-noturno .status .dir { display: flex; align-items: center; gap: 7px; }
+.mk-noturno .status svg { display: block; }
+
+/* ─── página de leitura ───────────────────────────────────── */
+.mk-noturno .pagina {
+  position: relative; z-index: 2;
+  height: calc(100% - 30px);
+  padding: 26px 30px 0;
+  overflow: hidden;
+}
+.mk-noturno .cabeca-cap { margin-bottom: 20px; }
+.mk-noturno .cabeca-cap .obra {
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(231, 214, 182, 0.30);
+}
+.mk-noturno .cabeca-cap .cap {
+  margin-top: 12px;
+  font-family: var(--titulo);
+  font-weight: 400;
+  font-size: 12px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(255, 180, 78, 0.72);
+}
+.mk-noturno .cabeca-cap .cap-nome {
+  margin-top: 5px;
+  font-family: var(--titulo);
+  font-weight: 500;
+  font-size: 25px;
+  letter-spacing: -0.01em;
+  color: var(--tinta-forte);
+}
+.mk-noturno .cabeca-cap .risco {
+  margin-top: 14px;
+  width: 46px; height: 1px;
+  background: linear-gradient(90deg, rgba(255, 180, 78, 0.75), rgba(255, 180, 78, 0));
+}
+
+/* corpo do texto — Literata, tinta âmbar, nunca branco puro */
+.mk-noturno .corpo p {
+  font-family: var(--serifa);
+  font-weight: 400;
+  font-size: 15.1px;
+  line-height: 1.72;
+  letter-spacing: 0.004em;
+  color: var(--tinta);
+  text-align: justify;
+  hyphens: auto;
+  text-wrap: pretty;
+  margin-bottom: 12px;
+}
+.mk-noturno .corpo p.fala {
+  text-align: left;
+  text-indent: 0;
+  margin-bottom: 9px;
+  color: rgba(231, 214, 182, 0.94);
+}
+.mk-noturno .corpo p + p:not(.fala) { text-indent: 1.35em; }
+.mk-noturno .corpo p.fala + p:not(.fala) { text-indent: 1.35em; }
+
+/* lettrine: a primeira letra é a fonte de luz do parágrafo */
+.mk-noturno .lettrine {
+  float: left;
+  font-family: var(--titulo);
+  font-weight: 400;
+  font-size: 58px;
+  line-height: 0.82;
+  padding: 6px 9px 0 0;
+  color: var(--ambar-claro);
+  text-shadow: 0 0 30px rgba(255, 168, 66, 0.55), 0 0 6px rgba(255, 168, 66, 0.3);
+}
+
+/* grifo: luz sob a linha, não bloco de tinta */
+.mk-noturno .grifo {
+  border-radius: 3px;
+  padding: 1px 2px;
+  color: #FCE7BC;
+  background: linear-gradient(180deg, rgba(240, 180, 76, 0.05) 0%, rgba(240, 180, 76, 0.26) 100%);
+  box-shadow: 0 0 16px 1px rgba(240, 180, 76, 0.16);
+}
+.mk-noturno .grifo-argila {
+  color: #F7D6C9;
+  background: linear-gradient(180deg, rgba(216, 120, 92, 0.05) 0%, rgba(216, 120, 92, 0.30) 100%);
+  box-shadow: 0 0 16px 1px rgba(216, 120, 92, 0.16);
+}
+
+/* vestígio de dicionário: sublinhado tênue, uma cicatriz de leitura */
+.mk-noturno .consultada {
+  border-bottom: 1px solid rgba(255, 180, 78, 0.40);
+  padding-bottom: 1.5px;
+  color: #F2DFBB;
+}
+
+/* seleção */
+.mk-noturno .selecao {
+  position: relative;
+  border-radius: 3px;
+  padding: 1px 2px;
+  color: #FFF3DC;
+  background: rgba(255, 180, 78, 0.20);
+  box-shadow: 0 0 24px 3px rgba(255, 168, 66, 0.20);
+}
+.mk-noturno .alca {
+  position: absolute;
+  top: -4px;
+  width: 2px; height: calc(100% + 8px);
+  background: var(--ambar-claro);
+  box-shadow: 0 0 10px 1px rgba(255, 180, 78, 0.9);
+}
+.mk-noturno .alca.esq { left: -1px; }
+.mk-noturno .alca.dir { right: -1px; }
+.mk-noturno .alca::after {
+  content: "";
+  position: absolute;
+  left: 50%; width: 9px; height: 9px;
+  margin-left: -4.5px;
+  border-radius: 50%;
+  background: var(--ambar-claro);
+  box-shadow: 0 0 12px 2px rgba(255, 180, 78, 0.8);
+}
+.mk-noturno .alca.esq::after { top: -9px; }
+.mk-noturno .alca.dir::after { bottom: -9px; }
+
+/* ─── fio de vela: presença permanente, sem números ───────── */
+.mk-noturno .fio-vela {
+  position: absolute;
+  left: 0; bottom: 0;
+  height: 34px; width: 100%;
+  z-index: 4;
+  pointer-events: none;
+}
+.mk-noturno .fio-vela i {
+  position: absolute;
+  left: 30px; bottom: 15px;
+  display: block;
+  height: 1.5px;
+  width: 340px;
+  background: rgba(231, 214, 182, 0.09);
+  border-radius: 2px;
+}
+.mk-noturno .fio-vela i::after {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 8%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, rgba(255, 180, 78, 0.35), var(--ambar-claro));
+  box-shadow: 0 0 12px 1px rgba(255, 180, 78, 0.55);
+}
+
+/* ─── camadas de controle: emergem por difusão ────────────── */
+.mk-noturno .difusao-topo,
+.mk-noturno .difusao-base {
+  position: absolute; left: 0; right: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+.mk-noturno .difusao-topo {
+  top: 0; height: 210px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.9) 42%, rgba(0,0,0,0.55) 74%, rgba(0,0,0,0) 100%);
+}
+.mk-noturno .difusao-base {
+  bottom: 0; height: 300px;
+  background: linear-gradient(0deg, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.93) 40%, rgba(0,0,0,0.6) 72%, rgba(0,0,0,0) 100%);
+}
+.mk-noturno .texto-recuado { opacity: 0.40; }
+
+.mk-noturno .barra-topo {
+  position: absolute; z-index: 6;
+  top: 46px; left: 0; right: 0;
+  padding: 0 24px;
+  display: flex; align-items: flex-start; justify-content: space-between;
+}
+.mk-noturno .voltar {
+  width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(231, 214, 182, 0.7);
+}
+.mk-noturno .titulo-corrente { text-align: center; padding-top: 3px; }
+.mk-noturno .titulo-corrente .t {
+  font-family: var(--titulo);
+  font-size: 15px; font-weight: 500;
+  color: var(--tinta-forte);
+  letter-spacing: -0.005em;
+}
+.mk-noturno .titulo-corrente .a {
+  margin-top: 3px;
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(231, 214, 182, 0.36);
+}
+.mk-noturno .tipo-acesso { width: 34px; }
+
+/* ferramentas: halo em vez de caixa */
+.mk-noturno .ferramentas {
+  position: absolute; z-index: 6;
+  top: 96px; left: 24px; right: 24px;
+  display: flex; justify-content: space-between; gap: 6px;
+}
+.mk-noturno .ferramenta {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; gap: 9px;
+  padding: 12px 0 10px;
+  border-radius: 16px;
+  color: rgba(231, 214, 182, 0.62);
+}
+.mk-noturno .ferramenta.viva {
+  color: var(--ambar-claro);
+  background: radial-gradient(ellipse at 50% 34%, rgba(255, 168, 66, 0.16), rgba(255, 168, 66, 0.02) 62%, transparent 78%);
+}
+.mk-noturno .ferramenta span {
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.mk-noturno .ferramenta em {
+  font-style: normal;
+  position: absolute;
+}
+
+/* ─── rodapé de progresso ─────────────────────────────────── */
+.mk-noturno .rodape-progresso {
+  position: absolute; z-index: 6;
+  left: 28px; right: 28px; bottom: 34px;
+}
+.mk-noturno .linha-cap {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.mk-noturno .linha-cap .cap-atual {
+  font-family: var(--titulo);
+  font-size: 14px; font-weight: 500;
+  color: var(--tinta-forte);
+}
+.mk-noturno .linha-cap .cap-indice {
+  font-family: var(--sans);
+  font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(231, 214, 182, 0.38);
+}
+.mk-noturno .trilha {
+  position: relative;
+  height: 2px;
+  border-radius: 2px;
+  background: rgba(231, 214, 182, 0.11);
+}
+.mk-noturno .trilha .cheia {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 8%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, rgba(255, 143, 46, 0.55), var(--ambar-claro));
+  box-shadow: 0 0 14px 1px rgba(255, 180, 78, 0.6);
+}
+.mk-noturno .trilha .brasa {
+  position: absolute;
+  left: 8%; top: 50%;
+  width: 9px; height: 9px;
+  margin: -4.5px 0 0 -4.5px;
+  border-radius: 50%;
+  background: #FFE6BC;
+  box-shadow: 0 0 4px 1px rgba(255, 214, 155, 0.9), 0 0 18px 4px rgba(255, 168, 66, 0.55);
+}
+/* marcas de capítulo ao longo da trilha */
+.mk-noturno .trilha .marca {
+  position: absolute; top: -2px;
+  width: 1px; height: 6px;
+  background: rgba(231, 214, 182, 0.16);
+}
+.mk-noturno .info-pagina {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin-top: 14px;
+  font-family: var(--sans);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  color: rgba(231, 214, 182, 0.5);
+}
+.mk-noturno .info-pagina b {
+  font-family: var(--titulo);
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--tinta-forte);
+  letter-spacing: 0;
+}
+.mk-noturno .info-pagina .pct { color: rgba(255, 180, 78, 0.85); }
+
+.mk-noturno .toque-dica {
+  position: absolute; z-index: 6;
+  left: 0; right: 0; bottom: 12px;
+  text-align: center;
+  font-family: var(--sans);
+  font-size: 8.5px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(231, 214, 182, 0.22);
+}
+
+/* ─── folha (painel que sobe) ─────────────────────────────── */
+.mk-noturno .folha {
+  position: absolute; z-index: 7;
+  left: 0; right: 0; bottom: 0;
+  border-radius: 34px 34px 43px 43px;
+  background:
+    radial-gradient(560px 300px at 50% -6%, rgba(255, 150, 55, 0.10), transparent 70%),
+    linear-gradient(180deg, #0d0b09 0%, #070605 40%, #000 100%);
+  padding: 0 26px 26px;
+}
+/* borda superior: luz difusa, não linha de contorno */
+.mk-noturno .folha::before {
+  content: "";
+  position: absolute; left: 6%; right: 6%; top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 180, 78, 0.5), transparent);
+}
+.mk-noturno .folha::after {
+  content: "";
+  position: absolute; left: -12%; right: -12%; top: -46px;
+  height: 92px;
+  background: radial-gradient(ellipse at 50% 60%, rgba(255, 150, 55, 0.13), transparent 68%);
+  pointer-events: none;
+}
+.mk-noturno .puxador {
+  width: 42px; height: 3px;
+  margin: 12px auto 18px;
+  border-radius: 3px;
+  background: rgba(231, 214, 182, 0.24);
+}
+.mk-noturno .folha-topo {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.mk-noturno .folha-topo h3 {
+  font-family: var(--titulo);
+  font-size: 17px; font-weight: 500;
+  color: var(--tinta-forte);
+}
+.mk-noturno .folha-topo .fechar {
+  font-family: var(--sans);
+  font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(231, 214, 182, 0.4);
+}
+
+.mk-noturno .secao { margin-bottom: 17px; }
+.mk-noturno .secao > .rot {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin-bottom: 9px;
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(231, 214, 182, 0.42);
+}
+.mk-noturno .secao > .rot .valor {
+  font-family: var(--titulo);
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--ambar-claro);
+}
+
+/* chips de fonte */
+.mk-noturno .chips { display: flex; gap: 7px; }
+.mk-noturno .chip {
+  flex: 1;
+  padding: 9px 4px 8px;
+  text-align: center;
+  border-radius: 12px;
+  background: rgba(231, 214, 182, 0.045);
+  color: rgba(231, 214, 182, 0.62);
+  font-size: 13px;
+}
+.mk-noturno .chip.ativo {
+  color: #FFF0D2;
+  background: radial-gradient(ellipse at 50% 50%, rgba(255, 168, 66, 0.20), rgba(255, 168, 66, 0.05) 70%);
+  box-shadow: inset 0 0 0 1px rgba(255, 180, 78, 0.34), 0 0 20px -4px rgba(255, 168, 66, 0.5);
+}
+.mk-noturno .chip .n {
+  display: block;
+  margin-top: 3px;
+  font-family: var(--sans);
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+.mk-noturno .f-lit { font-family: var(--serifa); }
+.mk-noturno .f-news { font-family: "Newsreader", Georgia, serif; }
+.mk-noturno .f-frau { font-family: var(--titulo); }
+
+/* linha de steppers (corpo) */
+.mk-noturno .stepper {
+  display: flex; align-items: center; gap: 12px;
+}
+.mk-noturno .stepper .btn {
+  width: 38px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 11px;
+  background: rgba(231, 214, 182, 0.05);
+  color: var(--tinta);
+  font-family: var(--serifa);
+}
+.mk-noturno .stepper .btn.p { font-size: 12px; }
+.mk-noturno .stepper .btn.g { font-size: 19px; }
+.mk-noturno .degraus { flex: 1; display: flex; align-items: center; gap: 4px; }
+.mk-noturno .degraus i {
+  flex: 1; height: 2px; border-radius: 2px;
+  background: rgba(231, 214, 182, 0.13);
+}
+.mk-noturno .degraus i.on {
+  background: var(--ambar-claro);
+  box-shadow: 0 0 10px 1px rgba(255, 180, 78, 0.55);
+}
+
+/* trio compacto: entrelinha / margens / alinhamento */
+.mk-noturno .trio { display: flex; gap: 8px; }
+.mk-noturno .trio > div { flex: 1; }
+.mk-noturno .mini-rot {
+  font-family: var(--sans);
+  font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(231, 214, 182, 0.36);
+  margin-bottom: 7px;
+}
+.mk-noturno .opts { display: flex; gap: 4px; }
+.mk-noturno .opt {
+  flex: 1; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 9px;
+  background: rgba(231, 214, 182, 0.045);
+  color: rgba(231, 214, 182, 0.5);
+}
+.mk-noturno .opt.ativo {
+  color: #FFF0D2;
+  background: radial-gradient(ellipse at 50% 50%, rgba(255, 168, 66, 0.20), rgba(255, 168, 66, 0.04) 72%);
+  box-shadow: inset 0 0 0 1px rgba(255, 180, 78, 0.30);
+}
+.mk-noturno .opt .bars { display: flex; flex-direction: column; justify-content: center; gap: 2px; width: 15px; }
+.mk-noturno .opt .bars b { display: block; height: 1.5px; background: currentColor; border-radius: 2px; }
+.mk-noturno .opt .bars.solto { gap: 4px; }
+.mk-noturno .opt .bars.medio { gap: 3px; }
+.mk-noturno .opt .bars.dir b:last-child { width: 66%; }
+.mk-noturno .opt .caixa {
+  width: 17px; height: 15px; border-radius: 2px;
+  box-shadow: inset 0 0 0 1px currentColor;
+  position: relative;
+}
+.mk-noturno .opt .caixa i {
+  position: absolute; top: 3px; bottom: 3px;
+  background: currentColor; opacity: 0.6;
+}
+.mk-noturno .opt .caixa.estreita i { left: 2px; right: 2px; }
+.mk-noturno .opt .caixa.media i { left: 4px; right: 4px; }
+.mk-noturno .opt .caixa.larga i { left: 6px; right: 6px; }
+
+/* temas de leitura */
+.mk-noturno .temas { display: flex; gap: 8px; }
+.mk-noturno .tema { flex: 1; text-align: center; }
+.mk-noturno .tema .amostra {
+  height: 50px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--serifa);
+  font-size: 19px;
+  box-shadow: inset 0 0 0 1px rgba(231, 214, 182, 0.10);
+}
+.mk-noturno .tema .rotulinho {
+  margin-top: 7px;
+  font-family: var(--sans);
+  font-size: 8px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: rgba(231, 214, 182, 0.4);
+}
+.mk-noturno .tema.sel .amostra {
+  box-shadow: inset 0 0 0 1px rgba(255, 180, 78, 0.75), 0 0 22px -2px rgba(255, 168, 66, 0.55);
+}
+.mk-noturno .tema.sel .rotulinho { color: var(--ambar-claro); }
+.mk-noturno .am-claro { background: #F6F2E9; color: #1a1713; }
+.mk-noturno .am-sepia { background: #E9D9B8; color: #4a3924; }
+.mk-noturno .am-escuro { background: #17161a; color: #c9c6c0; }
+.mk-noturno .am-oled { background: #000; color: var(--tinta-forte); text-shadow: 0 0 14px rgba(255, 168, 66, 0.6); }
+
+/* ═══ TEMPERATURA DE LUZ — o coração da tela ═══ */
+.mk-noturno .temperatura {
+  position: relative;
+  margin: 22px -6px 20px;
+  padding: 0 6px;
+}
+.mk-noturno .temperatura .cabeca {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  margin-bottom: 4px;
+}
+.mk-noturno .temperatura .cabeca .tit {
+  font-family: var(--titulo);
+  font-size: 15px; font-weight: 500;
+  color: var(--tinta-forte);
+  letter-spacing: -0.005em;
+}
+.mk-noturno .temperatura .cabeca .kelvin {
+  font-family: var(--titulo);
+  font-size: 22px; font-weight: 400;
+  color: var(--ambar-claro);
+  text-shadow: 0 0 22px rgba(255, 168, 66, 0.6);
+  letter-spacing: -0.01em;
+}
+.mk-noturno .temperatura .frase {
+  font-family: var(--serifa);
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: rgba(231, 214, 182, 0.44);
+  margin-bottom: 13px;
+  max-width: 250px;
+}
+.mk-noturno .arco {
+  position: relative;
+  height: 54px;
+  border-radius: 27px;
+  background: linear-gradient(90deg,
+    #FF7A18 0%, #FF9A34 14%, #FFB861 30%, #FFD9A2 48%,
+    #F5F1E8 64%, #DCE7F7 80%, #B7D0F0 100%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.10);
+}
+/* halo que escapa do controle — a luz não fica presa na caixa */
+.mk-noturno .arco-halo {
+  position: absolute;
+  left: -14px; right: -14px; top: -12px; bottom: -12px;
+  border-radius: 40px;
+  background: linear-gradient(90deg,
+    rgba(255, 122, 24, 0.55) 0%, rgba(255, 184, 97, 0.4) 30%,
+    rgba(245, 241, 232, 0.25) 62%, rgba(183, 208, 240, 0.28) 100%);
+  filter: blur(20px);
+  opacity: 0.55;
+  z-index: -1;
+}
+.mk-noturno .arco .cursor {
+  position: absolute;
+  top: 50%; left: 21%;
+  width: 44px; height: 44px;
+  margin: -22px 0 0 -22px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 44%, #FFFDF6 0%, #FFE9C4 34%, #FFC172 62%, #F49A34 100%);
+  box-shadow:
+    0 0 0 2px rgba(0, 0, 0, 0.42),
+    0 0 0 4px rgba(255, 236, 200, 0.55),
+    0 0 26px 6px rgba(255, 160, 60, 0.75);
+}
+.mk-noturno .arco .cursor::after {
+  content: "";
+  position: absolute; inset: 13px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  filter: blur(3px);
+}
+.mk-noturno .arco-legenda {
+  display: flex; justify-content: space-between;
+  margin-top: 11px;
+  font-family: var(--sans);
+  font-size: 8.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(231, 214, 182, 0.36);
+}
+.mk-noturno .arco-legenda .aceso { color: var(--ambar-claro); }
+
+/* amostras: a mesma palavra em tinta quente e tinta fria */
+.mk-noturno .amostras { display: flex; gap: 8px; margin-top: 12px; }
+.mk-noturno .amostras div {
+  flex: 1;
+  border-radius: 11px;
+  padding: 10px 12px 11px;
+  background: #000;
+  box-shadow: inset 0 0 0 1px rgba(231, 214, 182, 0.08);
+}
+.mk-noturno .amostras div.viva { box-shadow: inset 0 0 0 1px rgba(255, 180, 78, 0.45); }
+.mk-noturno .amostras .txt { font-family: var(--serifa); font-size: 13px; }
+.mk-noturno .amostras .q { color: var(--tinta); }
+.mk-noturno .amostras .f { color: var(--tinta-fria); }
+.mk-noturno .amostras .leg {
+  margin-top: 5px;
+  font-family: var(--sans);
+  font-size: 8px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: rgba(231, 214, 182, 0.34);
+}
+
+/* brilho */
+.mk-noturno .brilho-linha { display: flex; align-items: center; gap: 12px; }
+.mk-noturno .brilho-trilha {
+  position: relative; flex: 1;
+  height: 6px; border-radius: 6px;
+  background: linear-gradient(90deg, rgba(255, 180, 78, 0.10), rgba(255, 214, 155, 0.55));
+}
+.mk-noturno .brilho-trilha b {
+  position: absolute; left: 26%; top: 50%;
+  width: 16px; height: 16px; margin: -8px 0 0 -8px;
+  border-radius: 50%;
+  background: #FFE6BC;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.5), 0 0 16px 3px rgba(255, 180, 78, 0.6);
+}
+.mk-noturno .brilho-linha .ico { color: rgba(231, 214, 182, 0.5); display: flex; }
+
+/* chave de retorno sensorial */
+.mk-noturno .chave-bloco {
+  margin-top: 4px;
+  padding: 14px 15px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(231, 214, 182, 0.045), rgba(231, 214, 182, 0.015));
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+}
+.mk-noturno .chave-bloco .t {
+  font-family: var(--titulo);
+  font-size: 13.5px; font-weight: 500;
+  color: var(--tinta-forte);
+}
+.mk-noturno .chave-bloco .s {
+  margin-top: 4px;
+  font-family: var(--serifa);
+  font-size: 10.5px;
+  line-height: 1.45;
+  color: rgba(231, 214, 182, 0.42);
+  max-width: 220px;
+}
+.mk-noturno .chave {
+  flex: 0 0 auto;
+  width: 50px; height: 29px;
+  border-radius: 29px;
+  background: rgba(231, 214, 182, 0.10);
+  box-shadow: inset 0 0 0 1px rgba(231, 214, 182, 0.12);
+  position: relative;
+}
+.mk-noturno .chave i {
+  position: absolute; top: 4px; left: 4px;
+  width: 21px; height: 21px; border-radius: 50%;
+  background: rgba(231, 214, 182, 0.55);
+}
+.mk-noturno .chave .rot-off {
+  position: absolute; right: -1px; top: 36px;
+  font-family: var(--sans);
+  font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(231, 214, 182, 0.3);
+}
+
+/* ─── seleção: barra de ações ─────────────────────────────── */
+.mk-noturno .acoes {
+  position: absolute; z-index: 8;
+  left: 22px; right: 22px;
+  top: 292px;
+  padding: 15px 16px 14px;
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(24, 20, 15, 0.97), rgba(8, 7, 6, 0.99));
+  box-shadow:
+    0 0 0 1px rgba(255, 180, 78, 0.14),
+    0 26px 60px -18px rgba(0, 0, 0, 0.95),
+    0 0 44px -8px rgba(255, 150, 55, 0.28);
+}
+.mk-noturno .acoes .rot-acoes {
+  font-family: var(--sans);
+  font-size: 8.5px; letter-spacing: 0.24em; text-transform: uppercase;
+  color: rgba(231, 214, 182, 0.34);
+  margin-bottom: 12px;
+}
+.mk-noturno .cores { display: flex; align-items: center; gap: 12px; }
+.mk-noturno .cor {
+  flex: 1;
+  height: 38px;
+  border-radius: 12px;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+.mk-noturno .cor b {
+  width: 17px; height: 17px; border-radius: 50%;
+  display: block;
+}
+.mk-noturno .cor .nome {
+  position: absolute; bottom: -15px; left: 0; right: 0;
+  text-align: center;
+  font-family: var(--sans);
+  font-size: 7.5px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(231, 214, 182, 0.34);
+}
+.mk-noturno .cor.c1 b { background: var(--gr-ambar); box-shadow: 0 0 16px 3px rgba(240, 180, 76, 0.55); }
+.mk-noturno .cor.c2 b { background: var(--gr-argila); box-shadow: 0 0 16px 3px rgba(216, 120, 92, 0.45); }
+.mk-noturno .cor.c3 b { background: var(--gr-musgo); box-shadow: 0 0 16px 3px rgba(143, 174, 122, 0.45); }
+.mk-noturno .cor.c4 b { background: var(--gr-nevoa); box-shadow: 0 0 16px 3px rgba(127, 161, 196, 0.45); }
+.mk-noturno .cor.sel {
+  background: radial-gradient(ellipse at 50% 50%, rgba(255, 168, 66, 0.16), transparent 72%);
+  box-shadow: inset 0 0 0 1px rgba(255, 180, 78, 0.4);
+}
+.mk-noturno .risco-acoes {
+  height: 1px; margin: 26px 0 13px;
+  background: linear-gradient(90deg, transparent, rgba(231, 214, 182, 0.13), transparent);
+}
+.mk-noturno .duo { display: flex; gap: 9px; }
+.mk-noturno .duo a {
+  flex: 1;
+  text-decoration: none;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  height: 40px;
+  border-radius: 13px;
+  font-family: var(--sans);
+  font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase;
+  background: rgba(231, 214, 182, 0.05);
+  color: rgba(231, 214, 182, 0.72);
+}
+.mk-noturno .duo a.viva {
+  color: #FFF0D2;
+  background: radial-gradient(ellipse at 50% 50%, rgba(255, 168, 66, 0.22), rgba(255, 168, 66, 0.05) 72%);
+  box-shadow: inset 0 0 0 1px rgba(255, 180, 78, 0.4);
+}
+
+/* ─── dicionário ──────────────────────────────────────────── */
+.mk-noturno .dicionario {
+  position: absolute; z-index: 9;
+  left: 0; right: 0; bottom: 0;
+  height: 396px;
+  border-radius: 30px 30px 43px 43px;
+  padding: 0 26px 24px;
+  background:
+    radial-gradient(520px 260px at 50% -4%, rgba(255, 150, 55, 0.12), transparent 70%),
+    linear-gradient(180deg, #100d0a 0%, #070605 42%, #000 100%);
+}
+.mk-noturno .dicionario::before {
+  content: "";
+  position: absolute; left: 5%; right: 5%; top: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 180, 78, 0.55), transparent);
+}
+.mk-noturno .dicionario::after {
+  content: "";
+  position: absolute; left: -12%; right: -12%; top: -48px; height: 96px;
+  background: radial-gradient(ellipse at 50% 62%, rgba(255, 150, 55, 0.14), transparent 68%);
+  pointer-events: none;
+}
+.mk-noturno .dic-fonte {
+  font-family: var(--sans);
+  font-size: 8.5px; letter-spacing: 0.24em; text-transform: uppercase;
+  color: rgba(231, 214, 182, 0.32);
+  margin-bottom: 12px;
+}
+.mk-noturno .verbete {
+  display: flex; align-items: baseline; gap: 11px; flex-wrap: wrap;
+}
+.mk-noturno .verbete .palavra {
+  font-family: var(--titulo);
+  font-size: 33px; font-weight: 400;
+  letter-spacing: -0.015em;
+  color: var(--tinta-forte);
+  text-shadow: 0 0 30px rgba(255, 168, 66, 0.35);
+}
+.mk-noturno .verbete .fon {
+  font-family: var(--serifa);
+  font-size: 12px;
+  color: rgba(231, 214, 182, 0.44);
+}
+.mk-noturno .verbete .classe {
+  font-family: var(--titulo);
+  font-style: italic;
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  color: rgba(255, 180, 78, 0.85);
+}
+.mk-noturno .acepcoes { margin-top: 16px; }
+.mk-noturno .acepcoes li {
+  display: flex; gap: 11px;
+  margin-bottom: 9px;
+}
+.mk-noturno .acepcoes .n {
+  flex: 0 0 auto;
+  font-family: var(--titulo);
+  font-size: 11px;
+  color: rgba(255, 180, 78, 0.8);
+  padding-top: 2px;
+  min-width: 11px;
+}
+.mk-noturno .acepcoes .d {
+  font-family: var(--serifa);
+  font-size: 13px; line-height: 1.54;
+  color: rgba(231, 214, 182, 0.88);
+}
+.mk-noturno .acepcoes .d i {
+  color: rgba(231, 214, 182, 0.46);
+}
+.mk-noturno .nota-etimo {
+  margin-top: 13px;
+  padding-left: 12px;
+  border-left: 1px solid rgba(255, 180, 78, 0.32);
+  font-family: var(--serifa);
+  font-style: italic;
+  font-size: 11.5px; line-height: 1.5;
+  color: rgba(231, 214, 182, 0.52);
+}
+.mk-noturno .dic-acoes {
+  position: absolute; left: 26px; right: 26px; bottom: 26px;
+  display: flex; gap: 9px; align-items: center;
+}
+.mk-noturno .dic-acoes .principal {
+  flex: 1;
+  height: 46px;
+  border-radius: 15px;
+  display: flex; align-items: center; justify-content: center; gap: 9px;
+  font-family: var(--sans);
+  font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: #2A1B06;
+  background: linear-gradient(180deg, #FFDCA4 0%, #FFB758 100%);
+  box-shadow: 0 0 34px -4px rgba(255, 168, 66, 0.6);
+}
+.mk-noturno .dic-acoes .secundaria {
+  flex: 0 0 auto;
+  height: 46px; padding: 0 16px;
+  border-radius: 15px;
+  display: flex; align-items: center;
+  font-family: var(--sans);
+  font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(231, 214, 182, 0.62);
+  background: rgba(231, 214, 182, 0.05);
+}
+.mk-noturno .dic-rodape {
+  position: absolute; left: 0; right: 0; bottom: 8px;
+  text-align: center;
+  font-family: var(--sans);
+  font-size: 8px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: rgba(231, 214, 182, 0.2);
+}
+
+/* ─── notas de rodapé do canvas ───────────────────────────── */
+.mk-noturno .notas {
+  max-width: 1180px;
+  margin: 34px auto 0;
+  padding: 0 34px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+}
+.mk-noturno .nota .cab {
+  font-family: var(--sans);
+  font-size: 9px; letter-spacing: 0.26em; text-transform: uppercase;
+  color: rgba(255, 180, 78, 0.6);
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(231, 214, 182, 0.10);
+}
+.mk-noturno .nota p {
+  font-family: var(--serifa);
+  font-size: 12.5px; line-height: 1.66;
+  color: rgba(231, 214, 182, 0.5);
+}
+.mk-noturno .nota p b { color: rgba(231, 214, 182, 0.8); font-weight: 500; }
+
+@media (max-width: 900px) {
+  .mk-noturno { padding-top: 34px; }
+  .mk-noturno .marca { font-size: 34px; }
+  .mk-noturno .trilho { padding-left: 20px; padding-right: 20px; }
+  .mk-noturno .topo, .mk-noturno .notas { padding-left: 20px; padding-right: 20px; }
+}
+</style>
+</head>
+<body style="margin:0; background:#070605;">
+<div class="mk-noturno">
+
+  <!-- ══════════ CABEÇALHO ══════════ -->
+  <div class="topo">
+    <div class="sobrenome">BookWorm · leitor · direção estética</div>
+    <div class="marca">Noturno<em>.</em></div>
+    <p class="conceito">
+      Ler no escuro é uma questão de <b>temperatura</b>, não de contraste.
+      A tela não é uma superfície pintada de preto: é uma fonte de luz, e o leitor
+      decide a cor dessa luz — do âmbar de abajur às três da manhã ao branco frio do meio-dia.
+      Aqui esse controle não mora enterrado nas configurações: ele é a peça central da tela.
+    </p>
+    <div class="espectro"></div>
+    <div class="espectro-legenda">
+      <span>1800 K · âmbar</span><span>4200 K · neutro</span><span>6500 K · frio</span>
+    </div>
+  </div>
+
+  <!-- ══════════ TRILHO DE MOLDURAS ══════════ -->
+  <div class="trilho">
+   <div class="fileira">
+
+    <!-- ─────────────────────────────────────────────────────
+         ESTADO 1 — LEITURA
+         ───────────────────────────────────────────────────── -->
+    <div class="peca">
+      <div class="rotulo">
+        <div class="num">ESTADO 01</div>
+        <div class="nome">Leitura</div>
+        <div class="desc">Nada além da página. Um grifo âmbar e uma palavra já consultada — a página que foi trabalhada guarda a marca.</div>
+      </div>
+      <div class="moldura"><div class="tela">
+        <div class="abajur"></div>
+        <div class="status">
+          <span>23:47</span>
+          <span class="dir">
+            <svg width="15" height="11" viewBox="0 0 15 11" fill="none" aria-hidden="true"><path d="M1 6.2 7.5 1 14 6.2" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/><path d="M4.4 8.8 7.5 6.4l3.1 2.4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+            <svg width="20" height="10" viewBox="0 0 20 10" fill="none" aria-hidden="true"><rect x="0.5" y="0.5" width="16" height="9" rx="2.5" stroke="currentColor" stroke-width="1"/><rect x="2" y="2" width="10" height="6" rx="1" fill="currentColor"/><path d="M18.4 3.6v2.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          </span>
+        </div>
+
+        <div class="pagina">
+          <div class="cabeca-cap">
+            <div class="obra">Dom Casmurro · Machado de Assis</div>
+            <div class="cap">Capítulo I</div>
+            <div class="cap-nome">Do título</div>
+            <div class="risco"></div>
+          </div>
+          <div class="corpo">
+            <p><span class="lettrine">U</span>ma noite destas, vindo da cidade para o Engenho Novo, encontrei num trem da Central um rapaz aqui do bairro, que eu conheço de vista e de chapéu. Cumprimentou-me, sentou-se ao pé de mim, <span class="grifo">falou da lua e dos ministros, e acabou recitando-me versos</span>. A viagem era curta, e os versos pode ser que não fossem inteiramente maus. Sucedeu, porém, que, como eu estava cansado, fechei os olhos três ou quatro vezes; tanto bastou para que ele interrompesse a leitura e metesse os versos no bolso.</p>
+            <p class="fala">— Continue, disse eu acordando.</p>
+            <p class="fala">— Já acabei, murmurou ele.</p>
+            <p class="fala">— São muito bonitos.</p>
+            <p>Vi-lhe fazer um gesto para tirá-los outra vez do bolso, mas não passou do gesto; estava <span class="consultada">amuado</span>. No dia seguinte entrou a dizer de mim nomes feios, e acabou alcunhando-me Dom Casmurro. Os vizinhos, que não gostam dos meus hábitos reclusos e calados, deram curso à alcunha, que afinal pegou.</p>
+          </div>
+        </div>
+
+        <div class="fio-vela"><i></i></div>
+      </div></div>
+    </div>
+
+    <!-- ─────────────────────────────────────────────────────
+         ESTADO 2 — CONTROLES REVELADOS
+         ───────────────────────────────────────────────────── -->
+    <div class="peca">
+      <div class="rotulo">
+        <div class="num">ESTADO 02</div>
+        <div class="nome">Controles revelados</div>
+        <div class="desc">Um toque no centro. Os controles emergem por difusão da própria escuridão — sem cartão, sem borda, sem contorno.</div>
+      </div>
+      <div class="moldura"><div class="tela">
+        <div class="abajur"></div>
+        <div class="status">
+          <span>23:47</span>
+          <span class="dir">
+            <svg width="15" height="11" viewBox="0 0 15 11" fill="none" aria-hidden="true"><path d="M1 6.2 7.5 1 14 6.2" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/><path d="M4.4 8.8 7.5 6.4l3.1 2.4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+            <svg width="20" height="10" viewBox="0 0 20 10" fill="none" aria-hidden="true"><rect x="0.5" y="0.5" width="16" height="9" rx="2.5" stroke="currentColor" stroke-width="1"/><rect x="2" y="2" width="10" height="6" rx="1" fill="currentColor"/><path d="M18.4 3.6v2.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          </span>
+        </div>
+
+        <div class="pagina texto-recuado">
+          <div class="cabeca-cap">
+            <div class="obra">Dom Casmurro · Machado de Assis</div>
+            <div class="cap">Capítulo I</div>
+            <div class="cap-nome">Do título</div>
+            <div class="risco"></div>
+          </div>
+          <div class="corpo">
+            <p><span class="lettrine">U</span>ma noite destas, vindo da cidade para o Engenho Novo, encontrei num trem da Central um rapaz aqui do bairro, que eu conheço de vista e de chapéu. Cumprimentou-me, sentou-se ao pé de mim, <span class="grifo">falou da lua e dos ministros, e acabou recitando-me versos</span>. A viagem era curta, e os versos pode ser que não fossem inteiramente maus. Sucedeu, porém, que, como eu estava cansado, fechei os olhos três ou quatro vezes; tanto bastou para que ele interrompesse a leitura e metesse os versos no bolso.</p>
+            <p class="fala">— Continue, disse eu acordando.</p>
+            <p class="fala">— Já acabei, murmurou ele.</p>
+            <p class="fala">— São muito bonitos.</p>
+            <p>Vi-lhe fazer um gesto para tirá-los outra vez do bolso, mas não passou do gesto; estava <span class="consultada">amuado</span>. No dia seguinte entrou a dizer de mim nomes feios, e acabou alcunhando-me Dom Casmurro. Os vizinhos, que não gostam dos meus hábitos reclusos e calados, deram curso à alcunha, que afinal pegou.</p>
+          </div>
+        </div>
+
+        <div class="difusao-topo"></div>
+        <div class="difusao-base"></div>
+
+        <div class="barra-topo">
+          <div class="voltar">
+            <svg width="19" height="19" viewBox="0 0 19 19" fill="none" aria-hidden="true"><path d="M11.5 4 6 9.5l5.5 5.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="titulo-corrente">
+            <div class="t">Dom Casmurro</div>
+            <div class="a">Machado de Assis</div>
+          </div>
+          <div class="tipo-acesso"></div>
+        </div>
+
+        <div class="ferramentas">
+          <div class="ferramenta">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 4.6h14M3 9.4h14M3 14.2h9" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></svg>
+            <span>Sumário</span>
+          </div>
+          <div class="ferramenta">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="8.6" cy="8.6" r="5.3" stroke="currentColor" stroke-width="1.25"/><path d="m12.6 12.6 4 4" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></svg>
+            <span>Busca</span>
+          </div>
+          <div class="ferramenta">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5.4 3.2h9.2v13.6L10 13.2l-4.6 3.6V3.2Z" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round"/></svg>
+            <span>Marcadores</span>
+          </div>
+          <div class="ferramenta viva">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4.2 12.4 12 4.6a2 2 0 0 1 2.8 0l.6.6a2 2 0 0 1 0 2.8l-7.8 7.8H4.2v-3.4Z" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round"/><path d="M3 18.4h14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            <span>Destaques · 6</span>
+          </div>
+        </div>
+
+        <div class="rodape-progresso">
+          <div class="linha-cap">
+            <div class="cap-atual">Capítulo I — Do título</div>
+            <div class="cap-indice">1 / 148</div>
+          </div>
+          <div class="trilha">
+            <div class="cheia"></div>
+            <div class="marca" style="left:14%"></div>
+            <div class="marca" style="left:29%"></div>
+            <div class="marca" style="left:41%"></div>
+            <div class="marca" style="left:58%"></div>
+            <div class="marca" style="left:73%"></div>
+            <div class="marca" style="left:88%"></div>
+            <div class="brasa"></div>
+          </div>
+          <div class="info-pagina">
+            <span><b>17</b> de 208 páginas</span>
+            <span class="pct">8% da obra</span>
+          </div>
+          <div class="info-pagina" style="margin-top:6px">
+            <span style="font-size:10px; color:rgba(231,214,182,0.34)">3 páginas até o Capítulo II</span>
+          </div>
+        </div>
+
+        <div class="toque-dica">os controles se recolhem em 3 s</div>
+      </div></div>
+    </div>
+
+    <!-- ─────────────────────────────────────────────────────
+         ESTADO 3 — TIPOGRAFIA E ACESSIBILIDADE
+         ───────────────────────────────────────────────────── -->
+    <div class="peca">
+      <div class="rotulo">
+        <div class="num">ESTADO 03</div>
+        <div class="nome">Tipografia &amp; conforto</div>
+        <div class="desc">A temperatura de luz ocupa o centro da folha, com o dobro do peso visual de qualquer outro controle. É a decisão que mais muda a leitura noturna.</div>
+      </div>
+      <div class="moldura"><div class="tela">
+        <div class="abajur"></div>
+        <div class="status">
+          <span>23:47</span>
+          <span class="dir">
+            <svg width="15" height="11" viewBox="0 0 15 11" fill="none" aria-hidden="true"><path d="M1 6.2 7.5 1 14 6.2" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/><path d="M4.4 8.8 7.5 6.4l3.1 2.4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+            <svg width="20" height="10" viewBox="0 0 20 10" fill="none" aria-hidden="true"><rect x="0.5" y="0.5" width="16" height="9" rx="2.5" stroke="currentColor" stroke-width="1"/><rect x="2" y="2" width="10" height="6" rx="1" fill="currentColor"/><path d="M18.4 3.6v2.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          </span>
+        </div>
+
+        <div class="pagina texto-recuado">
+          <div class="cabeca-cap">
+            <div class="obra">Dom Casmurro · Machado de Assis</div>
+            <div class="cap">Capítulo I</div>
+            <div class="cap-nome">Do título</div>
+            <div class="risco"></div>
+          </div>
+          <div class="corpo">
+            <p><span class="lettrine">U</span>ma noite destas, vindo da cidade para o Engenho Novo, encontrei num trem da Central um rapaz aqui do bairro, que eu conheço de vista e de chapéu. Cumprimentou-me, sentou-se ao pé de mim, <span class="grifo">falou da lua e dos ministros, e acabou recitando-me versos</span>. A viagem era curta, e os versos pode ser que não fossem inteiramente maus.</p>
+          </div>
+        </div>
+
+        <div class="folha" style="height:704px">
+          <div class="puxador"></div>
+          <div class="folha-topo">
+            <h3>Como você lê</h3>
+            <div class="fechar">Pronto</div>
+          </div>
+
+          <!-- fonte -->
+          <div class="secao">
+            <div class="rot"><span>Família</span><span class="valor">Literata</span></div>
+            <div class="chips">
+              <div class="chip ativo"><span class="f-lit">Aa</span><span class="n">Literata</span></div>
+              <div class="chip"><span class="f-news">Aa</span><span class="n">Newsreader</span></div>
+              <div class="chip"><span class="f-frau">Aa</span><span class="n">Fraunces</span></div>
+              <div class="chip"><span class="f-lit" style="font-weight:600">Aa</span><span class="n">Alta legib.</span></div>
+            </div>
+          </div>
+
+          <!-- corpo -->
+          <div class="secao">
+            <div class="rot"><span>Corpo</span><span class="valor">15,1 pt</span></div>
+            <div class="stepper">
+              <div class="btn p">A</div>
+              <div class="degraus">
+                <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i>
+              </div>
+              <div class="btn g">A</div>
+            </div>
+          </div>
+
+          <!-- entrelinha / margens / alinhamento -->
+          <div class="secao">
+            <div class="trio">
+              <div>
+                <div class="mini-rot">Entrelinha</div>
+                <div class="opts">
+                  <div class="opt"><span class="bars"><b></b><b></b><b></b></span></div>
+                  <div class="opt ativo"><span class="bars medio"><b></b><b></b><b></b></span></div>
+                  <div class="opt"><span class="bars solto"><b></b><b></b><b></b></span></div>
+                </div>
+              </div>
+              <div>
+                <div class="mini-rot">Margens</div>
+                <div class="opts">
+                  <div class="opt"><span class="caixa estreita"><i></i></span></div>
+                  <div class="opt ativo"><span class="caixa media"><i></i></span></div>
+                  <div class="opt"><span class="caixa larga"><i></i></span></div>
+                </div>
+              </div>
+              <div>
+                <div class="mini-rot">Alinhar</div>
+                <div class="opts">
+                  <div class="opt"><span class="bars dir"><b></b><b></b><b></b></span></div>
+                  <div class="opt ativo"><span class="bars"><b></b><b></b><b></b></span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- temas -->
+          <div class="secao">
+            <div class="rot"><span>Tema de leitura</span><span class="valor">Preto puro</span></div>
+            <div class="temas">
+              <div class="tema"><div class="amostra am-claro">Aa</div><div class="rotulinho">Claro</div></div>
+              <div class="tema"><div class="amostra am-sepia">Aa</div><div class="rotulinho">Sépia</div></div>
+              <div class="tema"><div class="amostra am-escuro">Aa</div><div class="rotulinho">Escuro</div></div>
+              <div class="tema sel"><div class="amostra am-oled">Aa</div><div class="rotulinho">OLED</div></div>
+            </div>
+          </div>
+
+          <!-- ★ TEMPERATURA DE LUZ ★ -->
+          <div class="temperatura">
+            <div class="cabeca">
+              <div class="tit">Temperatura de luz</div>
+              <div class="kelvin">2 400 K</div>
+            </div>
+            <div class="frase">Âmbar de abajur. A tinta esquenta; o fundo continua preto absoluto.</div>
+            <div style="position:relative">
+              <div class="arco-halo"></div>
+              <div class="arco"><div class="cursor"></div></div>
+            </div>
+            <div class="arco-legenda">
+              <span class="aceso">Âmbar · noite</span><span>Neutro</span><span>Frio · dia</span>
+            </div>
+            <div class="amostras">
+              <div class="viva">
+                <div class="txt q">Uma noite destas</div>
+                <div class="leg">2 400 K · agora</div>
+              </div>
+              <div>
+                <div class="txt f">Uma noite destas</div>
+                <div class="leg">6 500 K</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- brilho -->
+          <div class="secao">
+            <div class="rot"><span>Brilho</span><span class="valor">26%</span></div>
+            <div class="brilho-linha">
+              <span class="ico">
+                <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="2.6" stroke="currentColor" stroke-width="1.2"/></svg>
+              </span>
+              <div class="brilho-trilha"><b></b></div>
+              <span class="ico">
+                <svg width="17" height="17" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="3.4" stroke="currentColor" stroke-width="1.2"/><path d="M9 1.4v1.8M9 14.8v1.8M1.4 9h1.8M14.8 9h1.8M3.7 3.7l1.3 1.3M13 13l1.3 1.3M14.3 3.7 13 5M5 13l-1.3 1.3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              </span>
+            </div>
+          </div>
+
+          <!-- chave única de retorno sensorial -->
+          <div class="chave-bloco">
+            <div>
+              <div class="t">Retorno sensorial</div>
+              <div class="s">Desligado: nenhum som, nenhuma vibração, nenhuma animação de página.</div>
+            </div>
+            <div class="chave"><i></i><span class="rot-off">Desl.</span></div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ─────────────────────────────────────────────────────
+         ESTADO 4 — SELEÇÃO DE TEXTO + DICIONÁRIO
+         ───────────────────────────────────────────────────── -->
+    <div class="peca">
+      <div class="rotulo">
+        <div class="num">ESTADO 04</div>
+        <div class="nome">Seleção &amp; dicionário</div>
+        <div class="desc">Quatro cores de grifo, nomeadas. O verbete sobe sobre a página: o dicionário nunca tira o leitor do livro.</div>
+      </div>
+      <div class="moldura"><div class="tela">
+        <div class="abajur"></div>
+        <div class="status">
+          <span>23:51</span>
+          <span class="dir">
+            <svg width="15" height="11" viewBox="0 0 15 11" fill="none" aria-hidden="true"><path d="M1 6.2 7.5 1 14 6.2" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/><path d="M4.4 8.8 7.5 6.4l3.1 2.4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+            <svg width="20" height="10" viewBox="0 0 20 10" fill="none" aria-hidden="true"><rect x="0.5" y="0.5" width="16" height="9" rx="2.5" stroke="currentColor" stroke-width="1"/><rect x="2" y="2" width="10" height="6" rx="1" fill="currentColor"/><path d="M18.4 3.6v2.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          </span>
+        </div>
+
+        <div class="pagina">
+          <div class="cabeca-cap" style="margin-bottom:14px">
+            <div class="obra">Dom Casmurro · Machado de Assis</div>
+            <div class="cap" style="margin-top:9px">Capítulo I — Do título</div>
+            <div class="risco" style="margin-top:11px"></div>
+          </div>
+          <div class="corpo">
+            <p>A viagem era curta, e os versos pode ser que não fossem inteiramente maus. Sucedeu, porém, que, como eu estava cansado, fechei os olhos três ou quatro vezes; tanto bastou para que ele interrompesse a leitura e metesse os versos no bolso.</p>
+            <p class="fala">— Continue, disse eu acordando.</p>
+            <p class="fala">— Já acabei, murmurou ele.</p>
+            <p class="fala">— São muito bonitos.</p>
+            <p>Vi-lhe fazer um gesto para tirá-los outra vez do bolso, mas não passou do gesto; estava <span class="consultada">amuado</span>. No dia seguinte entrou a dizer de mim nomes feios, e acabou <span class="selecao"><span class="alca esq"></span>alcunhando-me Dom Casmurro<span class="alca dir"></span></span>. Os vizinhos, que não gostam dos meus hábitos reclusos e calados, deram curso à alcunha, que afinal pegou.</p>
+          </div>
+        </div>
+
+        <!-- barra de ações da seleção -->
+        <div class="acoes">
+          <div class="rot-acoes">Grifar em</div>
+          <div class="cores">
+            <div class="cor c1 sel"><b></b><span class="nome">Âmbar</span></div>
+            <div class="cor c2"><b></b><span class="nome">Argila</span></div>
+            <div class="cor c3"><b></b><span class="nome">Musgo</span></div>
+            <div class="cor c4"><b></b><span class="nome">Névoa</span></div>
+          </div>
+          <div class="risco-acoes"></div>
+          <div class="duo">
+            <a href="#">
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 11.2 10.4 3.8a1.6 1.6 0 0 1 2.3 0l.5.5a1.6 1.6 0 0 1 0 2.3L5.8 14H3v-2.8Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+              Anotar
+            </a>
+            <a href="#" class="viva">
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.4 3.2h4.2c.8 0 1.4.6 1.4 1.4v8.2c0-.8-.6-1.4-1.4-1.4H2.4V3.2ZM13.6 3.2H9.4c-.8 0-1.4.6-1.4 1.4v8.2c0-.8.6-1.4 1.4-1.4h4.2V3.2Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+              Dicionário
+            </a>
+          </div>
+        </div>
+
+        <!-- dicionário sobreposto -->
+        <div class="dicionario">
+          <div style="height:14px"></div>
+          <div class="puxador" style="margin-top:0"></div>
+          <div class="dic-fonte">Dicionário · pt-BR</div>
+          <div class="verbete">
+            <span class="palavra">casmurro</span>
+            <span class="fon">/kaʒ&#8203;ˈmuʁu/</span>
+            <span class="classe">adjetivo · substantivo</span>
+          </div>
+          <ul class="acepcoes">
+            <li><span class="n">1</span><span class="d">Teimoso, obstinado; que não se deixa demover.</span></li>
+            <li><span class="n">2</span><span class="d">Calado, ensimesmado, metido consigo mesmo. <i>“hábitos reclusos e calados”</i></span></li>
+            <li><span class="n">3</span><span class="d">Homem taciturno, de convívio esquivo.</span></li>
+          </ul>
+          <div class="nota-etimo">No romance, o narrador adverte que o apelido não vem do dicionário: “não consultes dicionários” — vale o sentido que os vizinhos lhe deram.</div>
+          <div class="dic-acoes">
+            <div class="principal">
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 2.4h8v11.2L8 10.9l-4 2.7V2.4Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+              Salvar como anotação
+            </div>
+            <div class="secundaria">4 ocorrências</div>
+          </div>
+          <div class="dic-rodape">a página continua atrás — você não saiu do livro</div>
+        </div>
+      </div></div>
+    </div>
+
+   </div>
+  </div>
+
+  <!-- ══════════ NOTAS ══════════ -->
+  <div class="notas">
+    <div class="nota">
+      <div class="cab">Tipografia</div>
+      <p><b>Literata</b> para o corpo do texto: desenhada para leitura em tela, tem eixo vertical, baixo contraste de traço e altura-x generosa — três coisas que impedem o texto de sumir ou florescer (<i>halation</i>) sobre preto puro. Nada de pesos finos: 400 é o mínimo, e a tinta é <b>#E7D6B6</b>, nunca branco puro, que a 100% de luminância queima a retina no escuro. <b>Fraunces</b> entra só em títulos e números, pela personalidade <i>cult</i> que a marca pede.</p>
+    </div>
+    <div class="nota">
+      <div class="cab">Contraste como argumento</div>
+      <p>Contraste máximo não é conforto: é ofuscamento. A tinta âmbar sobre preto fica em torno de <b>11:1</b> — muito acima do mínimo AA — enquanto reduz o azul que atrapalha o sono. Conforto visual aqui é uma decisão de design declarada na superfície da tela, não uma opção escondida num submenu de acessibilidade.</p>
+    </div>
+    <div class="nota">
+      <div class="cab">Divergência da RN-02.13</div>
+      <p>Mantive o modo imersivo — sem barra, sem contador, sem badge — mas <b>discordo do zero absoluto</b>. Acrescentei o <b>fio de vela</b>: um traço de 1,5 px na base da página, sem número algum, que só mostra o quanto de luz já percorreu a obra. Sem nenhuma âncora, o leitor perde a noção de lugar e sai do livro para descobrir onde está — o que quebra a imersão mais do que um fio de luz. Nenhuma métrica de velocidade aparece em lugar nenhum.</p>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

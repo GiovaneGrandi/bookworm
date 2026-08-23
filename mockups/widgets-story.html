@@ -1,0 +1,1352 @@
+<title>Widgets de Story</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=EB+Garamond:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Caveat:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════════
+   BookWorm · Widgets compartilháveis para Instagram Stories
+   Direção "Papel" — mesmo vocabulário de telas-papel.html / leitor-papel.html
+   TODO o CSS escopado sob .mk-widgets — nada vaza.
+   ══════════════════════════════════════════════════════════════ */
+html, body { margin:0; padding:0; background:#1e2320; }
+
+.mk-widgets {
+  --tinta: #241f19;
+  --tinta-70: rgba(36,31,25,.72);  --tinta-50: rgba(36,31,25,.52);
+  --tinta-32: rgba(36,31,25,.34);  --tinta-16: rgba(36,31,25,.16);
+  --papel: #f3ead9;  --papel-fundo: #efe3ce;  --grafite: #6f6858;
+  --verde-tinta: #2f5d3a;
+  --ambar: #e6c15c;
+  --mesa: #1e2320;
+  --pig-ambar: #e7c25e; --pig-oliva: #a8b07a;
+  --pig-tinta: #93a9c0; --pig-carmim: #d79aa2;
+  --serif: 'Spectral', 'Iowan Old Style', Palatino, Georgia, serif;
+  --garamond: 'EB Garamond', 'Spectral', Garamond, Georgia, serif;
+  --mono: 'Courier Prime', 'Courier New', Courier, monospace;
+  --lapis: 'Caveat', 'Segoe Script', cursive;
+
+  /* tokens de tinta "locais" — sobrescritos por material (§ materiais) */
+  --ink: var(--tinta); --ink-70: var(--tinta-70); --ink-50: var(--tinta-50); --ink-30: var(--tinta-32);
+  --acento-loc: var(--verde-tinta); --acento-loc-70: rgba(47,93,58,.7);
+  --papel-loc: var(--papel);
+
+  font-family: var(--serif);
+  color: #ded4bd;
+  background-color: var(--mesa);
+  background-image:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.020) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(0deg,  rgba(0,0,0,.16) 0 1px, transparent 1px 3px),
+    radial-gradient(120% 90% at 50% -10%, rgba(190,170,130,.14), transparent 60%),
+    radial-gradient(140% 120% at 50% 110%, rgba(0,0,0,.55), transparent 65%);
+  min-height: 100vh;
+  padding-bottom: 10px;
+  -webkit-font-smoothing: antialiased;
+}
+.mk-widgets *, .mk-widgets *::before, .mk-widgets *::after { box-sizing: border-box; }
+.mk-widgets p, .mk-widgets h1, .mk-widgets h2, .mk-widgets h3, .mk-widgets figure { margin:0; }
+.mk-widgets ::selection { background: rgba(230,193,92,.4); }
+.mk-widgets b, .mk-widgets strong { font-weight: 600; }
+.mk-widgets em, .mk-widgets i { font-style: italic; }
+
+/* ── cabeça ────────────────────────────────────────────────── */
+.mk-widgets .mw-cabeca { max-width: 1320px; margin:0 auto; padding: 54px 48px 24px; }
+.mk-widgets .mw-carimbo-prova {
+  position:absolute; top:44px; right:48px; width:150px; height:94px;
+  border:2px solid rgba(84,140,96,.55); border-radius:50%;
+  box-shadow: inset 0 0 0 3px rgba(84,140,96,.16);
+  transform: rotate(-9deg);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+  font-family: var(--mono); color: rgba(84,140,96,.78); text-align:center; opacity:.9;
+}
+.mk-widgets .mw-carimbo-prova b { font-size:12px; letter-spacing:.15em; }
+.mk-widgets .mw-carimbo-prova span { font-size:7.5px; letter-spacing:.2em; }
+.mk-widgets .mw-carimbo-prova hr { width:60px; border:0; border-top:1px solid rgba(84,140,96,.45); margin:2px 0; }
+.mk-widgets .mw-titulo {
+  font-family: var(--serif); font-weight:300; font-size:44px; letter-spacing:.06em;
+  line-height:1.1; color:#f0e7d2; max-width:22ch;
+}
+.mk-widgets .mw-titulo em { font-style:italic; font-weight:300; color:#c9a86a; }
+.mk-widgets .mw-sub {
+  font-family: var(--mono); font-size:10.5px; letter-spacing:.3em; text-transform:uppercase;
+  color: rgba(222,212,189,.6); margin-top:16px;
+}
+.mk-widgets .mw-linha { height:1px; margin:18px 0 16px; background: linear-gradient(90deg, rgba(222,212,189,.55), rgba(222,212,189,.06) 78%, transparent); }
+.mk-widgets .mw-nota { font-size:14.5px; font-style:italic; font-weight:300; color: rgba(222,212,189,.68); max-width:74ch; line-height:1.65; }
+.mk-widgets .mw-regra {
+  margin-top:18px; max-width:74ch; padding:16px 20px; border-left:2px solid rgba(230,193,92,.6);
+  background: rgba(230,193,92,.06);
+  font-family: var(--garamond); font-style:italic; font-size:16px; line-height:1.55; color:#f0e7d2;
+}
+.mk-widgets .mw-regra b { font-style:normal; color:#e6c15c; }
+
+/* amostras de material */
+.mk-widgets .mw-materiais { display:flex; flex-wrap:wrap; gap:16px; margin-top:30px; }
+.mk-widgets .mw-mat-amostra { width:150px; }
+.mk-widgets .mw-mat-chip {
+  height:78px; display:flex; align-items:center; justify-content:center;
+  border:1px solid rgba(255,255,255,.14); box-shadow: 0 6px 16px rgba(0,0,0,.4);
+  border-radius: 3px 6px 4px 7px / 5px 3px 6px 4px;
+  font-family: var(--serif); font-size:26px; font-weight:500;
+}
+.mk-widgets .mw-mat-amostra b { display:block; font-family: var(--mono); font-size:8.5px; letter-spacing:.14em; text-transform:uppercase; color: rgba(222,212,189,.85); margin-top:8px; }
+.mk-widgets .mw-mat-amostra span { display:block; font-family: var(--mono); font-size:7.6px; color: rgba(222,212,189,.42); margin-top:2px; line-height:1.5; }
+
+/* ── corpo / seções ────────────────────────────────────────── */
+.mk-widgets .mw-corpo { max-width:1320px; margin:0 auto; padding: 8px 48px 40px; }
+.mk-widgets .mw-familia { padding: 50px 0 10px; border-top:1px solid rgba(222,212,189,.14); }
+.mk-widgets .mw-familia:first-child { border-top:none; }
+.mk-widgets .mw-familia-cabeca { max-width: 880px; margin-bottom: 30px; }
+.mk-widgets .mw-familia-kicker { font-family: var(--mono); font-size:10px; letter-spacing:.3em; text-transform:uppercase; color: rgba(230,193,92,.85); }
+.mk-widgets .mw-familia-titulo { font-family: var(--serif); font-size:28px; font-weight:400; color:#f0e7d2; margin-top:6px; }
+.mk-widgets .mw-familia-nota { font-family: var(--garamond); font-style:italic; font-size:15px; line-height:1.6; color: rgba(222,212,189,.66); margin-top:10px; max-width:74ch; }
+
+/* legenda / ficha de cada widget — etiqueta datilografada */
+.mk-widgets .mw-legenda {
+  position:relative; max-width:640px; margin:0 0 26px;
+  background:#ece2cc;
+  background-image: radial-gradient(rgba(90,70,45,.055) .5px, transparent .6px), linear-gradient(180deg, rgba(255,255,255,.4), rgba(0,0,0,.02));
+  background-size: 7px 7px, 100% 100%;
+  padding:16px 20px 17px;
+  box-shadow: 0 10px 22px rgba(48,32,16,.34), inset 0 0 0 1px rgba(120,95,60,.18);
+  transform: rotate(-.6deg);
+}
+.mk-widgets .mw-widget:nth-child(even) .mw-legenda { transform: rotate(.6deg); }
+.mk-widgets .mw-legenda::before {
+  content:""; position:absolute; top:-12px; left:36px; width:84px; height:23px;
+  background: linear-gradient(180deg, rgba(226,208,168,.8), rgba(206,184,140,.72));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.28); transform: rotate(-2.4deg); opacity:.92;
+}
+.mk-widgets .mw-legenda-num { font-family: var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.26em; color: var(--verde-tinta); text-transform:uppercase; }
+.mk-widgets .mw-legenda-nome { font-family: var(--serif); font-size:21px; font-weight:500; margin-top:3px; color: var(--tinta); }
+.mk-widgets .mw-legenda-linha { display:flex; flex-wrap:wrap; gap:4px 18px; margin-top:9px; font-family: var(--mono); font-size:9.5px; color: var(--tinta-70); }
+.mk-widgets .mw-legenda-linha b { font-weight:700; color: var(--tinta); }
+.mk-widgets .mw-legenda-rn { font-family: var(--mono); font-size:8.6px; letter-spacing:.04em; color: var(--tinta-50); margin-top:8px; }
+.mk-widgets .mw-legenda-racional { font-size:12.8px; font-style:italic; font-weight:300; color: var(--tinta-70); margin-top:8px; line-height:1.5; border-top:1px dashed rgba(124,98,58,.35); padding-top:8px; }
+
+.mk-widgets .mw-widget { margin-bottom: 6px; }
+.mk-widgets .mw-frames { display:flex; flex-wrap:nowrap; gap:40px; align-items:flex-start; overflow-x:auto; padding: 4px 4px 18px; scrollbar-width:thin; }
+.mk-widgets .mw-frames::-webkit-scrollbar { height:9px; }
+.mk-widgets .mw-frames::-webkit-scrollbar-track { background: rgba(0,0,0,.3); }
+.mk-widgets .mw-frames::-webkit-scrollbar-thumb { background: rgba(201,168,106,.4); border-radius:6px; }
+.mk-widgets .mw-frame-col { display:flex; flex-direction:column; align-items:center; gap:12px; flex:0 0 auto; }
+.mk-widgets .mw-frame-tag { font-family: var(--mono); font-size:9px; letter-spacing:.1em; text-transform:uppercase; color: rgba(222,212,189,.56); text-align:center; max-width:360px; line-height:1.6; }
+.mk-widgets .mw-frame-tag b { color: rgba(230,193,92,.92); font-weight:700; }
+/* ── aparelho + moldura de Instagram Story ────────────────────── */
+.mk-widgets .mw-fone {
+  width:411px; height:870px; padding:9px; border-radius:30px; flex:0 0 auto;
+  background: linear-gradient(160deg, #34322c 0%, #16150f 46%, #2b2922 100%);
+  box-shadow: 0 34px 60px rgba(0,0,0,.62), 0 4px 10px rgba(0,0,0,.5),
+    inset 0 0 0 1px rgba(255,255,255,.075), inset 0 1px 0 rgba(255,255,255,.14);
+  position:relative;
+}
+.mk-widgets .mw-story { position:relative; overflow:hidden; width:393px; height:852px; border-radius:22px; }
+.mk-widgets .mw-ig-top { position:absolute; left:0; right:0; top:0; padding:12px 12px 0; z-index:9; }
+.mk-widgets .mw-ig-bars { display:flex; gap:4px; }
+.mk-widgets .mw-ig-bars i { flex:1; height:2.5px; border-radius:2px; background: rgba(255,255,255,.32); }
+.mk-widgets .mw-ig-bars i:first-child { background: rgba(255,255,255,.92); }
+.mk-widgets .mw-ig-user { display:flex; align-items:center; gap:8px; margin-top:9px; }
+.mk-widgets .mw-ig-avatar {
+  width:26px; height:26px; border-radius:50%; flex:0 0 auto;
+  background: radial-gradient(circle at 32% 28%, #6f8f6a, #2f5d3a 70%);
+  box-shadow: 0 0 0 1.5px rgba(255,255,255,.7);
+  display:flex; align-items:center; justify-content:center;
+  font-family: var(--serif); font-size:11px; font-weight:600; color:#f3ead9;
+}
+.mk-widgets .mw-ig-nome { font-family: var(--serif); font-size:12.5px; font-weight:600; color:#fff; text-shadow: 0 1px 3px rgba(0,0,0,.5); }
+.mk-widgets .mw-ig-hora { font-family: var(--serif); font-size:11.5px; color: rgba(255,255,255,.78); text-shadow: 0 1px 3px rgba(0,0,0,.5); margin-left:2px; }
+.mk-widgets .mw-ig-dots { margin-left:auto; color: rgba(255,255,255,.85); font-size:15px; text-shadow: 0 1px 3px rgba(0,0,0,.5); letter-spacing:1px; }
+.mk-widgets .mw-ig-bottom {
+  position:absolute; left:0; right:0; bottom:0; padding:14px 14px 20px; z-index:9;
+  display:flex; align-items:center; gap:10px;
+}
+.mk-widgets .mw-ig-input {
+  flex:1; border:1.4px solid rgba(255,255,255,.65); border-radius:999px; padding:9px 16px;
+  font-family: var(--garamond); font-style:italic; font-size:13px; color: rgba(255,255,255,.82);
+  text-shadow: 0 1px 2px rgba(0,0,0,.4);
+}
+.mk-widgets .mw-ig-icone { width:20px; height:20px; opacity:.85; filter: drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
+.mk-widgets .mw-story-fundo { position:absolute; inset:0; }
+
+/* ── 5 fotos simuladas ─────────────────────────────────────── */
+.mk-widgets .mw-foto-clara {
+  background:
+    radial-gradient(120% 90% at 32% 12%, rgba(255,255,255,.9), transparent 55%),
+    linear-gradient(162deg, #f6f1e5 0%, #e6dabd 48%, #cdbfa0 100%),
+    repeating-linear-gradient(98deg, rgba(255,255,255,.14) 0 2px, transparent 2px 30px);
+}
+.mk-widgets .mw-foto-clara::before, .mk-widgets .mw-foto-clara::after {
+  content:""; position:absolute; width:150px; height:190px; background: rgba(250,246,236,.88);
+  box-shadow: 0 14px 30px rgba(90,70,40,.22); border-radius: 2px 4px 2px 4px / 3px 2px 4px 2px;
+}
+.mk-widgets .mw-foto-clara::before { left:96px; top:340px; transform: rotate(-7deg) skewY(1deg); }
+.mk-widgets .mw-foto-clara::after { left:206px; top:336px; transform: rotate(6deg) skewY(-1deg); }
+
+.mk-widgets .mw-foto-escura {
+  background:
+    radial-gradient(36% 26% at 74% 18%, rgba(255,214,140,.5), transparent 62%),
+    radial-gradient(70% 60% at 50% 104%, rgba(46,32,18,.92), transparent 70%),
+    linear-gradient(180deg, #2a2018 0%, #171009 68%, #0e0906 100%);
+}
+
+.mk-widgets .mw-foto-quente {
+  background:
+    radial-gradient(26% 20% at 22% 80%, rgba(58,36,16,.55), transparent 65%),
+    linear-gradient(138deg, #dba55d 0%, #ba7c3d 42%, #8a5326 78%, #6a3c1b 100%),
+    repeating-linear-gradient(92deg, rgba(255,255,255,.05) 0 3px, transparent 3px 28px);
+}
+
+.mk-widgets .mw-foto-fria {
+  background:
+    radial-gradient(6% 4% at 22% 28%, rgba(255,255,255,.55), transparent 72%),
+    radial-gradient(4% 3% at 42% 52%, rgba(255,255,255,.42), transparent 72%),
+    radial-gradient(5% 4% at 68% 20%, rgba(255,255,255,.48), transparent 72%),
+    radial-gradient(3% 3% at 80% 58%, rgba(255,255,255,.4), transparent 72%),
+    radial-gradient(4% 3% at 54% 78%, rgba(255,255,255,.36), transparent 72%),
+    radial-gradient(5% 3% at 30% 68%, rgba(255,255,255,.3), transparent 72%),
+    linear-gradient(172deg, #829aad 0%, #55708a 55%, #384c62 100%);
+}
+
+.mk-widgets .mw-foto-ocupada {
+  background:
+    repeating-linear-gradient(90deg, #8a4136 0 26px, #4f5a49 26px 50px, #c69a45 50px 70px, #35513f 70px 96px, #a3562f 96px 118px, #4a3968 118px 140px, #6b7c5a 140px 160px, #7d271f 160px 182px),
+    repeating-linear-gradient(0deg, rgba(0,0,0,.1) 0 2px, transparent 2px 38px),
+    linear-gradient(0deg, rgba(0,0,0,.18), rgba(0,0,0,.18));
+}
+
+/* ── 6 materiais ───────────────────────────────────────────── */
+.mk-widgets .mw-mat-creme {
+  --papel-loc:#f3ead9; --ink:#241f19; --ink-70:rgba(36,31,25,.72); --ink-50:rgba(36,31,25,.5); --ink-30:rgba(36,31,25,.3);
+  --acento-loc:#2f5d3a; --acento-loc-70:rgba(47,93,58,.72);
+  background-color: var(--papel-loc);
+  background-image: radial-gradient(circle at 16% 8%, rgba(255,255,255,.5), transparent 46%), radial-gradient(rgba(96,74,46,.075) .5px, transparent .6px);
+  background-size: 100% 100%, 7px 7px;
+  color: var(--ink);
+}
+.mk-widgets .mw-mat-sepia {
+  --papel-loc:#e7d5b4; --ink:#3a2e20; --ink-70:rgba(58,46,32,.74); --ink-50:rgba(58,46,32,.54); --ink-30:rgba(58,46,32,.32);
+  --acento-loc:#2f5d3a; --acento-loc-70:rgba(47,93,58,.72);
+  background-color: var(--papel-loc);
+  background-image: radial-gradient(circle at 16% 8%, rgba(255,255,255,.3), transparent 46%), radial-gradient(rgba(90,60,30,.09) .5px, transparent .6px);
+  background-size: 100% 100%, 7px 7px;
+  color: var(--ink);
+}
+.mk-widgets .mw-mat-kraft {
+  --papel-loc:#c8a97e; --ink:#2b2117; --ink-70:rgba(43,33,23,.78); --ink-50:rgba(43,33,23,.56); --ink-30:rgba(43,33,23,.32);
+  --acento-loc:#8a5a12; --acento-loc-70:rgba(138,90,18,.85);
+  background-color: var(--papel-loc);
+  background-image: radial-gradient(circle at 20% 10%, rgba(255,255,255,.22), transparent 50%), radial-gradient(rgba(70,48,20,.14) .5px, transparent .6px);
+  background-size: 100% 100%, 7px 7px;
+  color: var(--ink);
+}
+.mk-widgets .mw-mat-vegetal {
+  --papel-loc:rgba(247,241,227,.72); --ink:#241f19; --ink-70:rgba(36,31,25,.72); --ink-50:rgba(36,31,25,.5); --ink-30:rgba(36,31,25,.3);
+  --acento-loc:#2f5d3a; --acento-loc-70:rgba(47,93,58,.72);
+  background:
+    radial-gradient(60% 46% at 20% 18%, rgba(168,176,122,.5), transparent 60%),
+    radial-gradient(50% 40% at 82% 70%, rgba(147,169,192,.42), transparent 62%),
+    radial-gradient(40% 34% at 60% 15%, rgba(215,154,162,.34), transparent 60%),
+    linear-gradient(160deg, #efe4c8, #d9c9a0);
+  color: var(--ink);
+}
+.mk-widgets .mw-mat-vegetal .mw-vegetal-veu {
+  position:absolute; inset:0; background: var(--papel-loc); backdrop-filter: blur(3px);
+  background-image: radial-gradient(rgba(255,255,255,.4) .6px, transparent .7px);
+  background-size: 7px 7px;
+}
+.mk-widgets .mw-mat-carvao {
+  --papel-loc:#221f1b; --ink:#e8dcc4; --ink-70:rgba(232,220,196,.76); --ink-50:rgba(232,220,196,.56); --ink-30:rgba(232,220,196,.32);
+  --acento-loc:#e6c15c; --acento-loc-70:rgba(230,193,92,.85);
+  background-color: var(--papel-loc);
+  background-image: radial-gradient(circle at 50% 0%, rgba(255,255,255,.06), transparent 60%), radial-gradient(rgba(255,255,255,.045) .5px, transparent .6px);
+  background-size: 100% 100%, 7px 7px;
+  color: var(--ink);
+}
+.mk-widgets .mw-mat-cianotipo {
+  --papel-loc:#1d3a56; --ink:#dce8f2; --ink-70:rgba(220,232,242,.78); --ink-50:rgba(220,232,242,.56); --ink-30:rgba(220,232,242,.32);
+  --acento-loc:#dce8f2; --acento-loc-70:rgba(220,232,242,.75);
+  background-color: var(--papel-loc);
+  background-image: radial-gradient(circle at 80% 90%, rgba(255,255,255,.07), transparent 55%), radial-gradient(rgba(255,255,255,.05) .5px, transparent .6px);
+  background-size: 100% 100%, 7px 7px;
+  color: var(--ink);
+}
+/* ── marca BookWorm (obrigatória em todo widget) ──────────────── */
+.mk-widgets .mw-marca {
+  display:inline-flex; align-items:center; gap:4px;
+  font-family: var(--mono); font-size:6.6px; letter-spacing:.16em; text-transform:uppercase;
+  opacity:.62; white-space:nowrap;
+}
+.mk-widgets .mw-marca svg { flex:0 0 auto; }
+
+/* ── A1 · carimbo de sessão ────────────────────────────────── */
+.mk-widgets .mw-carimbo {
+  position:absolute; width:158px; height:158px; border-radius:50%;
+  border:2px solid rgba(47,93,58,.6);
+  box-shadow: inset 0 0 0 3px rgba(47,93,58,.15), 0 12px 22px rgba(48,32,16,.36);
+  background:#f8f1e2;
+  background-image: radial-gradient(rgba(96,74,46,.08) .5px, transparent .6px);
+  background-size:7px 7px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px;
+  font-family: var(--mono); color: rgba(47,93,58,.85); text-align:center;
+  transform: rotate(-9deg);
+}
+.mk-widgets .mw-carimbo b { font-family: var(--serif); font-size:30px; font-weight:600; line-height:1; color: var(--tinta); font-variant-numeric: tabular-nums; }
+.mk-widgets .mw-carimbo .mw-c-lbl { font-size:6.6px; letter-spacing:.16em; margin-top:3px; }
+.mk-widgets .mw-carimbo hr { width:66px; border:0; border-top:1px solid rgba(47,93,58,.4); margin:5px 0; }
+.mk-widgets .mw-carimbo em { font-style:normal; font-size:7.2px; letter-spacing:.05em; color: rgba(47,93,58,.78); }
+.mk-widgets .mw-carimbo .mw-marca { position:absolute; bottom:14px; left:50%; transform:translateX(-50%) rotate(9deg); color: rgba(47,93,58,.7); }
+
+/* ── A2 · etiqueta datilografada ───────────────────────────── */
+.mk-widgets .mw-etiqueta {
+  position:absolute; background:#f3ead9;
+  background-image: radial-gradient(rgba(96,74,46,.08) .5px, transparent .6px);
+  background-size:7px 7px;
+  border:1px solid rgba(124,98,58,.4);
+  box-shadow: 0 9px 18px rgba(48,32,16,.32), inset 0 0 0 1px rgba(255,255,255,.25);
+  padding:11px 18px 10px;
+  transform: rotate(-2.4deg);
+  display:flex; align-items:center; gap:12px;
+}
+.mk-widgets .mw-etiqueta-txt { font-family: var(--mono); font-size:12.5px; letter-spacing:.1em; text-transform:uppercase; color: var(--tinta); white-space:nowrap; font-weight:700; }
+.mk-widgets .mw-etiqueta .mw-marca { border-left:1px dashed rgba(124,98,58,.4); padding-left:10px; color: var(--tinta-50); }
+
+/* ── A3 · ficha de empréstimo ──────────────────────────────── */
+.mk-widgets .mw-ficha-w {
+  position:absolute; width:276px; background:#f8f1e2;
+  background-image: radial-gradient(rgba(96,74,46,.07) .5px, transparent .6px), repeating-linear-gradient(180deg, transparent 0 19px, rgba(147,169,192,.3) 19px 20px);
+  background-size:7px 7px, 100% 100%;
+  border:1px solid rgba(124,98,58,.42);
+  box-shadow: 0 12px 24px rgba(48,32,16,.36);
+  padding:14px 16px 12px;
+  transform: rotate(-1.2deg);
+  color: var(--tinta);
+}
+.mk-widgets .mw-ficha-w-topo { display:flex; justify-content:space-between; align-items:baseline; border-bottom:2px solid var(--tinta); padding-bottom:6px; }
+.mk-widgets .mw-ficha-w-obra { font-family: var(--serif); font-style:italic; font-size:14px; }
+.mk-widgets .mw-ficha-w-carimbo {
+  width:40px; height:40px; border-radius:50%; border:1.5px solid rgba(47,93,58,.6);
+  display:flex; align-items:center; justify-content:center; flex-direction:column;
+  font-family: var(--mono); color: rgba(47,93,58,.85); transform: rotate(8deg); flex:0 0 auto;
+  box-shadow: inset 0 0 0 2px rgba(47,93,58,.14);
+}
+.mk-widgets .mw-ficha-w-carimbo span { font-size:6px; letter-spacing:.04em; line-height:1.05; text-align:center; }
+.mk-widgets .mw-ficha-w-linha { display:flex; justify-content:space-between; margin-top:10px; font-family: var(--mono); font-size:9px; letter-spacing:.04em; color: var(--tinta-70); }
+.mk-widgets .mw-ficha-w-linha b { display:block; font-family: var(--serif); font-size:19px; color: var(--tinta); font-weight:600; margin-bottom:2px; font-variant-numeric: tabular-nums; }
+.mk-widgets .mw-ficha-w-nota { font-family: var(--serif); font-style:italic; font-size:12px; color: var(--tinta-70); margin-top:10px; border-top:1px dashed rgba(124,98,58,.35); padding-top:8px; }
+.mk-widgets .mw-ficha-w .mw-marca { margin-top:9px; color: var(--tinta-50); }
+
+/* ── A4 · número a lápis ───────────────────────────────────── */
+.mk-widgets .mw-lapis {
+  position:absolute; text-align:center; color: var(--tinta);
+  text-shadow: 0 0 16px rgba(243,234,217,.95), 0 0 9px rgba(243,234,217,.95), 0 0 4px rgba(243,234,217,.9);
+}
+.mk-widgets .mw-lapis b { display:block; font-family: var(--lapis); font-size:92px; line-height:.85; font-weight:600; transform: rotate(-2deg); }
+.mk-widgets .mw-lapis span { display:block; font-family: var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; margin-top:8px; font-weight:700; }
+.mk-widgets .mw-lapis .mw-marca { justify-content:center; margin-top:10px; text-shadow:none; }
+
+/* ── A5 · corte do livro ───────────────────────────────────── */
+.mk-widgets .mw-corte-w {
+  position:absolute; right:20px; top:72px; bottom:110px; width:44px;
+  background: repeating-linear-gradient(90deg, rgba(124,98,58,.35) 0 1.5px, rgba(252,246,234,.92) 1.5px 4px);
+  border:1px solid rgba(124,98,58,.32);
+  box-shadow: inset 1px 0 0 rgba(255,255,255,.5), -4px 0 10px -4px rgba(0,0,0,.4), 0 10px 20px rgba(48,32,16,.32);
+}
+.mk-widgets .mw-corte-w-lido { position:absolute; left:0; top:0; bottom:0; background: rgba(150,108,52,.46); mix-blend-mode:multiply; border-right:1.5px solid rgba(47,93,58,.72); }
+.mk-widgets .mw-corte-tag {
+  position:absolute; right:20px; background:#f3ead9; border:1px solid rgba(124,98,58,.42);
+  padding:6px 8px 5px; box-shadow: 0 6px 12px rgba(48,32,16,.3); transform: rotate(2deg);
+  font-family: var(--mono); font-size:9px; color: var(--tinta); text-align:center;
+}
+.mk-widgets .mw-corte-tag b { display:block; font-family: var(--serif); font-size:15px; font-weight:600; }
+.mk-widgets .mw-corte-tag .mw-marca { margin-top:4px; justify-content:center; }
+
+/* ── prancha técnica (Família A, isolada) ─────────────────── */
+.mk-widgets .mw-prancha {
+  position:relative; width:393px; min-height:280px; background:#e9ded0;
+  background-image: radial-gradient(rgba(96,74,46,.06) .5px, transparent .6px); background-size:7px 7px;
+  border:1px solid rgba(124,98,58,.3);
+  box-shadow: 0 14px 30px rgba(48,32,16,.3), inset 0 0 0 1px rgba(255,255,255,.2);
+  padding:34px 26px 26px; display:flex; align-items:center; justify-content:center; gap:36px; flex-wrap:wrap;
+}
+.mk-widgets .mw-prancha-mira { position:absolute; width:11px; height:11px; }
+.mk-widgets .mw-prancha-mira::before, .mk-widgets .mw-prancha-mira::after { content:""; position:absolute; background: rgba(58,46,32,.5); }
+.mk-widgets .mw-prancha-mira::before { left:5px; top:0; width:1px; height:11px; }
+.mk-widgets .mw-prancha-mira::after { top:5px; left:0; height:1px; width:11px; }
+.mk-widgets .mw-prancha-mira.tl { top:8px; left:8px; } .mk-widgets .mw-prancha-mira.tr { top:8px; right:8px; }
+.mk-widgets .mw-prancha-mira.bl { bottom:8px; left:8px; } .mk-widgets .mw-prancha-mira.br { bottom:8px; right:8px; }
+.mk-widgets .mw-prancha-item { display:flex; flex-direction:column; align-items:center; gap:10px; position:relative; }
+.mk-widgets .mw-prancha-item .mw-carimbo, .mk-widgets .mw-prancha-item .mw-lapis, .mk-widgets .mw-prancha-item .mw-etiqueta, .mk-widgets .mw-prancha-item .mw-ficha-w, .mk-widgets .mw-prancha-item .mw-corte-w { position:static; transform: rotate(0deg); }
+.mk-widgets .mw-prancha-dim { font-family: var(--mono); font-size:8.5px; letter-spacing:.06em; color: rgba(58,46,32,.6); text-align:center; }
+.mk-widgets .mw-prancha-dim b { color: rgba(47,93,58,.85); }
+/* ── cards cheios (Famílias B, C, D) ──────────────────────── */
+.mk-widgets .mw-card { position:absolute; inset:0; padding:96px 26px 0; }
+.mk-widgets .mw-card-fleuron { color: var(--ink-30); display:block; margin: 14px auto; }
+
+/* B1 — ex-líbris de sessão */
+.mk-widgets .mw-b1-kicker { font-family: var(--mono); font-size:8.5px; letter-spacing:.24em; text-transform:uppercase; color: var(--ink-50); text-align:center; }
+.mk-widgets .mw-b1-titulo { font-family: var(--serif); font-size:23px; font-weight:400; text-align:center; margin-top:10px; line-height:1.32; color: var(--ink); }
+.mk-widgets .mw-b1-numeros { display:flex; margin-top:22px; border-top:2px solid var(--ink); border-bottom:1px solid var(--ink-30); padding:14px 0; }
+.mk-widgets .mw-b1-num { flex:1; border-left:1px solid var(--ink-30); padding:0 4px; text-align:center; }
+.mk-widgets .mw-b1-num:first-child { border-left:none; }
+.mk-widgets .mw-b1-num b { display:block; font-family: var(--serif); font-size:27px; font-weight:600; color: var(--ink); font-variant-numeric: tabular-nums; line-height:1; }
+.mk-widgets .mw-b1-num span { display:block; font-family: var(--mono); font-size:6.6px; letter-spacing:.08em; text-transform:uppercase; color: var(--ink-50); margin-top:6px; line-height:1.4; }
+.mk-widgets .mw-b1-estilo { display:flex; justify-content:center; margin-top:16px; }
+.mk-widgets .mw-b1-estilo span { border:1px solid var(--acento-loc-70); padding:6px 14px; transform: rotate(-1deg); font-family: var(--mono); font-size:9px; letter-spacing:.16em; color: var(--acento-loc); text-transform:uppercase; }
+.mk-widgets .mw-b1-cit { margin-top:20px; border-top:1px dashed rgba(124,98,58,.4); padding-top:14px; }
+.mk-widgets .mw-b1-cit p { font-family: var(--garamond); font-style:italic; font-size:14px; line-height:1.55; color: var(--ink); }
+.mk-widgets .mw-b1-cit-fonte { font-family: var(--mono); font-size:7.4px; letter-spacing:.1em; text-transform:uppercase; color: var(--ink-50); margin-top:8px; }
+.mk-widgets .mw-b1-rodape { display:flex; justify-content:space-between; align-items:center; margin-top:20px; font-family: var(--mono); font-size:8px; letter-spacing:.06em; color: var(--ink-50); }
+
+/* B2 — jornada da obra */
+.mk-widgets .mw-b2 { padding-top:74px; text-align:center; }
+.mk-widgets .mw-b2-selo { font-family: var(--mono); font-size:7.6px; letter-spacing:.26em; text-transform:uppercase; color: var(--acento-loc); }
+.mk-widgets .mw-b2-livro { display:flex; justify-content:center; margin:18px 0 14px; }
+.mk-widgets .mw-b2-obra { font-family: var(--serif); font-style:italic; font-size:21px; font-weight:500; color: var(--ink); line-height:1.3; }
+.mk-widgets .mw-b2-autor { font-family: var(--mono); font-size:8.5px; letter-spacing:.1em; text-transform:uppercase; color: var(--ink-50); margin-top:6px; }
+.mk-widgets .mw-b2-stats { display:flex; justify-content:center; gap:0; margin-top:20px; border-top:1px solid var(--ink-30); padding-top:12px; }
+.mk-widgets .mw-b2-stat { flex:1; text-align:center; padding:0 3px; }
+.mk-widgets .mw-b2-stat b { display:block; font-family: var(--serif); font-size:17px; font-weight:600; color: var(--ink); font-variant-numeric: tabular-nums; }
+.mk-widgets .mw-b2-stat span { display:block; font-family: var(--mono); font-size:6.2px; letter-spacing:.06em; text-transform:uppercase; color: var(--ink-50); margin-top:4px; line-height:1.35; }
+.mk-widgets .mw-b2-frase { font-family: var(--garamond); font-style:italic; font-size:12.5px; color: var(--ink-70); margin-top:18px; line-height:1.55; padding:0 8px; }
+
+/* B3 — fechamento semanal */
+.mk-widgets .mw-b3-titulo { font-family: var(--serif); font-size:19px; text-align:center; color: var(--ink); }
+.mk-widgets .mw-b3-sub { font-family: var(--mono); font-size:8px; letter-spacing:.2em; text-transform:uppercase; text-align:center; color: var(--ink-50); margin-top:6px; }
+.mk-widgets .mw-b3-grade { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:24px; }
+.mk-widgets .mw-b3-cel { border:1px solid var(--ink-30); padding:14px 10px; text-align:center; }
+.mk-widgets .mw-b3-cel b { display:block; font-family: var(--serif); font-size:24px; font-weight:600; color: var(--ink); font-variant-numeric: tabular-nums; }
+.mk-widgets .mw-b3-cel span { display:block; font-family: var(--mono); font-size:6.8px; letter-spacing:.08em; text-transform:uppercase; color: var(--ink-50); margin-top:6px; }
+.mk-widgets .mw-b3-delta { margin-top:20px; text-align:center; border-top:1px dashed rgba(124,98,58,.4); padding-top:14px; }
+.mk-widgets .mw-b3-delta-num { font-family: var(--serif); font-size:15px; color: var(--acento-loc); font-weight:600; }
+.mk-widgets .mw-b3-delta-txt { font-family: var(--garamond); font-style:italic; font-size:12px; color: var(--ink-70); margin-top:6px; }
+
+/* B4 — marco de ofensiva (selo/lacre) */
+.mk-widgets .mw-b4 { text-align:center; padding-top:130px; }
+.mk-widgets .mw-b4-selo {
+  width:180px; height:180px; margin:0 auto; border-radius:50%;
+  border:3px solid rgba(230,193,92,.7); box-shadow: inset 0 0 0 5px rgba(230,193,92,.14), 0 0 0 1px rgba(230,193,92,.28), 0 16px 30px rgba(0,0,0,.5);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  background: radial-gradient(circle at 40% 32%, rgba(230,193,92,.1), transparent 60%);
+}
+.mk-widgets .mw-b4-selo b { font-family: var(--serif); font-size:56px; font-weight:600; color: var(--ambar); line-height:1; font-variant-numeric: tabular-nums; }
+.mk-widgets .mw-b4-selo span { font-family: var(--mono); font-size:8px; letter-spacing:.24em; text-transform:uppercase; color: rgba(230,193,92,.85); margin-top:6px; }
+.mk-widgets .mw-b4-frase { font-family: var(--garamond); font-style:italic; font-size:15px; color: var(--ink-70); margin-top:24px; padding:0 30px; line-height:1.55; }
+
+/* C1 — traço da sessão */
+.mk-widgets .mw-c1-titulo { font-family: var(--mono); font-size:8px; letter-spacing:.22em; text-transform:uppercase; text-align:center; color: var(--ink-50); }
+.mk-widgets .mw-c1-svg-wrap { display:flex; justify-content:center; margin-top:26px; }
+.mk-widgets .mw-c1-legenda { display:flex; justify-content:center; gap:18px; margin-top:16px; font-family: var(--mono); font-size:7.4px; letter-spacing:.05em; color: var(--ink-50); text-transform:uppercase; }
+.mk-widgets .mw-c1-nums { display:flex; justify-content:center; gap:26px; margin-top:26px; }
+.mk-widgets .mw-c1-nums div { text-align:center; }
+.mk-widgets .mw-c1-nums b { display:block; font-family: var(--serif); font-size:22px; font-weight:600; color: var(--ink); font-variant-numeric: tabular-nums; }
+.mk-widgets .mw-c1-nums span { display:block; font-family: var(--mono); font-size:6.8px; letter-spacing:.08em; text-transform:uppercase; color: var(--ink-50); margin-top:4px; }
+
+/* C2 — mapa de constância */
+.mk-widgets .mw-c2-titulo { font-family: var(--serif); font-size:18px; text-align:center; color: var(--ink); }
+.mk-widgets .mw-c2-grid { display:grid; grid-template-columns: repeat(13,1fr); gap:4px; margin-top:22px; }
+.mk-widgets .mw-c2-grid rect { }
+.mk-widgets .mw-c2-legenda { margin-top:20px; display:flex; flex-direction:column; gap:6px; }
+.mk-widgets .mw-c2-legenda-item { display:flex; align-items:center; gap:8px; font-family: var(--mono); font-size:8px; letter-spacing:.03em; color: var(--ink-70); }
+.mk-widgets .mw-c2-swatch { width:12px; height:12px; flex:0 0 auto; border:1px solid var(--ink-30); }
+
+/* C3 — retomada */
+.mk-widgets .mw-c3 { text-align:center; }
+.mk-widgets .mw-c3-titulo { font-family: var(--mono); font-size:7.6px; letter-spacing:.22em; text-transform:uppercase; color: var(--ink-50); }
+.mk-widgets .mw-c3-nums { display:flex; justify-content:center; gap:0; margin-top:22px; }
+.mk-widgets .mw-c3-num { flex:1; text-align:center; padding:0 6px; }
+.mk-widgets .mw-c3-num.corrente { border-left:1px solid var(--ink-30); border-right:1px solid var(--ink-30); }
+.mk-widgets .mw-c3-num b { display:block; font-family: var(--serif); font-size:26px; font-weight:600; color: var(--ink); font-variant-numeric: tabular-nums; }
+.mk-widgets .mw-c3-num span { display:block; font-family: var(--mono); font-size:6.4px; letter-spacing:.06em; text-transform:uppercase; color: var(--ink-50); margin-top:5px; line-height:1.3; }
+.mk-widgets .mw-c3-frase { font-family: var(--garamond); font-style:italic; font-size:14px; color: var(--ink-70); margin-top:22px; padding:0 10px; line-height:1.6; }
+
+.mk-widgets .mw-card .mw-marca { position:absolute; left:0; right:0; bottom:26px; justify-content:center; color: var(--ink-50); }
+
+/* ── colofão ───────────────────────────────────────────────── */
+.mk-widgets .mw-colofao {
+  max-width:1320px; margin:0 auto; padding:30px 48px 64px; color: rgba(222,212,189,.46);
+  font-family: var(--mono); font-size:10px; line-height:1.9; letter-spacing:.03em;
+  border-top:1px solid rgba(222,212,189,.14); padding-top:28px;
+}
+.mk-widgets .mw-colofao b { color: rgba(201,168,106,.85); font-weight:700; letter-spacing:.14em; }
+.mk-widgets .mw-colofao em { font-family: var(--serif); font-size:13px; font-style:italic; letter-spacing:0; }
+
+/* D1 — citação grifada (painel vegetal sobre a foto) */
+.mk-widgets .mw-d1-painel {
+  position:absolute; left:26px; right:26px; top:214px;
+  padding:30px 26px 24px;
+  /* vegetal de verdade: a foto precisa atravessar o papel */
+  background:
+    radial-gradient(circle at 18% 10%, rgba(255,255,255,.30), transparent 52%),
+    radial-gradient(rgba(96,74,46,.10) .5px, transparent .6px),
+    linear-gradient(162deg, rgba(244,236,214,.80), rgba(226,212,178,.72));
+  background-size: 100% 100%, 7px 7px, 100% 100%;
+  transform: rotate(-.6deg);
+  border: 1px solid rgba(124,98,58,.42);
+  border-radius: 5px 8px 6px 9px / 7px 5px 8px 6px;
+  box-shadow: 0 18px 40px rgba(28,16,6,.46), 0 2px 0 rgba(255,255,255,.10) inset;
+  backdrop-filter: blur(3px);
+}
+.mk-widgets .mw-d1-kicker { font-family: var(--mono); font-size:7.5px; letter-spacing:.26em; text-transform:uppercase; color: var(--ink-50); text-align:center; }
+.mk-widgets .mw-d1-fio { width:34px; height:1px; background: var(--ink-30); margin:9px auto 0; }
+.mk-widgets .mw-d1-texto {
+  font-family: var(--garamond); font-size:19px; font-style:italic; line-height:1.5;
+  color: var(--ink); margin-top:16px; text-align:left; hyphens:auto;
+}
+.mk-widgets .mw-d1-texto.curta { font-size:23px; line-height:1.46; }
+.mk-widgets .mw-d1-grifo {
+  background-image:
+    linear-gradient(180deg, rgba(231,194,94,0) 12%, rgba(231,194,94,.62) 12%, rgba(231,194,94,.70) 88%, rgba(231,194,94,0) 88%),
+    linear-gradient(90deg, rgba(231,194,94,.30), rgba(214,172,66,.12) 40%, rgba(231,194,94,.34));
+  mix-blend-mode: multiply; box-decoration-break: clone; -webkit-box-decoration-break: clone;
+  padding: .04em .16em; border-radius: 3px 7px 4px 6px;
+}
+.mk-widgets .mw-d1-atrib { margin-top:20px; padding-top:13px; border-top:1px solid var(--ink-30); text-align:center; }
+.mk-widgets .mw-d1-obra { font-family: var(--serif); font-size:12.5px; font-weight:500; letter-spacing:.14em; text-transform:uppercase; color: var(--ink-70); }
+.mk-widgets .mw-d1-autor { font-family: var(--serif); font-size:12px; font-style:italic; color: var(--ink-50); margin-top:4px; }
+.mk-widgets .mw-d1-pig { position:absolute; right:-9px; top:-9px; width:20px; height:20px; border-radius:50%; background: var(--pig-ambar); opacity:.85; box-shadow: 0 2px 5px rgba(48,32,16,.35); transform: rotate(8deg); }
+
+@media (max-width:900px) {
+  .mk-widgets .mw-cabeca, .mk-widgets .mw-corpo, .mk-widgets .mw-colofao { padding-left:20px; padding-right:20px; }
+  .mk-widgets .mw-carimbo-prova { display:none; }
+}
+</style>
+
+<div class="mk-widgets">
+  <header class="mw-cabeca" style="position:relative;">
+    <div class="mw-carimbo-prova"><b>PROVA</b><hr><span>NÃO DISTRIBUIR</span></div>
+    <h1 class="mw-titulo">Widgets de story <em>— o que sai do app</em></h1>
+    <div class="mw-sub">13 adesivos e cards para Instagram Stories · mood, alta fidelidade, estático</div>
+    <div class="mw-linha"></div>
+    <p class="mw-nota">O motor de aquisição orgânica do BookWorm não é um leaderboard — é proibido ter um. É a própria leitora contando, em papel, o que viveu com um livro: um carimbo, uma linha datilografada, um traço único por sessão. Sem ranking, sem percentual, sem "top X%": o modelo é Strava sem o placar.</p>
+    <div class="mw-regra"><b>A regra da dignidade —</b> o widget de uma sessão de 11 minutos precisa ter o mesmo peso visual do de 2h14. O número muda; a tipografia, a moldura e o cuidado não. Quem mais precisa postar é justamente quem está começando.</div>
+
+    <div class="mw-materiais">
+      <div class="mw-mat-amostra"><div class="mw-mat-chip" style="background:#f3ead9;color:#241f19;">Aa</div><b>Creme</b><span>#f3ead9 · papel padrão</span></div>
+      <div class="mw-mat-amostra"><div class="mw-mat-chip" style="background:#e7d5b4;color:#3a2e20;">Aa</div><b>Sépia</b><span>#e7d5b4 · memória, arquivo</span></div>
+      <div class="mw-mat-amostra"><div class="mw-mat-chip" style="background:#c8a97e;color:#2b2117;">Aa</div><b>Kraft</b><span>#c8a97e · embrulho, objeto</span></div>
+      <div class="mw-mat-amostra"><div class="mw-mat-chip" style="background:linear-gradient(160deg,#efe4c8,#d9c9a0);color:#241f19;backdrop-filter:blur(1px);">Aa</div><b>Vegetal</b><span>translúcido · sobre foto/cor</span></div>
+      <div class="mw-mat-amostra"><div class="mw-mat-chip" style="background:#221f1b;color:#e8dcc4;">Aa</div><b>Carvão</b><span>#221f1b · cerimônia, marco</span></div>
+      <div class="mw-mat-amostra"><div class="mw-mat-chip" style="background:#1d3a56;color:#dce8f2;">Aa</div><b>Cianótipo</b><span>#1d3a56 · desenho técnico</span></div>
+    </div>
+  </header>
+
+  <div class="mw-corpo">
+    <!-- ══════════════════ FAMÍLIA A — ADESIVOS SOBRE FOTO ══════════════════ -->
+    <section class="mw-familia">
+      <div class="mw-familia-cabeca">
+        <div class="mw-familia-kicker">Família A · 5 widgets</div>
+        <h2 class="mw-familia-titulo">Adesivos sobre foto</h2>
+        <p class="mw-familia-nota">A família que mais importa: fundo transparente, colado torto sobre a foto que a leitora já ia postar de qualquer forma. Cada um aparece em contexto — sobre uma das cinco fotos simuladas — e isolado numa prancha técnica, em escala.</p>
+      </div>
+
+      <!-- A1 — CARIMBO DE SESSÃO -->
+      <article class="mw-widget">
+        <div class="mw-legenda">
+          <div class="mw-legenda-num">A1</div>
+          <div class="mw-legenda-nome">Carimbo de sessão</div>
+          <div class="mw-legenda-linha"><span>Formato <b>circular, ~158×158</b></span><span>Material <b>Creme</b></span></div>
+          <div class="mw-legenda-linha"><span>Dado <b>tempo ativo · páginas · ofensiva</b></span></div>
+          <div class="mw-legenda-rn">RN-08.13 (marca obrigatória) · RN-06.8/06.9 (nenhum dado de ranking ou média)</div>
+          <p class="mw-legenda-racional">Três números, nunca quatro: o carimbo de biblioteca só tem espaço para o essencial. É o widget mais "postável" por ser o menor gesto — por isso é também o teste mais duro da dignidade, feito ao lado com N1 e N4.</p>
+        </div>
+
+        <div class="mw-frames">
+          <div class="mw-frame-col">
+            <div class="mw-frame-tag"><b>Em contexto</b><br>foto quente · sessão típica de Marina</div>
+            <div class="mw-fone"><div class="mw-story">
+              <div class="mw-story-fundo mw-foto-quente"></div>
+              <div class="mw-ig-top"><div class="mw-ig-bars"><i></i><i></i><i></i><i></i></div>
+                <div class="mw-ig-user"><div class="mw-ig-avatar">M</div><div class="mw-ig-nome">marina.le</div><div class="mw-ig-hora">agora</div><div class="mw-ig-dots">•••</div></div></div>
+              <div class="mw-carimbo" style="left:118px; top:330px;">
+                <b>26</b><span class="mw-c-lbl">MIN ATIVOS</span><hr>
+                <em>18 pág · ofensiva 23</em>
+                <span class="mw-marca"><svg width="8" height="8" viewBox="0 0 9 9" aria-hidden="true"><path d="M1 8C1 4 4 1 8 1c0 4-3 7-7 7Z" fill="currentColor" opacity=".7"/></svg>bookworm</span>
+              </div>
+              <div class="mw-ig-bottom"><div class="mw-ig-input">Enviar mensagem</div>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 21s-7-4.5-9.5-9C.5 8 2 4 6 4c2 0 4 1.2 6 4 2-2.8 4-4 6-4 4 0 5.5 4 3.5 8-2.5 4.5-9.5 9-9.5 9Z"/></svg>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z"/></svg></div>
+            </div></div>
+          </div>
+
+          <div class="mw-frame-col">
+            <div class="mw-frame-tag"><b>Prancha técnica — teste da dignidade</b><br>N1 (11 min, sessão mínima) e N4 (2h14, maratona) lado a lado, mesmo tamanho, mesmo peso</div>
+            <div class="mw-prancha">
+              <div class="mw-prancha-mira tl"></div><div class="mw-prancha-mira tr"></div><div class="mw-prancha-mira bl"></div><div class="mw-prancha-mira br"></div>
+              <div class="mw-prancha-item">
+                <div class="mw-carimbo"><b>11</b><span class="mw-c-lbl">MIN ATIVOS</span><hr><em>5 pág · ofensiva 3</em>
+                  <span class="mw-marca"><svg width="8" height="8" viewBox="0 0 9 9" aria-hidden="true"><path d="M1 8C1 4 4 1 8 1c0 4-3 7-7 7Z" fill="currentColor" opacity=".7"/></svg>bookworm</span></div>
+                <div class="mw-prancha-dim"><b>N1</b> · sessão mínima digna</div>
+              </div>
+              <div class="mw-prancha-item">
+                <div class="mw-carimbo"><b>2h14</b><span class="mw-c-lbl">ATIVAS</span><hr><em>96 pág · ofensiva 127</em>
+                  <span class="mw-marca"><svg width="8" height="8" viewBox="0 0 9 9" aria-hidden="true"><path d="M1 8C1 4 4 1 8 1c0 4-3 7-7 7Z" fill="currentColor" opacity=".7"/></svg>bookworm</span></div>
+                <div class="mw-prancha-dim"><b>N4</b> · maratona</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- A2 — ETIQUETA DATILOGRAFADA -->
+      <article class="mw-widget">
+        <div class="mw-legenda">
+          <div class="mw-legenda-num">A2</div>
+          <div class="mw-legenda-nome">Etiqueta datilografada</div>
+          <div class="mw-legenda-linha"><span>Formato <b>faixa horizontal, ~330×54</b></span><span>Material <b>Kraft</b></span></div>
+          <div class="mw-legenda-linha"><span>Dado <b>maior bloco contínuo de foco</b></span></div>
+          <div class="mw-legenda-rn">RN-08.6 (proíbe ritmo/velocidade — a etiqueta fala de atenção, nunca de páginas por minuto) · RN-08.13</div>
+          <p class="mw-legenda-racional">Uma linha só, em Courier — a melhor copy que a spec oferece. Não é tempo de sessão, é tempo sem desviar o olhar: a métrica que só existe porque o produto recompensa profundidade, não velocidade.</p>
+        </div>
+
+        <div class="mw-frames">
+          <div class="mw-frame-col">
+            <div class="mw-frame-tag"><b>Em contexto</b><br>foto fria · janela chuvosa</div>
+            <div class="mw-fone"><div class="mw-story">
+              <div class="mw-story-fundo mw-foto-fria"></div>
+              <div class="mw-ig-top"><div class="mw-ig-bars"><i></i><i></i><i></i><i></i></div>
+                <div class="mw-ig-user"><div class="mw-ig-avatar">M</div><div class="mw-ig-nome">marina.le</div><div class="mw-ig-hora">agora</div><div class="mw-ig-dots">•••</div></div></div>
+              <div class="mw-etiqueta" style="left:30px; top:400px;">
+                <span class="mw-etiqueta-txt">19 min sem levantar os olhos</span>
+                <span class="mw-marca"><svg width="7" height="7" viewBox="0 0 9 9" aria-hidden="true"><path d="M1 8C1 4 4 1 8 1c0 4-3 7-7 7Z" fill="currentColor" opacity=".7"/></svg>bookworm</span>
+              </div>
+              <div class="mw-ig-bottom"><div class="mw-ig-input">Enviar mensagem</div>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 21s-7-4.5-9.5-9C.5 8 2 4 6 4c2 0 4 1.2 6 4 2-2.8 4-4 6-4 4 0 5.5 4 3.5 8-2.5 4.5-9.5 9-9.5 9Z"/></svg>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z"/></svg></div>
+            </div></div>
+          </div>
+
+          <div class="mw-frame-col">
+            <div class="mw-frame-tag"><b>Prancha técnica</b><br>proporção original ~640×92, exibida em escala reduzida</div>
+            <div class="mw-prancha" style="min-height:180px;">
+              <div class="mw-prancha-mira tl"></div><div class="mw-prancha-mira tr"></div><div class="mw-prancha-mira bl"></div><div class="mw-prancha-mira br"></div>
+              <div class="mw-prancha-item">
+                <div class="mw-etiqueta"><span class="mw-etiqueta-txt">7 trechos marcados hoje</span>
+                  <span class="mw-marca"><svg width="7" height="7" viewBox="0 0 9 9" aria-hidden="true"><path d="M1 8C1 4 4 1 8 1c0 4-3 7-7 7Z" fill="currentColor" opacity=".7"/></svg>bookworm</span></div>
+                <div class="mw-prancha-dim">330 × 54 <b>·</b> razão ~6:1</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+      <!-- A3 — FICHA DE EMPRÉSTIMO -->
+      <article class="mw-widget">
+        <div class="mw-legenda">
+          <div class="mw-legenda-num">A3</div>
+          <div class="mw-legenda-nome">Ficha de empréstimo</div>
+          <div class="mw-legenda-linha"><span>Formato <b>cartão, ~276×176</b></span><span>Material <b>Sépia</b></span></div>
+          <div class="mw-legenda-linha"><span>Dado <b>sessão + data</b></span></div>
+          <div class="mw-legenda-rn">RN-08.13 · RN-08.32 (nada além do que o sistema registrou — sem espaço para nota pessoal)</div>
+          <p class="mw-legenda-racional">A redação literal da spec para o estilo Metódico: "sessão de estudo, 7 trechos marcados". A ficha prova que o widget funciona quando a conquista não é tempo — é atenção.</p>
+        </div>
+
+        <div class="mw-frames">
+          <div class="mw-frame-col">
+            <div class="mw-frame-tag"><b>Em contexto</b><br>foto escura · leitura noturna · sessão de estudo (N3)</div>
+            <div class="mw-fone"><div class="mw-story">
+              <div class="mw-story-fundo mw-foto-escura"></div>
+              <div class="mw-ig-top"><div class="mw-ig-bars"><i></i><i></i><i></i><i></i></div>
+                <div class="mw-ig-user"><div class="mw-ig-avatar">M</div><div class="mw-ig-nome">marina.le</div><div class="mw-ig-hora">agora</div><div class="mw-ig-dots">•••</div></div></div>
+              <div class="mw-ficha-w" style="left:36px; top:300px;">
+                <div class="mw-ficha-w-topo">
+                  <span class="mw-ficha-w-obra">A Metamorfose</span>
+                  <div class="mw-ficha-w-carimbo"><span>20<br>AGO</span></div>
+                </div>
+                <div class="mw-ficha-w-linha">
+                  <div><b>34</b>min ativos</div>
+                  <div><b>12</b>páginas</div>
+                  <div><b>7</b>trechos marcados</div>
+                </div>
+                <div class="mw-ficha-w-nota">Sessão de estudo · estilo metódico</div>
+                <span class="mw-marca"><svg width="7" height="7" viewBox="0 0 9 9" aria-hidden="true"><path d="M1 8C1 4 4 1 8 1c0 4-3 7-7 7Z" fill="currentColor" opacity=".7"/></svg>bookworm</span>
+              </div>
+              <div class="mw-ig-bottom"><div class="mw-ig-input">Enviar mensagem</div>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 21s-7-4.5-9.5-9C.5 8 2 4 6 4c2 0 4 1.2 6 4 2-2.8 4-4 6-4 4 0 5.5 4 3.5 8-2.5 4.5-9.5 9-9.5 9Z"/></svg>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z"/></svg></div>
+            </div></div>
+          </div>
+
+          <div class="mw-frame-col">
+            <div class="mw-frame-tag"><b>Prancha técnica</b><br>proporção original ~520×300, isolada em escala</div>
+            <div class="mw-prancha">
+              <div class="mw-prancha-mira tl"></div><div class="mw-prancha-mira tr"></div><div class="mw-prancha-mira bl"></div><div class="mw-prancha-mira br"></div>
+              <div class="mw-prancha-item">
+                <div class="mw-ficha-w">
+                  <div class="mw-ficha-w-topo"><span class="mw-ficha-w-obra">A Metamorfose</span><div class="mw-ficha-w-carimbo"><span>20<br>AGO</span></div></div>
+                  <div class="mw-ficha-w-linha"><div><b>34</b>min ativos</div><div><b>12</b>páginas</div><div><b>7</b>trechos</div></div>
+                  <div class="mw-ficha-w-nota">Sessão de estudo · estilo metódico</div>
+                  <span class="mw-marca"><svg width="7" height="7" viewBox="0 0 9 9" aria-hidden="true"><path d="M1 8C1 4 4 1 8 1c0 4-3 7-7 7Z" fill="currentColor" opacity=".7"/></svg>bookworm</span>
+                </div>
+                <div class="mw-prancha-dim">276 × 176 <b>·</b> razão ~1,74:1</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- A4 — NÚMERO A LÁPIS -->
+      <article class="mw-widget">
+        <div class="mw-legenda">
+          <div class="mw-legenda-num">A4</div>
+          <div class="mw-legenda-nome">Número a lápis</div>
+          <div class="mw-legenda-linha"><span>Formato <b>livre, sem fundo</b></span><span>Material <b>— (tinta direta, sem suporte)</b></span></div>
+          <div class="mw-legenda-linha"><span>Dado <b>1 número + 1 rótulo</b></span></div>
+          <div class="mw-legenda-rn">RN-08.32 — a letra manuscrita é estilo, nunca pensamento privado da leitora: a mão só escreve o número e o rótulo do sistema, nada que ela tenha pensado</div>
+          <p class="mw-legenda-racional">Sem carimbo, sem cartão — só tinta sobre a foto, com um leve halo para continuar legível em qualquer fundo. O par ao lado usa páginas em vez de minutos de propósito: "5" contra "96" é o teste de dignidade mais literal do conjunto.</p>
+        </div>
+
+        <div class="mw-frames">
+          <div class="mw-frame-col">
+            <div class="mw-frame-tag"><b>Em contexto</b><br>foto clara · manhã, lençol branco</div>
+            <div class="mw-fone"><div class="mw-story">
+              <div class="mw-story-fundo mw-foto-clara"></div>
+              <div class="mw-ig-top"><div class="mw-ig-bars"><i></i><i></i><i></i><i></i></div>
+                <div class="mw-ig-user"><div class="mw-ig-avatar">M</div><div class="mw-ig-nome">marina.le</div><div class="mw-ig-hora">agora</div><div class="mw-ig-dots">•••</div></div></div>
+              <div class="mw-lapis" style="left:96px; top:340px; width:200px;">
+                <b>18</b><span>páginas hoje</span>
+                <span class="mw-marca"><svg width="8" height="8" viewBox="0 0 9 9" aria-hidden="true"><path d="M1 8C1 4 4 1 8 1c0 4-3 7-7 7Z" fill="currentColor" opacity=".7"/></svg>bookworm</span>
+              </div>
+              <svg width="60" height="60" viewBox="0 0 60 60" style="position:absolute; left:280px; top:400px;" aria-hidden="true"><path d="M4 50 Q30 10 54 8" fill="none" stroke="#241f19" stroke-width="2" opacity=".55"/><path d="M42 6 54 8 48 20" fill="none" stroke="#241f19" stroke-width="2" opacity=".55" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <div class="mw-ig-bottom"><div class="mw-ig-input">Enviar mensagem</div>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 21s-7-4.5-9.5-9C.5 8 2 4 6 4c2 0 4 1.2 6 4 2-2.8 4-4 6-4 4 0 5.5 4 3.5 8-2.5 4.5-9.5 9-9.5 9Z"/></svg>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z"/></svg></div>
+            </div></div>
+          </div>
+
+          <div class="mw-frame-col">
+            <div class="mw-frame-tag"><b>Prancha técnica — teste da dignidade</b><br>N1 "5 páginas" e N4 "96 páginas", exatamente o mesmo corpo de letra</div>
+            <div class="mw-prancha" style="background:#e9ded0;">
+              <div class="mw-prancha-mira tl"></div><div class="mw-prancha-mira tr"></div><div class="mw-prancha-mira bl"></div><div class="mw-prancha-mira br"></div>
+              <div class="mw-prancha-item">
+                <div class="mw-lapis" style="text-shadow:none;"><b>5</b><span>páginas hoje</span>
+                  <span class="mw-marca"><svg width="8" height="8" viewBox="0 0 9 9" aria-hidden="true"><path d="M1 8C1 4 4 1 8 1c0 4-3 7-7 7Z" fill="currentColor" opacity=".7"/></svg>bookworm</span></div>
+                <div class="mw-prancha-dim"><b>N1</b> · sessão mínima digna</div>
+              </div>
+              <div class="mw-prancha-item">
+                <div class="mw-lapis" style="text-shadow:none;"><b>96</b><span>páginas hoje</span>
+                  <span class="mw-marca"><svg width="8" height="8" viewBox="0 0 9 9" aria-hidden="true"><path d="M1 8C1 4 4 1 8 1c0 4-3 7-7 7Z" fill="currentColor" opacity=".7"/></svg>bookworm</span></div>
+                <div class="mw-prancha-dim"><b>N4</b> · maratona</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+      <!-- A5 — CORTE DO LIVRO -->
+      <article class="mw-widget">
+        <div class="mw-legenda">
+          <div class="mw-legenda-num">A5</div>
+          <div class="mw-legenda-nome">Corte do livro</div>
+          <div class="mw-legenda-linha"><span>Formato <b>barra vertical, ~44×680</b></span><span>Material <b>Creme</b></span></div>
+          <div class="mw-legenda-linha"><span>Dado <b>progresso na obra</b></span></div>
+          <div class="mw-legenda-rn">RN-08.13</div>
+          <p class="mw-legenda-racional">Reaproveita o dispositivo que já existe no leitor: o progresso como a espessura do corte de páginas na borda. Abstrato, único por obra — e o teste de legibilidade mais difícil, por isso vai sobre a foto mais ocupada do conjunto.</p>
+        </div>
+
+        <div class="mw-frames">
+          <div class="mw-frame-col">
+            <div class="mw-frame-tag"><b>Em contexto</b><br>foto ocupada · estante cheia · teste de fundo difícil</div>
+            <div class="mw-fone"><div class="mw-story">
+              <div class="mw-story-fundo mw-foto-ocupada"></div>
+              <div class="mw-ig-top"><div class="mw-ig-bars"><i></i><i></i><i></i><i></i></div>
+                <div class="mw-ig-user"><div class="mw-ig-avatar">M</div><div class="mw-ig-nome">marina.le</div><div class="mw-ig-hora">agora</div><div class="mw-ig-dots">•••</div></div></div>
+              <div class="mw-corte-w"><div class="mw-corte-w-lido" style="width:34%;"></div></div>
+              <div class="mw-corte-tag" style="top:770px;">34%<b>de "A Metamorfose"</b>
+                <span class="mw-marca"><svg width="7" height="7" viewBox="0 0 9 9" aria-hidden="true"><path d="M1 8C1 4 4 1 8 1c0 4-3 7-7 7Z" fill="currentColor" opacity=".7"/></svg>bookworm</span></div>
+              <div class="mw-ig-bottom"><div class="mw-ig-input">Enviar mensagem</div>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 21s-7-4.5-9.5-9C.5 8 2 4 6 4c2 0 4 1.2 6 4 2-2.8 4-4 6-4 4 0 5.5 4 3.5 8-2.5 4.5-9.5 9-9.5 9Z"/></svg>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z"/></svg></div>
+            </div></div>
+          </div>
+
+          <div class="mw-frame-col">
+            <div class="mw-frame-tag"><b>Prancha técnica</b><br>dois estados de progresso, mesma barra, mesma escala</div>
+            <div class="mw-prancha" style="min-height:340px;">
+              <div class="mw-prancha-mira tl"></div><div class="mw-prancha-mira tr"></div><div class="mw-prancha-mira bl"></div><div class="mw-prancha-mira br"></div>
+              <div class="mw-prancha-item">
+                <div style="position:relative; width:36px; height:240px; background:repeating-linear-gradient(90deg, rgba(124,98,58,.35) 0 1.5px, rgba(252,246,234,.92) 1.5px 4px); border:1px solid rgba(124,98,58,.32); box-shadow:0 8px 16px rgba(48,32,16,.28);">
+                  <div style="position:absolute; left:0; top:0; bottom:0; width:11%; background:rgba(150,108,52,.46); mix-blend-mode:multiply; border-right:1.5px solid rgba(47,93,58,.72);"></div>
+                </div>
+                <div class="mw-prancha-dim">11% <b>·</b> início de obra</div>
+              </div>
+              <div class="mw-prancha-item">
+                <div style="position:relative; width:36px; height:240px; background:repeating-linear-gradient(90deg, rgba(124,98,58,.35) 0 1.5px, rgba(252,246,234,.92) 1.5px 4px); border:1px solid rgba(124,98,58,.32); box-shadow:0 8px 16px rgba(48,32,16,.28);">
+                  <div style="position:absolute; left:0; top:0; bottom:0; width:89%; background:rgba(150,108,52,.46); mix-blend-mode:multiply; border-right:1.5px solid rgba(47,93,58,.72);"></div>
+                </div>
+                <div class="mw-prancha-dim">89% <b>·</b> quase concluída</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- BÔNUS — PROVA DE FOGO: os 5 adesivos sobre o fundo mais difícil -->
+      <article class="mw-widget">
+        <div class="mw-legenda" style="max-width:520px;">
+          <div class="mw-legenda-num">Verificação</div>
+          <div class="mw-legenda-nome">Prova de fogo</div>
+          <p class="mw-legenda-racional">Os cinco adesivos da Família A, juntos, sobre a foto mais ocupada do conjunto. Se algum sumir aqui, ele não sobrevive a uma estante real.</p>
+        </div>
+        <div class="mw-frames">
+          <div class="mw-frame-col">
+            <div class="mw-frame-tag"><b>Teste de fundo ocupado</b><br>estante cheia · os 5 adesivos ao mesmo tempo, em miniatura</div>
+            <div class="mw-fone"><div class="mw-story">
+              <div class="mw-story-fundo mw-foto-ocupada"></div>
+              <div class="mw-ig-top"><div class="mw-ig-bars"><i></i><i></i><i></i><i></i></div>
+                <div class="mw-ig-user"><div class="mw-ig-avatar">M</div><div class="mw-ig-nome">marina.le</div><div class="mw-ig-hora">agora</div><div class="mw-ig-dots">•••</div></div></div>
+
+              <div class="mw-carimbo" style="left:24px; top:100px; width:120px; height:120px;"><b style="font-size:22px;">26</b><span class="mw-c-lbl" style="font-size:5.6px;">MIN ATIVOS</span><hr style="width:50px;"><em style="font-size:6px;">18 pág · of. 23</em></div>
+
+              <div class="mw-etiqueta" style="left:150px; top:130px; padding:8px 12px;"><span class="mw-etiqueta-txt" style="font-size:9.5px;">19 min sem levantar os olhos</span></div>
+
+              <div class="mw-ficha-w" style="left:30px; top:270px; width:220px; transform:rotate(-1.4deg);">
+                <div class="mw-ficha-w-topo"><span class="mw-ficha-w-obra" style="font-size:12px;">A Metamorfose</span><div class="mw-ficha-w-carimbo" style="width:32px;height:32px;"><span style="font-size:5px;">20<br>AGO</span></div></div>
+                <div class="mw-ficha-w-linha" style="font-size:7.5px;"><div><b style="font-size:15px;">34</b>min</div><div><b style="font-size:15px;">12</b>pág</div><div><b style="font-size:15px;">7</b>trechos</div></div>
+              </div>
+
+              <div class="mw-lapis" style="left:70px; top:470px; width:160px;"><b style="font-size:58px;">18</b><span style="font-size:9px;">páginas hoje</span></div>
+
+              <div class="mw-corte-w" style="right:16px; top:60px; bottom:96px; width:34px;"><div class="mw-corte-w-lido" style="width:34%;"></div></div>
+
+              <span class="mw-marca" style="position:absolute; left:28px; bottom:96px; color:#f3ead9; text-shadow:0 1px 3px rgba(0,0,0,.6);"><svg width="8" height="8" viewBox="0 0 9 9" aria-hidden="true"><path d="M1 8C1 4 4 1 8 1c0 4-3 7-7 7Z" fill="currentColor" opacity=".8"/></svg>bookworm</span>
+
+              <div class="mw-ig-bottom"><div class="mw-ig-input">Enviar mensagem</div>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 21s-7-4.5-9.5-9C.5 8 2 4 6 4c2 0 4 1.2 6 4 2-2.8 4-4 6-4 4 0 5.5 4 3.5 8-2.5 4.5-9.5 9-9.5 9Z"/></svg>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z"/></svg></div>
+            </div></div>
+          </div>
+        </div>
+      </article>
+    </section>
+    <!-- ══════════════════ FAMÍLIA B — CARDS CHEIOS 9:16 ══════════════════ -->
+    <section class="mw-familia">
+      <div class="mw-familia-cabeca">
+        <div class="mw-familia-kicker">Família B · 4 widgets</div>
+        <h2 class="mw-familia-titulo">Cards cheios</h2>
+        <p class="mw-familia-nota">Não colam sobre a foto da leitora — são o card inteiro. Uma aparição cada, em contexto, exceto o card padrão, que carrega sozinho o teste central deste trabalho.</p>
+      </div>
+
+      <!-- B1 — EX-LÍBRIS DE SESSÃO -->
+      <article class="mw-widget">
+        <div class="mw-legenda">
+          <div class="mw-legenda-num">B1</div>
+          <div class="mw-legenda-nome">Ex-líbris de sessão</div>
+          <div class="mw-legenda-linha"><span>Formato <b>card cheio 393×852</b></span><span>Material <b>Creme</b></span></div>
+          <div class="mw-legenda-linha"><span>Dado <b>tempo · páginas · citação · ofensiva · progresso</b></span></div>
+          <div class="mw-legenda-rn">RN-03.22b (estilo é descrito, nunca "78/100") · RN-08.14 (citação exige título e autor) · RN-06.8/06.9</div>
+          <p class="mw-legenda-racional">O card padrão — e o teste central de todo o conjunto. É a mesma composição, o mesmo corpo de letra, a mesma moldura para 11 minutos e para 2h14: só os números e a citação mudam.</p>
+        </div>
+
+        <div class="mw-frames">
+          <div class="mw-frame-col">
+            <div class="mw-frame-tag"><b>N1 · sessão mínima digna</b><br>11 minutos com A Metamorfose</div>
+            <div class="mw-fone"><div class="mw-story mw-mat-creme">
+              <div class="mw-ig-top"><div class="mw-ig-bars"><i></i><i></i><i></i><i></i></div>
+                <div class="mw-ig-user"><div class="mw-ig-avatar">M</div><div class="mw-ig-nome">marina.le</div><div class="mw-ig-hora">agora</div><div class="mw-ig-dots">•••</div></div></div>
+              <div class="mw-card">
+                <div class="mw-b1-kicker">sessão de hoje · domingo, 22 de agosto</div>
+                <div class="mw-b1-titulo">11 minutos com<br><em>A Metamorfose</em></div>
+                <div class="mw-b1-numeros">
+                  <div class="mw-b1-num"><b>11</b><span>min ativos</span></div>
+                  <div class="mw-b1-num"><b>5</b><span>páginas</span></div>
+                  <div class="mw-b1-num"><b>9</b><span>maior bloco</span></div>
+                </div>
+                <div class="mw-b1-estilo"><span>estilo · focado</span></div>
+                <div class="mw-b1-cit">
+                  <p>"Encontrou-se em sua cama metamorfoseado num inseto monstruoso."</p>
+                  <div class="mw-b1-cit-fonte">A Metamorfose · Franz Kafka</div>
+                </div>
+                <div class="mw-b1-rodape"><span>ofensiva · 3 dias</span><span>18% da obra</span></div>
+              </div>
+              <span class="mw-marca" style="position:absolute; left:0; right:0; bottom:98px; justify-content:center; color:var(--tinta-50);"><svg width="8" height="8" viewBox="0 0 9 9" aria-hidden="true"><path d="M1 8C1 4 4 1 8 1c0 4-3 7-7 7Z" fill="currentColor" opacity=".7"/></svg>bookworm</span>
+              <div class="mw-ig-bottom"><div class="mw-ig-input" style="color:rgba(255,255,255,.9); border-color:rgba(255,255,255,.5);">Enviar mensagem</div>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 21s-7-4.5-9.5-9C.5 8 2 4 6 4c2 0 4 1.2 6 4 2-2.8 4-4 6-4 4 0 5.5 4 3.5 8-2.5 4.5-9.5 9-9.5 9Z"/></svg>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z"/></svg></div>
+            </div></div>
+          </div>
+
+          <div class="mw-frame-col">
+            <div class="mw-frame-tag"><b>N4 · maratona</b><br>2h14 com A Metamorfose</div>
+            <div class="mw-fone"><div class="mw-story mw-mat-creme">
+              <div class="mw-ig-top"><div class="mw-ig-bars"><i></i><i></i><i></i><i></i></div>
+                <div class="mw-ig-user"><div class="mw-ig-avatar">M</div><div class="mw-ig-nome">marina.le</div><div class="mw-ig-hora">agora</div><div class="mw-ig-dots">•••</div></div></div>
+              <div class="mw-card">
+                <div class="mw-b1-kicker">sessão de hoje · domingo, 22 de agosto</div>
+                <div class="mw-b1-titulo">2h14 com<br><em>A Metamorfose</em></div>
+                <div class="mw-b1-numeros">
+                  <div class="mw-b1-num"><b>2h14</b><span>ativas</span></div>
+                  <div class="mw-b1-num"><b>96</b><span>páginas</span></div>
+                  <div class="mw-b1-num"><b>47</b><span>maior bloco</span></div>
+                </div>
+                <div class="mw-b1-estilo"><span>estilo · focado</span></div>
+                <div class="mw-b1-cit">
+                  <p>"Encontrou-se em sua cama metamorfoseado num inseto monstruoso."</p>
+                  <div class="mw-b1-cit-fonte">A Metamorfose · Franz Kafka</div>
+                </div>
+                <div class="mw-b1-rodape"><span>ofensiva · 127 dias</span><span>78% da obra</span></div>
+              </div>
+              <span class="mw-marca" style="position:absolute; left:0; right:0; bottom:98px; justify-content:center; color:var(--tinta-50);"><svg width="8" height="8" viewBox="0 0 9 9" aria-hidden="true"><path d="M1 8C1 4 4 1 8 1c0 4-3 7-7 7Z" fill="currentColor" opacity=".7"/></svg>bookworm</span>
+              <div class="mw-ig-bottom"><div class="mw-ig-input" style="color:rgba(255,255,255,.9); border-color:rgba(255,255,255,.5);">Enviar mensagem</div>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 21s-7-4.5-9.5-9C.5 8 2 4 6 4c2 0 4 1.2 6 4 2-2.8 4-4 6-4 4 0 5.5 4 3.5 8-2.5 4.5-9.5 9-9.5 9Z"/></svg>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z"/></svg></div>
+            </div></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- B2 — JORNADA DA OBRA -->
+      <article class="mw-widget">
+        <div class="mw-legenda">
+          <div class="mw-legenda-num">B2</div>
+          <div class="mw-legenda-nome">Jornada da obra</div>
+          <div class="mw-legenda-linha"><span>Formato <b>card cheio 393×852</b></span><span>Material <b>Kraft</b></span></div>
+          <div class="mw-legenda-linha"><span>Dado <b>período · sessões · tempo total · destaques</b></span></div>
+          <div class="mw-legenda-rn">RN-08.13</div>
+          <p class="mw-legenda-racional">"A cerimônia de conclusão é o único momento em que o app pode legitimamente fazer barulho" — e mesmo assim o objeto-livro vem antes do número. Ao lado, a mesma cerimônia para uma novela de 9 dias e para uma epopeia de 94: nenhuma das duas fica pequena.</p>
+        </div>
+
+        <div class="mw-frames">
+          <div class="mw-frame-col">
+            <div class="mw-frame-tag"><b>N5 · obra curta concluída</b></div>
+            <div class="mw-fone"><div class="mw-story mw-mat-kraft">
+              <div class="mw-ig-top"><div class="mw-ig-bars"><i></i><i></i><i></i><i></i></div>
+                <div class="mw-ig-user"><div class="mw-ig-avatar">M</div><div class="mw-ig-nome">marina.le</div><div class="mw-ig-hora">agora</div><div class="mw-ig-dots">•••</div></div></div>
+              <div class="mw-card mw-b2">
+                <div class="mw-b2-selo">obra concluída</div>
+                <div class="mw-b2-livro">
+                  <svg width="80" height="100" viewBox="0 0 80 100" aria-hidden="true" style="color:var(--ink);">
+                    <rect x="6" y="4" width="68" height="92" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".7"/>
+                    <line x1="17" y1="4" x2="17" y2="96" stroke="currentColor" stroke-width="1" opacity=".35"/>
+                    <path d="M48 4 L61 4 L61 30 L54.5 24 L48 30 Z" fill="var(--acento-loc)" opacity=".9"/>
+                  </svg>
+                </div>
+                <div class="mw-b2-obra">A Metamorfose</div>
+                <div class="mw-b2-autor">Franz Kafka</div>
+                <div class="mw-b2-stats">
+                  <div class="mw-b2-stat"><b>9</b><span>dias de<br>jornada</span></div>
+                  <div class="mw-b2-stat"><b>5</b><span>sessões</span></div>
+                  <div class="mw-b2-stat"><b>3h47</b><span>tempo<br>total</span></div>
+                  <div class="mw-b2-stat"><b>11</b><span>destaques</span></div>
+                </div>
+                <p class="mw-b2-frase">Números medem esforço.<br>A estante mostra quem você é.</p>
+              </div>
+              <span class="mw-marca" style="position:absolute; left:0; right:0; bottom:98px; justify-content:center; color:var(--ink-50);"><svg width="8" height="8" viewBox="0 0 9 9" aria-hidden="true"><path d="M1 8C1 4 4 1 8 1c0 4-3 7-7 7Z" fill="currentColor" opacity=".7"/></svg>bookworm</span>
+              <div class="mw-ig-bottom"><div class="mw-ig-input" style="color:rgba(255,255,255,.9); border-color:rgba(255,255,255,.5);">Enviar mensagem</div>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 21s-7-4.5-9.5-9C.5 8 2 4 6 4c2 0 4 1.2 6 4 2-2.8 4-4 6-4 4 0 5.5 4 3.5 8-2.5 4.5-9.5 9-9.5 9Z"/></svg>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z"/></svg></div>
+            </div></div>
+          </div>
+
+          <div class="mw-frame-col">
+            <div class="mw-frame-tag"><b>N6 · obra longa concluída</b></div>
+            <div class="mw-fone"><div class="mw-story mw-mat-kraft">
+              <div class="mw-ig-top"><div class="mw-ig-bars"><i></i><i></i><i></i><i></i></div>
+                <div class="mw-ig-user"><div class="mw-ig-avatar">M</div><div class="mw-ig-nome">marina.le</div><div class="mw-ig-hora">agora</div><div class="mw-ig-dots">•••</div></div></div>
+              <div class="mw-card mw-b2">
+                <div class="mw-b2-selo">obra concluída</div>
+                <div class="mw-b2-livro">
+                  <svg width="80" height="100" viewBox="0 0 80 100" aria-hidden="true" style="color:var(--ink);">
+                    <rect x="6" y="4" width="68" height="92" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".7"/>
+                    <line x1="17" y1="4" x2="17" y2="96" stroke="currentColor" stroke-width="1" opacity=".35"/>
+                    <path d="M48 4 L61 4 L61 30 L54.5 24 L48 30 Z" fill="var(--acento-loc)" opacity=".9"/>
+                  </svg>
+                </div>
+                <div class="mw-b2-obra">Os Irmãos Karamázov</div>
+                <div class="mw-b2-autor">Fiódor Dostoiévski</div>
+                <div class="mw-b2-stats">
+                  <div class="mw-b2-stat"><b>94</b><span>dias de<br>jornada</span></div>
+                  <div class="mw-b2-stat"><b>47</b><span>sessões</span></div>
+                  <div class="mw-b2-stat"><b>38h20</b><span>tempo<br>total</span></div>
+                  <div class="mw-b2-stat"><b>63</b><span>destaques</span></div>
+                </div>
+                <p class="mw-b2-frase">Números medem esforço.<br>A estante mostra quem você é.</p>
+              </div>
+              <span class="mw-marca" style="position:absolute; left:0; right:0; bottom:98px; justify-content:center; color:var(--ink-50);"><svg width="8" height="8" viewBox="0 0 9 9" aria-hidden="true"><path d="M1 8C1 4 4 1 8 1c0 4-3 7-7 7Z" fill="currentColor" opacity=".7"/></svg>bookworm</span>
+              <div class="mw-ig-bottom"><div class="mw-ig-input" style="color:rgba(255,255,255,.9); border-color:rgba(255,255,255,.5);">Enviar mensagem</div>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 21s-7-4.5-9.5-9C.5 8 2 4 6 4c2 0 4 1.2 6 4 2-2.8 4-4 6-4 4 0 5.5 4 3.5 8-2.5 4.5-9.5 9-9.5 9Z"/></svg>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z"/></svg></div>
+            </div></div>
+          </div>
+        </div>
+      </article>
+      <!-- B3 — FECHAMENTO SEMANAL -->
+      <article class="mw-widget">
+        <div class="mw-legenda">
+          <div class="mw-legenda-num">B3</div>
+          <div class="mw-legenda-nome">Fechamento semanal</div>
+          <div class="mw-legenda-linha"><span>Formato <b>card cheio 393×852</b></span><span>Material <b>Vegetal</b></span></div>
+          <div class="mw-legenda-linha"><span>Dado <b>dias cumpridos · tempo total · estilo predominante · delta</b></span></div>
+          <div class="mw-legenda-rn">RN-06.9 (a única superfície de compartilhamento com comparação — e ela é obrigatoriamente com a própria Marina)</div>
+          <p class="mw-legenda-racional">O delta nunca mede Marina contra ninguém além de Marina. Papel vegetal translúcido porque este card é, literalmente, uma transparência sobreposta à semana anterior.</p>
+        </div>
+
+        <div class="mw-frames">
+          <div class="mw-frame-col">
+            <div class="mw-frame-tag"><b>Em contexto</b><br>fechamento de domingo</div>
+            <div class="mw-fone"><div class="mw-story">
+              <div class="mw-story-fundo mw-foto-fria" style="filter:blur(2px) saturate(1.1);"></div>
+              <div class="mw-vegetal-veu mw-mat-vegetal" style="position:absolute; inset:0;"></div>
+              <div class="mw-ig-top"><div class="mw-ig-bars"><i></i><i></i><i></i><i></i></div>
+                <div class="mw-ig-user"><div class="mw-ig-avatar">M</div><div class="mw-ig-nome">marina.le</div><div class="mw-ig-hora">agora</div><div class="mw-ig-dots">•••</div></div></div>
+              <div class="mw-card" style="padding-top:120px;">
+                <div class="mw-b3-titulo">Sua semana com os livros</div>
+                <div class="mw-b3-sub">16 a 22 de agosto</div>
+                <div class="mw-b3-grade">
+                  <div class="mw-b3-cel"><b>6/7</b><span>dias cumpridos</span></div>
+                  <div class="mw-b3-cel"><b>3h12</b><span>tempo total</span></div>
+                  <div class="mw-b3-cel"><b>Focado</b><span>estilo predominante</span></div>
+                  <div class="mw-b3-cel"><b>+38min</b><span>sobre você mesma</span></div>
+                </div>
+                <div class="mw-b3-delta">
+                  <div class="mw-b3-delta-txt">Comparado só com você: a semana anterior teve 2h34 de leitura.</div>
+                </div>
+              </div>
+              <span class="mw-marca" style="position:absolute; left:0; right:0; bottom:98px; justify-content:center; color:var(--ink-50);"><svg width="8" height="8" viewBox="0 0 9 9" aria-hidden="true"><path d="M1 8C1 4 4 1 8 1c0 4-3 7-7 7Z" fill="currentColor" opacity=".7"/></svg>bookworm</span>
+              <div class="mw-ig-bottom"><div class="mw-ig-input" style="color:rgba(255,255,255,.9); border-color:rgba(255,255,255,.5);">Enviar mensagem</div>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 21s-7-4.5-9.5-9C.5 8 2 4 6 4c2 0 4 1.2 6 4 2-2.8 4-4 6-4 4 0 5.5 4 3.5 8-2.5 4.5-9.5 9-9.5 9Z"/></svg>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z"/></svg></div>
+            </div></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- B4 — MARCO DE OFENSIVA -->
+      <article class="mw-widget">
+        <div class="mw-legenda">
+          <div class="mw-legenda-num">B4</div>
+          <div class="mw-legenda-nome">Marco de ofensiva</div>
+          <div class="mw-legenda-linha"><span>Formato <b>card cheio 393×852</b></span><span>Material <b>Carvão</b></span></div>
+          <div class="mw-legenda-linha"><span>Dado <b>ofensiva · marco de 100 dias</b></span></div>
+          <div class="mw-legenda-rn">RN-08.13 · princípio P1 (auto-competição, nunca competição tóxica)</div>
+          <p class="mw-legenda-racional">Vocabulário de diploma e ex-líbris, não de troféu de app: selo em relevo, âmbar sobre carvão, uma frase — nunca um placar contra outras pessoas.</p>
+        </div>
+
+        <div class="mw-frames">
+          <div class="mw-frame-col">
+            <div class="mw-frame-tag"><b>Marco de 100 dias</b></div>
+            <div class="mw-fone"><div class="mw-story mw-mat-carvao">
+              <div class="mw-ig-top"><div class="mw-ig-bars"><i></i><i></i><i></i><i></i></div>
+                <div class="mw-ig-user"><div class="mw-ig-avatar">M</div><div class="mw-ig-nome">marina.le</div><div class="mw-ig-hora">agora</div><div class="mw-ig-dots">•••</div></div></div>
+              <div class="mw-card mw-b4">
+                <svg class="mw-card-fleuron" width="118" height="9" viewBox="0 0 118 9" aria-hidden="true"><path d="M2 4.5h44M72 4.5h44" stroke="currentColor" stroke-width="1" opacity=".4"/><path d="M59 .8 63.4 4.5 59 8.2 54.6 4.5Z" fill="currentColor" opacity=".5"/></svg>
+                <div class="mw-b4-selo"><b>100</b><span>dias de leitura</span></div>
+                <p class="mw-b4-frase">Seu jardim floresceu cem vezes seguidas. A marca fica guardada — mesmo se um dia a sequência descansar.</p>
+              </div>
+              <span class="mw-marca" style="position:absolute; left:0; right:0; bottom:98px; justify-content:center; color:var(--ink-50);"><svg width="8" height="8" viewBox="0 0 9 9" aria-hidden="true"><path d="M1 8C1 4 4 1 8 1c0 4-3 7-7 7Z" fill="currentColor" opacity=".7"/></svg>bookworm</span>
+              <div class="mw-ig-bottom"><div class="mw-ig-input" style="color:rgba(255,255,255,.9); border-color:rgba(255,255,255,.5);">Enviar mensagem</div>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 21s-7-4.5-9.5-9C.5 8 2 4 6 4c2 0 4 1.2 6 4 2-2.8 4-4 6-4 4 0 5.5 4 3.5 8-2.5 4.5-9.5 9-9.5 9Z"/></svg>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z"/></svg></div>
+            </div></div>
+          </div>
+        </div>
+      </article>
+    </section>
+    <!-- ══════════════════ FAMÍLIA C — O DADO COMO FORMA ══════════════════ -->
+    <section class="mw-familia">
+      <div class="mw-familia-cabeca">
+        <div class="mw-familia-kicker">Família C · 3 widgets</div>
+        <h2 class="mw-familia-titulo">O dado como forma</h2>
+        <p class="mw-familia-nota">O equivalente ao mapa de rota do Strava — só que aqui o "mapa" nunca compara. É uma forma abstrata, única por sessão ou por período, reconhecível a três metros de distância. A invenção de maior valor deste conjunto.</p>
+      </div>
+
+      <!-- C1 — TRAÇO DA SESSÃO -->
+      <article class="mw-widget">
+        <div class="mw-legenda">
+          <div class="mw-legenda-num">C1</div>
+          <div class="mw-legenda-nome">Traço da sessão</div>
+          <div class="mw-legenda-linha"><span>Formato <b>card cheio 393×852</b></span><span>Material <b>Cianótipo</b></span></div>
+          <div class="mw-legenda-linha"><span>Dado <b>linha temporal desenhada</b> — espessa no foco, fina na pausa</span></div>
+          <div class="mw-legenda-rn">RN-08.6 (a espessura fala de atenção sustentada, nunca de velocidade de leitura) · RN-08.13</div>
+          <p class="mw-legenda-racional">Azul de projeto técnico, como uma planta de arquiteto: cada sessão desenha o próprio traço, único, sem eixo numérico. Ao lado, o par de dignidade — a mesma tela, o mesmo traço grosso, para 11 minutos e para 2h14: a de 11 minutos é uma frase curta e inteira, não um resto pequeno num canto.</p>
+        </div>
+
+        <div class="mw-frames">
+          <div class="mw-frame-col">
+            <div class="mw-frame-tag"><b>N1 · sessão mínima digna</b><br>um traço curto, mas inteiro</div>
+            <div class="mw-fone"><div class="mw-story mw-mat-cianotipo">
+              <div class="mw-ig-top"><div class="mw-ig-bars"><i></i><i></i><i></i><i></i></div>
+                <div class="mw-ig-user"><div class="mw-ig-avatar">M</div><div class="mw-ig-nome">marina.le</div><div class="mw-ig-hora">agora</div><div class="mw-ig-dots">•••</div></div></div>
+              <div class="mw-card">
+                <div class="mw-c1-titulo">traço da sessão · A Metamorfose</div>
+                <div class="mw-c1-svg-wrap">
+                  <svg width="240" height="300" viewBox="0 0 240 300" aria-hidden="true">
+                    <path d="M70 26 C56 50 74 66 88 84" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" opacity=".55"/>
+                    <path d="M88 84 C108 106 96 138 122 162 C148 186 138 218 164 240 C182 256 176 276 192 292" fill="none" stroke="var(--ink)" stroke-width="7.5" stroke-linecap="round"/>
+                    <circle cx="140" cy="176" r="5" fill="var(--acento-loc)"/>
+                  </svg>
+                </div>
+                <div class="mw-c1-legenda"><span>— traço fino · pausa</span><span>— traço grosso · foco</span><span>● destaque</span></div>
+                <div class="mw-c1-nums">
+                  <div><b>11</b><span>min ativos</span></div>
+                  <div><b>9</b><span>maior bloco</span></div>
+                  <div><b>1</b><span>destaque</span></div>
+                </div>
+              </div>
+              <span class="mw-marca" style="position:absolute; left:0; right:0; bottom:98px; justify-content:center; color:var(--ink-50);"><svg width="8" height="8" viewBox="0 0 9 9" aria-hidden="true"><path d="M1 8C1 4 4 1 8 1c0 4-3 7-7 7Z" fill="currentColor" opacity=".7"/></svg>bookworm</span>
+              <div class="mw-ig-bottom"><div class="mw-ig-input" style="color:rgba(255,255,255,.9); border-color:rgba(255,255,255,.5);">Enviar mensagem</div>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 21s-7-4.5-9.5-9C.5 8 2 4 6 4c2 0 4 1.2 6 4 2-2.8 4-4 6-4 4 0 5.5 4 3.5 8-2.5 4.5-9.5 9-9.5 9Z"/></svg>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z"/></svg></div>
+            </div></div>
+          </div>
+
+          <div class="mw-frame-col">
+            <div class="mw-frame-tag"><b>N4 · maratona</b><br>o mesmo traço, muito mais para contar</div>
+            <div class="mw-fone"><div class="mw-story mw-mat-cianotipo">
+              <div class="mw-ig-top"><div class="mw-ig-bars"><i></i><i></i><i></i><i></i></div>
+                <div class="mw-ig-user"><div class="mw-ig-avatar">M</div><div class="mw-ig-nome">marina.le</div><div class="mw-ig-hora">agora</div><div class="mw-ig-dots">•••</div></div></div>
+              <div class="mw-card">
+                <div class="mw-c1-titulo">traço da sessão · A Metamorfose</div>
+                <div class="mw-c1-svg-wrap">
+                  <svg width="240" height="300" viewBox="0 0 240 300" aria-hidden="true">
+                    <path d="M40 20 C30 34 44 44 40 58" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" opacity=".5"/>
+                    <path d="M40 58 C60 74 44 96 66 112 C86 126 78 148 100 160" fill="none" stroke="var(--ink)" stroke-width="6.5" stroke-linecap="round"/>
+                    <path d="M100 160 C112 168 108 180 118 188" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" opacity=".5"/>
+                    <path d="M118 188 C140 202 132 222 156 234 C176 244 172 262 194 268" fill="none" stroke="var(--ink)" stroke-width="7.5" stroke-linecap="round"/>
+                    <path d="M194 268 C204 272 202 280 210 284" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" opacity=".5"/>
+                    <path d="M210 284 C186 262 200 234 176 214 C154 196 160 168 138 148 C118 130 122 100 100 82 C78 64 84 40 62 26" fill="none" stroke="var(--ink)" stroke-width="5" stroke-linecap="round" opacity=".85"/>
+                    <circle cx="66" cy="112" r="5" fill="var(--acento-loc)"/>
+                    <circle cx="156" cy="234" r="5" fill="var(--acento-loc)"/>
+                    <circle cx="100" cy="82" r="5" fill="var(--acento-loc)"/>
+                    <rect x="176" y="210" width="7" height="7" fill="var(--ink)" opacity=".8" transform="rotate(45 179.5 213.5)"/>
+                  </svg>
+                </div>
+                <div class="mw-c1-legenda"><span>— traço fino · pausa</span><span>— traço grosso · foco</span><span>● destaque ◆ dicionário</span></div>
+                <div class="mw-c1-nums">
+                  <div><b>2h14</b><span>ativas</span></div>
+                  <div><b>47</b><span>maior bloco</span></div>
+                  <div><b>3</b><span>destaques</span></div>
+                </div>
+              </div>
+              <span class="mw-marca" style="position:absolute; left:0; right:0; bottom:98px; justify-content:center; color:var(--ink-50);"><svg width="8" height="8" viewBox="0 0 9 9" aria-hidden="true"><path d="M1 8C1 4 4 1 8 1c0 4-3 7-7 7Z" fill="currentColor" opacity=".7"/></svg>bookworm</span>
+              <div class="mw-ig-bottom"><div class="mw-ig-input" style="color:rgba(255,255,255,.9); border-color:rgba(255,255,255,.5);">Enviar mensagem</div>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 21s-7-4.5-9.5-9C.5 8 2 4 6 4c2 0 4 1.2 6 4 2-2.8 4-4 6-4 4 0 5.5 4 3.5 8-2.5 4.5-9.5 9-9.5 9Z"/></svg>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z"/></svg></div>
+            </div></div>
+          </div>
+        </div>
+      </article>
+      <!-- C2 — MAPA DE CONSTÂNCIA -->
+      <article class="mw-widget">
+        <div class="mw-legenda">
+          <div class="mw-legenda-num">C2</div>
+          <div class="mw-legenda-nome">Mapa de constância</div>
+          <div class="mw-legenda-linha"><span>Formato <b>card cheio 393×852</b></span><span>Material <b>Sépia</b></span></div>
+          <div class="mw-legenda-linha"><span>Dado <b>densidade de tinta por dia</b>, 6 semanas</span></div>
+          <div class="mw-legenda-rn">RN-06.9 (nenhuma comparação com a média de outros leitores — a grade é só de Marina)</div>
+          <p class="mw-legenda-racional">Densidade de tinta, nunca o heat map verde-vermelho de engenharia. O dia protegido por congelamento ganha uma marca própria — âmbar, tracejada — porque proteger o hábito não é o mesmo que cumpri-lo, e a grade não pode confundir os dois.</p>
+        </div>
+
+        <div class="mw-frames">
+          <div class="mw-frame-col">
+            <div class="mw-frame-tag"><b>Em contexto</b><br>seis semanas de leitura</div>
+            <div class="mw-fone"><div class="mw-story mw-mat-sepia">
+              <div class="mw-ig-top"><div class="mw-ig-bars"><i></i><i></i><i></i><i></i></div>
+                <div class="mw-ig-user"><div class="mw-ig-avatar">M</div><div class="mw-ig-nome">marina.le</div><div class="mw-ig-hora">agora</div><div class="mw-ig-dots">•••</div></div></div>
+              <div class="mw-card">
+                <div class="mw-c2-titulo">Seis semanas</div>
+                <div class="mw-c2-titulo" style="font-family:var(--mono); font-size:8px; letter-spacing:.2em; text-transform:uppercase; color:var(--ink-50); margin-top:6px;">11 jul — 22 ago</div>
+                <div class="mw-c2-grid" style="grid-template-columns:repeat(7,1fr);">
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.42"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.42"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.18"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.68"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30);"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.42"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.42"></div>
+
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.68"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.95"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.42"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.42"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.18"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30);"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.68"></div>
+
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.42"></div>
+                  <div style="aspect-ratio:1; border:1.5px dashed var(--acento-loc);" title="congelamento"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.42"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.68"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.42"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.18"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.42"></div>
+
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.95"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.68"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.42"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30);"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.42"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.68"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.95"></div>
+
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.18"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.42"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.42"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.68"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.42"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30);"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.42"></div>
+
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.42"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.68"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.95"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.42"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.18"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.42"></div>
+                  <div style="aspect-ratio:1; border:1px solid var(--ink-30); background:var(--ink); opacity:.68"></div>
+                </div>
+                <div class="mw-c2-legenda">
+                  <div class="mw-c2-legenda-item"><span class="mw-c2-swatch" style="background:transparent;"></span>sem leitura</div>
+                  <div class="mw-c2-legenda-item"><span class="mw-c2-swatch" style="background:var(--ink); opacity:.18;"></span>abaixo da meta</div>
+                  <div class="mw-c2-legenda-item"><span class="mw-c2-swatch" style="background:var(--ink); opacity:.42;"></span>meta cumprida</div>
+                  <div class="mw-c2-legenda-item"><span class="mw-c2-swatch" style="background:var(--ink); opacity:.68;"></span>1,5× a meta</div>
+                  <div class="mw-c2-legenda-item"><span class="mw-c2-swatch" style="background:var(--ink); opacity:.95;"></span>2× a meta ou mais</div>
+                  <div class="mw-c2-legenda-item"><span class="mw-c2-swatch" style="border:1.5px dashed var(--acento-loc); background:transparent;"></span>dia protegido (congelamento)</div>
+                </div>
+              </div>
+              <span class="mw-marca" style="position:absolute; left:0; right:0; bottom:98px; justify-content:center; color:var(--ink-50);"><svg width="8" height="8" viewBox="0 0 9 9" aria-hidden="true"><path d="M1 8C1 4 4 1 8 1c0 4-3 7-7 7Z" fill="currentColor" opacity=".7"/></svg>bookworm</span>
+              <div class="mw-ig-bottom"><div class="mw-ig-input" style="color:rgba(255,255,255,.9); border-color:rgba(255,255,255,.5);">Enviar mensagem</div>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 21s-7-4.5-9.5-9C.5 8 2 4 6 4c2 0 4 1.2 6 4 2-2.8 4-4 6-4 4 0 5.5 4 3.5 8-2.5 4.5-9.5 9-9.5 9Z"/></svg>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z"/></svg></div>
+            </div></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- C3 — RETOMADA -->
+      <article class="mw-widget">
+        <div class="mw-legenda">
+          <div class="mw-legenda-num">C3</div>
+          <div class="mw-legenda-nome">Retomada</div>
+          <div class="mw-legenda-linha"><span>Formato <b>card cheio 393×852</b></span><span>Material <b>Sépia</b></span></div>
+          <div class="mw-legenda-linha"><span>Dado <b>ofensiva encerrada · corrente · recorde</b></span></div>
+          <div class="mw-legenda-rn">RN-04.14a (o terceiro número — a marca encerrada) · princípio P2 (anti-frustração por design)</div>
+          <p class="mw-legenda-racional">O widget que nenhum app de fitness tem: a dormência como história, não como vazio. Nunca um "23" solto, que mentiria fingindo a sequência viva; nunca o silêncio, que apagaria o esforço. Sépia e folha prensada — dormência é bonita, não cinza.</p>
+        </div>
+
+        <div class="mw-frames">
+          <div class="mw-frame-col">
+            <div class="mw-frame-tag"><b>Em contexto</b><br>a sequência descansando</div>
+            <div class="mw-fone"><div class="mw-story mw-mat-sepia">
+              <div class="mw-ig-top"><div class="mw-ig-bars"><i></i><i></i><i></i><i></i></div>
+                <div class="mw-ig-user"><div class="mw-ig-avatar">M</div><div class="mw-ig-nome">marina.le</div><div class="mw-ig-hora">agora</div><div class="mw-ig-dots">•••</div></div></div>
+              <div class="mw-card mw-c3" style="padding-top:78px;">
+                <div class="mw-c3-titulo">herbário de Marina</div>
+                <svg width="140" height="190" viewBox="0 0 130 188" aria-hidden="true" style="margin:16px auto 0; display:block;">
+                  <path d="M65 182 C61 150,70 110,64 70 C60 46,68 30,66 14" fill="none" stroke="rgba(58,46,32,.55)" stroke-width="2"/>
+                  <ellipse cx="44" cy="150" rx="18" ry="8" fill="#8f7a4c" opacity=".7" transform="rotate(-40 44 150)"/>
+                  <ellipse cx="88" cy="128" rx="18" ry="8" fill="#8f7a4c" opacity=".7" transform="rotate(38 88 128)"/>
+                  <ellipse cx="42" cy="98" rx="16" ry="7" fill="#7d6a42" opacity=".62" transform="rotate(-32 42 98)"/>
+                  <ellipse cx="86" cy="78" rx="15" ry="7" fill="#7d6a42" opacity=".62" transform="rotate(30 86 78)"/>
+                  <g transform="translate(66 24) rotate(18)">
+                    <ellipse cx="0" cy="-12" rx="6" ry="12" fill="#96754a" opacity=".8"/>
+                    <ellipse cx="0" cy="-12" rx="6" ry="12" fill="#7a5f3c" opacity=".7" transform="rotate(60)"/>
+                    <ellipse cx="0" cy="-12" rx="6" ry="12" fill="#96754a" opacity=".8" transform="rotate(120)"/>
+                    <ellipse cx="0" cy="-12" rx="6" ry="12" fill="#7a5f3c" opacity=".7" transform="rotate(180)"/>
+                    <ellipse cx="0" cy="-12" rx="6" ry="12" fill="#96754a" opacity=".8" transform="rotate(240)"/>
+                    <ellipse cx="0" cy="-12" rx="6" ry="12" fill="#7a5f3c" opacity=".7" transform="rotate(300)"/>
+                    <circle cx="0" cy="0" r="6" fill="#584425" opacity=".75"/>
+                  </g>
+                </svg>
+                <div class="mw-c3-nums">
+                  <div class="mw-c3-num"><b>23</b><span>dias · chegou a</span></div>
+                  <div class="mw-c3-num corrente"><b>0</b><span>agora, em<br>descanso</span></div>
+                  <div class="mw-c3-num"><b>41</b><span>seu recorde</span></div>
+                </div>
+                <p class="mw-c3-frase">Sua sequência chegou a 23 dias e agora descansa. O recorde, 41, continua de pé — e as raízes seguem inteiras.</p>
+              </div>
+              <span class="mw-marca" style="position:absolute; left:0; right:0; bottom:98px; justify-content:center; color:var(--ink-50);"><svg width="8" height="8" viewBox="0 0 9 9" aria-hidden="true"><path d="M1 8C1 4 4 1 8 1c0 4-3 7-7 7Z" fill="currentColor" opacity=".7"/></svg>bookworm</span>
+              <div class="mw-ig-bottom"><div class="mw-ig-input" style="color:rgba(255,255,255,.9); border-color:rgba(255,255,255,.5);">Enviar mensagem</div>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 21s-7-4.5-9.5-9C.5 8 2 4 6 4c2 0 4 1.2 6 4 2-2.8 4-4 6-4 4 0 5.5 4 3.5 8-2.5 4.5-9.5 9-9.5 9Z"/></svg>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z"/></svg></div>
+            </div></div>
+          </div>
+        </div>
+      </article>
+    </section>
+<section class="mw-familia">
+      <div class="mw-familia-cabeca">
+        <div class="mw-familia-kicker">Família D · 1 widget</div>
+        <h2 class="mw-familia-titulo">A palavra</h2>
+        <p class="mw-familia-nota">O único widget em que o dado não é da leitora — é do autor. Por isso é também o único com atribuição obrigatória e irremovível, e o único que a leitora não pode editar: só destaques viram citação, nunca anotações pessoais.</p>
+      </div>
+
+      <!-- D1 — CITAÇÃO GRIFADA -->
+      <article class="mw-widget">
+        <div class="mw-legenda">
+          <div class="mw-legenda-num">D1</div>
+          <div class="mw-legenda-nome">Citação grifada</div>
+          <div class="mw-legenda-linha"><span>Formato <b>painel translúcido sobre a foto, 341×auto</b></span><span>Material <b>Vegetal</b></span></div>
+          <div class="mw-legenda-linha"><span>Dado <b>o trecho grifado · obra · autor</b> — nenhuma métrica</span></div>
+          <div class="mw-legenda-rn">RN-08.4 (a curadoria é da leitora, nunca de algoritmo) · RN-08.5 (teto de 400 caracteres) · RN-08.14 (obra e autor não removíveis) · RN-08.32 (anotação pessoal jamais entra) · RN-08.13</div>
+          <p class="mw-legenda-racional">Único card que não cobre a foto: o papel vegetal deixa o livro real aparecer atrás do trecho, e o grifo sai no mesmo pigmento âmbar que a leitora usou dentro do app. Ao lado, o teste de dignidade da palavra — uma frase de 128 caracteres e um parágrafo de 372, no teto de RN-08.5: a frase curta ganha corpo maior em vez de sobrar espaço vazio.</p>
+        </div>
+
+        <div class="mw-frames">
+          <div class="mw-frame-col">
+            <div class="mw-frame-tag"><b>Trecho curto · 128 caracteres</b><br>foto escura · o corpo cresce para ocupar a folha</div>
+            <div class="mw-fone"><div class="mw-story">
+              <div class="mw-story-fundo mw-foto-escura"></div>
+              <div class="mw-ig-top"><div class="mw-ig-bars"><i></i><i></i><i></i><i></i></div>
+                <div class="mw-ig-user"><div class="mw-ig-avatar">M</div><div class="mw-ig-nome">marina.le</div><div class="mw-ig-hora">agora</div><div class="mw-ig-dots">•••</div></div></div>
+              <div class="mw-d1-painel mw-mat-vegetal">
+                <div class="mw-d1-pig"></div>
+                <div class="mw-d1-kicker">trecho grifado</div><div class="mw-d1-fio"></div>
+                <p class="mw-d1-texto curta">Quando certa manhã Gregor Samsa acordou de sonhos intranquilos, <span class="mw-d1-grifo">encontrou-se em sua cama metamorfoseado num inseto monstruoso.</span></p>
+                <div class="mw-d1-atrib">
+                  <div class="mw-d1-obra">A Metamorfose</div>
+                  <div class="mw-d1-autor">Franz Kafka</div>
+                </div>
+                <span class="mw-marca" style="display:flex; justify-content:center; margin-top:14px; color:var(--ink-50);"><svg width="8" height="8" viewBox="0 0 9 9" aria-hidden="true"><path d="M1 8C1 4 4 1 8 1c0 4-3 7-7 7Z" fill="currentColor" opacity=".7"/></svg>bookworm</span>
+              </div>
+              <div class="mw-ig-bottom"><div class="mw-ig-input">Enviar mensagem</div>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 21s-7-4.5-9.5-9C.5 8 2 4 6 4c2 0 4 1.2 6 4 2-2.8 4-4 6-4 4 0 5.5 4 3.5 8-2.5 4.5-9.5 9-9.5 9Z"/></svg>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z"/></svg></div>
+            </div></div>
+          </div>
+
+          <div class="mw-frame-col">
+            <div class="mw-frame-tag"><b>Trecho longo · 372 caracteres</b><br>foto ocupada · no teto de <code>RN-08.5</code>, ainda legível</div>
+            <div class="mw-fone"><div class="mw-story">
+              <div class="mw-story-fundo mw-foto-ocupada"></div>
+              <div class="mw-ig-top"><div class="mw-ig-bars"><i></i><i></i><i></i><i></i></div>
+                <div class="mw-ig-user"><div class="mw-ig-avatar">M</div><div class="mw-ig-nome">marina.le</div><div class="mw-ig-hora">agora</div><div class="mw-ig-dots">•••</div></div></div>
+              <div class="mw-d1-painel mw-mat-vegetal">
+                <div class="mw-d1-pig"></div>
+                <div class="mw-d1-kicker">trecho grifado</div><div class="mw-d1-fio"></div>
+                <p class="mw-d1-texto">Estava deitado sobre suas costas duras como couraça e, ao levantar um pouco a cabeça, viu seu ventre abaulado, marrom, dividido em segmentos arqueados, sobre o qual a coberta, prestes a deslizar de vez, ainda mal se sustinha. <span class="mw-d1-grifo">Suas muitas pernas, lastimavelmente finas em comparação com o volume do resto do corpo, tremulavam desamparadas diante dos seus olhos.</span></p>
+                <div class="mw-d1-atrib">
+                  <div class="mw-d1-obra">A Metamorfose</div>
+                  <div class="mw-d1-autor">Franz Kafka</div>
+                </div>
+                <span class="mw-marca" style="display:flex; justify-content:center; margin-top:14px; color:var(--ink-50);"><svg width="8" height="8" viewBox="0 0 9 9" aria-hidden="true"><path d="M1 8C1 4 4 1 8 1c0 4-3 7-7 7Z" fill="currentColor" opacity=".7"/></svg>bookworm</span>
+              </div>
+              <div class="mw-ig-bottom"><div class="mw-ig-input">Enviar mensagem</div>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 21s-7-4.5-9.5-9C.5 8 2 4 6 4c2 0 4 1.2 6 4 2-2.8 4-4 6-4 4 0 5.5 4 3.5 8-2.5 4.5-9.5 9-9.5 9Z"/></svg>
+                <svg class="mw-ig-icone" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z"/></svg></div>
+            </div></div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+
+  <footer class="mw-colofao">
+    <b>O QUE ESTA PRANCHA É</b><br>
+    13 widgets compartilháveis para Instagram Stories, na direção Papel. Mood, alta fidelidade, estático — nada aqui é funcional nem definitivo. Fixture: Marina, <em>A Metamorfose</em>, ofensiva de 23 dias, recorde de 41.<br><br>
+
+    <b>A REGRA DA DIGNIDADE</b><br>
+    <em>O widget de 11 minutos precisa ter o mesmo peso do de 2h14. O número muda; a dignidade não.</em><br>
+    Quem mais precisa compartilhar é quem está começando — um leiaute que envergonha a sessão curta nunca sai do app. Por isso quatro widgets aparecem em par, no cenário mínimo e no máximo, lado a lado e do mesmo tamanho.<br><br>
+
+    <b>O QUE SEPARA ISTO DO STRAVA</b><br>
+    O laço de crescimento do Strava é movido a status comparativo: segmentos, coroas, leaderboards. <code>RN-06.8</code> proíbe essa mecânica inteira e nomeia os cards de compartilhamento; <code>RN-06.9</code> proíbe até comparar com "a média dos leitores". Nenhum widget desta prancha exibe ranking, percentil, média, curtida ou ritmo de leitura — <code>RN-08.6</code> veta velocidade mesmo com o dado disponível no sistema. A vontade de postar precisa vir de narrativa própria, não de posição.<br><br>
+
+    <b>TRÊS PENDÊNCIAS QUE ESTA PRANCHA ABRE</b><br>
+    <b>1.</b> O adesivo sobre foto — a Família A inteira — <em>não existe em regra nenhuma</em>. Nenhum <code>RN</code> menciona fundo transparente ou sobreposição à foto do usuário; o que a spec exporta é um retângulo cheio 1080×1920. O formato colide com <code>RN-08.13</code> (marca não removível, que aqui perde o papel que a sustentava), <code>RN-08.9</code> (tema define textura de fundo, que num adesivo deixa de existir) e <code>RN-08.22</code> (proporções fixas). Registrado como <code>Q-DV.5</code>.<br>
+    <b>2.</b> O widget ficou <em>sem número-síntese</em>. <code>RN-03.22</code> proíbe exibir a Leitura Consciente como nota de qualidade e manda descrever o estilo — então o que vai grande é "Focado", não "78". Strava tem o pace, o Duolingo tem o streak; aqui o lugar está vago, e estes mockups apostam no tempo ativo e no maior bloco de foco. É aposta de design, não decisão fechada. Registrado como <code>Q-DV.6</code>.<br>
+    <b>3.</b> <code>PreferenciasCard.blocos_visiveis</code> tem cinco chaves — tempo, páginas, citação, ofensiva, progresso — e <em>nenhuma para estilo de leitura</em>, que <code>RN-03.22b</code> manda caber no card. O modelo de dados e a regra discordam.<br><br>
+
+    <b>ONDE A DIREÇÃO RESISTIU</b><br>
+    O papel é um material opaco, e o adesivo pede o contrário: quanto mais o widget respeita a foto, menos superfície sobra para a marca e para o grão que fazem a peça ser reconhecível. O material Vegetal é a resposta — translúcido, deixa a foto atravessar — mas ele só funciona porque a foto por trás é escura o bastante. Sobre a foto ocupada, a legibilidade depende de sombra mais pesada do que a assinatura de Papel normalmente admite. O adesivo é a família que mais cresce e a que mais tensiona o pilar.<br><br>
+
+    Direção vinculante: <code>specs/direcao-visual.md</code> · escopo: <code>specs/mvp.md</code> §4.6 · regras: <code>specs/08-social-sharing.md</code>
+  </footer>
+</div>
+</div>

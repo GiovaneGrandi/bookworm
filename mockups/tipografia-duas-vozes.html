@@ -1,0 +1,902 @@
+<title>Duas Vozes e Meia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;0,800;1,400;1,500&family=Alegreya+Sans+SC:wght@400;500;700;800&family=Caveat:wght@400;500;600;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bitter:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════════════
+   BookWorm · Sistema tipográfico B — "Duas vozes e meia"
+   Newsreader (corpo + display, eixo opsz) · Alegreya Sans / Sans SC (chrome, versalete real) · Caveat (manuscrito)
+   Sem face própria para citação. Sem monoespaço em lugar nenhum do sistema.
+   Cores e mecânica: specs/direcao-visual.md §3 e §4 — intocadas.
+   Todo o CSS escopado sob .mk-tipo-b.
+   ══════════════════════════════════════════════════════════════════ */
+
+html, body { margin:0; padding:0; background:#1e2320; }
+
+.mk-tipo-b {
+  --tinta:        #241f19;
+  --tinta-70:     rgba(36,31,25,.72);
+  --tinta-50:     rgba(36,31,25,.52);
+  --tinta-32:     rgba(36,31,25,.34);
+  --tinta-16:     rgba(36,31,25,.16);
+  --papel:        #f3ead9;
+  --papel-fundo:  #efe3ce;
+  --grafite:      #6f6858;
+  --verde-tinta:  #2f5d3a;
+  --verde-70:     rgba(47,93,58,.78);
+  --verde-50:     rgba(47,93,58,.52);
+  --ambar:        #e6c15c;
+  --mesa:         #1e2320;
+  --pig-ambar:  #e7c25e;
+  --pig-oliva:  #a8b07a;
+  --pig-tinta:  #93a9c0;
+  --pig-carmim: #d79aa2;
+
+  /* ─ as três vozes e a meia ─ */
+  --nr:      'Newsreader', 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  --sans:    'Alegreya Sans', Optima, Candara, 'Segoe UI', sans-serif;
+  --sans-sc: 'Alegreya Sans SC', 'Alegreya Sans', Optima, 'Segoe UI', sans-serif;
+  --lapis:   'Caveat', 'Segoe Script', 'Bradley Hand', cursive;
+  /* faces do painel de leitura, fora do sistema B propriamente dito */
+  --literata:  'Literata', 'Iowan Old Style', Georgia, serif;
+  --atkinson:  'Atkinson Hyperlegible', Arial, sans-serif;
+  --bitter:    'Bitter', Georgia, serif;
+
+  font-family: var(--nr);
+  color: #ded4bd;
+  background-color: var(--mesa);
+  background-image:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.020) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(0deg,  rgba(0,0,0,.16) 0 1px, transparent 1px 3px),
+    radial-gradient(120% 90% at 50% -10%, rgba(190,170,130,.14), transparent 60%),
+    radial-gradient(140% 120% at 50% 110%, rgba(0,0,0,.55), transparent 65%);
+  min-height: 100vh;
+  padding-bottom: 10px;
+  -webkit-font-smoothing: antialiased;
+}
+.mk-tipo-b *, .mk-tipo-b *::before, .mk-tipo-b *::after { box-sizing: border-box; }
+.mk-tipo-b p, .mk-tipo-b h1, .mk-tipo-b h2, .mk-tipo-b h3, .mk-tipo-b figure { margin:0; }
+.mk-tipo-b b, .mk-tipo-b strong { font-weight: 600; }
+.mk-tipo-b em, .mk-tipo-b i { font-style: italic; }
+.mk-tipo-b ::selection { background: rgba(230,193,92,.4); }
+.mk-tipo-b [class*="nr-"] { font-family: var(--nr); font-optical-sizing: none; }
+
+/* ── eixo óptico: classes utilitárias — a "meia voz" ── */
+.mk-tipo-b .op-6  { font-variation-settings: 'opsz' 6;  }
+.mk-tipo-b .op-9  { font-variation-settings: 'opsz' 9;  }
+.mk-tipo-b .op-10 { font-variation-settings: 'opsz' 10; }
+.mk-tipo-b .op-11 { font-variation-settings: 'opsz' 11; }
+.mk-tipo-b .op-12 { font-variation-settings: 'opsz' 12; }
+.mk-tipo-b .op-14 { font-variation-settings: 'opsz' 14; }
+.mk-tipo-b .op-20 { font-variation-settings: 'opsz' 20; }
+.mk-tipo-b .op-28 { font-variation-settings: 'opsz' 28; }
+.mk-tipo-b .op-32 { font-variation-settings: 'opsz' 32; }
+.mk-tipo-b .op-48 { font-variation-settings: 'opsz' 48; }
+.mk-tipo-b .op-60 { font-variation-settings: 'opsz' 60; }
+.mk-tipo-b .op-72 { font-variation-settings: 'opsz' 72; }
+.mk-tipo-b .tnum  { font-variant-numeric: tabular-nums; }
+.mk-tipo-b .onum  { font-variant-numeric: oldstyle-nums; }
+
+/* ── versalete real: primeira letra em versal, resto em Alegreya Sans SC ── */
+.mk-tipo-b .versal { font-family: var(--sans-sc); }
+.mk-tipo-b .versal-ini { font-family: var(--sans); font-weight:700; }
+
+/* ══ CABEÇA ══════════════════════════════════════════════════════ */
+.mk-tipo-b .tb-cabeca { position:relative; max-width:1280px; margin:0 auto; padding:54px 48px 30px; }
+.mk-tipo-b .tb-carimbo {
+  position:absolute; top:46px; right:48px; width:150px; height:96px;
+  border:2px solid rgba(84,140,96,.55); border-radius:50%;
+  box-shadow: inset 0 0 0 3px rgba(84,140,96,.16);
+  transform: rotate(-9deg);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+  font-family: var(--sans-sc); color: rgba(84,140,96,.8); text-align:center; opacity:.92;
+}
+.tb-carimbo b { font-size:12px; letter-spacing:.1em; font-weight:700; }
+.tb-carimbo span { font-size:7.5px; letter-spacing:.16em; }
+.tb-carimbo hr { width:60px; border:0; border-top:1px solid rgba(84,140,96,.45); margin:2px 0; }
+
+.tb-eyebrow { font-family: var(--sans-sc); font-size:11px; line-height:16px; letter-spacing:.1em; color: rgba(230,193,92,.85); font-weight:700; }
+.tb-titulo {
+  font-family: var(--nr); font-weight:340; font-style:italic; font-size:56px; line-height:54px;
+  letter-spacing:.002em; color:#f4ecd9; margin-top:12px; max-width:16ch;
+  font-variation-settings: 'opsz' 72; text-wrap: balance;
+}
+.tb-tese {
+  font-family: var(--nr); font-weight:400; font-size:19px; line-height:29px; font-style:normal;
+  font-variation-settings: 'opsz' 14;
+  color: rgba(222,212,189,.82); max-width:64ch; margin-top:18px;
+}
+.tb-tese b { font-weight:600; color:#f0e7d2; }
+.tb-linha { height:1px; margin:22px 0 20px; background: linear-gradient(90deg, rgba(222,212,189,.5), rgba(222,212,189,.06) 78%, transparent); }
+
+.tb-especimes-grandes { display:flex; flex-wrap:wrap; gap:34px 44px; align-items:flex-end; }
+.tb-eg-item { min-width:170px; }
+.tb-eg-face { color:#f4ecd9; line-height:1; }
+.tb-eg-face.nr { font-family: var(--nr); font-size:52px; font-weight:400; font-variation-settings: 'opsz' 60; }
+.tb-eg-face.sc { font-family: var(--sans-sc); font-size:30px; font-weight:600; letter-spacing:.02em; }
+.tb-eg-face.lp { font-family: var(--lapis); font-size:46px; font-weight:500; }
+.tb-eg-nome { font-family: var(--sans-sc); font-size:10.5px; letter-spacing:.1em; color: rgba(230,193,92,.85); margin-top:10px; font-weight:700; }
+.tb-eg-papel { font-family: var(--sans); font-size:11px; font-style:italic; color: rgba(222,212,189,.56); margin-top:3px; line-height:1.5; max-width:26ch; }
+
+/* ══ CORPO / SITUAÇÕES ═══════════════════════════════════════════ */
+.tb-corpo { max-width:1280px; margin:0 auto; padding:6px 48px 10px; }
+.tb-situacao { padding:56px 0 6px; border-top:1px solid rgba(222,212,189,.14); }
+.tb-situacao:first-child { border-top:none; }
+.tb-sit-cabeca { max-width:900px; margin-bottom:30px; }
+.tb-sit-kicker { display:flex; align-items:baseline; gap:12px; }
+.tb-sit-num { font-family: var(--sans-sc); font-size:11px; letter-spacing:.12em; color: rgba(230,193,92,.85); font-weight:700; }
+.tb-sit-prova { font-family: var(--sans); font-size:10.5px; letter-spacing:.08em; font-style:italic; color: rgba(222,212,189,.42); }
+.tb-sit-titulo {
+  font-family: var(--nr); font-weight:400; font-style:italic; font-size:30px; line-height:34px;
+  font-variation-settings: 'opsz' 34; color:#f0e7d2; margin-top:8px;
+}
+.tb-sit-racional {
+  font-family: var(--nr); font-size:15.5px; line-height:24px; font-variation-settings: 'opsz' 12;
+  color: rgba(222,212,189,.72); max-width:74ch; margin-top:10px;
+}
+.tb-sit-legenda-linha { display:flex; flex-wrap:wrap; gap:6px 18px; margin-top:10px; font-family: var(--sans-sc); font-size:10.5px; letter-spacing:.03em; color: rgba(222,212,189,.5); }
+.tb-sit-legenda-linha b { color: rgba(230,193,92,.85); font-weight:700; }
+
+/* ── aparelho de telefone (situações 1, 7, 8) ── */
+.tb-fone-wrap { display:flex; gap:40px; flex-wrap:wrap; align-items:flex-start; }
+.tb-fone {
+  width:411px; height:870px; padding:9px; border-radius:30px; flex:0 0 auto;
+  background: linear-gradient(160deg, #34322c 0%, #16150f 46%, #2b2922 100%);
+  box-shadow: 0 34px 60px rgba(0,0,0,.6), 0 4px 10px rgba(0,0,0,.5),
+    inset 0 0 0 1px rgba(255,255,255,.075), inset 0 1px 0 rgba(255,255,255,.14);
+  position:relative;
+}
+.tb-tela { position:relative; overflow:hidden; width:393px; height:852px; border-radius:22px; background: var(--papel); }
+.tb-pagina { position:absolute; inset:0; color: var(--tinta);
+  background-color: var(--papel);
+  background-image:
+    radial-gradient(circle at 16% 10%, rgba(255,255,255,.55), transparent 46%),
+    radial-gradient(circle at 86% 82%, rgba(163,130,84,.13), transparent 52%),
+    radial-gradient(rgba(96,74,46,.075) .5px, transparent .6px);
+  background-size: 100% 100%, 100% 100%, 7px 7px;
+}
+.tb-lombada { position:absolute; left:0; top:0; bottom:0; width:28px; background: linear-gradient(90deg, rgba(88,64,36,.24), rgba(88,64,36,.05) 55%, transparent); pointer-events:none; }
+.tb-status { position:absolute; left:30px; right:26px; top:12px; display:flex; justify-content:space-between;
+  font-family: var(--sans-sc); font-size:9px; letter-spacing:.1em; color: var(--tinta-32); font-variant-numeric: tabular-nums; }
+
+/* ── prancha de espécime (situações 2,3,4,5,6) ── */
+.tb-prancha-wrap { display:flex; flex-direction:column; gap:14px; align-items:flex-start; max-width:100%; }
+.tb-prancha-scroll { max-width:100%; overflow-x:auto; padding-bottom:4px; }
+.tb-prancha {
+  position:relative; min-width:640px; min-height:280px; background:#e9ded0;
+  background-image: radial-gradient(rgba(96,74,46,.06) .5px, transparent .6px); background-size:7px 7px;
+  border:1px solid rgba(124,98,58,.3);
+  box-shadow: 0 14px 30px rgba(48,32,16,.3), inset 0 0 0 1px rgba(255,255,255,.2);
+  padding:40px 40px 32px; display:flex; align-items:center; justify-content:center; gap:40px; flex-wrap:wrap;
+  color: var(--tinta);
+}
+.tb-prancha-mira { position:absolute; width:11px; height:11px; }
+.tb-prancha-mira::before, .tb-prancha-mira::after { content:""; position:absolute; background: rgba(58,46,32,.5); }
+.tb-prancha-mira::before { left:5px; top:0; width:1px; height:11px; }
+.tb-prancha-mira::after { top:5px; left:0; height:1px; width:11px; }
+.tb-prancha-mira.tl { top:10px; left:10px; } .tb-prancha-mira.tr { top:10px; right:10px; }
+.tb-prancha-mira.bl { bottom:10px; left:10px; } .tb-prancha-mira.br { bottom:10px; right:10px; }
+.tb-prancha-dim { font-family: var(--sans-sc); font-size:9px; letter-spacing:.05em; color: rgba(58,46,32,.62); text-align:center; margin-top:2px; }
+.tb-prancha-dim b { color: var(--verde-70); font-weight:700; }
+
+/* ── etiqueta (washi tape) — legenda de cada situação em prancha ── */
+.tb-etq {
+  position:relative; max-width:640px;
+  background:#ece2cc;
+  background-image: radial-gradient(rgba(90,70,45,.055) .5px, transparent .6px), linear-gradient(180deg, rgba(255,255,255,.4), rgba(0,0,0,.02));
+  background-size: 7px 7px, 100% 100%;
+  padding:13px 18px 14px;
+  box-shadow: 0 9px 18px rgba(48,32,16,.3), inset 0 0 0 1px rgba(120,95,60,.18);
+  transform: rotate(-.6deg); color: var(--tinta);
+}
+.tb-etq::before {
+  content:""; position:absolute; top:-12px; left:34px; width:82px; height:22px;
+  background: linear-gradient(180deg, rgba(226,208,168,.8), rgba(206,184,140,.72));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.28); transform: rotate(-2.4deg); opacity:.92;
+}
+.tb-etq-linha { font-family: var(--sans-sc); font-size:10px; letter-spacing:.03em; color: var(--tinta-70); }
+.tb-etq-linha b { color: var(--tinta); font-weight:700; }
+
+/* ══ FLEURÃO ═════════════════════════════════════════════════════ */
+.tb-fleuron { display:block; margin:14px auto; }
+
+/* ══ SITUAÇÃO 1 — texto corrido ═════════════════════════════════ */
+.tb-s1-cap { padding:74px 34px 0 32px; text-align:center; }
+.tb-s1-capnum { font-family: var(--sans-sc); font-size:10px; font-weight:700; letter-spacing:.14em; color: var(--tinta-50); }
+.tb-s1-capnome { font-family: var(--nr); font-style:italic; font-weight:340; font-size:26px; font-variation-settings:'opsz' 40; margin-top:8px; color: var(--tinta); }
+.tb-corpo-txt { position:absolute; left:32px; right:40px; top:186px; bottom:0; overflow:hidden;
+  font-family: var(--nr); font-size:17px; line-height:28px; font-weight:400; font-variation-settings:'opsz' 9;
+  text-align:justify; hyphens:auto; -webkit-hyphens:auto; color: var(--tinta); }
+.tb-par { text-indent:1.1em; margin-bottom:0; }
+.tb-par--semi { text-indent:0; }
+.tb-fala { text-indent:1.1em; margin-top:6px; display:block; }
+.tb-capitular {
+  float:left; font-family: var(--nr); font-weight:500; font-size:66px; line-height:52px;
+  font-variation-settings:'opsz' 72; padding:2px 6px 0 0; color: var(--tinta);
+}
+.tb-abertura-versal {
+  font-family: var(--sans-sc); font-size:15px; letter-spacing:.07em; font-weight:600; color: var(--tinta);
+}
+.tb-consulta { border-bottom:1px dashed rgba(111,104,88,.62); padding-bottom:.5px; }
+
+.tb-dic { position:absolute; left:0; right:0; bottom:0; height:406px; background:#f8f1e2;
+  background-image: radial-gradient(rgba(96,74,46,.06) .5px, transparent .6px), linear-gradient(180deg, rgba(255,255,255,.5), rgba(0,0,0,.015));
+  background-size: 7px 7px, 100% 100%;
+  box-shadow: 0 -22px 44px rgba(48,32,16,.34); padding:16px 26px 0 30px; }
+.tb-dic::before { content:""; position:absolute; top:-7px; left:0; right:0; height:8px; background:#f8f1e2;
+  -webkit-mask-image: radial-gradient(circle at 4px 8px, #000 3.5px, transparent 3.7px);
+  mask-image: radial-gradient(circle at 4px 8px, #000 3.5px, transparent 3.7px);
+  -webkit-mask-size:8px 8px; mask-size:8px 8px; -webkit-mask-repeat:repeat-x; mask-repeat:repeat-x; }
+.tb-dic-corrente { display:flex; justify-content:space-between; align-items:baseline; font-family: var(--sans-sc); font-size:9px; letter-spacing:.08em; color: rgba(36,31,25,.48); border-bottom:1px solid rgba(36,31,25,.32); padding-bottom:6px; }
+.tb-verbete { font-family: var(--nr); font-size:29px; font-weight:500; font-variation-settings:'opsz' 36; margin-top:12px; color:#241f19; }
+.tb-verbete sup { font-size:12px; font-weight:400; color: rgba(36,31,25,.5); }
+.tb-fonetica { font-family: var(--sans); font-style:italic; font-size:11.5px; color: rgba(36,31,25,.58); margin-top:4px; }
+.tb-classe { font-family: var(--nr); font-style:italic; font-size:13.5px; font-variation-settings:'opsz' 12; color: rgba(36,31,25,.72); margin-top:8px; border-bottom:1px solid rgba(36,31,25,.14); padding-bottom:9px; }
+.tb-acepcao { font-family: var(--nr); font-size:13.5px; line-height:20px; font-variation-settings:'opsz' 10; color:#2c261f; padding-left:18px; text-indent:-18px; margin-top:8px; }
+.tb-acepcao b { font-weight:600; margin-right:6px; }
+.tb-etim { font-family: var(--nr); font-style:italic; font-size:11.5px; line-height:18px; font-variation-settings:'opsz' 9; color: rgba(36,31,25,.6); border-top:1px solid rgba(36,31,25,.14); padding-top:9px; margin-top:8px; }
+.tb-dic-rodape { position:absolute; left:30px; right:26px; bottom:16px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.tb-salvar { font-family: var(--sans-sc); font-size:10px; letter-spacing:.08em; font-weight:700; color:#f4e7d2; background: var(--verde-tinta); padding:9px 14px; border-radius:2px; box-shadow: 0 2px 0 rgba(30,60,38,.9), 0 6px 12px rgba(48,32,16,.22); transform: rotate(-.6deg); }
+.tb-dic-nota { font-family: var(--lapis); font-size:15px; color: rgba(90,84,70,.8); transform: rotate(-2deg); text-align:right; line-height:17px; }
+
+/* ══ SITUAÇÃO 2 — título e eixo óptico ══════════════════════════ */
+.tb-s2-abertura { text-align:center; }
+.tb-s2-capnum { font-family: var(--sans-sc); font-size:10px; font-weight:700; letter-spacing:.14em; color: var(--tinta-50); }
+.tb-s2-titulo { font-family: var(--nr); font-style:italic; font-weight:340; font-size:38px; line-height:38px; font-variation-settings:'opsz' 68; margin-top:10px; color: var(--tinta); }
+.tb-eixo-row { display:flex; gap:40px; align-items:flex-end; justify-content:center; margin-top:30px; }
+.tb-eixo-item { text-align:center; }
+.tb-eixo-amostra { font-family: var(--nr); font-size:60px; line-height:60px; color: var(--tinta); }
+.tb-eixo-tag { font-family: var(--sans-sc); font-size:10px; letter-spacing:.07em; color: var(--verde-70); margin-top:10px; font-weight:700; }
+.tb-eixo-sub { font-family: var(--sans); font-size:9.5px; font-style:italic; color: var(--tinta-50); margin-top:2px; }
+.tb-s2-numero { margin-top:34px; text-align:center; }
+.tb-s2-num-val { font-family: var(--nr); font-size:108px; line-height:96px; font-weight:600; font-variation-settings:'opsz' 72; color: var(--tinta); font-variant-numeric: tabular-nums; }
+.tb-s2-num-lbl { font-family: var(--sans-sc); font-size:11px; letter-spacing:.1em; color: var(--tinta-50); margin-top:6px; }
+
+/* ══ SITUAÇÃO 3 — tabela semanal ════════════════════════════════ */
+.tb-semana { display:flex; gap:2px; }
+.tb-dia { width:70px; text-align:center; border-right:1px solid rgba(36,31,25,.16); padding:0 2px; }
+.tb-dia:last-child { border-right:none; }
+.tb-dia-rot { font-family: var(--sans-sc); font-size:9.5px; letter-spacing:.06em; color: var(--tinta-50); font-weight:700; }
+.tb-dia-val { font-family: var(--nr); font-size:19px; line-height:24px; font-variation-settings:'opsz' 20; color: var(--tinta); margin-top:10px; font-variant-numeric: tabular-nums; }
+.tb-dia-val.vazio { color: var(--tinta-32); }
+.tb-dia--hoje .tb-dia-val { color: var(--verde-tinta); font-weight:600; }
+.tb-dia--hoje .tb-dia-rot { color: var(--verde-70); }
+
+/* ══ SITUAÇÃO 3b — regra da dignidade ═══════════════════════════ */
+.tb-dignidade { display:flex; gap:44px; flex-wrap:wrap; justify-content:center; }
+.tb-dig-par { text-align:center; }
+.tb-dig-cab { font-family: var(--sans); font-size:10px; font-style:italic; color: var(--tinta-50); margin-bottom:12px; }
+.tb-dig-caixa {
+  width:168px; padding:14px 8px 12px; margin:0 auto;
+  border:1px dashed rgba(124,98,58,.34); background: rgba(255,255,255,.34);
+}
+.tb-dig-val {
+  font-family: var(--nr); font-size:46px; line-height:48px; font-weight:600;
+  font-variation-settings:'opsz' 60; color: var(--tinta);
+  font-variant-numeric: tabular-nums;
+}
+.tb-dig-lbl { font-family: var(--sans-sc); font-size:11px; letter-spacing:.08em; color: var(--tinta-50); margin-top:8px; font-weight:700; }
+.tb-dig-of { font-family: var(--sans); font-size:10.5px; font-style:italic; color: var(--tinta-50); margin-top:10px; }
+.tb-dig-of b { font-family: var(--nr); font-style:normal; font-variant-numeric: tabular-nums; color: var(--tinta); font-weight:600; }
+
+/* ══ SITUAÇÃO 4 — chrome / versalete vs. máquina ════════════════ */
+.tb-comparativo { display:flex; gap:36px; flex-wrap:wrap; justify-content:center; }
+.tb-comp-col { text-align:center; }
+.tb-comp-cab { font-family: var(--sans); font-size:10px; font-style:italic; letter-spacing:.04em; color: var(--tinta-50); margin-bottom:14px; }
+.tb-comp-antes { font-family: 'Courier New', 'Nimbus Mono PS', monospace; font-size:6.2px; letter-spacing:.32em; text-transform:uppercase; color: var(--tinta-70); background:#e2d5b6; padding:9px 12px; border:1px solid rgba(36,31,25,.24); }
+.tb-comp-depois { display:flex; align-items:center; }
+.tb-rotulos-grid { display:flex; flex-wrap:wrap; gap:8px; max-width:520px; justify-content:center; margin-top:22px; }
+.tb-rotulo-chip { border:1px solid rgba(124,98,58,.34); background: rgba(255,255,255,.4); padding:7px 12px 6px; }
+.tb-rotulo-chip span { font-family: var(--sans-sc); font-size:13px; letter-spacing:.02em; color: var(--tinta); font-weight:600; }
+
+/* ══ SITUAÇÃO 5 — citação ═══════════════════════════════════════ */
+.tb-citacao-card { max-width:560px; text-align:left; padding:8px 6px; }
+.tb-cit-kicker { font-family: var(--sans-sc); font-size:10px; letter-spacing:.1em; color: var(--tinta-50); text-align:center; }
+.tb-cit-fio { width:34px; height:1px; background: var(--tinta-32); margin:10px auto 0; }
+.tb-cit-texto { font-family: var(--nr); font-style:italic; font-size:22px; line-height:34px; font-variation-settings:'opsz' 28; color: var(--tinta); margin-top:20px; }
+.tb-grifo { background-image:
+    linear-gradient(180deg, rgba(231,194,94,0) 10%, rgba(231,194,94,.62) 10%, rgba(231,194,94,.7) 90%, rgba(231,194,94,0) 90%),
+    linear-gradient(90deg, rgba(231,194,94,.3), rgba(214,172,66,.12) 40%, rgba(231,194,94,.34));
+  mix-blend-mode: multiply; box-decoration-break: clone; -webkit-box-decoration-break: clone;
+  padding:.04em .16em; border-radius:3px 7px 4px 6px; }
+.tb-cit-atrib { margin-top:22px; padding-top:14px; border-top:1px solid var(--tinta-32); text-align:center; }
+.tb-cit-obra { font-family: var(--sans-sc); font-size:13px; font-weight:700; letter-spacing:.1em; color: var(--tinta-70); }
+.tb-cit-autor { font-family: var(--nr); font-size:13px; font-style:italic; font-variation-settings:'opsz' 12; color: var(--tinta-50); margin-top:4px; }
+
+/* ══ SITUAÇÃO 6 — manuscrito ═════════════════════════════════════ */
+.tb-marginal-row { display:flex; gap:40px; align-items:flex-start; }
+.tb-marginal-texto { max-width:280px; }
+.tb-marginal-frase { font-family: var(--nr); font-style:italic; font-size:16px; line-height:25px; font-variation-settings:'opsz' 12; color: var(--tinta); }
+.tb-marginal-grifo { background: rgba(231,194,94,.4); mix-blend-mode:multiply; padding:.02em .1em; border-radius:2px 5px 3px 4px; }
+.tb-lapis-nota { font-family: var(--lapis); font-size:19px; line-height:22px; color: rgba(90,84,70,.85); transform: rotate(-2.5deg); max-width:190px; }
+.tb-lapis-seta { width:44px; height:30px; margin-top:8px; }
+.tb-herbario { width:170px; background:#efe4c8; border:1px solid rgba(124,98,58,.4); box-shadow: 0 8px 18px rgba(48,32,16,.28); padding:14px 12px 12px; transform: rotate(1.4deg); text-align:center; }
+.tb-herb-fita { width:60px; height:16px; margin:0 auto 10px; background: linear-gradient(180deg, rgba(168,176,122,.85), rgba(140,150,96,.8)); transform: rotate(-2deg); }
+.tb-herb-titulo { font-family: var(--sans-sc); font-size:10px; letter-spacing:.06em; color: var(--tinta-70); font-weight:700; }
+.tb-herb-num { font-family: var(--nr); font-style:italic; font-size:15px; font-variation-settings:'opsz' 12; color: var(--tinta); margin-top:8px; }
+.tb-herb-nota { font-family: var(--lapis); font-size:14px; color: rgba(90,84,70,.8); margin-top:8px; transform: rotate(-1.4deg); }
+
+/* ══ SITUAÇÃO 7 — microcopy e carta (fone) ═══════════════════════ */
+.tb-s7-wrap { position:absolute; inset:0; padding:60px 26px 24px; overflow:hidden; }
+.tb-notif { background:#fbf6ea; border:1px solid rgba(124,98,58,.3); box-shadow:0 8px 16px rgba(48,32,16,.28); padding:12px 15px 11px; border-radius:3px 6px 4px 7px/5px 3px 6px 4px; }
+.tb-notif-nome { font-family: var(--sans-sc); font-size:9px; letter-spacing:.08em; color: var(--verde-70); font-weight:700; }
+.tb-notif-txt { font-family: var(--nr); font-style:italic; font-size:15px; line-height:20px; font-variation-settings:'opsz' 12; color: var(--tinta); margin-top:5px; }
+.tb-notif-data { font-family: var(--sans); font-size:9px; font-style:italic; color: var(--tinta-50); margin-top:6px; }
+.tb-micro-lista { margin-top:16px; display:flex; flex-direction:column; gap:9px; }
+.tb-micro-item { font-family: var(--nr); font-style:italic; font-size:13.5px; line-height:19px; font-variation-settings:'opsz' 11; color: var(--tinta-70); border-left:2px solid rgba(124,98,58,.28); padding-left:10px; }
+.tb-carta { margin-top:20px; background:#f8f1e2; border:1px solid rgba(124,98,58,.32); box-shadow:0 10px 20px rgba(48,32,16,.26); padding:18px 18px 16px; transform: rotate(-.4deg); }
+.tb-carta-cap { font-family: var(--nr); float:left; font-weight:500; font-size:38px; line-height:32px; font-variation-settings:'opsz' 48; padding-right:4px; color: var(--tinta); }
+.tb-carta-corpo { font-family: var(--nr); font-size:14px; line-height:21px; font-variation-settings:'opsz' 10; color: var(--tinta); text-align:justify; hyphens:auto; }
+.tb-carta-corpo p + p { margin-top:9px; }
+.tb-carta-assin { font-family: var(--nr); font-style:italic; font-size:13px; font-variation-settings:'opsz' 10; color: var(--tinta-70); margin-top:9px; }
+
+/* ══ SITUAÇÃO 8 — lista densa (fone) ══════════════════════════════ */
+.tb-s8-wrap { position:absolute; inset:0; padding:56px 24px 24px; }
+.tb-s8-kicker { font-family: var(--sans-sc); font-size:10px; letter-spacing:.1em; color: var(--tinta-50); font-weight:700; }
+.tb-lista { margin-top:16px; display:flex; flex-direction:column; }
+.tb-item-livro { display:flex; align-items:flex-start; gap:12px; padding:13px 0; border-bottom:1px solid rgba(124,98,58,.2); }
+.tb-capa-mini { width:34px; height:48px; flex:0 0 auto; background: linear-gradient(160deg, #efe4c8, #cdbd94); border:1px solid rgba(124,98,58,.4); box-shadow: 1px 2px 4px rgba(48,32,16,.24); }
+.tb-item-txt { flex:1; min-width:0; }
+.tb-item-titulo { font-family: var(--nr); font-style:italic; font-weight:500; font-size:16px; line-height:20px; font-variation-settings:'opsz' 11; color: var(--tinta); }
+.tb-item-autor { font-family: var(--sans-sc); font-size:10px; letter-spacing:.05em; color: var(--tinta-50); margin-top:4px; font-weight:600; }
+.tb-item-chips { display:flex; flex-wrap:wrap; gap:5px; margin-top:7px; }
+.tb-chip { font-family: var(--sans); font-size:8.5px; font-style:italic; letter-spacing:.02em; color: var(--tinta-70); border:1px solid rgba(124,98,58,.28); padding:2px 7px 1px; border-radius:2px 5px 3px 4px; }
+.tb-chip.verde { color: var(--verde-tinta); border-color: rgba(47,93,58,.4); }
+
+/* ══ FICHA TÉCNICA ═══════════════════════════════════════════════ */
+.tb-ficha-wrap { max-width:1280px; margin:0 auto; padding:40px 48px 10px; }
+.tb-ficha-titulo { font-family: var(--nr); font-style:italic; font-size:26px; font-variation-settings:'opsz' 34; color:#f0e7d2; }
+.tb-ficha-nota { font-family: var(--nr); font-size:14.5px; line-height:22px; font-variation-settings:'opsz' 11; color: rgba(222,212,189,.68); max-width:74ch; margin-top:8px; }
+.tb-tabela-scroll { overflow-x:auto; margin-top:24px; }
+table.tb-tabela { border-collapse: collapse; width:100%; min-width:920px; background:#f3ead9; box-shadow:0 14px 28px rgba(48,32,16,.3); }
+table.tb-tabela caption { caption-side: top; }
+.tb-tabela th, .tb-tabela td { padding:11px 14px; text-align:left; border-bottom:1px solid rgba(36,31,25,.14); vertical-align:baseline; }
+.tb-tabela thead th { font-family: var(--sans-sc); font-size:9.5px; letter-spacing:.08em; color: var(--tinta-50); border-bottom:2px solid var(--tinta); font-weight:700; }
+.tb-tabela tbody td { font-family: var(--nr); font-size:13.5px; font-variation-settings:'opsz' 10; color: var(--tinta); }
+.tb-tabela tbody td.situacao { font-family: var(--sans-sc); font-size:11px; letter-spacing:.03em; color: var(--tinta); font-weight:700; }
+.tb-tabela tbody td.face { font-style:italic; }
+.tb-tabela tbody td.num { font-variant-numeric: tabular-nums; }
+.tb-tabela tbody tr:nth-child(even) td { background: rgba(124,98,58,.045); }
+
+/* ══ PAINEL DE LEITURA ═══════════════════════════════════════════ */
+.tb-painel-wrap { max-width:1280px; margin:0 auto; padding:44px 48px 10px; }
+.tb-painel-grid { display:flex; gap:16px; margin-top:26px; overflow-x:auto; padding-bottom:6px; }
+.tb-painel-item { flex:1 1 218px; min-width:200px; background:#f3ead9; border:1px solid rgba(124,98,58,.3); box-shadow:0 12px 24px rgba(48,32,16,.28); padding:14px 14px 13px; }
+.tb-painel-item.sel { box-shadow: 0 0 0 2px var(--verde-tinta), 0 12px 24px rgba(48,32,16,.28); }
+.tb-painel-nome { font-family: var(--sans-sc); font-size:11px; letter-spacing:.06em; color: var(--tinta); font-weight:700; display:flex; justify-content:space-between; align-items:baseline; }
+.tb-painel-nome em { font-family: var(--sans); font-style:italic; font-size:8.5px; color: var(--verde-70); font-weight:400; letter-spacing:0; }
+.tb-painel-amostra { margin-top:10px; font-size:14px; line-height:21px; color: var(--tinta); min-height:126px; }
+.tb-painel-desc { font-family: var(--sans); font-size:9.5px; font-style:italic; color: var(--tinta-50); margin-top:10px; line-height:1.5; border-top:1px dashed rgba(124,98,58,.32); padding-top:8px; }
+
+/* ══ PROVA DE ESTRESSE ═══════════════════════════════════════════ */
+.tb-estresse-wrap { max-width:1280px; margin:0 auto; padding:44px 48px 10px; }
+.tb-estresse-grid { display:flex; gap:20px; margin-top:24px; flex-wrap:wrap; }
+.tb-estresse-item { flex:1 1 300px; min-width:280px; background:#f3ead9; border:1px solid rgba(124,98,58,.3); box-shadow:0 12px 24px rgba(48,32,16,.28); padding:18px 18px 16px; }
+.tb-estresse-item.erro { box-shadow: 0 0 0 2px rgba(215,90,70,.55), 0 12px 24px rgba(48,32,16,.28); }
+.tb-estresse-tag { font-family: var(--sans-sc); font-size:9.5px; letter-spacing:.06em; color: var(--tinta-50); font-weight:700; }
+.tb-estresse-tag.erro { color: rgba(190,66,46,.85); }
+.tb-estresse-texto { margin-top:10px; color: var(--tinta); }
+.tb-estresse-nota { font-family: var(--sans); font-size:9.5px; font-style:italic; color: var(--tinta-50); margin-top:10px; line-height:1.5; }
+
+/* ══ COLOFÃO ═══════════════════════════════════════════════════════ */
+.tb-colofao { max-width:1280px; margin:0 auto; padding:44px 48px 64px; color: rgba(222,212,189,.5); }
+.tb-colofao-titulo { font-family: var(--sans-sc); font-size:11px; letter-spacing:.1em; color: rgba(230,193,92,.85); font-weight:700; border-top:1px solid rgba(222,212,189,.16); padding-top:26px; }
+.tb-colofao p { font-family: var(--nr); font-size:14.5px; line-height:23px; font-variation-settings:'opsz' 11; margin-top:12px; max-width:82ch; color: rgba(222,212,189,.78); }
+.tb-colofao p b { color:#f0e7d2; font-weight:600; }
+.tb-colofao p em { font-style:italic; color: rgba(230,193,92,.9); }
+.tb-colofao-grid { display:grid; grid-template-columns: 1fr 1fr; gap:22px 40px; margin-top:18px; }
+@media (max-width:860px) { .tb-colofao-grid { grid-template-columns:1fr; } }
+.tb-colofao-bloco-titulo { font-family: var(--sans-sc); font-size:10px; letter-spacing:.08em; color: var(--ambar); font-weight:700; }
+
+@media (max-width:900px) {
+  .tb-cabeca, .tb-corpo, .tb-ficha-wrap, .tb-painel-wrap, .tb-estresse-wrap, .tb-colofao { padding-left:22px; padding-right:22px; }
+  .tb-carimbo { display:none; }
+}
+</style>
+
+<div class="mk-tipo-b">
+
+  <!-- ═══════════════════ CABEÇA ═══════════════════ -->
+  <header class="tb-cabeca">
+    <div class="tb-carimbo"><b>SISTEMA B</b><hr><span>DUAS VOZES E MEIA</span></div>
+    <div class="tb-eyebrow">BookWorm · comparativo tipográfico · sistema B de 3</div>
+    <h1 class="tb-titulo">Duas vozes<br>e meia</h1>
+    <p class="tb-tese">A tese: <b>três famílias bastam onde o sistema concorrente usa quatro</b> — uma serifada variável cobre corpo e display pelo eixo óptico, uma sans com versalete real assume todo o chrome, e a citação se resolve por composição, sem face própria. A quarta voz, a máquina de escrever, é dispensada por inteiro.</p>
+    <div class="tb-linha"></div>
+
+    <div class="tb-especimes-grandes">
+      <div class="tb-eg-item">
+        <div class="tb-eg-face nr">Casmurro</div>
+        <div class="tb-eg-nome">Newsreader</div>
+        <div class="tb-eg-papel">corpo e display · eixo opsz 6–72 · variável</div>
+      </div>
+      <div class="tb-eg-item">
+        <div class="tb-eg-face sc">dias seguidos</div>
+        <div class="tb-eg-nome">Alegreya Sans SC</div>
+        <div class="tb-eg-papel">chrome, rótulos, kickers · versalete real</div>
+      </div>
+      <div class="tb-eg-item">
+        <div class="tb-eg-face lp">a frase inteira</div>
+        <div class="tb-eg-nome">Caveat</div>
+        <div class="tb-eg-papel">manuscrito e marginália</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="tb-corpo">
+
+    <!-- ═══════════════════ SITUAÇÃO 1 ═══════════════════ -->
+    <section class="tb-situacao" id="s1">
+      <div class="tb-sit-cabeca">
+        <div class="tb-sit-kicker"><span class="tb-sit-num">Situação 01</span><span class="tb-sit-prova">393×852 · moldura de aparelho</span></div>
+        <h2 class="tb-sit-titulo">Texto corrido do livro</h2>
+        <p class="tb-sit-racional">Corpo em Newsreader a 17px/28px, opsz 9 — a extremidade "texto" do eixo. A abertura do parágrafo usa versalete real de Alegreya Sans SC, no espírito do corte-a-frio que os livros impressos já fazem ao abrir um capítulo com um trecho em caixa alta menor: aqui, a "meia voz" cruza para dentro da página lida. O painel de dicionário sobe sobre o texto, nunca sai do leitor; a palavra consultada guarda o sublinhado tênue permanente de <b>RN-02.17d</b>.</p>
+      </div>
+
+      <div class="tb-fone-wrap">
+        <div class="tb-fone">
+          <div class="tb-tela">
+            <div class="tb-pagina">
+              <div class="tb-lombada"></div>
+              <div class="tb-status"><span>21:47</span><span>78%</span></div>
+
+              <div class="tb-s1-cap">
+                <div class="tb-s1-capnum">Capítulo primeiro</div>
+                <div class="tb-s1-capnome">Do título</div>
+                <svg class="tb-fleuron" width="110" height="9" viewBox="0 0 110 9" aria-hidden="true">
+                  <path d="M2 4.5h40M68 4.5h40" stroke="rgba(36,31,25,.32)" stroke-width="1"/>
+                  <path d="M55 .8 59.4 4.5 55 8.2 50.6 4.5Z" fill="rgba(36,31,25,.4)"/>
+                </svg>
+              </div>
+
+              <div class="tb-corpo-txt">
+                <p class="tb-par tb-par--semi"><span class="tb-capitular">U</span><span class="tb-abertura-versal">ma noite destas,</span> vindo da cidade para o Engenho Novo, encontrei num trem da Central um rapaz aqui do bairro, que eu conheço de vista e de chapéu. Cumprimentou-me, sentou-se ao pé de mim, falou da lua e dos ministros, e acabou recitando-me versos. A viagem era curta, e os versos pode ser que não fossem inteiramente maus. Sucedeu, porém, que, como eu estava cansado, fechei os olhos três ou quatro vezes; tanto bastou para que ele interrompesse a leitura e metesse os versos no bolso.</p>
+                <p class="tb-fala">— Continue, disse eu acordando.</p>
+                <p class="tb-fala">— Já acabei, murmurou ele.</p>
+                <p class="tb-fala">— São muito bonitos.</p>
+                <p class="tb-par">Vi-lhe fazer um gesto para tirá-los outra vez do bolso, mas não passou do gesto; estava amuado. No dia seguinte entrou a dizer de mim nomes feios, e acabou <span class="tb-consulta">alcunhando-me Dom <span class="tb-consulta">Casmurro</span></span>. Os vizinhos, que não gostam dos meus hábitos reclusos e calados, deram curso à alcunha, que afinal pegou.</p>
+              </div>
+
+              <div class="tb-dic">
+                <div class="tb-dic-corrente"><span>Dicionário · sobre a página</span><span>fol. 32</span></div>
+                <div class="tb-verbete">cas·mur·ro<sup>1</sup></div>
+                <div class="tb-fonetica">[kaz.ˈmu.ʁu]</div>
+                <div class="tb-classe">adjetivo e substantivo masculino</div>
+                <p class="tb-acepcao"><b>1.</b> Que ou aquele que é teimoso, calado, avesso a explicações.</p>
+                <p class="tb-acepcao"><b>2.</b> Ensimesmado, fechado em si — mais por hábito do que por mágoa.</p>
+                <p class="tb-etim">Etim. controversa; no romance, o apelido nasce do gesto dos vizinhos, não do dicionário.</p>
+                <div class="tb-dic-rodape">
+                  <span class="tb-salvar">Salvar como anotação</span>
+                  <span class="tb-dic-nota">3.ª consulta<br>nesta obra</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="max-width:320px; padding-top:18px;">
+          <div class="tb-etq">
+            <div class="tb-etq-linha"><b>Face única</b> na página: Newsreader, opsz 9 no corpo · opsz 72 na capitular.</div>
+            <div class="tb-etq-linha" style="margin-top:6px;">O trecho "ma noite destas," é Alegreya Sans SC — a meia voz visitando a leitura, não o contrário.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ SITUAÇÃO 2 ═══════════════════ -->
+    <section class="tb-situacao" id="s2">
+      <div class="tb-sit-cabeca">
+        <div class="tb-sit-kicker"><span class="tb-sit-num">Situação 02</span><span class="tb-sit-prova">prancha de espécime</span></div>
+        <h2 class="tb-sit-titulo">Título, display e o eixo óptico</h2>
+        <p class="tb-sit-racional">A mesma palavra, ao mesmo tamanho de fonte, em dois pontos do eixo <code>opsz</code>: à esquerda a otimização de texto (opsz 6), à direita a de display (opsz 72). Não são duas famílias — é a mesma variável respirando. O numeral de celebração herda a voz de display.</p>
+      </div>
+
+      <div class="tb-prancha-wrap">
+        <div class="tb-prancha-scroll">
+          <div class="tb-prancha">
+            <div class="tb-prancha-mira tl"></div><div class="tb-prancha-mira tr"></div><div class="tb-prancha-mira bl"></div><div class="tb-prancha-mira br"></div>
+            <div style="display:flex; flex-direction:column; align-items:center; width:100%;">
+              <div class="tb-s2-abertura">
+                <div class="tb-s2-capnum">Capítulo primeiro</div>
+                <div class="tb-s2-titulo">Do título</div>
+              </div>
+
+              <div class="tb-eixo-row">
+                <div class="tb-eixo-item">
+                  <div class="tb-eixo-amostra op-6">Casmurro</div>
+                  <div class="tb-eixo-tag">TEXTO · opsz 6</div>
+                  <div class="tb-eixo-sub">traço uniforme, mais aberto</div>
+                </div>
+                <div class="tb-eixo-item">
+                  <div class="tb-eixo-amostra op-72" style="font-style:italic;">Casmurro</div>
+                  <div class="tb-eixo-tag">DISPLAY · opsz 72</div>
+                  <div class="tb-eixo-sub">contraste alto, hastes finas</div>
+                </div>
+              </div>
+
+              <div class="tb-s2-numero">
+                <div class="tb-s2-num-val">100</div>
+                <div class="tb-s2-num-lbl">marco · cem sessões</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tb-prancha-dim">prancha 640×320 <b>·</b> Newsreader, mesma família nas três amostras</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ SITUAÇÃO 3 ═══════════════════ -->
+    <section class="tb-situacao" id="s3">
+      <div class="tb-sit-cabeca">
+        <div class="tb-sit-kicker"><span class="tb-sit-num">Situação 03</span><span class="tb-sit-prova">prancha de espécime</span></div>
+        <h2 class="tb-sit-titulo">Número e dado</h2>
+        <p class="tb-sit-racional">Algarismos tabulares de Newsreader, opsz 20. O travessão dos dias sem leitura ocupa a mesma coluna de largura fixa dos dois dígitos — nenhum salto de grade quando o valor falta. Abaixo, a regra da dignidade: a caixa do numeral é dimensionada para o pior caso, e o número de um dígito precisa parecer intencional dentro dela.</p>
+      </div>
+
+      <div class="tb-prancha-wrap">
+        <div class="tb-prancha-scroll">
+          <div class="tb-prancha" style="min-height:180px;">
+            <div class="tb-prancha-mira tl"></div><div class="tb-prancha-mira tr"></div><div class="tb-prancha-mira bl"></div><div class="tb-prancha-mira br"></div>
+            <div class="tb-semana">
+              <div class="tb-dia"><div class="tb-dia-rot">SEG</div><div class="tb-dia-val tnum">24</div></div>
+              <div class="tb-dia"><div class="tb-dia-rot">TER</div><div class="tb-dia-val vazio tnum">—</div></div>
+              <div class="tb-dia"><div class="tb-dia-rot">QUA</div><div class="tb-dia-val tnum">31</div></div>
+              <div class="tb-dia"><div class="tb-dia-rot">QUI</div><div class="tb-dia-val tnum">29</div></div>
+              <div class="tb-dia"><div class="tb-dia-rot">SEX</div><div class="tb-dia-val vazio tnum">—</div></div>
+              <div class="tb-dia"><div class="tb-dia-rot">SÁB</div><div class="tb-dia-val tnum">38</div></div>
+              <div class="tb-dia tb-dia--hoje"><div class="tb-dia-rot">DOM</div><div class="tb-dia-val tnum">26</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="tb-prancha-dim">semana 5 de 7 dias <b>·</b> minutos ativos por dia · rótulos SEG–DOM em versalete real</div>
+      </div>
+
+      <div class="tb-prancha-wrap" style="margin-top:26px;">
+        <div class="tb-prancha-scroll">
+          <div class="tb-prancha" style="min-height:200px;">
+            <div class="tb-prancha-mira tl"></div><div class="tb-prancha-mira tr"></div><div class="tb-prancha-mira bl"></div><div class="tb-prancha-mira br"></div>
+            <div class="tb-dignidade">
+              <div class="tb-dig-par">
+                <div class="tb-dig-cab">sessão mínima</div>
+                <div class="tb-dig-caixa">
+                  <div class="tb-dig-val">11</div>
+                  <div class="tb-dig-lbl">tempo ativo</div>
+                </div>
+                <div class="tb-dig-of">ofensiva <b>3</b> dias</div>
+              </div>
+              <div class="tb-dig-par">
+                <div class="tb-dig-cab">maratona</div>
+                <div class="tb-dig-caixa">
+                  <div class="tb-dig-val">2h14</div>
+                  <div class="tb-dig-lbl">tempo ativo</div>
+                </div>
+                <div class="tb-dig-of">ofensiva <b>127</b> dias</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tb-prancha-dim">a regra da dignidade <b>·</b> a caixa tem largura fixa, dimensionada para <b>2h14</b> — o <b>11</b> ocupa a mesma moldura, no mesmo corpo e no mesmo peso, e não fica perdido nela</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ SITUAÇÃO 4 ═══════════════════ -->
+    <section class="tb-situacao" id="s4">
+      <div class="tb-sit-cabeca">
+        <div class="tb-sit-kicker"><span class="tb-sit-num">Situação 04</span><span class="tb-sit-prova">prancha de espécime</span></div>
+        <h2 class="tb-sit-titulo">Rótulo e chrome</h2>
+        <p class="tb-sit-racional">A primeira aposta, posta à prova. À esquerda, o kicker do sistema atual — máquina de escrever a 6,2px, tracking .32em, para caber a caixa alta. À direita, o mesmo vocabulário de rótulo em Alegreya Sans SC, a 13px, versalete verdadeiro: cada rótulo digitado em minúsculas ganha a altura de uma versal pequena, sem precisar de caixa alta forçada nem de tracking extremo para respirar.</p>
+      </div>
+
+      <div class="tb-prancha-wrap">
+        <div class="tb-prancha-scroll">
+          <div class="tb-prancha" style="flex-direction:column; gap:28px;">
+            <div class="tb-prancha-mira tl"></div><div class="tb-prancha-mira tr"></div><div class="tb-prancha-mira bl"></div><div class="tb-prancha-mira br"></div>
+            <div class="tb-comparativo">
+              <div class="tb-comp-col">
+                <div class="tb-comp-cab">antes — Courier Prime, 6,2px</div>
+                <div class="tb-comp-antes">DIAS SEGUIDOS</div>
+              </div>
+              <div class="tb-comp-col">
+                <div class="tb-comp-cab">depois — Alegreya Sans SC, 13px, versalete</div>
+                <div class="tb-rotulo-chip"><span class="versal">dias seguidos</span></div>
+              </div>
+            </div>
+            <div class="tb-rotulos-grid">
+              <div class="tb-rotulo-chip"><span class="versal">min ativos</span></div>
+              <div class="tb-rotulo-chip"><span class="versal">páginas canônicas</span></div>
+              <div class="tb-rotulo-chip"><span class="versal">leitura consciente</span></div>
+              <div class="tb-rotulo-chip"><span class="versal">leitura registrada</span></div>
+              <div class="tb-rotulo-chip"><span class="versal">guardados</span></div>
+              <div class="tb-rotulo-chip"><span class="versal">recorde 41</span></div>
+              <div class="tb-rotulo-chip"><span class="versal">estilo · focado</span></div>
+              <div class="tb-rotulo-chip"><span class="versal">lendo agora · 34%</span></div>
+              <div class="tb-rotulo-chip"><span class="versal">domínio público</span></div>
+              <div class="tb-rotulo-chip"><span class="versal">epub importado</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="tb-prancha-dim">os onze rótulos reais do produto <b>·</b> nenhum precisou de caixa alta digitada para virar versalete</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ SITUAÇÃO 5 ═══════════════════ -->
+    <section class="tb-situacao" id="s5">
+      <div class="tb-sit-cabeca">
+        <div class="tb-sit-kicker"><span class="tb-sit-num">Situação 05</span><span class="tb-sit-prova">prancha de espécime</span></div>
+        <h2 class="tb-sit-titulo">Citação compartilhável</h2>
+        <p class="tb-sit-racional">A segunda aposta. Sem EB Garamond, sem qualquer face reservada: o mesmo Newsreader do corpo, em itálico, num corpo maior (22px/34px, opsz 28) e numa composição com fio e atribuição centrada. O grifo usa <code>--pig-ambar</code> com <code>mix-blend-mode: multiply</code>, como manda a assinatura mecânica.</p>
+      </div>
+
+      <div class="tb-prancha-wrap">
+        <div class="tb-prancha-scroll">
+          <div class="tb-prancha">
+            <div class="tb-prancha-mira tl"></div><div class="tb-prancha-mira tr"></div><div class="tb-prancha-mira bl"></div><div class="tb-prancha-mira br"></div>
+            <div class="tb-citacao-card">
+              <div class="tb-cit-kicker">citação</div>
+              <div class="tb-cit-fio"></div>
+              <p class="tb-cit-texto">Quando certa manhã Gregor Samsa acordou de sonhos intranquilos, encontrou-se em sua cama <span class="tb-grifo">metamorfoseado num inseto monstruoso</span>.</p>
+              <div class="tb-cit-atrib">
+                <div class="tb-cit-obra">A METAMORFOSE</div>
+                <div class="tb-cit-autor">Franz Kafka</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tb-prancha-dim">card 560×420 <b>·</b> Newsreader itálico opsz 28, mesma família do corpo · atribuição em Alegreya Sans SC</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ SITUAÇÃO 6 ═══════════════════ -->
+    <section class="tb-situacao" id="s6">
+      <div class="tb-sit-cabeca">
+        <div class="tb-sit-kicker"><span class="tb-sit-num">Situação 06</span><span class="tb-sit-prova">prancha de espécime</span></div>
+        <h2 class="tb-sit-titulo">Manuscrito</h2>
+        <p class="tb-sit-racional">Caveat na marginália ao lado do grifo e na etiqueta de herbário — a meia voz não entra aqui: é a única situação de mão cheia, sem disputa com Newsreader ou Alegreya Sans.</p>
+      </div>
+
+      <div class="tb-prancha-wrap">
+        <div class="tb-prancha-scroll">
+          <div class="tb-prancha">
+            <div class="tb-prancha-mira tl"></div><div class="tb-prancha-mira tr"></div><div class="tb-prancha-mira bl"></div><div class="tb-prancha-mira br"></div>
+            <div class="tb-marginal-row">
+              <div class="tb-marginal-texto">
+                <p class="tb-marginal-frase">No dia seguinte entrou a dizer de mim nomes feios, e acabou <span class="tb-marginal-grifo">alcunhando-me Dom Casmurro</span>.</p>
+              </div>
+              <div class="tb-lapis-nota">a frase que já é a história inteira</div>
+              <div class="tb-herbario">
+                <div class="tb-herb-fita"></div>
+                <div class="tb-herb-titulo">Herbário</div>
+                <div class="tb-herb-num">Espécime N.º 23<br>— em floração</div>
+                <div class="tb-herb-nota">o apelido que virou o livro</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tb-prancha-dim">Caveat 20px/24px <b>·</b> a única voz manuscrita do sistema</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ SITUAÇÃO 7 ═══════════════════ -->
+    <section class="tb-situacao" id="s7">
+      <div class="tb-sit-cabeca">
+        <div class="tb-sit-kicker"><span class="tb-sit-num">Situação 07</span><span class="tb-sit-prova">393×852 · moldura de aparelho</span></div>
+        <h2 class="tb-sit-titulo">Microcopy e carta editorial</h2>
+        <p class="tb-sit-racional">Duas escalas da mesma voz: a notificação de uma frase em opsz 12, e o corpo da carta de domingo em opsz 10 — mais perto da extremidade de texto, porque ali se lê por mais tempo.</p>
+      </div>
+
+      <div class="tb-fone-wrap">
+        <div class="tb-fone">
+          <div class="tb-tela">
+            <div class="tb-pagina">
+              <div class="tb-s7-wrap">
+                <div class="tb-notif">
+                  <div class="tb-notif-nome">bookworm</div>
+                  <div class="tb-notif-txt">Bom domingo, Marina.</div>
+                  <div class="tb-notif-data">22 de agosto</div>
+                </div>
+
+                <div class="tb-micro-lista">
+                  <div class="tb-micro-item">Este espécime está descansando. As raízes seguem inteiras — é só retomar.</div>
+                  <div class="tb-micro-item">Duas páginas, e já é a segunda vitória do dia: você começou.</div>
+                  <div class="tb-micro-item">Continue quando quiser — o marcador guarda o lugar exato onde você parou.</div>
+                  <div class="tb-micro-item">Sessão de imersão: 34 minutos sem levantar os olhos.</div>
+                  <div class="tb-micro-item">18 minutos de foco hoje. Seu jardim agradece.</div>
+                  <div class="tb-micro-item">Da última vez que você abriu <i>A Metamorfose</i>, foram 21 minutos. Hoje, 26 — e mais tempo em blocos de foco contínuo.</div>
+                  <div class="tb-micro-item">Comparado só com você: a semana anterior teve 2h34 de leitura.</div>
+                  <div class="tb-micro-item">Seu jardim floresceu cem vezes seguidas. A marca fica guardada — mesmo se um dia a sequência descansar.</div>
+                </div>
+
+                <div class="tb-carta">
+                  <div class="tb-carta-corpo">
+                    <p><span class="tb-carta-cap">Q</span>uerida Marina, esta semana você abriu o livro em cinco dos sete dias — e não foi qualquer leitura: quase meia hora por sessão, quase sempre voltando para <i>A Metamorfose</i>, do jeito de quem não está com pressa de terminar.</p>
+                    <p>Faltam sete dias para o seu próximo marco, os 30. A ofensiva segue em 23, e o recorde de 41 está logo ali, à vista.</p>
+                  </div>
+                  <div class="tb-carta-assin">Até semana que vem.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ SITUAÇÃO 8 ═══════════════════ -->
+    <section class="tb-situacao" id="s8">
+      <div class="tb-sit-cabeca">
+        <div class="tb-sit-kicker"><span class="tb-sit-num">Situação 08</span><span class="tb-sit-prova">393×852 · moldura de aparelho</span></div>
+        <h2 class="tb-sit-titulo">Lista densa</h2>
+        <p class="tb-sit-racional">Título em itálico opsz 11, autor em versalete de Alegreya Sans SC, estado e origem em chips de Alegreya Sans itálico. O título longo de Brás Cubas é o teste: quebra em duas linhas sem atropelar o autor.</p>
+      </div>
+
+      <div class="tb-fone-wrap">
+        <div class="tb-fone">
+          <div class="tb-tela">
+            <div class="tb-pagina">
+              <div class="tb-s8-wrap">
+                <div class="tb-s8-kicker">biblioteca</div>
+                <div class="tb-lista">
+                  <div class="tb-item-livro">
+                    <div class="tb-capa-mini"></div>
+                    <div class="tb-item-txt">
+                      <div class="tb-item-titulo">Dom Casmurro</div>
+                      <div class="tb-item-autor">Machado de Assis</div>
+                      <div class="tb-item-chips"><span class="tb-chip verde">lendo agora · 34%</span></div>
+                    </div>
+                  </div>
+                  <div class="tb-item-livro">
+                    <div class="tb-capa-mini"></div>
+                    <div class="tb-item-txt">
+                      <div class="tb-item-titulo">Memórias Póstumas de Brás Cubas</div>
+                      <div class="tb-item-autor">Machado de Assis</div>
+                      <div class="tb-item-chips"><span class="tb-chip">domínio público</span><span class="tb-chip">guardados</span></div>
+                    </div>
+                  </div>
+                  <div class="tb-item-livro">
+                    <div class="tb-capa-mini"></div>
+                    <div class="tb-item-txt">
+                      <div class="tb-item-titulo">O Cortiço</div>
+                      <div class="tb-item-autor">Aluísio Azevedo</div>
+                      <div class="tb-item-chips"><span class="tb-chip">domínio público</span></div>
+                    </div>
+                  </div>
+                  <div class="tb-item-livro">
+                    <div class="tb-capa-mini"></div>
+                    <div class="tb-item-txt">
+                      <div class="tb-item-titulo">A Metamorfose</div>
+                      <div class="tb-item-autor">Franz Kafka</div>
+                      <div class="tb-item-chips"><span class="tb-chip">epub importado</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ═══════════════════ FICHA TÉCNICA ═══════════════════ -->
+  <section class="tb-ficha-wrap" id="ficha">
+    <div class="tb-eyebrow">A escala</div>
+    <h2 class="tb-ficha-titulo">Ficha técnica</h2>
+    <p class="tb-ficha-nota">Toda entrelinha declarada em pixels inteiros — <b>RN</b> §4.1: o passo de uma pauta e o <code>line-height</code> precisam ser o mesmo número inteiro. Este sistema não usa nenhuma superfície pautada (a saída "remover" da regra 11): nenhum conflito de grade a resolver, mas a disciplina de px inteiros vale de qualquer forma, para toda a escala.</p>
+
+    <div class="tb-tabela-scroll">
+      <table class="tb-tabela">
+        <thead><tr>
+          <th>Situação</th><th>Face</th><th>opsz</th><th>Corpo</th><th>Peso</th><th>Entrelinha</th><th>Tracking</th><th>OpenType</th>
+        </tr></thead>
+        <tbody>
+          <tr><td class="situacao">01 · corpo de leitura</td><td class="face">Newsreader</td><td class="num">9</td><td class="num">17px</td><td class="num">400</td><td class="num">28px</td><td class="num">0</td><td>liga, kern</td></tr>
+          <tr><td class="situacao">01 · capitular</td><td class="face">Newsreader</td><td class="num">72</td><td class="num">66px</td><td class="num">500</td><td class="num">52px</td><td class="num">-0,01em</td><td>liga</td></tr>
+          <tr><td class="situacao">01 · abertura de capítulo</td><td class="face">Alegreya Sans SC</td><td class="num">—</td><td class="num">15px</td><td class="num">600</td><td class="num">28px</td><td class="num">.07em</td><td>versal nativa</td></tr>
+          <tr><td class="situacao">02 · título de capítulo</td><td class="face">Newsreader itálico</td><td class="num">68</td><td class="num">38px</td><td class="num">340</td><td class="num">38px</td><td class="num">0</td><td>liga</td></tr>
+          <tr><td class="situacao">02 · numeral de celebração</td><td class="face">Newsreader</td><td class="num">72</td><td class="num">108px</td><td class="num">600</td><td class="num">96px</td><td class="num">-0,02em</td><td>tnum</td></tr>
+          <tr><td class="situacao">03 · tabela semanal</td><td class="face">Newsreader</td><td class="num">20</td><td class="num">19px</td><td class="num">500</td><td class="num">24px</td><td class="num">0</td><td>tnum</td></tr>
+          <tr><td class="situacao">03 · rótulo de dia</td><td class="face">Alegreya Sans SC</td><td class="num">—</td><td class="num">9,5px</td><td class="num">700</td><td class="num">16px</td><td class="num">.06em</td><td>versal nativa</td></tr>
+          <tr><td class="situacao">04 · kicker / rótulo</td><td class="face">Alegreya Sans SC</td><td class="num">—</td><td class="num">13px</td><td class="num">600</td><td class="num">18px</td><td class="num">.02em</td><td>versal nativa</td></tr>
+          <tr><td class="situacao">05 · citação</td><td class="face">Newsreader itálico</td><td class="num">28</td><td class="num">22px</td><td class="num">400</td><td class="num">34px</td><td class="num">0</td><td>liga</td></tr>
+          <tr><td class="situacao">05 · atribuição</td><td class="face">Alegreya Sans SC</td><td class="num">—</td><td class="num">13px</td><td class="num">700</td><td class="num">18px</td><td class="num">.1em</td><td>versal nativa</td></tr>
+          <tr><td class="situacao">06 · manuscrito</td><td class="face">Caveat</td><td class="num">—</td><td class="num">19px</td><td class="num">500</td><td class="num">22–24px</td><td class="num">0</td><td>—</td></tr>
+          <tr><td class="situacao">07 · notificação</td><td class="face">Newsreader itálico</td><td class="num">12</td><td class="num">15px</td><td class="num">400</td><td class="num">20px</td><td class="num">0</td><td>liga</td></tr>
+          <tr><td class="situacao">07 · carta editorial</td><td class="face">Newsreader</td><td class="num">10</td><td class="num">14px</td><td class="num">400</td><td class="num">21px</td><td class="num">0</td><td>liga, kern</td></tr>
+          <tr><td class="situacao">08 · título de lista</td><td class="face">Newsreader itálico</td><td class="num">11</td><td class="num">16px</td><td class="num">500</td><td class="num">20px</td><td class="num">0</td><td>liga</td></tr>
+          <tr><td class="situacao">08 · autor / rótulo</td><td class="face">Alegreya Sans SC</td><td class="num">—</td><td class="num">10px</td><td class="num">600</td><td class="num">14px</td><td class="num">.05em</td><td>versal nativa</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ PAINEL DE LEITURA ═══════════════════ -->
+  <section class="tb-painel-wrap" id="painel">
+    <div class="tb-eyebrow">RN-02.16d · RN-02.16e</div>
+    <h2 class="tb-ficha-titulo">Painel de leitura — as faces oferecidas</h2>
+    <p class="tb-ficha-nota">Cinco famílias, realmente distintas entre si, todas gratuitas — nenhuma é recurso pago. Uma sans é obrigatória (Alegreya Sans, a mesma do chrome); a alta legibilidade é obrigatória (Atkinson Hyperlegible, ausente da spec até aqui). A pré-visualização é sobre o texto real de <i>Dom Casmurro</i>, nunca sobre amostra solta.</p>
+
+    <div class="tb-painel-grid">
+      <div class="tb-painel-item sel">
+        <div class="tb-painel-nome">Newsreader <em>selecionada</em></div>
+        <div class="tb-painel-amostra" style="font-family:var(--nr); font-variation-settings:'opsz' 9;">Uma noite destas, vindo da cidade para o Engenho Novo, encontrei num trem da Central um rapaz aqui do bairro, que eu conheço de vista e de chapéu.</div>
+        <div class="tb-painel-desc">a face do sistema — serifada, eixo óptico próprio, corpo e display na mesma família</div>
+      </div>
+      <div class="tb-painel-item">
+        <div class="tb-painel-nome">Literata</div>
+        <div class="tb-painel-amostra" style="font-family:var(--literata); font-optical-sizing:auto;">Uma noite destas, vindo da cidade para o Engenho Novo, encontrei num trem da Central um rapaz aqui do bairro, que eu conheço de vista e de chapéu.</div>
+        <div class="tb-painel-desc">serifada de leitura, mais quente e menos contrastada — contraponto real a Newsreader</div>
+      </div>
+      <div class="tb-painel-item">
+        <div class="tb-painel-nome">Alegreya Sans <em>a sans obrigatória</em></div>
+        <div class="tb-painel-amostra" style="font-family:var(--sans);">Uma noite destas, vindo da cidade para o Engenho Novo, encontrei num trem da Central um rapaz aqui do bairro, que eu conheço de vista e de chapéu.</div>
+        <div class="tb-painel-desc">a mesma família do chrome, oferecida também para o corpo do livro</div>
+      </div>
+      <div class="tb-painel-item">
+        <div class="tb-painel-nome">Atkinson Hyperlegible <em>obrigatória</em></div>
+        <div class="tb-painel-amostra" style="font-family:var(--atkinson);">Uma noite destas, vindo da cidade para o Engenho Novo, encontrei num trem da Central um rapaz aqui do bairro, que eu conheço de vista e de chapéu.</div>
+        <div class="tb-painel-desc">desenhada para baixa visão e dislexia · OpenDyslexic bloqueada pelo CSP, esta não</div>
+      </div>
+      <div class="tb-painel-item">
+        <div class="tb-painel-nome">Bitter</div>
+        <div class="tb-painel-amostra" style="font-family:var(--bitter);">Uma noite destas, vindo da cidade para o Engenho Novo, encontrei num trem da Central um rapaz aqui do bairro, que eu conheço de vista e de chapéu.</div>
+        <div class="tb-painel-desc">serifada de textura mais robusta — a opção de quem quer peso, não delicadeza</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ PROVA DE ESTRESSE ═══════════════════ -->
+  <section class="tb-estresse-wrap" id="estresse">
+    <div class="tb-eyebrow">Onde um sistema delicado quebra</div>
+    <h2 class="tb-ficha-titulo">Prova de estresse</h2>
+    <p class="tb-ficha-nota">O mesmo parágrafo nos dois extremos do controle de corpo, Atkinson Hyperlegible aplicada ao leitor real, e o eixo óptico errado de propósito — para provar que a escolha certa importa, não só existe.</p>
+
+    <div class="tb-estresse-grid">
+      <div class="tb-estresse-item">
+        <div class="tb-estresse-tag">12pt · opsz 8 (correto)</div>
+        <p class="tb-estresse-texto" style="font-family:var(--nr); font-size:12px; line-height:19px; font-variation-settings:'opsz' 8;">Uma noite destas, vindo da cidade para o Engenho Novo, encontrei num trem da Central um rapaz aqui do bairro, que eu conheço de vista e de chapéu.</p>
+        <div class="tb-estresse-nota">no menor corpo, o eixo puxa para a extremidade de texto: traço mais uniforme, aberturas maiores.</div>
+      </div>
+      <div class="tb-estresse-item">
+        <div class="tb-estresse-tag">20pt · opsz 18 (correto)</div>
+        <p class="tb-estresse-texto" style="font-family:var(--nr); font-size:20px; line-height:31px; font-variation-settings:'opsz' 18;">Uma noite destas, vindo da cidade para o Engenho Novo, encontrei num trem da Central um rapaz aqui do bairro, que eu conheço de vista e de chapéu.</p>
+        <div class="tb-estresse-nota">no maior corpo, ainda dentro da faixa de leitura — não chega a opsz de display.</div>
+      </div>
+      <div class="tb-estresse-item">
+        <div class="tb-estresse-tag">17px · Atkinson Hyperlegible, no leitor real</div>
+        <p class="tb-estresse-texto" style="font-family:var(--atkinson); font-size:16px; line-height:26px;">Uma noite destas, vindo da cidade para o Engenho Novo, encontrei num trem da Central um rapaz aqui do bairro, que eu conheço de vista e de chapéu.</p>
+        <div class="tb-estresse-nota">o mesmo componente de leitura da situação 01, com a face trocada — não é uma amostra isolada.</div>
+      </div>
+      <div class="tb-estresse-item erro">
+        <div class="tb-estresse-tag erro">12pt · opsz 72 (errado, de propósito)</div>
+        <p class="tb-estresse-texto" style="font-family:var(--nr); font-size:12px; line-height:19px; font-variation-settings:'opsz' 72;">Uma noite destas, vindo da cidade para o Engenho Novo, encontrei num trem da Central um rapaz aqui do bairro, que eu conheço de vista e de chapéu.</p>
+        <div class="tb-estresse-nota">a otimização de display num corpo de texto: hastes finas demais, contraste alto demais para 12pt — o eixo errado lê pior, não só diferente.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ COLOFÃO ═══════════════════ -->
+  <footer class="tb-colofao">
+    <div class="tb-colofao-titulo">COLOFÃO</div>
+    <p>Composto inteiramente em três famílias. <b>Newsreader</b> (Production Type) cobre corpo e display pelo eixo <code>opsz</code> 6–72, variável — a mesma fonte que abre um capítulo em 108px também compõe o parágrafo em 17px. <b>Alegreya Sans</b> e <b>Alegreya Sans SC</b> (Huerta Tipográfica) assumem todo o chrome: kickers, rótulos, atribuições, versalete real onde o produto hoje força caixa alta em monoespaço. <b>Caveat</b> permanece a única voz manuscrita. Nenhum Courier em lugar nenhum deste arquivo — nem nas legendas técnicas das pranchas, que em <code>widgets-story.html</code> ainda usam <code>var(--mono)</code>.</p>
+
+    <div class="tb-colofao-grid">
+      <div>
+        <div class="tb-colofao-bloco-titulo">A APOSTA 1 — VERSALETE CONTRA MÁQUINA</div>
+        <p>Sustentou-se. Os onze rótulos reais do produto (situação 04) saem de 6,2px tracked .32em para 13px em versalete legível sem perder o registro de "isto é uma etiqueta, não uma frase" — o versalete já carrega essa marca por natureza, sem precisar de caixa alta nem de tracking extremo para sinalizar. A régua semanal (situação 03) e a lista densa (situação 08) confirmam: o mesmo tratamento serve tabela e biblioteca sem ajuste.</p>
+      </div>
+      <div>
+        <div class="tb-colofao-bloco-titulo">A APOSTA 2 — CITAÇÃO SEM FACE PRÓPRIA</div>
+        <p>Sustentou-se, com uma ressalva. Isolada em card (situação 05), a citação se distingue do corpo por tamanho, itálico e composição — a peça funciona e seria difícil apontar que "falta" uma segunda serifada ali. A ressalva: se uma citação aparecesse <i>solta dentro do texto corrido</i>, em vez de em card próprio, o único sinal remanescente seria o itálico — o mesmo itálico que já marca falas e ênfases no corpo. Isto não invalida a aposta, mas é o ponto onde ela se apoiaria só na composição, sem rede de segurança tipográfica.</p>
+      </div>
+      <div>
+        <div class="tb-colofao-bloco-titulo">ONDE O SISTEMA RESISTIU</div>
+        <p>O eixo óptico de Newsreader é real e mensurável (situação 02, prova de estresse) — mas em títulos muito grandes ele ainda lê como "a mesma serifada, mais elegante", não como uma voz claramente outra. Quem espera o salto de personalidade de uma família de display dedicada vai sentir a diferença como sutil, não dramática. E Newsreader, verificado nesta prova, não expõe <code>smcp</code> — o que significa que a divisão de trabalho deste sistema (versalete só em Alegreya Sans SC) não é escolha estética isolada: é a única opção disponível. Isso reforça a tese das duas vozes e meia, mas também expõe que ela não teria alternativa se Alegreya Sans SC faltasse.</p>
+      </div>
+      <div>
+        <div class="tb-colofao-bloco-titulo">O QUE A MÁQUINA AINDA FAZIA MELHOR</div>
+        <p>A barra de status do leitor (21:47 · 78%) e os relógios de sessão têm, no monoespaço, a conotação de "isto foi impresso por uma máquina" — um efeito de gênero que o versalete, por mais elegante, não replica. Aqui ele foi resolvido com Alegreya Sans SC e algarismos tabulares, o que funciona, mas é a única situação em que a ausência da quarta voz custa uma nuance de significado, não apenas uma nuance de forma.</p>
+      </div>
+    </div>
+  </footer>
+
+</div>

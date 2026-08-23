@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BookWorm — Leitor · direção PAPEL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=EB+Garamond:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Caveat:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════════
+   BookWorm · Leitor · direção estética "PAPEL"
+   TODO o CSS escopado sob .mk-papel — nada vaza.
+   ══════════════════════════════════════════════════════════════ */
+
+.mk-papel {
+  /* --- tintas e papéis --- */
+  --tinta:        #241f19;
+  --tinta-70:     rgba(36,31,25,.72);
+  --tinta-50:     rgba(36,31,25,.52);
+  --tinta-32:     rgba(36,31,25,.34);
+  --tinta-16:     rgba(36,31,25,.16);
+  --papel:        #f3ead9;
+  --papel-fundo:  #efe3ce;
+  --grafite:      #6f6858;
+  --oxblood:      #8e2f26;
+  --ambar:        #e6c15c;
+
+  /* --- 4 pigmentos de destaque --- */
+  --pig-ambar:  #e7c25e;
+  --pig-oliva:  #a8b07a;
+  --pig-tinta:  #93a9c0;
+  --pig-carmim: #d79aa2;
+
+  /* --- pano da mesa --- */
+  --mesa:       #1e2320;
+
+  --serif: 'Spectral', 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, 'Times New Roman', serif;
+  --garamond: 'EB Garamond', 'Spectral', Garamond, Georgia, 'Times New Roman', serif;
+  --mono: 'Courier Prime', 'Courier New', Courier, 'Nimbus Mono PS', monospace;
+  --lapis: 'Caveat', 'Segoe Script', 'Bradley Hand', cursive;
+
+  font-family: var(--serif);
+  color: var(--tinta);
+  background-color: var(--mesa);
+  background-image:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.020) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(0deg,  rgba(0,0,0,.16) 0 1px, transparent 1px 3px),
+    radial-gradient(120% 90% at 50% -10%, rgba(190,170,130,.14), transparent 60%),
+    radial-gradient(140% 120% at 50% 110%, rgba(0,0,0,.55), transparent 65%);
+  min-height: 100vh;
+  padding: 0 0 4px;
+  -webkit-font-smoothing: antialiased;
+}
+.mk-papel *, .mk-papel *::before, .mk-papel *::after { box-sizing: border-box; }
+.mk-papel p, .mk-papel h1, .mk-papel h2, .mk-papel h3, .mk-papel figure { margin: 0; }
+
+/* ── cabeça da prancha ─────────────────────────────────────── */
+.mk-papel .p-cabeca {
+  position: relative;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 54px 48px 26px;
+  color: #ded4bd;
+}
+.mk-papel .p-cabeca-titulo {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: 46px;
+  letter-spacing: .10em;
+  line-height: 1;
+  color: #f0e7d2;
+}
+.mk-papel .p-cabeca-titulo em { font-style: italic; font-weight: 300; color: #c9a86a; }
+.mk-papel .p-cabeca-sub {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: .30em;
+  text-transform: uppercase;
+  color: rgba(222,212,189,.62);
+  margin-top: 14px;
+}
+.mk-papel .p-cabeca-linha {
+  height: 1px; margin: 16px 0 12px;
+  background: linear-gradient(90deg, rgba(222,212,189,.55), rgba(222,212,189,.06) 78%, transparent);
+}
+.mk-papel .p-cabeca-nota {
+  font-size: 14.5px; font-style: italic; font-weight: 300;
+  color: rgba(222,212,189,.60); max-width: 62ch; line-height: 1.6;
+}
+.mk-papel .p-carimbo {
+  position: absolute; top: 44px; right: 44px;
+  width: 152px; height: 96px;
+  border: 2px solid rgba(176,72,58,.55);
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 3px rgba(176,72,58,.16);
+  transform: rotate(-9deg);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 3px;
+  font-family: var(--mono);
+  color: rgba(196,84,68,.72);
+  text-align: center;
+  opacity: .9;
+}
+.mk-papel .p-carimbo b { font-size: 12.5px; letter-spacing: .16em; font-weight: 700; }
+.mk-papel .p-carimbo span { font-size: 8px; letter-spacing: .22em; }
+.mk-papel .p-carimbo hr { width: 62px; border: 0; border-top: 1px solid rgba(176,72,58,.45); margin: 2px 0; }
+
+/* ── estante horizontal ────────────────────────────────────── */
+.mk-papel .p-rack {
+  display: flex; flex-wrap: nowrap; align-items: flex-start;
+  gap: 46px;
+  overflow-x: auto;
+  padding: 12px 48px 54px;
+  scrollbar-width: thin;
+}
+.mk-papel .p-rack::-webkit-scrollbar { height: 10px; }
+.mk-papel .p-rack::-webkit-scrollbar-track { background: rgba(0,0,0,.35); }
+.mk-papel .p-rack::-webkit-scrollbar-thumb { background: rgba(201,168,106,.45); border-radius: 6px; }
+.mk-papel .p-slot { flex: 0 0 auto; width: 400px; }
+
+/* ── etiqueta datilografada de cada estado ─────────────────── */
+.mk-papel .p-rotulo {
+  position: relative;
+  width: 330px; margin: 0 auto 26px;
+  background: #ece2cc;
+  background-image:
+    radial-gradient(rgba(90,70,45,.055) .5px, transparent .6px),
+    linear-gradient(180deg, rgba(255,255,255,.4), rgba(0,0,0,.02));
+  background-size: 7px 7px, 100% 100%;
+  padding: 13px 16px 14px;
+  box-shadow: 0 10px 22px rgba(0,0,0,.45), inset 0 0 0 1px rgba(120,95,60,.18);
+  transform: rotate(-.7deg);
+}
+.mk-papel .p-slot:nth-child(even) .p-rotulo { transform: rotate(.8deg); }
+.mk-papel .p-rotulo::before { /* fita crepe */
+  content: ""; position: absolute; top: -13px; left: 50%;
+  width: 92px; height: 26px; margin-left: -46px;
+  background: linear-gradient(180deg, rgba(226,208,168,.80), rgba(206,184,140,.72));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.28);
+  transform: rotate(-2.4deg);
+  opacity: .92;
+}
+.mk-papel .p-rotulo-num {
+  font-family: var(--mono); font-size: 9.5px; font-weight: 700;
+  letter-spacing: .30em; color: var(--oxblood); text-transform: uppercase;
+}
+.mk-papel .p-rotulo-nome {
+  font-family: var(--serif); font-size: 19px; font-weight: 500;
+  letter-spacing: .01em; margin-top: 3px; color: var(--tinta);
+}
+.mk-papel .p-rotulo-desc {
+  font-size: 12.5px; font-style: italic; font-weight: 300;
+  color: var(--tinta-70); margin-top: 5px; line-height: 1.45;
+}
+
+/* ── aparelho ──────────────────────────────────────────────── */
+.mk-papel .p-fone {
+  width: 400px; height: 860px;
+  padding: 9px;
+  border-radius: 30px;
+  background: linear-gradient(160deg, #34322c 0%, #16150f 46%, #2b2922 100%);
+  box-shadow:
+    0 34px 60px rgba(0,0,0,.62),
+    0 4px 10px rgba(0,0,0,.5),
+    inset 0 0 0 1px rgba(255,255,255,.075),
+    inset 0 1px 0 rgba(255,255,255,.14);
+  position: relative;
+}
+.mk-papel .p-tela {
+  position: relative; overflow: hidden;
+  width: 382px; height: 842px;
+  border-radius: 22px;
+  background: var(--papel);
+  --papel: #f3ead9;
+  --tinta: #241f19;
+  --tinta-70: rgba(36,31,25,.72);
+  --tinta-50: rgba(36,31,25,.52);
+  --tinta-32: rgba(36,31,25,.34);
+}
+/* tema sépia aplicado (estado III) */
+.mk-papel .p-tela--sepia {
+  --papel: #e7d5b4;
+  --tinta: #3a2e20;
+  --tinta-70: rgba(58,46,32,.74);
+  --tinta-50: rgba(58,46,32,.54);
+  --tinta-32: rgba(58,46,32,.34);
+}
+
+/* ── a página ──────────────────────────────────────────────── */
+.mk-papel .p-pagina {
+  position: absolute; inset: 0;
+  background-color: var(--papel);
+  background-image:
+    radial-gradient(circle at 16% 10%, rgba(255,255,255,.55), transparent 46%),
+    radial-gradient(circle at 86% 82%, rgba(163,130,84,.13), transparent 52%),
+    radial-gradient(rgba(96,74,46,.075) .5px, transparent .6px),
+    repeating-linear-gradient(96deg, rgba(120,95,60,.028) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(4deg,  rgba(120,95,60,.022) 0 1px, transparent 1px 4px);
+  background-size: 100% 100%, 100% 100%, 7px 7px, 100% 100%, 100% 100%;
+  color: var(--tinta);
+}
+/* sombra da lombada — margem interna */
+.mk-papel .p-lombada {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 30px;
+  background: linear-gradient(90deg, rgba(88,64,36,.26), rgba(88,64,36,.06) 55%, transparent);
+  pointer-events: none;
+}
+/* corte de página: a espessura do que falta — progresso ambiente */
+.mk-papel .p-corte {
+  position: absolute; right: 0; top: 46px; bottom: 46px; width: 17px;
+  background:
+    repeating-linear-gradient(90deg,
+      rgba(124,98,58,.30) 0 1px,
+      rgba(252,246,234,.85) 1px 2.4px);
+  box-shadow: inset 1px 0 0 rgba(255,255,255,.5), -3px 0 6px -3px rgba(88,64,36,.35);
+}
+.mk-papel .p-corte-lido { /* fatia já virada: papel manuseado, amarelado */
+  position: absolute; left: 0; top: 0; bottom: 0; width: 11%;
+  background: rgba(150,108,52,.42);
+  mix-blend-mode: multiply;
+  border-right: 1px solid rgba(142,47,38,.85);
+}
+/* fita de marcador */
+.mk-papel .p-fita {
+  position: absolute; top: -6px; right: 62px; width: 15px; height: 232px;
+  background: linear-gradient(90deg, #6f231d, #9c352b 38%, #7d271f 100%);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 88%, 0 100%);
+  box-shadow: 2px 0 5px rgba(60,30,20,.30);
+  transform: rotate(1.2deg);
+}
+.mk-papel .p-fita::after {
+  content: ""; position: absolute; inset: 0;
+  background: repeating-linear-gradient(90deg, rgba(255,255,255,.10) 0 1px, transparent 1px 3px);
+}
+
+/* barra de status: tinta impressa, não chrome */
+.mk-papel .p-status {
+  position: absolute; left: 30px; right: 26px; top: 12px;
+  display: flex; justify-content: space-between;
+  font-family: var(--mono); font-size: 9px; letter-spacing: .18em;
+  color: var(--tinta-32);
+}
+
+/* cabeçalho corrente + fólio */
+.mk-papel .p-corrente {
+  position: absolute; left: 34px; right: 44px; top: 40px;
+  display: flex; justify-content: space-between;
+  font-family: var(--serif); font-size: 9.5px; font-weight: 500;
+  letter-spacing: .26em; text-transform: uppercase;
+  color: var(--tinta-32);
+}
+.mk-papel .p-folio {
+  position: absolute; bottom: 24px;
+  font-family: var(--serif); font-size: 12px; letter-spacing: .16em;
+  color: var(--tinta-50);
+}
+.mk-papel .p-folio--centro { left: 0; right: 0; text-align: center; }
+.mk-papel .p-folio--fora   { right: 44px; }
+
+/* abertura de capítulo */
+.mk-papel .p-abertura-cap { padding: 82px 44px 0 34px; text-align: center; }
+.mk-papel .p-cap-num {
+  font-family: var(--mono); font-size: 9.5px; font-weight: 700;
+  letter-spacing: .38em; color: var(--tinta-50);
+}
+.mk-papel .p-cap-nome {
+  font-family: var(--serif); font-style: italic; font-weight: 300;
+  font-size: 27px; letter-spacing: .01em; margin-top: 9px; color: var(--tinta);
+}
+.mk-papel .p-fleuron { margin: 15px auto 26px; display: block; }
+
+/* corpo do texto */
+.mk-papel .p-corpo {
+  position: absolute; left: 34px; right: 44px; top: 200px;
+  font-size: 16px; line-height: 1.68; font-weight: 400;
+  text-align: justify; hyphens: auto; -webkit-hyphens: auto;
+  color: var(--tinta);
+}
+.mk-papel .p-corpo--alto { top: 74px; }
+.mk-papel .p-par { text-indent: 1.15em; margin-bottom: 0; }
+.mk-papel .p-par + .p-par { margin-top: 0; }
+.mk-papel .p-par--sem-indent { text-indent: 0; }
+.mk-papel .p-versal { font-variant: small-caps; letter-spacing: .055em; }
+.mk-papel .p-fala { text-indent: 1.15em; margin-top: .55em; }
+.mk-papel .p-fala + .p-par { margin-top: .55em; }
+
+/* grifo — marca-texto que sangra */
+.mk-papel .p-grifo {
+  background-image:
+    linear-gradient(180deg, rgba(230,193,92,0) 10%, rgba(230,193,92,.62) 10%, rgba(230,193,92,.70) 90%, rgba(230,193,92,0) 90%),
+    linear-gradient(90deg, rgba(230,193,92,.30), rgba(214,172,66,.12) 40%, rgba(230,193,92,.34));
+  mix-blend-mode: multiply;
+  box-decoration-break: clone; -webkit-box-decoration-break: clone;
+  padding: .04em .16em;
+  border-radius: 3px 7px 4px 6px;
+}
+/* vestígio de consulta ao dicionário: sublinhado tênue, a lápis */
+.mk-papel .p-consulta {
+  border-bottom: 1px dashed rgba(111,104,88,.62);
+  padding-bottom: .5px;
+}
+/* marginália a lápis */
+.mk-papel .p-marginalia {
+  position: absolute; font-family: var(--lapis); font-size: 15.5px;
+  color: rgba(90,84,70,.78); line-height: 1.15; transform: rotate(-3.5deg);
+}
+.mk-papel .p-traco-margem {
+  position: absolute; width: 2px;
+  background: linear-gradient(180deg, rgba(111,104,88,0), rgba(111,104,88,.62) 14%, rgba(111,104,88,.55) 86%, rgba(111,104,88,0));
+  border-radius: 2px; transform: rotate(1.4deg);
+}
+
+/* ══ ESTADO II — controles revelados ══════════════════════════ */
+.mk-papel .p-veu {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(58,42,24,.16), rgba(58,42,24,.05) 34%, rgba(48,34,20,.30));
+  pointer-events: none;
+}
+/* ex-libris colado no topo */
+.mk-papel .p-plaqueta {
+  position: absolute; top: 34px; left: 26px; right: 26px;
+  background: #f7f0e0;
+  padding: 13px 16px 12px;
+  border: 1px solid rgba(124,98,58,.42);
+  box-shadow: 0 2px 0 rgba(124,98,58,.16), 0 12px 22px rgba(50,34,18,.22);
+  transform: rotate(-.5deg);
+  text-align: center;
+}
+.mk-papel .p-plaqueta::after {
+  content: ""; position: absolute; inset: 4px; border: 1px solid rgba(124,98,58,.30); pointer-events: none;
+}
+.mk-papel .p-plaqueta-obra {
+  font-family: var(--serif); font-size: 17.5px; font-weight: 500;
+  letter-spacing: .19em; text-transform: uppercase;
+}
+.mk-papel .p-plaqueta-autor {
+  font-family: var(--serif); font-style: italic; font-weight: 300;
+  font-size: 12.5px; color: var(--tinta-70); margin-top: 4px;
+}
+.mk-papel .p-plaqueta-cap {
+  font-family: var(--mono); font-size: 8.5px; letter-spacing: .24em;
+  color: var(--oxblood); margin-top: 8px; text-transform: uppercase;
+}
+
+/* ficha de fichário que sobe do rodapé */
+.mk-papel .p-ficha {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  background: #f8f1e2;
+  background-image:
+    radial-gradient(rgba(96,74,46,.055) .5px, transparent .6px),
+    repeating-linear-gradient(180deg, transparent 0 25px, rgba(120,150,170,.20) 25px 26px);
+  background-size: 7px 7px, 100% 100%;
+  border-top: 1px solid rgba(124,98,58,.45);
+  box-shadow: 0 -18px 34px rgba(48,32,16,.28);
+  padding: 0 0 16px;
+}
+.mk-papel .p-ficha-cabeca {
+  background: linear-gradient(180deg, #8e2f26, #7a271f);
+  color: #f4e7d2;
+  padding: 7px 22px 6px;
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-family: var(--mono); font-size: 8.5px; letter-spacing: .24em; text-transform: uppercase;
+}
+.mk-papel .p-ficha-corpo { padding: 15px 22px 0; }
+
+/* abas de índice */
+.mk-papel .p-abas { position: absolute; top: -25px; left: 16px; right: 16px; display: flex; gap: 5px; }
+.mk-papel .p-aba {
+  flex: 1;
+  background: #ede2cb;
+  border: 1px solid rgba(124,98,58,.42);
+  border-bottom: none;
+  border-radius: 3px 3px 0 0;
+  padding: 6px 3px 7px;
+  text-align: center;
+  font-family: var(--mono); font-size: 7.6px; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--tinta-70);
+  box-shadow: 0 -3px 8px rgba(50,34,18,.14);
+}
+.mk-papel .p-aba b { display: block; font-size: 12px; letter-spacing: 0; color: var(--tinta); font-weight: 700; margin-bottom: 2px; font-family: var(--serif); }
+.mk-papel .p-aba--ativa { background: #f8f1e2; color: var(--oxblood); border-color: rgba(142,47,38,.55); }
+
+/* maciço de páginas = progresso */
+.mk-papel .p-macico-rot {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-family: var(--mono); font-size: 8px; letter-spacing: .20em;
+  color: var(--tinta-50); text-transform: uppercase; margin-bottom: 6px;
+}
+.mk-papel .p-macico {
+  position: relative; height: 44px;
+  background: repeating-linear-gradient(90deg, rgba(124,98,58,.32) 0 1px, rgba(253,248,238,.9) 1px 2.6px);
+  box-shadow: inset 0 0 0 1px rgba(124,98,58,.35), 0 2px 5px rgba(50,34,18,.14);
+}
+.mk-papel .p-macico-lido {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 11%;
+  background: rgba(150,108,52,.40); mix-blend-mode: multiply;
+}
+.mk-papel .p-macico-fita {
+  position: absolute; top: -6px; bottom: -9px; left: 11%; width: 3px;
+  background: var(--oxblood); margin-left: -1px;
+}
+.mk-papel .p-macico-fita::after {
+  content: ""; position: absolute; left: -2px; bottom: -4px;
+  border: 3.5px solid transparent; border-top-color: var(--oxblood);
+}
+.mk-papel .p-macico-nums {
+  display: flex; justify-content: space-between;
+  font-family: var(--mono); font-size: 8.5px; color: var(--tinta-50);
+  margin-top: 7px; letter-spacing: .08em;
+}
+.mk-papel .p-ficha-linha {
+  display: flex; justify-content: space-between; align-items: baseline;
+  border-top: 1px solid rgba(124,98,58,.28);
+  margin-top: 13px; padding-top: 10px;
+}
+.mk-papel .p-ficha-cap { font-family: var(--serif); font-style: italic; font-size: 15px; }
+.mk-papel .p-ficha-pag { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; }
+.mk-papel .p-ficha-nota {
+  font-family: var(--serif); font-style: italic; font-size: 12px;
+  color: var(--tinta-70); margin-top: 4px;
+}
+/* carimbos de data — a sequência de dias, gamificação em papel */
+.mk-papel .p-datas { display: flex; gap: 7px; margin-top: 13px; flex-wrap: wrap; align-items: center; }
+.mk-papel .p-data {
+  font-family: var(--mono); font-size: 7.5px; letter-spacing: .06em;
+  color: rgba(142,47,38,.68);
+  border: 1px solid rgba(142,47,38,.45); border-radius: 2px;
+  padding: 3px 5px; transform: rotate(-1.6deg);
+}
+.mk-papel .p-data:nth-child(2n) { transform: rotate(1.4deg); opacity: .85; }
+.mk-papel .p-data:nth-child(3n) { transform: rotate(-.6deg); opacity: .92; }
+.mk-papel .p-data--hoje { color: #f4e7d2; background: rgba(142,47,38,.86); border-color: rgba(142,47,38,.86); }
+.mk-papel .p-datas-rot {
+  font-family: var(--mono); font-size: 7.5px; letter-spacing: .2em;
+  color: var(--tinta-32); text-transform: uppercase; margin-left: auto;
+}
+
+/* ══ ESTADO III — papel vegetal com a composição ══════════════ */
+.mk-papel .p-vegetal {
+  position: absolute; left: 0; right: 0; bottom: 0; top: 272px;
+  background: rgba(247,241,227,.965);
+  box-shadow: 0 -20px 40px rgba(48,32,16,.30);
+  padding: 16px 22px 14px;
+}
+.mk-papel .p-vegetal::before { /* borda irregular, papel rasgado */
+  content: ""; position: absolute; top: -7px; left: 0; right: 0; height: 8px;
+  background: rgba(247,241,227,.965);
+  -webkit-mask-image: radial-gradient(circle at 4px 8px, #000 3.5px, transparent 3.7px);
+  mask-image: radial-gradient(circle at 4px 8px, #000 3.5px, transparent 3.7px);
+  -webkit-mask-size: 8px 8px; mask-size: 8px 8px;
+  -webkit-mask-repeat: repeat-x; mask-repeat: repeat-x;
+}
+.mk-papel .p-painel-cabeca {
+  display: flex; justify-content: space-between; align-items: baseline;
+  border-bottom: 2px solid var(--tinta); padding-bottom: 6px; margin-bottom: 12px;
+  color: #241f19;
+}
+.mk-papel .p-painel-titulo {
+  font-family: var(--serif); font-size: 14px; font-weight: 600;
+  letter-spacing: .30em; text-transform: uppercase;
+}
+.mk-papel .p-painel-sub {
+  font-family: var(--mono); font-size: 7.5px; letter-spacing: .18em;
+  color: rgba(36,31,25,.5); text-transform: uppercase;
+}
+.mk-papel .p-secao { margin-bottom: 10px; color: #241f19; }
+.mk-papel .p-secao-rot {
+  font-family: var(--mono); font-size: 7.5px; letter-spacing: .26em;
+  text-transform: uppercase; color: rgba(36,31,25,.48);
+  display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;
+}
+.mk-papel .p-secao-rot b { font-weight: 700; color: rgba(142,47,38,.9); letter-spacing: .1em; }
+
+/* marcador triangular oxblood = "ajuste corrente" (linguagem única do painel) */
+.mk-papel .p-marca {
+  width: 0; height: 0; margin: 4px auto 0;
+  border: 4px solid transparent; border-top-color: var(--oxblood);
+}
+.mk-papel .p-marca--cima { border: 4px solid transparent; border-bottom-color: var(--oxblood); margin: 0 auto 3px; }
+
+/* espécimes de fonte */
+.mk-papel .p-especimes { display: flex; gap: 6px; }
+.mk-papel .p-especime {
+  flex: 1; text-align: center; padding: 5px 2px 4px;
+  border: 1px solid rgba(36,31,25,.22); background: rgba(255,255,255,.42);
+}
+.mk-papel .p-especime--sel { border-color: rgba(142,47,38,.7); background: rgba(230,193,92,.16); }
+.mk-papel .p-especime i { display: block; font-style: normal; font-size: 21px; line-height: 1.1; }
+.mk-papel .p-especime span {
+  display: block; font-family: var(--mono); font-size: 7px;
+  letter-spacing: .1em; color: rgba(36,31,25,.55); margin-top: 2px;
+}
+.mk-papel .p-esp-spectral { font-family: var(--serif); }
+.mk-papel .p-esp-garamond { font-family: var(--garamond); }
+.mk-papel .p-esp-mono { font-family: var(--mono); }
+
+/* régua tipográfica para o corpo */
+.mk-papel .p-regua { position: relative; height: 26px; }
+.mk-papel .p-regua-linha {
+  position: absolute; left: 0; right: 0; top: 11px; height: 1px; background: rgba(36,31,25,.42);
+}
+.mk-papel .p-tick {
+  position: absolute; top: 4px; width: 1px; height: 8px; background: rgba(36,31,25,.45);
+}
+.mk-papel .p-tick--maior { top: 1px; height: 11px; background: rgba(36,31,25,.75); }
+.mk-papel .p-tick span {
+  position: absolute; top: 13px; left: 50%; transform: translateX(-50%);
+  font-family: var(--mono); font-size: 7.5px; color: rgba(36,31,25,.55);
+}
+.mk-papel .p-regua-marca {
+  position: absolute; top: -2px; width: 0; height: 0; margin-left: -4px;
+  border: 4px solid transparent; border-top-color: var(--oxblood);
+}
+
+/* trio de controles: entrelinha / margens / alinhamento */
+.mk-papel .p-trio { display: flex; gap: 10px; }
+.mk-papel .p-trio > div { flex: 1; }
+.mk-papel .p-opcoes { display: flex; gap: 4px; }
+.mk-papel .p-opcao {
+  flex: 1; border: 1px solid rgba(36,31,25,.20);
+  background: rgba(255,255,255,.42); padding: 5px 4px 3px;
+}
+.mk-papel .p-opcao--sel { border-color: rgba(142,47,38,.7); background: rgba(230,193,92,.16); }
+.mk-papel .p-opcao-legenda {
+  font-family: var(--mono); font-size: 6.5px; letter-spacing: .08em;
+  text-align: center; color: rgba(36,31,25,.55); margin-top: 3px;
+}
+.mk-papel .p-linhas { display: flex; flex-direction: column; height: 18px; justify-content: center; }
+.mk-papel .p-linhas i { display: block; height: 1.5px; background: rgba(36,31,25,.55); }
+.mk-papel .p-el-1 i { margin-bottom: 2px; }
+.mk-papel .p-el-2 i { margin-bottom: 4px; }
+.mk-papel .p-el-3 i { margin-bottom: 6px; }
+.mk-papel .p-mini-pag { height: 18px; border: 1px solid rgba(36,31,25,.30); position: relative; }
+.mk-papel .p-mini-pag i {
+  position: absolute; top: 3px; bottom: 3px; border-left: 1px dashed rgba(36,31,25,.35); border-right: 1px dashed rgba(36,31,25,.35);
+}
+.mk-papel .p-mp-1 i { left: 3px; right: 3px; }
+.mk-papel .p-mp-2 i { left: 6px; right: 6px; }
+.mk-papel .p-mp-3 i { left: 9px; right: 9px; }
+.mk-papel .p-ragged i:nth-child(2) { width: 78%; }
+.mk-papel .p-ragged i:nth-child(3) { width: 90%; }
+.mk-papel .p-ragged i:nth-child(4) { width: 62%; }
+
+/* temas */
+.mk-papel .p-temas { display: flex; gap: 6px; }
+.mk-papel .p-tema { flex: 1; }
+.mk-papel .p-tema-chip {
+  height: 46px; border: 1px solid rgba(36,31,25,.28); padding: 6px 5px;
+  display: flex; flex-direction: column; justify-content: center; gap: 3px;
+}
+.mk-papel .p-tema-chip i { display: block; height: 1.5px; }
+.mk-papel .p-tema-chip i:last-child { width: 62%; }
+.mk-papel .p-tema--sel .p-tema-chip { box-shadow: 0 0 0 1px rgba(142,47,38,.85); border-color: rgba(142,47,38,.85); }
+.mk-papel .p-tc-claro  { background: #f6f1e6; }
+.mk-papel .p-tc-claro i  { background: rgba(36,31,25,.55); }
+.mk-papel .p-tc-sepia  { background: #e7d5b4; }
+.mk-papel .p-tc-sepia i  { background: rgba(58,46,32,.62); }
+.mk-papel .p-tc-escuro { background: #2b2a26; }
+.mk-papel .p-tc-escuro i { background: rgba(236,228,210,.62); }
+.mk-papel .p-tc-oled   { background: #000; }
+.mk-papel .p-tc-oled i   { background: rgba(214,206,190,.55); }
+.mk-papel .p-tema-nome {
+  font-family: var(--mono); font-size: 6.8px; letter-spacing: .12em;
+  text-align: center; margin-top: 4px; color: rgba(36,31,25,.58); text-transform: uppercase;
+}
+.mk-papel .p-tema--sel .p-tema-nome { color: var(--oxblood); font-weight: 700; }
+
+/* temperatura de luz */
+.mk-papel .p-temp-barra {
+  position: relative; height: 13px;
+  background: linear-gradient(90deg, #f0bb70 0%, #f2d29c 26%, #f4e6d0 52%, #e2e8ec 76%, #cfe0f0 100%);
+  box-shadow: inset 0 0 0 1px rgba(36,31,25,.28);
+}
+.mk-papel .p-temp-ticks { position: relative; height: 13px; margin-top: 2px; }
+.mk-papel .p-temp-ticks span {
+  position: absolute; transform: translateX(-50%);
+  font-family: var(--mono); font-size: 6.8px; color: rgba(36,31,25,.5);
+}
+.mk-papel .p-temp-ticks span::before {
+  content: ""; position: absolute; top: -3px; left: 50%; width: 1px; height: 3px;
+  background: rgba(36,31,25,.4);
+}
+.mk-papel .p-agulha {
+  position: absolute; top: -6px; bottom: -6px; width: 2px; background: #241f19;
+  margin-left: -1px; box-shadow: 0 0 0 1px rgba(255,255,255,.55);
+}
+.mk-papel .p-agulha::after {
+  content: ""; position: absolute; left: -3.5px; top: -6px;
+  border: 4px solid transparent; border-top-color: #241f19;
+}
+
+/* cunha de densidade = brilho */
+.mk-papel .p-cunha {
+  position: relative; height: 22px;
+  background: linear-gradient(90deg, #1c1913, #6b6152 32%, #b9ac93 62%, #f7f2e6);
+  clip-path: polygon(0 62%, 100% 0, 100% 100%, 0 100%);
+  box-shadow: inset 0 0 0 1px rgba(36,31,25,.2);
+}
+.mk-papel .p-cunha-marca {
+  position: absolute; top: -5px; bottom: -5px; width: 2px; background: var(--oxblood); margin-left: -1px;
+}
+
+/* chave de silêncio — lingueta de baquelite */
+.mk-papel .p-silencio {
+  display: flex; align-items: center; justify-content: space-between;
+  border-top: 1px solid rgba(36,31,25,.22); padding-top: 10px; margin-top: 12px;
+}
+.mk-papel .p-silencio-txt b {
+  font-family: var(--serif); font-size: 13.5px; font-weight: 600;
+  letter-spacing: .14em; text-transform: uppercase; display: block;
+}
+.mk-papel .p-silencio-txt span {
+  font-family: var(--serif); font-style: italic; font-size: 11.5px;
+  color: rgba(36,31,25,.62); display: block; margin-top: 2px;
+}
+.mk-papel .p-chave {
+  position: relative; width: 62px; height: 27px; flex: 0 0 auto;
+  background: #e6dcc4; border: 1px solid rgba(36,31,25,.45); border-radius: 3px;
+  box-shadow: inset 0 2px 4px rgba(36,31,25,.22);
+}
+.mk-papel .p-chave-knob {
+  position: absolute; top: 2px; right: 2px; width: 29px; bottom: 2px;
+  background: linear-gradient(180deg, #4d463a, #241f19 70%, #35302a);
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.22);
+}
+.mk-papel .p-chave-knob::after {
+  content: ""; position: absolute; left: 50%; top: 6px; bottom: 6px; width: 1px;
+  background: rgba(255,255,255,.28); box-shadow: -3px 0 0 rgba(255,255,255,.18), 3px 0 0 rgba(255,255,255,.18);
+}
+.mk-papel .p-chave-legenda {
+  position: absolute; left: 6px; top: 50%; transform: translateY(-50%);
+  font-family: var(--mono); font-size: 6.5px; letter-spacing: .1em; color: rgba(36,31,25,.55);
+}
+
+/* ══ ESTADO IV — seleção + dicionário ═════════════════════════ */
+.mk-papel .p-selecao {
+  background: rgba(142,47,38,.15);
+  box-shadow: 0 1px 0 rgba(142,47,38,.55);
+  padding: .04em 0;
+}
+.mk-papel .p-punho {
+  position: absolute; width: 0; height: 0;
+  border: 5px solid transparent;
+}
+.mk-papel .p-punho--ini { border-bottom-color: var(--oxblood); }
+.mk-papel .p-punho--fim { border-top-color: var(--oxblood); }
+
+.mk-papel .p-tira {
+  position: absolute; left: 20px; right: 20px;
+  background: #f8f1e2;
+  background-image: radial-gradient(rgba(96,74,46,.06) .5px, transparent .6px);
+  background-size: 7px 7px;
+  border-radius: 4px 7px 5px 8px / 6px 4px 7px 5px;
+  box-shadow: 0 8px 20px rgba(48,32,16,.32), inset 0 0 0 1px rgba(124,98,58,.30);
+  transform: rotate(-.5deg);
+  padding: 9px 12px;
+  display: flex; align-items: center; gap: 9px;
+}
+.mk-papel .p-pigmentos { display: flex; gap: 6px; }
+.mk-papel .p-pigmento {
+  width: 22px; height: 22px; border-radius: 2px;
+  box-shadow: inset 0 0 0 1px rgba(36,31,25,.22), 0 1px 2px rgba(48,32,16,.18);
+  position: relative;
+}
+.mk-papel .p-pigmento::after { /* leve sangria de tinta na borda */
+  content: ""; position: absolute; inset: -1.5px; border-radius: 3px;
+  background: inherit; opacity: .28; filter: blur(1.5px); z-index: -1;
+}
+.mk-papel .p-pig-1 { background: var(--pig-ambar); }
+.mk-papel .p-pig-2 { background: var(--pig-oliva); }
+.mk-papel .p-pig-3 { background: var(--pig-tinta); }
+.mk-papel .p-pig-4 { background: var(--pig-carmim); }
+.mk-papel .p-pigmento--sel { box-shadow: inset 0 0 0 1px rgba(36,31,25,.3), 0 0 0 2px #f8f1e2, 0 0 0 3px var(--oxblood); }
+.mk-papel .p-tira-sep { width: 1px; align-self: stretch; background: rgba(124,98,58,.35); }
+.mk-papel .p-tira-acao {
+  font-family: var(--mono); font-size: 8px; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--tinta-70); white-space: nowrap;
+}
+.mk-papel .p-tira-acao--ativa { color: var(--oxblood); font-weight: 700; }
+.mk-papel .p-tira-acao--ativa::before { content: "▸ "; }
+
+/* painel de dicionário */
+.mk-papel .p-dic {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 396px;
+  background: #f8f1e2;
+  background-image:
+    radial-gradient(rgba(96,74,46,.06) .5px, transparent .6px),
+    linear-gradient(180deg, rgba(255,255,255,.5), rgba(0,0,0,.015));
+  background-size: 7px 7px, 100% 100%;
+  box-shadow: 0 -22px 44px rgba(48,32,16,.34);
+  padding: 16px 26px 0 30px;
+}
+.mk-papel .p-dic::before {
+  content: ""; position: absolute; top: -7px; left: 0; right: 0; height: 8px;
+  background: #f8f1e2;
+  -webkit-mask-image: radial-gradient(circle at 4px 8px, #000 3.5px, transparent 3.7px);
+  mask-image: radial-gradient(circle at 4px 8px, #000 3.5px, transparent 3.7px);
+  -webkit-mask-size: 8px 8px; mask-size: 8px 8px;
+  -webkit-mask-repeat: repeat-x; mask-repeat: repeat-x;
+}
+.mk-papel .p-dic-corrente {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-family: var(--mono); font-size: 7.5px; letter-spacing: .22em;
+  text-transform: uppercase; color: rgba(36,31,25,.45);
+  border-bottom: 1px solid rgba(36,31,25,.35); padding-bottom: 6px;
+}
+.mk-papel .p-verbete {
+  font-family: var(--serif); font-size: 27px; font-weight: 600;
+  letter-spacing: .01em; margin-top: 13px; color: #241f19;
+}
+.mk-papel .p-verbete sup { font-size: 12px; font-weight: 400; color: rgba(36,31,25,.5); }
+.mk-papel .p-fonetica {
+  font-family: var(--mono); font-size: 10.5px; color: rgba(36,31,25,.6); margin-top: 4px;
+}
+.mk-papel .p-classe {
+  font-family: var(--serif); font-style: italic; font-size: 13px;
+  color: rgba(36,31,25,.72); margin-top: 7px;
+  border-bottom: 1px solid rgba(36,31,25,.16); padding-bottom: 9px;
+}
+.mk-papel .p-acepcoes { margin-top: 10px; }
+.mk-papel .p-acepcao {
+  font-family: var(--serif); font-size: 13.5px; line-height: 1.5;
+  color: #2c261f; padding-left: 19px; text-indent: -19px; margin-bottom: 7px;
+}
+.mk-papel .p-acepcao b { font-weight: 600; margin-right: 6px; }
+.mk-papel .p-acepcao em { font-style: italic; color: rgba(36,31,25,.6); }
+.mk-papel .p-etimologia {
+  font-family: var(--serif); font-style: italic; font-size: 11.5px; line-height: 1.5;
+  color: rgba(36,31,25,.6); border-top: 1px solid rgba(36,31,25,.16);
+  padding-top: 9px; margin-top: 3px;
+}
+.mk-papel .p-dic-rodape {
+  position: absolute; left: 30px; right: 26px; bottom: 18px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.mk-papel .p-salvar {
+  font-family: var(--mono); font-size: 8.5px; letter-spacing: .18em;
+  text-transform: uppercase; color: #f4e7d2;
+  background: #8e2f26; padding: 9px 14px; border-radius: 2px;
+  box-shadow: 0 2px 0 rgba(94,29,22,.9), 0 6px 12px rgba(48,32,16,.22);
+  transform: rotate(-.6deg);
+}
+.mk-papel .p-dic-nota {
+  font-family: var(--lapis); font-size: 15px; color: rgba(90,84,70,.8);
+  transform: rotate(-2deg); line-height: 1.15; text-align: right;
+}
+
+/* ── colofão ───────────────────────────────────────────────── */
+.mk-papel .p-colofao {
+  max-width: 1180px; margin: 0 auto; padding: 4px 48px 60px;
+  color: rgba(222,212,189,.46);
+  font-family: var(--mono); font-size: 10px; line-height: 1.9; letter-spacing: .05em;
+  border-top: 1px solid rgba(222,212,189,.14); padding-top: 26px;
+}
+.mk-papel .p-colofao b { color: rgba(201,168,106,.85); font-weight: 700; letter-spacing: .18em; }
+.mk-papel .p-colofao em { font-family: var(--serif); font-size: 13px; font-style: italic; letter-spacing: 0; }
+
+@media (max-width: 900px) {
+  .mk-papel .p-cabeca { padding: 34px 24px 18px; }
+  .mk-papel .p-carimbo { display: none; }
+  .mk-papel .p-rack { padding: 12px 24px 40px; gap: 30px; }
+  .mk-papel .p-colofao { padding-left: 24px; padding-right: 24px; }
+}
+</style>
+</head>
+<body style="margin:0;background:#1e2320;">
+<div class="mk-papel">
+
+  <header class="p-cabeca">
+    <div class="p-carimbo">
+      <b>PROVA</b>
+      <hr>
+      <span>NÃO DISTRIBUIR</span>
+    </div>
+    <h1 class="p-cabeca-titulo">BookWorm <em>— o leitor</em></h1>
+    <div class="p-cabeca-sub">Direção “Papel” · editorial analógico · quatro estados</div>
+    <div class="p-cabeca-linha"></div>
+    <p class="p-cabeca-nota">O livro como objeto, não como aplicativo. Nenhum controle aqui se parece com uma barra de app: são plaquetas coladas, abas de fichário, réguas de tipógrafo, carimbos e anotações a lápis na margem. O progresso é a espessura das páginas viradas.</p>
+  </header>
+
+  <div class="p-rack">
+
+    <!-- ════════════════ ESTADO I — LEITURA ════════════════ -->
+    <section class="p-slot">
+      <div class="p-rotulo">
+        <div class="p-rotulo-num">Estado I</div>
+        <div class="p-rotulo-nome">Leitura</div>
+        <p class="p-rotulo-desc">Sem chrome. Só a página, o grifo, o vestígio de uma consulta e o corte do livro na borda.</p>
+      </div>
+
+      <div class="p-fone">
+        <div class="p-tela">
+          <div class="p-pagina">
+            <div class="p-lombada"></div>
+            <div class="p-fita"></div>
+
+            <div class="p-status"><span>21:47</span><span>78%</span></div>
+
+            <div class="p-abertura-cap">
+              <div class="p-cap-num">Capítulo primeiro</div>
+              <div class="p-cap-nome">Do título</div>
+              <svg class="p-fleuron" width="118" height="9" viewBox="0 0 118 9" aria-hidden="true">
+                <path d="M2 4.5h44M72 4.5h44" stroke="rgba(36,31,25,.34)" stroke-width="1"/>
+                <path d="M59 .8 63.4 4.5 59 8.2 54.6 4.5Z" fill="rgba(36,31,25,.42)"/>
+              </svg>
+            </div>
+
+            <div class="p-corpo">
+              <p class="p-par p-par--sem-indent"><span class="p-versal">Uma noite destas,</span> vindo da cidade para o Engenho Novo, encontrei num trem da Central um rapaz aqui do bairro, que eu conheço de vista e de chapéu. Cumprimentou-me, sentou-se ao pé de mim, falou da lua e dos ministros, e acabou recitando-me versos. <span class="p-grifo">A viagem era curta, e os versos pode ser que não fossem inteiramente maus.</span> Sucedeu, porém, que, como eu estava cansado, fechei os olhos três ou quatro vezes; tanto bastou para que ele interrompesse a leitura e metesse os versos no bolso.</p>
+              <p class="p-par p-fala">— Continue, disse eu acordando.</p>
+              <p class="p-par p-fala">— Já acabei, murmurou ele.</p>
+              <p class="p-par p-fala">— São muito bonitos.</p>
+              <p class="p-par">Vi-lhe fazer um gesto para tirá-los outra vez do bolso, mas não passou do gesto; estava <span class="p-consulta">amuado</span>.</p>
+            </div>
+
+            <!-- marginália a lápis + traço na margem -->
+            <div class="p-traco-margem" style="left:22px; top:352px; height:74px;"></div>
+            <div class="p-marginalia" style="left:36px; top:600px; width:230px;">o gesto que não passa de gesto —<br>já é o livro inteiro aqui</div>
+
+            <div class="p-folio p-folio--centro">31</div>
+
+            <div class="p-corte"><div class="p-corte-lido"></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════ ESTADO II — CONTROLES ════════════════ -->
+    <section class="p-slot">
+      <div class="p-rotulo">
+        <div class="p-rotulo-num">Estado II</div>
+        <div class="p-rotulo-nome">Controles revelados</div>
+        <p class="p-rotulo-desc">Toque no centro: sobe a ficha de fichário. Progresso é o maciço de páginas; navegação são abas de índice.</p>
+      </div>
+
+      <div class="p-fone">
+        <div class="p-tela">
+          <div class="p-pagina">
+            <div class="p-lombada"></div>
+            <div class="p-fita"></div>
+            <div class="p-status"><span>21:47</span><span>78%</span></div>
+
+            <div class="p-abertura-cap" style="padding-top:132px;">
+              <div class="p-cap-num">Capítulo primeiro</div>
+              <div class="p-cap-nome">Do título</div>
+              <svg class="p-fleuron" width="118" height="9" viewBox="0 0 118 9" aria-hidden="true">
+                <path d="M2 4.5h44M72 4.5h44" stroke="rgba(36,31,25,.34)" stroke-width="1"/>
+                <path d="M59 .8 63.4 4.5 59 8.2 54.6 4.5Z" fill="rgba(36,31,25,.42)"/>
+              </svg>
+            </div>
+
+            <div class="p-corpo" style="top:250px;">
+              <p class="p-par p-par--sem-indent"><span class="p-versal">Uma noite destas,</span> vindo da cidade para o Engenho Novo, encontrei num trem da Central um rapaz aqui do bairro, que eu conheço de vista e de chapéu. Cumprimentou-me, sentou-se ao pé de mim, falou da lua e dos ministros, e acabou recitando-me versos. <span class="p-grifo">A viagem era curta, e os versos pode ser que não fossem inteiramente maus.</span> Sucedeu, porém, que, como eu estava cansado, fechei os olhos três ou quatro vezes.</p>
+            </div>
+
+            <div class="p-corte"><div class="p-corte-lido"></div></div>
+            <div class="p-veu"></div>
+
+            <!-- plaqueta / ex-libris -->
+            <div class="p-plaqueta">
+              <div class="p-plaqueta-obra">Dom Casmurro</div>
+              <div class="p-plaqueta-autor">Machado de Assis · 1899</div>
+              <div class="p-plaqueta-cap">Capítulo I — Do título</div>
+            </div>
+
+            <!-- ficha de fichário -->
+            <div class="p-ficha">
+              <div class="p-abas">
+                <div class="p-aba"><b>Su</b>Sumário</div>
+                <div class="p-aba"><b>Bu</b>Busca</div>
+                <div class="p-aba"><b>3</b>Marcadores</div>
+                <div class="p-aba p-aba--ativa"><b>14</b>Destaques</div>
+              </div>
+
+              <div class="p-ficha-cabeca">
+                <span>Ficha de leitura</span>
+                <span>N.º 0031</span>
+              </div>
+
+              <div class="p-ficha-corpo">
+                <div class="p-macico-rot">
+                  <span>Páginas viradas</span>
+                  <b>11%</b>
+                  <span>Por virar</span>
+                </div>
+                <div class="p-macico">
+                  <div class="p-macico-lido"></div>
+                  <div class="p-macico-fita"></div>
+                </div>
+                <div class="p-macico-nums"><span>31</span><span>288 páginas</span></div>
+
+                <div class="p-ficha-linha">
+                  <div>
+                    <div class="p-ficha-cap">Capítulo I — Do título</div>
+                    <div class="p-ficha-nota">faltam 2 páginas para o Capítulo II</div>
+                  </div>
+                  <div class="p-ficha-pag">31&thinsp;/&thinsp;288</div>
+                </div>
+
+                <div class="p-datas">
+                  <span class="p-data">12 AGO</span>
+                  <span class="p-data">13 AGO</span>
+                  <span class="p-data">15 AGO</span>
+                  <span class="p-data">16 AGO</span>
+                  <span class="p-data">18 AGO</span>
+                  <span class="p-data p-data--hoje">21 AGO</span>
+                  <span class="p-datas-rot">Carimbos</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════ ESTADO III — COMPOSIÇÃO ════════════════ -->
+    <section class="p-slot">
+      <div class="p-rotulo">
+        <div class="p-rotulo-num">Estado III</div>
+        <div class="p-rotulo-nome">Composição &amp; luz</div>
+        <p class="p-rotulo-desc">Folha de prova do tipógrafo: espécimes, régua de corpo, cunha de densidade, temperatura em kelvin.</p>
+      </div>
+
+      <div class="p-fone">
+        <div class="p-tela p-tela--sepia">
+          <div class="p-pagina">
+            <div class="p-lombada"></div>
+            <div class="p-status"><span>21:49</span><span>77%</span></div>
+
+            <div class="p-abertura-cap" style="padding-top:66px;">
+              <div class="p-cap-num">Capítulo primeiro</div>
+              <div class="p-cap-nome">Do título</div>
+              <svg class="p-fleuron" width="118" height="9" viewBox="0 0 118 9" aria-hidden="true">
+                <path d="M2 4.5h44M72 4.5h44" stroke="rgba(58,46,32,.34)" stroke-width="1"/>
+                <path d="M59 .8 63.4 4.5 59 8.2 54.6 4.5Z" fill="rgba(58,46,32,.42)"/>
+              </svg>
+            </div>
+
+            <div class="p-corpo" style="top:186px;">
+              <p class="p-par p-par--sem-indent"><span class="p-versal">Uma noite destas,</span> vindo da cidade para o Engenho Novo, encontrei num trem da Central um rapaz aqui do bairro, que eu conheço de vista e de chapéu. Cumprimentou-me, sentou-se ao pé de mim, falou da lua e dos ministros, e acabou recitando-me versos.</p>
+            </div>
+
+            <div class="p-corte"><div class="p-corte-lido"></div></div>
+
+            <!-- papel vegetal com a composição -->
+            <div class="p-vegetal">
+              <div class="p-painel-cabeca">
+                <span class="p-painel-titulo">Composição</span>
+                <span class="p-painel-sub">Prova · folha 1</span>
+              </div>
+
+              <!-- FONTE -->
+              <div class="p-secao">
+                <div class="p-secao-rot"><span>Família</span><b>Spectral</b></div>
+                <div class="p-especimes">
+                  <div class="p-especime p-especime--sel">
+                    <i class="p-esp-spectral">Aa</i><span>SPECTRAL</span>
+                  </div>
+                  <div class="p-especime">
+                    <i class="p-esp-garamond">Aa</i><span>GARAMOND</span>
+                  </div>
+                  <div class="p-especime">
+                    <i class="p-esp-mono">Aa</i><span>MONOESPAÇO</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- CORPO -->
+              <div class="p-secao">
+                <div class="p-secao-rot"><span>Corpo</span><b>16 pt</b></div>
+                <div class="p-regua">
+                  <div class="p-regua-linha"></div>
+                  <div class="p-tick p-tick--maior" style="left:0%"><span>12</span></div>
+                  <div class="p-tick" style="left:11%"></div>
+                  <div class="p-tick p-tick--maior" style="left:22%"><span>14</span></div>
+                  <div class="p-tick" style="left:33%"></div>
+                  <div class="p-tick p-tick--maior" style="left:44%"><span>16</span></div>
+                  <div class="p-tick" style="left:55%"></div>
+                  <div class="p-tick p-tick--maior" style="left:66%"><span>18</span></div>
+                  <div class="p-tick" style="left:78%"></div>
+                  <div class="p-tick p-tick--maior" style="left:89%"><span>20</span></div>
+                  <div class="p-tick" style="left:100%"></div>
+                  <div class="p-regua-marca" style="left:44%"></div>
+                </div>
+              </div>
+
+              <!-- TRIO -->
+              <div class="p-secao">
+                <div class="p-trio">
+                  <div>
+                    <div class="p-secao-rot"><span>Entrelinha</span></div>
+                    <div class="p-opcoes">
+                      <div class="p-opcao"><div class="p-linhas p-el-1"><i></i><i></i><i></i><i></i></div><div class="p-opcao-legenda">1,4</div></div>
+                      <div class="p-opcao p-opcao--sel"><div class="p-linhas p-el-2"><i></i><i></i><i></i></div><div class="p-opcao-legenda">1,7</div></div>
+                      <div class="p-opcao"><div class="p-linhas p-el-3"><i></i><i></i></div><div class="p-opcao-legenda">2,0</div></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="p-secao-rot"><span>Margens</span></div>
+                    <div class="p-opcoes">
+                      <div class="p-opcao"><div class="p-mini-pag p-mp-1"><i></i></div><div class="p-opcao-legenda">ESTR</div></div>
+                      <div class="p-opcao p-opcao--sel"><div class="p-mini-pag p-mp-2"><i></i></div><div class="p-opcao-legenda">MÉD</div></div>
+                      <div class="p-opcao"><div class="p-mini-pag p-mp-3"><i></i></div><div class="p-opcao-legenda">LARG</div></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="p-secao-rot"><span>Alinham.</span></div>
+                    <div class="p-opcoes">
+                      <div class="p-opcao p-opcao--sel"><div class="p-linhas p-el-2"><i></i><i></i><i></i></div><div class="p-opcao-legenda">JUST</div></div>
+                      <div class="p-opcao"><div class="p-linhas p-el-2 p-ragged"><i></i><i></i><i></i></div><div class="p-opcao-legenda">BAND</div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- TEMAS -->
+              <div class="p-secao">
+                <div class="p-secao-rot"><span>Papel</span><b>Sépia</b></div>
+                <div class="p-temas">
+                  <div class="p-tema"><div class="p-tema-chip p-tc-claro"><i></i><i></i><i></i></div><div class="p-tema-nome">Claro</div></div>
+                  <div class="p-tema p-tema--sel"><div class="p-tema-chip p-tc-sepia"><i></i><i></i><i></i></div><div class="p-tema-nome">Sépia</div></div>
+                  <div class="p-tema"><div class="p-tema-chip p-tc-escuro"><i></i><i></i><i></i></div><div class="p-tema-nome">Escuro</div></div>
+                  <div class="p-tema"><div class="p-tema-chip p-tc-oled"><i></i><i></i><i></i></div><div class="p-tema-nome">OLED</div></div>
+                </div>
+              </div>
+
+              <!-- TEMPERATURA -->
+              <div class="p-secao">
+                <div class="p-secao-rot"><span>Temperatura da luz</span><b>3&thinsp;200 K</b></div>
+                <div class="p-temp-barra">
+                  <div class="p-agulha" style="left:22%"></div>
+                </div>
+                <div class="p-temp-ticks">
+                  <span style="left:2%">2700 quente</span>
+                  <span style="left:50%">4500</span>
+                  <span style="left:96%">6500 fria</span>
+                </div>
+              </div>
+
+              <!-- BRILHO -->
+              <div class="p-secao">
+                <div class="p-secao-rot"><span>Brilho</span><b>62%</b></div>
+                <div class="p-cunha"><div class="p-cunha-marca" style="left:62%"></div></div>
+              </div>
+
+              <!-- SILÊNCIO -->
+              <div class="p-silencio">
+                <div class="p-silencio-txt">
+                  <b>Silêncio de papel</b>
+                  <span>desliga som de página e vibração</span>
+                </div>
+                <div class="p-chave">
+                  <span class="p-chave-legenda">LIG</span>
+                  <div class="p-chave-knob"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════ ESTADO IV — SELEÇÃO ════════════════ -->
+    <section class="p-slot">
+      <div class="p-rotulo">
+        <div class="p-rotulo-num">Estado IV</div>
+        <div class="p-rotulo-nome">Seleção &amp; verbete</div>
+        <p class="p-rotulo-desc">Quatro pigmentos numa tira de papel rasgado. O dicionário sobe sobre o texto — nunca sai do leitor.</p>
+      </div>
+
+      <div class="p-fone">
+        <div class="p-tela">
+          <div class="p-pagina">
+            <div class="p-lombada"></div>
+            <div class="p-status"><span>21:52</span><span>77%</span></div>
+            <div class="p-corrente"><span>Dom Casmurro</span><span>I · Do título</span></div>
+
+            <div class="p-corpo p-corpo--alto">
+              <p class="p-par p-par--sem-indent">No dia seguinte entrou a dizer de mim nomes feios, e acabou <span class="p-selecao">alcunhando-me Dom Casmurro</span>. Os vizinhos, que não gostam dos meus hábitos reclusos e calados, deram curso à alcunha, que afinal pegou.</p>
+              <svg class="p-fleuron" style="margin-top:34px;" width="118" height="9" viewBox="0 0 118 9" aria-hidden="true">
+                <path d="M2 4.5h44M72 4.5h44" stroke="rgba(36,31,25,.26)" stroke-width="1"/>
+                <path d="M59 .8 63.4 4.5 59 8.2 54.6 4.5Z" fill="rgba(36,31,25,.34)"/>
+              </svg>
+            </div>
+
+            <!-- punhos de seleção: pinos de papel, não bolinhas de sistema -->
+            <div class="p-punho p-punho--ini" style="left:146px; top:124px;"></div>
+            <div class="p-punho p-punho--ini" style="left:94px; top:151px;"></div>
+
+            <div class="p-folio p-folio--fora">32</div>
+            <div class="p-corte"><div class="p-corte-lido" style="width:11.4%"></div></div>
+
+            <!-- tira rasgada com os pigmentos -->
+            <div class="p-tira" style="top:172px;">
+              <div class="p-pigmentos">
+                <span class="p-pigmento p-pig-1 p-pigmento--sel"></span>
+                <span class="p-pigmento p-pig-2"></span>
+                <span class="p-pigmento p-pig-3"></span>
+                <span class="p-pigmento p-pig-4"></span>
+              </div>
+              <span class="p-tira-sep"></span>
+              <span class="p-tira-acao">Anotar</span>
+              <span class="p-tira-acao p-tira-acao--ativa">Verbete</span>
+            </div>
+
+            <!-- painel de dicionário -->
+            <div class="p-dic">
+              <div class="p-dic-corrente">
+                <span>Dicionário · sobre a página</span>
+                <span>fol. 32</span>
+              </div>
+
+              <div class="p-verbete">cas·mur·ro<sup>1</sup></div>
+              <div class="p-fonetica">[kaz.ˈmu.ʁu]</div>
+              <div class="p-classe">adjetivo e substantivo masculino</div>
+
+              <div class="p-acepcoes">
+                <p class="p-acepcao"><b>1.</b> Que ou aquele que é teimoso, obstinado; cabeçudo.</p>
+                <p class="p-acepcao"><b>2.</b> Ensimesmado, calado, avesso ao convívio; taciturno. <em>“os meus hábitos reclusos e calados”</em></p>
+                <p class="p-acepcao"><b>3.</b> <em>Bras.</em> Sorumbático, de humor melancólico e fechado.</p>
+              </div>
+
+              <p class="p-etimologia">Etim. controversa; a explicação corrente na obra desfaz o sentido dicionarizado — o narrador adverte que o apelido não veio do dicionário, mas dos vizinhos.</p>
+
+              <div class="p-dic-rodape">
+                <span class="p-salvar">Salvar como anotação</span>
+                <span class="p-dic-nota">3.ª consulta<br>nesta obra</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <footer class="p-colofao">
+    <b>COLOFÃO</b><br>
+    Composto em <em>Spectral</em> (Production Type, desenhada para leitura contínua em tela) para o corpo do livro; <em>EB Garamond</em> como segunda opção de família; <em>Courier Prime</em> nas etiquetas, carimbos e legendas de oficina; <em>Caveat</em> nas anotações a lápis. Papel simulado por camadas de gradiente; nenhuma imagem externa.<br>
+    Metadados coerentes entre as molduras: <em>Dom Casmurro</em>, Machado de Assis — Capítulo I, “Do título”; página 31 de 288 (11%), página 32 no estado IV.<br>
+    <b>DIVERGÊNCIA DA RN-02.13</b> — o leitor abre sem barra, sem contador e sem badge, como manda a regra; mas o <em>corte do livro</em> e o <em>fólio impresso</em> permanecem. Não são chrome: são o próprio corpo do objeto. O leitor sabe onde está sem que nada lhe seja medido.
+  </footer>
+
+</div>
+</body>
+</html>

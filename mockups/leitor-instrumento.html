@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BookWorm · Leitor · Território Instrumento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════════
+   MK-INSTRUMENTO — todo o CSS escopado sob .mk-instrumento
+   ══════════════════════════════════════════════════════════════ */
+
+.mk-instrumento{
+  /* ── superfície do canvas (bancada) ── */
+  --bench:#0B0C0E;
+  --bench-2:#101215;
+  --rule:rgba(255,255,255,.075);
+  --rule-2:rgba(255,255,255,.14);
+  --rule-3:rgba(255,255,255,.30);
+
+  /* ── chrome do instrumento ── */
+  --chr:#0E1013;
+  --chr-2:#15181C;
+  --chr-3:#1C2025;
+  --hair:#23282E;
+  --hair-2:#2E353C;
+  --txt:#E9ECEE;
+  --txt-2:#98A2AA;
+  --txt-3:#626C74;
+
+  /* ── SINAL 001: acento único, uso exclusivo = estado atual / posição ── */
+  --sig:#FF6B1A;
+  --sig-dim:rgba(255,107,26,.22);
+
+  /* ── temas de leitura ── */
+  --pg-claro:#F5F2EA;   --ink-claro:#16181A;
+  --pg-sepia:#EDE0C8;   --ink-sepia:#3B3125;
+  --pg-escuro:#17191C;  --ink-escuro:#CFD3D6;
+  --pg-oled:#000000;    --ink-oled:#B9BEC2;
+
+  /* ── 4 cores de destaque ── */
+  --h1:#F2B705;  --h2:#3AA0C4;  --h3:#C8447E;  --h4:#5FAE6B;
+
+  --sans:'IBM Plex Sans','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --mono:'IBM Plex Mono','SFMono-Regular',Consolas,'Liberation Mono',monospace;
+  --serif:'IBM Plex Serif',Georgia,'Times New Roman',serif;
+  --a11y:'Atkinson Hyperlegible','IBM Plex Sans',Arial,sans-serif;
+
+  font-family:var(--sans);
+  font-variant-numeric:tabular-nums;
+  -webkit-font-smoothing:antialiased;
+  color:var(--txt);
+  background:var(--bench);
+  background-image:
+    repeating-linear-gradient(90deg,rgba(255,255,255,.022) 0 1px,transparent 1px 40px),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.022) 0 1px,transparent 1px 40px);
+  padding:0 0 46px;
+  min-height:100%;
+}
+.mk-instrumento *{box-sizing:border-box;margin:0;padding:0}
+.mk-instrumento svg{display:block}
+
+/* ───────────────── cabeçalho da prancha ───────────────── */
+.mk-instrumento .mk-head{
+  border-bottom:1px solid var(--rule-2);
+  padding:26px 34px 0;
+  display:flex;align-items:flex-end;justify-content:space-between;gap:30px;flex-wrap:wrap;
+}
+.mk-instrumento .mk-wordmark{
+  font-size:30px;font-weight:600;letter-spacing:-.028em;line-height:1;
+}
+.mk-instrumento .mk-wordmark em{font-style:normal;color:var(--txt-3);font-weight:400}
+.mk-instrumento .mk-sub{
+  font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--txt-3);margin-top:9px;
+}
+.mk-instrumento .mk-meta{
+  display:flex;gap:0;font-family:var(--mono);font-size:10px;letter-spacing:.08em;
+  border-left:1px solid var(--rule-2);
+}
+.mk-instrumento .mk-meta div{
+  padding:0 14px 2px;border-right:1px solid var(--rule-2);
+}
+.mk-instrumento .mk-meta b{display:block;color:var(--txt-3);font-weight:400;letter-spacing:.16em;font-size:9px;margin-bottom:4px}
+.mk-instrumento .mk-meta span{color:var(--txt)}
+
+/* régua mestra */
+.mk-instrumento .mk-masterrule{
+  height:22px;margin:0;border-bottom:1px solid var(--rule-2);
+  background-image:
+    repeating-linear-gradient(90deg,var(--rule-3) 0 1px,transparent 1px 100px),
+    repeating-linear-gradient(90deg,var(--rule) 0 1px,transparent 1px 20px);
+  background-position:34px 0,34px 0;
+  background-size:100% 9px,100% 5px;
+  background-repeat:repeat-x;
+}
+
+/* ───────────────── trilho horizontal ───────────────── */
+.mk-instrumento .mk-rail{
+  display:flex;align-items:flex-start;gap:38px;
+  overflow-x:auto;padding:34px 34px 10px;
+  scrollbar-color:var(--hair-2) transparent;
+}
+.mk-instrumento .mk-slot{flex:0 0 auto;width:420px;position:relative}
+.mk-instrumento .mk-slot::before,
+.mk-instrumento .mk-slot::after{
+  content:'';position:absolute;width:11px;height:11px;pointer-events:none;
+}
+.mk-instrumento .mk-slot::before{top:74px;left:-9px;border-left:1px solid var(--rule-3);border-top:1px solid var(--rule-3)}
+.mk-instrumento .mk-slot::after{bottom:36px;right:-9px;border-right:1px solid var(--rule-3);border-bottom:1px solid var(--rule-3)}
+
+.mk-instrumento .mk-label{margin-bottom:16px;border-top:2px solid var(--txt);padding-top:9px}
+.mk-instrumento .mk-label .n{
+  font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--sig);
+}
+.mk-instrumento .mk-label h2{
+  font-size:16px;font-weight:600;letter-spacing:-.01em;margin:5px 0 5px;
+}
+.mk-instrumento .mk-label p{
+  font-size:11.5px;line-height:1.45;color:var(--txt-2);max-width:38ch;
+}
+.mk-instrumento .mk-dim{
+  display:flex;align-items:center;gap:8px;margin-top:12px;
+  font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--txt-3);
+}
+.mk-instrumento .mk-dim i{
+  flex:1;height:5px;border-left:1px solid var(--rule-2);border-right:1px solid var(--rule-2);
+  background:linear-gradient(var(--rule-2),var(--rule-2)) center/100% 1px no-repeat;
+}
+
+/* ───────────────── aparelho ───────────────── */
+.mk-instrumento .ph{
+  width:420px;height:880px;background:#050607;border-radius:22px;padding:10px;
+  border:1px solid #1B1E22;
+}
+.mk-instrumento .scr{
+  position:relative;width:400px;height:860px;border-radius:14px;overflow:hidden;
+  isolation:isolate;
+}
+.mk-instrumento .cam{
+  position:absolute;top:9px;left:50%;transform:translateX(-50%);
+  width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.14);z-index:60;
+}
+
+/* status bar android */
+.mk-instrumento .sb{
+  height:26px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;font-family:var(--mono);font-size:10px;letter-spacing:.04em;
+  opacity:.42;position:relative;z-index:5;
+}
+.mk-instrumento .sb .bat{display:flex;align-items:center;gap:5px}
+.mk-instrumento .sb .cell{
+  width:17px;height:8px;border:1px solid currentColor;border-radius:1px;position:relative;
+}
+.mk-instrumento .sb .cell::before{content:'';position:absolute;inset:1px;right:5px;background:currentColor}
+.mk-instrumento .sb .cell::after{content:'';position:absolute;right:-3px;top:2px;width:2px;height:4px;background:currentColor}
+
+/* ───────────────── temas de página ───────────────── */
+.mk-instrumento .pg{position:absolute;inset:0;display:flex;flex-direction:column}
+.mk-instrumento .t-claro{background:var(--pg-claro);color:var(--ink-claro)}
+.mk-instrumento .t-sepia{background:var(--pg-sepia);color:var(--ink-sepia)}
+.mk-instrumento .t-escuro{background:var(--pg-escuro);color:var(--ink-escuro)}
+.mk-instrumento .t-oled{background:var(--pg-oled);color:var(--ink-oled)}
+
+/* filtro de temperatura de luz — camada real sobre a página */
+.mk-instrumento .warm{
+  position:absolute;inset:0;background:#FFB25C;mix-blend-mode:multiply;
+  opacity:.13;pointer-events:none;z-index:2;
+}
+.mk-instrumento .warm-hi{opacity:.22}
+
+/* ───────────────── corpo de texto ───────────────── */
+.mk-instrumento .body{
+  padding:20px 30px 0;position:relative;z-index:3;flex:1;overflow:hidden;
+  font-family:var(--serif);font-size:14.6px;line-height:1.62;
+  hyphens:none;text-align:left;
+}
+.mk-instrumento .body p{margin-bottom:13px}
+.mk-instrumento .body .fala{margin-bottom:7px;text-indent:0}
+.mk-instrumento .chaphead{margin-bottom:22px}
+.mk-instrumento .chaphead .kick{
+  font-family:var(--mono);font-size:9px;letter-spacing:.24em;text-transform:uppercase;
+  opacity:.44;display:block;margin-bottom:9px;
+}
+.mk-instrumento .chaphead .num{
+  font-family:var(--mono);font-size:34px;font-weight:500;line-height:.9;letter-spacing:-.02em;
+}
+.mk-instrumento .chaphead .ttl{
+  font-family:var(--serif);font-style:italic;font-size:16px;margin-top:6px;opacity:.82;
+}
+.mk-instrumento .chaphead .bar{
+  height:1px;background:currentColor;opacity:.2;margin-top:14px;
+}
+
+/* destaque existente */
+.mk-instrumento .hl{
+  background:rgba(242,183,5,.34);
+  box-shadow:inset 0 -1.5px 0 rgba(200,148,0,.85);
+  padding:1px 0;
+  -webkit-box-decoration-break:clone;box-decoration-break:clone;
+}
+/* vestígio de consulta ao dicionário — sublinhado tênue */
+.mk-instrumento .trace{
+  border-bottom:1px dotted currentColor;opacity:1;
+  box-shadow:none;padding-bottom:1px;
+}
+.mk-instrumento .t-claro .trace,.mk-instrumento .t-sepia .trace{border-bottom-color:rgba(0,0,0,.32)}
+/* seleção ativa */
+.mk-instrumento .sel{
+  background:rgba(255,107,26,.24);box-shadow:inset 0 -1.5px 0 var(--sig);
+  position:relative;padding:1px 0;
+}
+
+/* ───────────────── rail permanente (divergência RN-02.13) ───────────────── */
+.mk-instrumento .rail{
+  position:absolute;left:0;right:0;bottom:0;height:34px;z-index:6;
+  display:flex;align-items:flex-end;justify-content:space-between;
+  padding:0 16px 8px;font-family:var(--mono);font-size:9px;letter-spacing:.14em;
+  text-transform:uppercase;
+}
+.mk-instrumento .rail span{opacity:.34}
+.mk-instrumento .rail .track{
+  position:absolute;left:0;right:0;bottom:0;height:3px;
+  background:currentColor;opacity:.12;
+}
+.mk-instrumento .rail .track i{
+  position:absolute;left:0;top:0;bottom:0;background:var(--sig);opacity:1;
+}
+.mk-instrumento .rail .ticks{
+  position:absolute;left:0;right:0;bottom:3px;height:5px;opacity:.16;
+  background-image:repeating-linear-gradient(90deg,currentColor 0 1px,transparent 1px 12.5%);
+}
+
+/* ───────────────── chrome sobreposto ───────────────── */
+.mk-instrumento .scrim{position:absolute;inset:0;background:rgba(6,7,8,.68);z-index:10}
+.mk-instrumento .panel{
+  position:absolute;left:0;right:0;z-index:11;background:var(--chr);color:var(--txt);
+  font-family:var(--sans);
+}
+.mk-instrumento .panel-top{top:0;border-bottom:1px solid var(--hair)}
+.mk-instrumento .panel-bot{bottom:0;border-top:1px solid var(--hair)}
+
+.mk-instrumento .lab{
+  font-family:var(--mono);font-size:8.5px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--txt-3);
+}
+.mk-instrumento .val{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* topo do estado 2 */
+.mk-instrumento .navbar{
+  display:flex;align-items:center;gap:12px;padding:14px 16px 13px;
+}
+.mk-instrumento .navbar .ico{
+  width:30px;height:30px;border:1px solid var(--hair-2);display:grid;place-items:center;
+  color:var(--txt-2);flex:0 0 auto;
+}
+.mk-instrumento .navbar .who{flex:1;min-width:0}
+.mk-instrumento .navbar .who b{
+  display:block;font-size:12.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.mk-instrumento .navbar .who i{
+  display:block;font-style:normal;font-size:10.5px;color:var(--txt-3);margin-top:3px;
+}
+
+/* leitura numérica grande */
+.mk-instrumento .readout{
+  display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid var(--hair);
+}
+.mk-instrumento .readout > div{padding:12px 14px 13px;border-right:1px solid var(--hair)}
+.mk-instrumento .readout > div:last-child{border-right:0}
+.mk-instrumento .readout .big{
+  font-family:var(--mono);font-size:25px;font-weight:500;letter-spacing:-.03em;line-height:1;
+  margin-top:7px;display:block;
+}
+.mk-instrumento .readout .big small{font-size:11px;color:var(--txt-3);letter-spacing:0;margin-left:2px}
+.mk-instrumento .readout .sig{color:var(--sig)}
+
+/* escala do livro */
+.mk-instrumento .scale{padding:16px 16px 12px;border-top:1px solid var(--hair)}
+.mk-instrumento .scale .head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}
+.mk-instrumento .scale .head .v{font-family:var(--mono);font-size:10px;color:var(--txt-2)}
+.mk-instrumento .gauge{position:relative;height:34px}
+.mk-instrumento .gauge .chapters{
+  position:absolute;left:0;right:0;top:0;height:13px;opacity:.30;
+  background-image:repeating-linear-gradient(90deg,var(--txt-3) 0 1px,transparent 1px 2.4%);
+}
+.mk-instrumento .gauge .majors{
+  position:absolute;left:0;right:0;top:0;height:20px;opacity:.55;
+  background-image:repeating-linear-gradient(90deg,var(--txt-2) 0 1px,transparent 1px 12.5%);
+}
+.mk-instrumento .gauge .bar{
+  position:absolute;left:0;right:0;top:24px;height:5px;background:var(--chr-3);
+}
+.mk-instrumento .gauge .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--sig)}
+.mk-instrumento .gauge .knob{
+  position:absolute;top:20px;width:2px;height:13px;background:var(--sig);
+}
+.mk-instrumento .gauge .knob::before{
+  content:'';position:absolute;top:-6px;left:-4px;border:5px solid transparent;border-top-color:var(--sig);
+}
+.mk-instrumento .gauge .legend{
+  position:absolute;left:0;right:0;top:36px;display:flex;justify-content:space-between;
+  font-family:var(--mono);font-size:8.5px;color:var(--txt-3);letter-spacing:.12em;
+}
+
+/* ações */
+.mk-instrumento .acts{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--hair)}
+.mk-instrumento .acts a{
+  padding:13px 8px 12px;border-right:1px solid var(--hair);text-decoration:none;color:var(--txt);
+  display:flex;flex-direction:column;align-items:center;gap:8px;position:relative;
+}
+.mk-instrumento .acts a:last-child{border-right:0}
+.mk-instrumento .acts a span{
+  font-family:var(--mono);font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--txt-2);
+}
+.mk-instrumento .acts a b{
+  position:absolute;top:9px;right:10px;font-family:var(--mono);font-size:9px;
+  font-weight:500;color:var(--sig);
+}
+
+/* constância */
+.mk-instrumento .depth{padding:13px 16px 15px;border-top:1px solid var(--hair);display:flex;gap:16px;align-items:flex-end}
+.mk-instrumento .spark{display:flex;align-items:flex-end;gap:5px;height:38px;position:relative;flex:0 0 auto}
+.mk-instrumento .spark u{
+  width:9px;background:var(--chr-3);display:block;text-decoration:none;position:relative;
+}
+.mk-instrumento .spark u.on{background:var(--txt-2)}
+.mk-instrumento .spark u.now{background:var(--sig)}
+.mk-instrumento .spark u::after{
+  content:attr(data-d);position:absolute;bottom:-13px;left:50%;transform:translateX(-50%);
+  font-family:var(--mono);font-size:8px;color:var(--txt-3);
+}
+.mk-instrumento .goal{
+  position:absolute;left:-4px;right:-4px;bottom:18px;border-top:1px dashed var(--hair-2);
+}
+.mk-instrumento .depth .dd{flex:1}
+.mk-instrumento .depth .dd .row{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--hair)}
+.mk-instrumento .depth .dd .row:last-child{border-bottom:0}
+.mk-instrumento .depth .dd .row em{font-style:normal;font-family:var(--mono);font-size:10px;color:var(--txt)}
+
+/* ───────────────── painel de tipografia ───────────────── */
+.mk-instrumento .ptitle{
+  display:flex;align-items:center;justify-content:space-between;padding:14px 16px 13px;
+  border-bottom:1px solid var(--hair);
+}
+.mk-instrumento .ptitle b{font-size:11.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase}
+.mk-instrumento .grp{padding:12px 16px 13px;border-bottom:1px solid var(--hair)}
+.mk-instrumento .grp .gh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.mk-instrumento .grp .gh .v{font-family:var(--mono);font-size:11px;color:var(--txt)}
+.mk-instrumento .grp .gh .v s{text-decoration:none;color:var(--txt-3);font-size:9px}
+
+.mk-instrumento .faces{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.mk-instrumento .faces div{
+  border:1px solid var(--hair-2);padding:9px 4px 7px;text-align:center;color:var(--txt-2);
+}
+.mk-instrumento .faces div.on{border-color:var(--sig);color:var(--txt);background:rgba(255,107,26,.08)}
+.mk-instrumento .faces div i{display:block;font-style:normal;font-size:20px;line-height:1;margin-bottom:6px}
+.mk-instrumento .faces div span{font-family:var(--mono);font-size:7.5px;letter-spacing:.1em;text-transform:uppercase;display:block}
+.mk-instrumento .f-serif{font-family:var(--serif)}
+.mk-instrumento .f-sans{font-family:var(--sans)}
+.mk-instrumento .f-mono{font-family:var(--mono)}
+.mk-instrumento .f-a11y{font-family:var(--a11y)}
+
+/* slider-régua */
+.mk-instrumento .slid{position:relative;height:26px}
+.mk-instrumento .slid .sc{
+  position:absolute;left:0;right:0;top:0;height:9px;opacity:.5;
+  background-image:repeating-linear-gradient(90deg,var(--hair-2) 0 1px,transparent 1px 6.25%);
+}
+.mk-instrumento .slid .sc.maj{
+  height:14px;opacity:.9;
+  background-image:repeating-linear-gradient(90deg,var(--txt-3) 0 1px,transparent 1px 25%);
+}
+.mk-instrumento .slid .tr{position:absolute;left:0;right:0;top:17px;height:3px;background:var(--chr-3)}
+.mk-instrumento .slid .tr i{position:absolute;left:0;top:0;bottom:0;background:var(--txt-2)}
+.mk-instrumento .slid .kn{
+  position:absolute;top:11px;width:3px;height:15px;background:var(--sig);
+}
+.mk-instrumento .slid .ends{
+  position:absolute;left:0;right:0;top:22px;display:flex;justify-content:space-between;
+  font-family:var(--mono);font-size:8px;color:var(--txt-3);letter-spacing:.1em;
+}
+
+/* segmentados */
+.mk-instrumento .seg{display:flex;border:1px solid var(--hair-2)}
+.mk-instrumento .seg div{
+  flex:1;text-align:center;padding:8px 2px;border-right:1px solid var(--hair-2);
+  font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--txt-2);
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+}
+.mk-instrumento .seg div:last-child{border-right:0}
+.mk-instrumento .seg div.on{background:var(--sig);color:#100A05;font-weight:600}
+.mk-instrumento .marg{width:20px;height:13px;border:1px solid currentColor;display:block;position:relative}
+.mk-instrumento .marg::before{content:'';position:absolute;top:2px;bottom:2px;background:currentColor;opacity:.65}
+.mk-instrumento .m1::before{left:1px;right:1px}
+.mk-instrumento .m2::before{left:3px;right:3px}
+.mk-instrumento .m3::before{left:5px;right:5px}
+.mk-instrumento .m4::before{left:7px;right:7px}
+
+/* temas */
+.mk-instrumento .themes{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.mk-instrumento .themes div{border:1px solid var(--hair-2);padding:3px}
+.mk-instrumento .themes div.on{border-color:var(--sig)}
+.mk-instrumento .themes .sw{height:38px;display:flex;flex-direction:column;justify-content:center;gap:3px;padding:0 6px}
+.mk-instrumento .themes .sw b{display:block;height:2px;background:currentColor;opacity:.55}
+.mk-instrumento .themes .sw b:nth-child(2){width:78%}
+.mk-instrumento .themes .sw b:nth-child(3){width:60%}
+.mk-instrumento .themes p{
+  font-family:var(--mono);font-size:7.5px;letter-spacing:.1em;text-transform:uppercase;
+  text-align:center;padding:6px 0 3px;color:var(--txt-2);
+}
+.mk-instrumento .themes div.on p{color:var(--sig)}
+
+/* temperatura de luz */
+.mk-instrumento .kelvin{position:relative;height:44px}
+.mk-instrumento .kelvin .band{
+  position:absolute;left:0;right:0;top:0;height:20px;
+  background:linear-gradient(90deg,#BFD9F2 0%,#DCE7EF 26%,#EFE7DA 52%,#F5D6A4 78%,#F2B771 100%);
+}
+.mk-instrumento .kelvin .band::after{
+  content:'';position:absolute;inset:0;
+  background-image:repeating-linear-gradient(90deg,rgba(0,0,0,.42) 0 1px,transparent 1px 12.5%);
+  opacity:.5;
+}
+.mk-instrumento .kelvin .kn{
+  position:absolute;top:-4px;width:3px;height:28px;background:var(--txt);
+  box-shadow:0 0 0 1px var(--chr);
+}
+.mk-instrumento .kelvin .kn::after{
+  content:'3 200 K';position:absolute;top:30px;left:50%;transform:translateX(-50%);
+  font-family:var(--mono);font-size:9px;color:var(--txt);white-space:nowrap;
+  border:1px solid var(--hair-2);padding:2px 5px;background:var(--chr-2);
+}
+.mk-instrumento .kelvin .e{
+  position:absolute;top:24px;font-family:var(--mono);font-size:8px;letter-spacing:.14em;color:var(--txt-3);
+}
+.mk-instrumento .kelvin .e.l{left:0}
+.mk-instrumento .kelvin .e.r{right:0}
+
+/* chave física */
+.mk-instrumento .sense{
+  display:flex;align-items:center;gap:14px;padding:13px 16px 15px;
+}
+.mk-instrumento .sense .cp{flex:1}
+.mk-instrumento .sense .cp b{display:block;font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+.mk-instrumento .sense .cp p{font-size:10.5px;line-height:1.42;color:var(--txt-3);margin-top:5px}
+.mk-instrumento .sw2{
+  width:58px;height:30px;border:1px solid var(--hair-2);background:var(--chr-2);
+  position:relative;flex:0 0 auto;display:flex;align-items:center;
+}
+.mk-instrumento .sw2 i{
+  position:absolute;left:2px;top:2px;bottom:2px;width:26px;background:var(--txt-2);
+}
+.mk-instrumento .sw2 span{
+  font-family:var(--mono);font-size:9px;color:var(--txt-3);position:absolute;right:9px;
+}
+.mk-instrumento .sw2.on{border-color:var(--sig)}
+.mk-instrumento .sw2.on i{left:auto;right:2px;background:var(--sig)}
+.mk-instrumento .sw2.on span{left:9px;right:auto;color:var(--txt)}
+
+/* ───────────────── seleção / dicionário ───────────────── */
+.mk-instrumento .selbar{
+  position:absolute;z-index:14;background:var(--chr);border:1px solid var(--hair-2);
+  display:flex;align-items:center;
+}
+.mk-instrumento .selbar .dot{
+  width:38px;height:40px;display:grid;place-items:center;border-right:1px solid var(--hair);
+}
+.mk-instrumento .selbar .dot i{width:16px;height:16px;display:block;border-radius:50%}
+.mk-instrumento .selbar .dot.on i{box-shadow:0 0 0 2px var(--chr),0 0 0 3.5px var(--txt)}
+.mk-instrumento .selbar .tx{
+  padding:0 12px;height:40px;display:flex;align-items:center;gap:7px;
+  font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--txt-2);border-right:1px solid var(--hair);
+}
+.mk-instrumento .selbar .tx:last-child{border-right:0}
+.mk-instrumento .selbar .tx.on{background:var(--chr-3);color:var(--txt)}
+.mk-instrumento .handle{position:absolute;width:2px;background:var(--sig);z-index:13}
+.mk-instrumento .handle::after{
+  content:'';position:absolute;left:-3.5px;width:9px;height:9px;border-radius:50%;background:var(--sig);
+}
+.mk-instrumento .handle.a::after{top:-9px}
+.mk-instrumento .handle.b::after{bottom:-9px}
+
+.mk-instrumento .dict{
+  position:absolute;left:0;right:0;bottom:0;z-index:16;background:var(--chr);
+  border-top:1px solid var(--hair-2);
+}
+.mk-instrumento .dict .grab{
+  height:18px;display:grid;place-items:center;
+}
+.mk-instrumento .dict .grab i{width:34px;height:2px;background:var(--hair-2);display:block}
+.mk-instrumento .dict .tabs{display:flex;border-bottom:1px solid var(--hair);padding:0 16px}
+.mk-instrumento .dict .tabs div{
+  font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--txt-3);padding:0 0 9px;margin-right:20px;border-bottom:2px solid transparent;
+}
+.mk-instrumento .dict .tabs div.on{color:var(--txt);border-bottom-color:var(--sig)}
+.mk-instrumento .dict .entry{padding:14px 16px 0}
+.mk-instrumento .dict .word{
+  font-family:var(--serif);font-size:27px;line-height:1;letter-spacing:-.015em;
+}
+.mk-instrumento .dict .phon{font-family:var(--mono);font-size:10.5px;color:var(--txt-3);margin-top:8px}
+.mk-instrumento .dict .cls{
+  font-family:var(--mono);font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--sig);border:1px solid rgba(255,107,26,.4);padding:3px 6px;display:inline-block;margin-top:10px;
+}
+.mk-instrumento .dict .defs{margin-top:14px;border-top:1px solid var(--hair)}
+.mk-instrumento .dict .defs li{
+  list-style:none;display:flex;gap:11px;padding:9px 0;border-bottom:1px solid var(--hair);
+  font-size:12.5px;line-height:1.45;color:var(--txt);
+}
+.mk-instrumento .dict .defs li em{
+  font-family:var(--mono);font-style:normal;font-size:10px;color:var(--txt-3);flex:0 0 auto;padding-top:2px;
+}
+.mk-instrumento .dict .defs li s{text-decoration:none;color:var(--txt-3)}
+.mk-instrumento .dict .etym{
+  padding:10px 0 12px;font-size:11px;line-height:1.45;color:var(--txt-3);
+  border-bottom:1px solid var(--hair);
+}
+.mk-instrumento .dict .foot{display:flex;gap:8px;padding:12px 16px 16px}
+.mk-instrumento .dict .foot .pri{
+  flex:1;background:var(--sig);color:#120A04;font-family:var(--mono);font-size:9.5px;
+  letter-spacing:.16em;text-transform:uppercase;font-weight:600;
+  display:flex;align-items:center;justify-content:center;height:40px;
+}
+.mk-instrumento .dict .foot .sec{
+  width:44px;height:40px;border:1px solid var(--hair-2);display:grid;place-items:center;color:var(--txt-2);
+}
+
+/* ───────────────── coluna de especificação ───────────────── */
+.mk-instrumento .mk-specs{
+  flex:0 0 auto;width:300px;border-left:1px solid var(--rule-2);padding-left:22px;align-self:stretch;
+}
+.mk-instrumento .mk-specs h3{
+  font-family:var(--mono);font-size:9px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--txt-3);border-bottom:1px solid var(--rule-2);padding-bottom:7px;margin:0 0 12px;
+}
+.mk-instrumento .mk-specs section{margin-bottom:26px}
+.mk-instrumento .mk-specs .kv{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid var(--rule)}
+.mk-instrumento .mk-specs .kv span{font-size:11px;color:var(--txt-2)}
+.mk-instrumento .mk-specs .kv b{font-family:var(--mono);font-size:10px;font-weight:500;color:var(--txt)}
+.mk-instrumento .mk-specs .chip{display:flex;align-items:center;gap:9px;padding:5px 0}
+.mk-instrumento .mk-specs .chip i{width:22px;height:12px;display:block;flex:0 0 auto}
+.mk-instrumento .mk-specs .chip span{font-family:var(--mono);font-size:9.5px;color:var(--txt-2);letter-spacing:.06em}
+.mk-instrumento .mk-specs .chip em{font-style:normal;font-size:10.5px;color:var(--txt-3);margin-left:auto}
+.mk-instrumento .mk-specs .note{
+  font-size:11.5px;line-height:1.5;color:var(--txt-2);border-left:2px solid var(--sig);padding-left:11px;
+}
+.mk-instrumento .mk-specs .note b{color:var(--sig);font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;display:block;margin-bottom:6px}
+.mk-instrumento .mk-specs .scaleline{
+  display:flex;align-items:baseline;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--rule);
+}
+.mk-instrumento .mk-specs .scaleline u{text-decoration:none;color:var(--txt)}
+.mk-instrumento .mk-specs .scaleline em{font-style:normal;font-family:var(--mono);font-size:9px;color:var(--txt-3)}
+
+.mk-instrumento .mk-foot{
+  padding:0 34px;font-family:var(--mono);font-size:9px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--txt-3);
+  border-top:1px solid var(--rule-2);padding-top:12px;margin-top:6px;
+  display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
+}
+
+@media (max-width:900px){
+  .mk-instrumento .mk-head{padding:20px 18px 0}
+  .mk-instrumento .mk-rail{padding:24px 18px 10px;gap:26px}
+  .mk-instrumento .mk-foot{padding-left:18px;padding-right:18px}
+}
+</style>
+</head>
+<body>
+<div class="mk-instrumento">
+
+  <!-- ══════════ CABEÇALHO ══════════ -->
+  <div class="mk-head">
+    <div>
+      <div class="mk-wordmark">BookWorm <em>/ Leitor</em></div>
+      <div class="mk-sub">Território&nbsp;: Instrumento — precisão suíça-digital</div>
+    </div>
+    <div class="mk-meta">
+      <div><b>Prancha</b><span>MK-01</span></div>
+      <div><b>Estados</b><span>04</span></div>
+      <div><b>Aparelho</b><span>400 × 860 dp</span></div>
+      <div><b>Grade</b><span>col 340 / base 4</span></div>
+      <div><b>Rev</b><span>0.3 — 2026.08</span></div>
+    </div>
+  </div>
+  <div class="mk-masterrule"></div>
+
+  <div class="mk-rail">
+
+    <!-- ══════════════════════════════════════════════════
+         ESTADO 01 — LEITURA
+         ══════════════════════════════════════════════════ -->
+    <div class="mk-slot">
+      <div class="mk-label">
+        <div class="n">01 / 04</div>
+        <h2>Leitura</h2>
+        <p>Texto em posse total da tela. Um destaque âmbar já feito; <i>amuado</i> guarda o vestígio de uma consulta. Rail de 3&nbsp;px permanente na borda inferior.</p>
+        <div class="mk-dim"><span>400</span><i></i><span>860 dp</span></div>
+      </div>
+
+      <div class="ph"><div class="scr">
+        <div class="pg t-claro">
+          <div class="warm"></div>
+          <div class="sb"><span>21:14</span><span class="bat"><span>68%</span><span class="cell"></span></span></div>
+
+          <div class="body">
+            <div class="chaphead">
+              <span class="kick">Machado de Assis · Dom Casmurro</span>
+              <div class="num">I</div>
+              <div class="ttl">Do título</div>
+              <div class="bar"></div>
+            </div>
+
+            <p>Uma noite destas, vindo da cidade para o Engenho Novo, encontrei num trem da Central um rapaz aqui do bairro, que eu conheço de vista e de chapéu. Cumprimentou-me, sentou-se ao pé de mim, falou da lua e dos ministros, e acabou recitando-me versos. <span class="hl">A viagem era curta, e os versos pode ser que não fossem inteiramente maus.</span> Sucedeu, porém, que, como eu estava cansado, fechei os olhos três ou quatro vezes; tanto bastou para que ele interrompesse a leitura e metesse os versos no bolso.</p>
+
+            <p class="fala">— Continue, disse eu acordando.</p>
+            <p class="fala">— Já acabei, murmurou ele.</p>
+            <p class="fala">— São muito bonitos.</p>
+
+            <p style="margin-top:13px">Vi-lhe fazer um gesto para tirá-los outra vez do bolso, mas não passou do gesto; estava <span class="trace">amuado</span>. No dia seguinte entrou a dizer de mim nomes feios, e acabou alcunhando-me Dom Casmurro. Os vizinhos, que não gostam dos meus hábitos reclusos e calados, deram curso à alcunha, que afinal pegou.</p>
+          </div>
+
+          <div class="rail">
+            <span>Cap. I · Do título</span>
+            <span>014 / 248</span>
+            <div class="ticks"></div>
+            <div class="track"><i style="width:5.6%"></i></div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════
+         ESTADO 02 — CONTROLES REVELADOS
+         ══════════════════════════════════════════════════ -->
+    <div class="mk-slot">
+      <div class="mk-label">
+        <div class="n">02 / 04</div>
+        <h2>Controles revelados</h2>
+        <p>Toque no centro. O aparelho abre como um painel: leitura numérica, escala de duas resoluções (obra + capítulo), acessos e constância.</p>
+        <div class="mk-dim"><span>toque central</span><i></i><span>oculta em 3 s</span></div>
+      </div>
+
+      <div class="ph"><div class="scr">
+        <div class="pg t-claro">
+          <div class="warm"></div>
+          <div class="sb"><span>21:14</span><span class="bat"><span>68%</span><span class="cell"></span></span></div>
+          <div class="body" style="padding-top:190px">
+            <p>Uma noite destas, vindo da cidade para o Engenho Novo, encontrei num trem da Central um rapaz aqui do bairro, que eu conheço de vista e de chapéu. Cumprimentou-me, sentou-se ao pé de mim, falou da lua e dos ministros, e acabou recitando-me versos. <span class="hl">A viagem era curta, e os versos pode ser que não fossem inteiramente maus.</span> Sucedeu, porém, que, como eu estava cansado, fechei os olhos três ou quatro vezes; tanto bastou para que ele interrompesse a leitura e metesse os versos no bolso.</p>
+            <p class="fala">— Continue, disse eu acordando.</p>
+            <p class="fala">— Já acabei, murmurou ele.</p>
+          </div>
+        </div>
+
+        <div class="scrim"></div>
+
+        <!-- painel superior -->
+        <div class="panel panel-top">
+          <div class="sb" style="opacity:.5"><span>21:14</span><span class="bat"><span>68%</span><span class="cell"></span></span></div>
+          <div class="navbar">
+            <div class="ico"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M10 2.5 4.5 8l5.5 5.5"/></svg></div>
+            <div class="who">
+              <b>Dom Casmurro</b>
+              <i>Machado de Assis · 1899</i>
+            </div>
+            <div class="ico"><svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="3" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="8" cy="13" r="1.3"/></svg></div>
+          </div>
+
+          <div class="readout">
+            <div>
+              <div class="lab">Obra</div>
+              <span class="big sig">5,6<small>%</small></span>
+            </div>
+            <div>
+              <div class="lab">Página</div>
+              <span class="big">014<small>/248</small></span>
+            </div>
+            <div>
+              <div class="lab">Capítulo</div>
+              <span class="big">I<small>/148</small></span>
+            </div>
+          </div>
+
+          <div class="scale" style="padding-bottom:8px">
+            <div class="head">
+              <div class="lab">Cap. I — “Do título”</div>
+              <div class="v">p. 12 – 14 · 68 %</div>
+            </div>
+            <div class="slid" style="height:20px">
+              <div class="sc maj" style="height:10px"></div>
+              <div class="tr" style="top:13px"><i style="width:68%"></i></div>
+              <div class="kn" style="left:68%;top:8px;height:12px"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- painel inferior -->
+        <div class="panel panel-bot">
+          <div class="depth">
+            <div class="spark">
+              <div class="goal"></div>
+              <u class="on" style="height:26px" data-d="S"></u>
+              <u class="on" style="height:12px" data-d="T"></u>
+              <u class="on" style="height:33px" data-d="Q"></u>
+              <u class="on" style="height:20px" data-d="Q"></u>
+              <u class="on" style="height:15px" data-d="S"></u>
+              <u class="on" style="height:38px" data-d="S"></u>
+              <u class="now" style="height:17px" data-d="D"></u>
+            </div>
+            <div class="dd">
+              <div class="row"><span class="lab">Sessão</span><em>00:22:41</em></div>
+              <div class="row"><span class="lab">Hoje</span><em>01:04</em></div>
+              <div class="row"><span class="lab">Sequência</span><em>18 dias</em></div>
+            </div>
+          </div>
+
+          <div class="scale">
+            <div class="head">
+              <div class="lab">Obra completa · 148 capítulos</div>
+              <div class="v">restam 234 páginas</div>
+            </div>
+            <div class="gauge">
+              <div class="chapters"></div>
+              <div class="majors"></div>
+              <div class="bar"><i style="width:5.6%"></i></div>
+              <div class="knob" style="left:5.6%"></div>
+              <div class="legend"><span>001</span><span>062</span><span>124</span><span>186</span><span>248</span></div>
+            </div>
+          </div>
+
+          <div class="acts">
+            <a href="#">
+              <svg width="17" height="17" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M2 4h14M2 9h14M2 14h9"/></svg>
+              <span>Sumário</span>
+            </a>
+            <a href="#">
+              <svg width="17" height="17" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="8" r="5"/><path d="M11.8 11.8 16 16"/></svg>
+              <span>Buscar</span>
+            </a>
+            <a href="#"><b>2</b>
+              <svg width="17" height="17" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M4.5 2.5h9v13l-4.5-4-4.5 4z"/></svg>
+              <span>Marcas</span>
+            </a>
+            <a href="#"><b>6</b>
+              <svg width="17" height="17" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M2.5 12.5h13"/><path d="M4 9.5h10v-6H4z"/></svg>
+              <span>Destaques</span>
+            </a>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════
+         ESTADO 03 — TIPOGRAFIA E ACESSIBILIDADE
+         ══════════════════════════════════════════════════ -->
+    <div class="mk-slot">
+      <div class="mk-label">
+        <div class="n">03 / 04</div>
+        <h2>Tipografia &amp; acessibilidade</h2>
+        <p>Bancada de ajuste. Toda escala tem régua e leitura numérica. Tema trocado ao vivo — a faixa de página acima já está em sépia.</p>
+        <div class="mk-dim"><span>9 controles</span><i></i><span>1 chave física</span></div>
+      </div>
+
+      <div class="ph"><div class="scr">
+        <div class="pg t-sepia">
+          <div class="warm warm-hi"></div>
+          <div class="sb"><span>21:16</span><span class="bat"><span>68%</span><span class="cell"></span></span></div>
+          <div class="body" style="font-size:14.6px">
+            <p>Uma noite destas, vindo da cidade para o Engenho Novo, encontrei num trem da Central um rapaz aqui do bairro, que eu conheço de vista e de chapéu. Cumprimentou-me, sentou-se ao pé de mim, falou da lua e dos ministros, e acabou recitando-me versos.</p>
+          </div>
+        </div>
+
+        <div class="panel panel-bot" style="top:172px;bottom:0;overflow:hidden">
+          <div class="ptitle">
+            <b>Tipografia &amp; leitura</b>
+            <span class="val" style="font-size:10px;color:var(--txt-3)">PERFIL 02 · NOITE</span>
+          </div>
+
+          <!-- família -->
+          <div class="grp">
+            <div class="gh"><div class="lab">Família</div><div class="v">IBM Plex Serif <s>· 400</s></div></div>
+            <div class="faces">
+              <div class="on"><i class="f-serif">Aa</i><span>Plex Serif</span></div>
+              <div><i class="f-sans">Aa</i><span>Plex Sans</span></div>
+              <div><i class="f-mono">Aa</i><span>Plex Mono</span></div>
+              <div><i class="f-a11y">Aa</i><span>Atkinson</span></div>
+            </div>
+          </div>
+
+          <!-- corpo -->
+          <div class="grp">
+            <div class="gh"><div class="lab">Corpo</div><div class="v">14,6 <s>px</s></div></div>
+            <div class="slid">
+              <div class="sc"></div><div class="sc maj"></div>
+              <div class="tr"><i style="width:41%"></i></div>
+              <div class="kn" style="left:41%"></div>
+              <div class="ends"><span>12</span><span>28</span></div>
+            </div>
+          </div>
+
+          <!-- entrelinha -->
+          <div class="grp">
+            <div class="gh"><div class="lab">Entrelinha</div><div class="v">1,62 <s>em</s></div></div>
+            <div class="slid">
+              <div class="sc"></div><div class="sc maj"></div>
+              <div class="tr"><i style="width:53%"></i></div>
+              <div class="kn" style="left:53%"></div>
+              <div class="ends"><span>1,20</span><span>2,00</span></div>
+            </div>
+          </div>
+
+          <!-- margens + alinhamento -->
+          <div class="grp" style="display:grid;grid-template-columns:1.35fr 1fr;gap:14px">
+            <div>
+              <div class="gh"><div class="lab">Margens</div><div class="v">II</div></div>
+              <div class="seg">
+                <div><i class="marg m1"></i>I</div>
+                <div class="on"><i class="marg m2"></i>II</div>
+                <div><i class="marg m3"></i>III</div>
+                <div><i class="marg m4"></i>IV</div>
+              </div>
+            </div>
+            <div>
+              <div class="gh"><div class="lab">Alinhar</div><div class="v">Esq.</div></div>
+              <div class="seg">
+                <div class="on">ESQ</div>
+                <div>JUST</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- temas -->
+          <div class="grp">
+            <div class="gh"><div class="lab">Tema de leitura</div><div class="v">Sépia</div></div>
+            <div class="themes">
+              <div>
+                <div class="sw t-claro"><b></b><b></b><b></b></div>
+                <p>Claro</p>
+              </div>
+              <div class="on">
+                <div class="sw t-sepia"><b></b><b></b><b></b></div>
+                <p>Sépia</p>
+              </div>
+              <div>
+                <div class="sw t-escuro"><b></b><b></b><b></b></div>
+                <p>Escuro</p>
+              </div>
+              <div>
+                <div class="sw t-oled"><b></b><b></b><b></b></div>
+                <p>OLED</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- temperatura de luz -->
+          <div class="grp">
+            <div class="gh">
+              <div class="lab">Temperatura de luz</div>
+              <div class="v">Auto · pôr do sol 17:48</div>
+            </div>
+            <div class="kelvin">
+              <div class="band"></div>
+              <div class="kn" style="left:66%"></div>
+              <div class="e l">6 500 K · FRIA</div>
+              <div class="e r">QUENTE · 2 700 K</div>
+            </div>
+          </div>
+
+          <!-- brilho -->
+          <div class="grp">
+            <div class="gh"><div class="lab">Brilho</div><div class="v">62 <s>%</s> · ultra-dim ativo</div></div>
+            <div class="slid" style="height:22px">
+              <div class="sc"></div>
+              <div class="tr"><i style="width:62%"></i></div>
+              <div class="kn" style="left:62%"></div>
+            </div>
+          </div>
+
+          <!-- chave sensorial -->
+          <div class="sense">
+            <div class="cp">
+              <b>Retorno sensorial</b>
+              <p>Desligado: sem clique de página, sem háptico, sem animação de virada. Silêncio absoluto.</p>
+            </div>
+            <div class="sw2"><i></i><span>OFF</span></div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════
+         ESTADO 04 — SELEÇÃO + DICIONÁRIO
+         ══════════════════════════════════════════════════ -->
+    <div class="mk-slot">
+      <div class="mk-label">
+        <div class="n">04 / 04</div>
+        <h2>Seleção &amp; dicionário</h2>
+        <p>Quatro cores de destaque, anotar, copiar. O dicionário sobe como painel sobre o texto — nunca leva o leitor para fora do livro.</p>
+        <div class="mk-dim"><span>seleção: “Casmurro”</span><i></i><span>6 ocorrências</span></div>
+      </div>
+
+      <div class="ph"><div class="scr">
+        <div class="pg t-claro">
+          <div class="warm"></div>
+          <div class="sb"><span>21:22</span><span class="bat"><span>66%</span><span class="cell"></span></span></div>
+
+          <div class="body" style="padding-top:26px">
+            <p class="fala">— Continue, disse eu acordando.</p>
+            <p class="fala">— Já acabei, murmurou ele.</p>
+            <p class="fala" style="margin-bottom:14px">— São muito bonitos.</p>
+            <p>Vi-lhe fazer um gesto para tirá-los outra vez do bolso, mas não passou do gesto; estava <span class="trace">amuado</span>. No dia seguinte entrou a dizer de mim nomes feios, e acabou alcunhando-me Dom <span class="sel">Casmurro</span>. Os vizinhos, que não gostam dos meus hábitos reclusos e calados, deram curso à alcunha, que afinal pegou.</p>
+          </div>
+
+          <!-- alças da seleção -->
+          <div class="handle a" style="left:172px;top:245px;height:20px"></div>
+          <div class="handle b" style="left:249px;top:245px;height:20px"></div>
+
+          <!-- barra de seleção -->
+          <div class="selbar" style="left:16px;right:16px;top:186px">
+            <div class="dot on"><i style="background:var(--h1)"></i></div>
+            <div class="dot"><i style="background:var(--h2)"></i></div>
+            <div class="dot"><i style="background:var(--h3)"></i></div>
+            <div class="dot"><i style="background:var(--h4)"></i></div>
+            <div class="tx">
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M2 12h10M3 9.2 9.6 2.6l1.8 1.8L4.8 11 2.6 11.4z"/></svg>
+              Anotar
+            </div>
+            <div class="tx">
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="2" width="8" height="8"/><path d="M4.6 12H12V4.6"/></svg>
+              Copiar
+            </div>
+            <div class="tx on">
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M2 2.6h4c.9 0 1.6.7 1.6 1.6v7.2c0-.9-.7-1.6-1.6-1.6H2z"/><path d="M12 2.6H8c-.9 0-1.6.7-1.6 1.6v7.2c0-.9.7-1.6 1.6-1.6h4z"/></svg>
+              Verbete
+            </div>
+          </div>
+
+          <!-- painel de dicionário -->
+          <div class="dict" style="height:470px">
+            <div class="grab"><i></i></div>
+            <div class="tabs">
+              <div class="on">Dicionário</div>
+              <div>Traduzir</div>
+              <div>Ocorrências · 6</div>
+            </div>
+            <div class="entry">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px">
+                <div>
+                  <div class="word">casmurro</div>
+                  <div class="phon">cas·mur·ro &nbsp;|&nbsp; /kaʒˈmu.ʁu/</div>
+                </div>
+                <div style="text-align:right">
+                  <div class="lab">Frequência</div>
+                  <div class="val" style="font-size:19px;margin-top:6px">RARA</div>
+                </div>
+              </div>
+              <span class="cls">adj. · s.m.</span>
+
+              <ul class="defs">
+                <li><em>1.</em><span>Que é teimoso, obstinado; que não cede. <s>Ele é casmurro nas suas manias.</s></span></li>
+                <li><em>2.</em><span>Que evita o convívio; calado, reservado, taciturno.</span></li>
+                <li><em>3.</em><span><s>[Antigo]</s> Que vive ensimesmado, em tristeza recolhida.</span></li>
+              </ul>
+              <div class="etym">Origem incerta; frequentemente associada ao latim <i>casa</i> + <i>murus</i> — “casa murada”, o que se fecha entre paredes.</div>
+            </div>
+            <div class="foot">
+              <div class="pri">Salvar como anotação</div>
+              <div class="sec">
+                <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M4.5 2.5h9v13l-4.5-4-4.5 4z"/></svg>
+              </div>
+              <div class="sec">
+                <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M9 3v9M5.5 8.5 9 12l3.5-3.5M3.5 15h11"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════
+         COLUNA DE ESPECIFICAÇÃO
+         ══════════════════════════════════════════════════ -->
+    <aside class="mk-specs">
+      <section>
+        <h3>Tipos</h3>
+        <div class="scaleline"><u style="font-family:var(--serif);font-size:15px">IBM Plex Serif</u><em>corpo do livro</em></div>
+        <div class="scaleline"><u style="font-size:14px;font-weight:600">IBM Plex Sans</u><em>chrome / rótulos</em></div>
+        <div class="scaleline"><u style="font-family:var(--mono);font-size:13px">IBM Plex Mono</u><em>toda medida</em></div>
+        <div class="scaleline"><u style="font-family:var(--a11y);font-size:14px">Atkinson Hyperlegible</u><em>opção a11y</em></div>
+        <div class="kv" style="margin-top:10px"><span>Numerais</span><b>tabular-nums</b></div>
+        <div class="kv"><span>Rótulo</span><b>8,5 px / .22 em</b></div>
+        <div class="kv"><span>Escala</span><b>8·9·10·12·14·17·25·34</b></div>
+      </section>
+
+      <section>
+        <h3>Sinal 001</h3>
+        <div class="chip"><i style="background:var(--sig)"></i><span>#FF6B1A</span><em>estado atual</em></div>
+        <p class="note" style="border-left-color:var(--hair-2);margin-top:8px;color:var(--txt-3)">
+          Uma única cor de acento na interface inteira. Ela só responde a uma pergunta: <i>onde eu estou agora</i>. Nunca decora, nunca celebra.
+        </p>
+      </section>
+
+      <section>
+        <h3>Destaques</h3>
+        <div class="chip"><i style="background:var(--h1)"></i><span>#F2B705</span><em>âmbar</em></div>
+        <div class="chip"><i style="background:var(--h2)"></i><span>#3AA0C4</span><em>ciano</em></div>
+        <div class="chip"><i style="background:var(--h3)"></i><span>#C8447E</span><em>magenta</em></div>
+        <div class="chip"><i style="background:var(--h4)"></i><span>#5FAE6B</span><em>verde</em></div>
+      </section>
+
+      <section>
+        <h3>Temas</h3>
+        <div class="chip"><i style="background:var(--pg-claro);outline:1px solid var(--hair-2)"></i><span>#F5F2EA</span><em>claro</em></div>
+        <div class="chip"><i style="background:var(--pg-sepia)"></i><span>#EDE0C8</span><em>sépia</em></div>
+        <div class="chip"><i style="background:var(--pg-escuro)"></i><span>#17191C</span><em>escuro</em></div>
+        <div class="chip"><i style="background:var(--pg-oled);outline:1px solid var(--hair-2)"></i><span>#000000</span><em>OLED</em></div>
+      </section>
+
+      <section>
+        <h3>Estado do exemplar</h3>
+        <div class="kv"><span>Obra</span><b>Dom Casmurro</b></div>
+        <div class="kv"><span>Página</span><b>014 / 248</b></div>
+        <div class="kv"><span>Progresso</span><b>5,6 %</b></div>
+        <div class="kv"><span>Capítulo</span><b>I / 148 · 68 %</b></div>
+        <div class="kv"><span>Destaques</span><b>6</b></div>
+        <div class="kv"><span>Anotações</span><b>3</b></div>
+        <div class="kv"><span>Marcadores</span><b>2</b></div>
+        <div class="kv"><span>Sequência</span><b>18 dias</b></div>
+      </section>
+
+      <section>
+        <h3>Divergência declarada</h3>
+        <p class="note">
+          <b>RN-02.13 — parcial</b>
+          O modo imersivo é mantido: sem barra de navegação, sem badge, controles ocultos em 3&nbsp;s. Mas o contador não desaparece por inteiro — permanece um rail de 3&nbsp;px na borda inferior com o número da página a 34&nbsp;% de opacidade. Um instrumento que esconde a medição deixa de ser instrumento; a régua fica, o painel é que se recolhe.
+        </p>
+      </section>
+
+      <section>
+        <h3>Não existe aqui</h3>
+        <div class="kv"><span>Páginas por minuto</span><b>—</b></div>
+        <div class="kv"><span>Tempo restante estimado</span><b>—</b></div>
+        <div class="kv"><span>Ranking de velocidade</span><b>—</b></div>
+        <p class="note" style="border-left-color:var(--hair-2);margin-top:10px;color:var(--txt-3)">
+          O painel mede permanência e constância — sessão, dia, sequência. Nunca ritmo.
+        </p>
+      </section>
+    </aside>
+
+  </div>
+
+  <div class="mk-foot">
+    <span>BookWorm · Leitor · MK-01 Instrumento</span>
+    <span>Trecho: Machado de Assis, Dom Casmurro, Cap. I — domínio público</span>
+    <span>400 × 860 dp · 4 estados</span>
+  </div>
+
+</div>
+</body>
+</html>

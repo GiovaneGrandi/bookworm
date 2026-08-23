@@ -1,0 +1,962 @@
+<title>Uma Voz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,700&family=Alegreya+SC:ital,wght@0,400;0,500;0,700;0,800;0,900;1,400&family=Caveat:wght@400;500;600;700&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=EB+Garamond:ital,wght@0,400;1,400&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════════════
+   BookWorm · Sistema C — UMA VOZ
+   Tese: contraste vem de corpo / peso / versalete / tracking — nunca
+   de troca de face. Alegreya (texto) + Alegreya SC (versalete real,
+   não sintético) + Caveat (só a mão). Nada mais.
+   Cores e mecânica de §3/§4 de direcao-visual.md — não são deste
+   sistema, são do produto. A tipografia, sim, é deste sistema.
+   Tudo escopado sob .mk-tipo-c.
+   ══════════════════════════════════════════════════════════════════ */
+
+html, body { margin:0; padding:0; background:#1e2320; }
+
+.mk-tipo-c {
+  --tinta:        #241f19;
+  --tinta-70:     rgba(36,31,25,.72);
+  --tinta-50:     rgba(36,31,25,.52);
+  --tinta-32:     rgba(36,31,25,.34);
+  --tinta-16:     rgba(36,31,25,.16);
+  --papel:        #f3ead9;
+  --papel-fundo:  #efe3ce;
+  --grafite:      #6f6858;
+  --verde-tinta:  #2f5d3a;
+  --verde-70:     rgba(47,93,58,.78);
+  --verde-50:     rgba(47,93,58,.5);
+  --ambar:        #e6c15c;
+  --mesa:         #1e2320;
+
+  --pig-ambar:  #e7c25e;
+  --pig-oliva:  #a8b07a;
+  --pig-tinta:  #93a9c0;
+  --pig-carmim: #d79aa2;
+
+  /* ── a voz única: duas famílias, uma tese ── */
+  --voz:    'Alegreya', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+  --voz-sc: 'Alegreya SC', 'Iowan Old Style', Georgia, serif;
+  --lapis:  'Caveat', 'Segoe Script', 'Bradley Hand', cursive;
+
+  /* ── as 5 faces do painel do leitor (decisão separada, ver §painel) ── */
+  --leit-alegreya:  var(--voz);
+  --leit-spectral:  'Spectral', Georgia, serif;
+  --leit-garamond:  'EB Garamond', Garamond, Georgia, serif;
+  --leit-sans:      'Public Sans', 'Segoe UI', Arial, sans-serif;
+  --leit-atkinson:  'Atkinson Hyperlegible', Arial, sans-serif;
+
+  font-family: var(--voz);
+  color: var(--tinta);
+  background-color: var(--mesa);
+  background-image:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.020) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(0deg,  rgba(0,0,0,.16) 0 1px, transparent 1px 3px),
+    radial-gradient(120% 90% at 50% -10%, rgba(190,170,130,.14), transparent 60%),
+    radial-gradient(140% 120% at 50% 110%, rgba(0,0,0,.55), transparent 65%);
+  min-height: 100vh;
+  padding-bottom: 8px;
+  -webkit-font-smoothing: antialiased;
+}
+.mk-tipo-c *, .mk-tipo-c *::before, .mk-tipo-c *::after { box-sizing: border-box; }
+.mk-tipo-c p, .mk-tipo-c h1, .mk-tipo-c h2, .mk-tipo-c h3, .mk-tipo-c figure { margin:0; }
+.mk-tipo-c b, .mk-tipo-c strong { font-weight:700; }
+.mk-tipo-c em, .mk-tipo-c i { font-style: italic; }
+.mk-tipo-c ::selection { background: rgba(230,193,92,.4); }
+
+/* pequenas figuras — old-style por padrão da família (Alegreya) */
+.mk-tipo-c .tc-onum { font-variant-numeric: oldstyle-nums proportional-nums; }
+.mk-tipo-c .tc-lnum { font-variant-numeric: lining-nums tabular-nums; }
+
+/* versalete verdadeiro: outra face da família, não fake CSS.
+   O texto entra em minúsculas e a própria Alegreya SC o desenha
+   como caixa-alta pequena — por isso o text-transform:lowercase
+   aqui não é decoração, é o mecanismo. */
+.mk-tipo-c .tc-sc {
+  font-family: var(--voz-sc);
+  text-transform: lowercase;
+  font-style: normal;
+}
+
+/* ══ cabeça ══════════════════════════════════════════════════════ */
+.mk-tipo-c .tc-cabeca { position:relative; max-width:1280px; margin:0 auto; padding:56px 48px 30px; }
+.mk-tipo-c .tc-carimbo-prova {
+  position:absolute; top:46px; right:48px; width:148px; height:92px;
+  border:2px solid rgba(84,140,96,.55); border-radius:50%;
+  box-shadow: inset 0 0 0 3px rgba(84,140,96,.16);
+  transform: rotate(-8deg);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+  font-family: var(--voz-sc); color: rgba(84,140,96,.8); text-align:center; opacity:.9;
+}
+.tc-carimbo-prova b { font-family: var(--voz-sc); font-size:12.5px; letter-spacing:.1em; }
+.tc-carimbo-prova span { font-size:7.5px; letter-spacing:.18em; }
+.tc-carimbo-prova hr { width:58px; border:0; border-top:1px solid rgba(84,140,96,.45); margin:2px 0; }
+
+.tc-kicker { font-family: var(--voz-sc); text-transform:lowercase; font-size:11px; letter-spacing:.28em; color: rgba(230,193,92,.9); }
+.tc-h1 { font-family: var(--voz); font-weight:300; font-size:48px; letter-spacing:.01em; line-height:1.08; color:#f0e7d2; margin-top:10px; max-width:20ch; text-wrap:balance; }
+.tc-h1 em { font-style:italic; font-weight:400; color:#c9a86a; }
+.tc-tese {
+  font-family: var(--voz); font-style:italic; font-weight:400; font-size:19px; line-height:1.6;
+  color: rgba(222,212,189,.86); max-width:66ch; margin-top:18px;
+}
+.tc-tese b { font-style:normal; font-weight:700; color:#e6c15c; }
+.tc-linha { height:1px; margin:22px 0 20px; background: linear-gradient(90deg, rgba(222,212,189,.5), rgba(222,212,189,.06) 78%, transparent); }
+.tc-nota { font-family: var(--voz-sc); text-transform:lowercase; font-size:12.5px; letter-spacing:.1em; color: rgba(222,212,189,.5); max-width:70ch; line-height:1.7; }
+
+/* espécime grande de amplitude no cabeçalho */
+.tc-amplitude { display:flex; flex-wrap:wrap; gap:28px; margin-top:34px; align-items:flex-end; }
+.tc-amp-item { display:flex; flex-direction:column; gap:6px; }
+.tc-amp-glifo { font-family: var(--voz); color:#f0e7d2; line-height:1; }
+.tc-amp-rot { font-family: var(--voz-sc); text-transform:lowercase; font-size:9.5px; letter-spacing:.16em; color: rgba(222,212,189,.5); }
+
+/* ══ corpo geral ═════════════════════════════════════════════════ */
+.mk-tipo-c .tc-corpo { max-width:1280px; margin:0 auto; padding:6px 48px 40px; }
+
+.tc-modulo { padding:54px 0 8px; border-top:1px solid rgba(222,212,189,.14); }
+.tc-modulo:first-child { border-top:none; }
+.tc-modulo-cabeca { max-width:900px; margin-bottom:28px; }
+.tc-modulo-kicker { font-family: var(--voz-sc); text-transform:lowercase; font-size:11px; letter-spacing:.26em; color: rgba(230,193,92,.88); }
+.tc-modulo-titulo { font-family: var(--voz); font-weight:400; font-size:30px; color:#f0e7d2; margin-top:8px; }
+.tc-modulo-nota { font-family: var(--voz); font-style:italic; font-size:15.5px; line-height:1.62; color: rgba(222,212,189,.68); margin-top:10px; max-width:76ch; }
+
+/* etiqueta datilografada / legenda de situação — na voz do sistema:
+   Alegreya SC para o número e valores, Alegreya itálico para o racional */
+.tc-etiqueta {
+  position:relative; max-width:640px; margin:0 0 26px;
+  background:#ece2cc;
+  background-image: radial-gradient(rgba(90,70,45,.055) .5px, transparent .6px), linear-gradient(180deg, rgba(255,255,255,.4), rgba(0,0,0,.02));
+  background-size: 7px 7px, 100% 100%;
+  padding:16px 20px 17px;
+  border: 1px solid rgba(124,98,58,.38);
+  box-shadow: 0 10px 22px rgba(48,32,16,.34);
+  transform: rotate(-.6deg);
+}
+.tc-situacao:nth-of-type(even) .tc-etiqueta { transform: rotate(.6deg); }
+.tc-etiqueta::before {
+  content:""; position:absolute; top:-12px; left:34px; width:82px; height:22px;
+  background: linear-gradient(180deg, rgba(226,208,168,.8), rgba(206,184,140,.72));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.28); transform: rotate(-2.4deg); opacity:.92;
+}
+.tc-etiqueta-num { font-family: var(--voz-sc); text-transform:lowercase; font-size:12px; letter-spacing:.22em; color: var(--verde-tinta); }
+.tc-etiqueta-nome { font-family: var(--voz); font-weight:600; font-size:21px; margin-top:4px; color: var(--tinta); }
+.tc-etiqueta-valores { display:flex; flex-wrap:wrap; gap:4px 16px; margin-top:9px; font-family: var(--voz-sc); text-transform:lowercase; font-size:10.5px; letter-spacing:.06em; color: var(--tinta-70); }
+.tc-etiqueta-valores b { font-family: var(--voz); font-weight:700; text-transform:none; color: var(--tinta); }
+.tc-etiqueta-racional { font-family: var(--voz); font-style:italic; font-size:13.5px; font-weight:400; color: var(--tinta-70); margin-top:9px; line-height:1.52; border-top:1px dashed rgba(124,98,58,.35); padding-top:8px; }
+
+.tc-palco { display:flex; flex-wrap:wrap; gap:36px; align-items:flex-start; margin-bottom:16px; }
+
+/* ══ aparelho — moldura Android 393×852 ═════════════════════════ */
+.tc-fone {
+  width:411px; height:870px; padding:9px; border-radius:30px; flex:0 0 auto;
+  background: linear-gradient(160deg, #34322c 0%, #16150f 46%, #2b2922 100%);
+  box-shadow: 0 34px 60px rgba(0,0,0,.6), 0 4px 10px rgba(0,0,0,.5),
+    inset 0 0 0 1px rgba(255,255,255,.075), inset 0 1px 0 rgba(255,255,255,.14);
+  position:relative;
+}
+.tc-tela { position:relative; overflow:hidden; width:393px; height:852px; border-radius:22px; background: var(--papel); }
+.tc-pagina { position:absolute; inset:0; background-color: var(--papel);
+  background-image:
+    radial-gradient(circle at 16% 10%, rgba(255,255,255,.55), transparent 46%),
+    radial-gradient(circle at 86% 82%, rgba(163,130,84,.13), transparent 52%),
+    radial-gradient(rgba(96,74,46,.075) .5px, transparent .6px);
+  background-size: 100% 100%, 100% 100%, 7px 7px;
+  color: var(--tinta);
+}
+.tc-lombada { position:absolute; left:0; top:0; bottom:0; width:28px;
+  background: linear-gradient(90deg, rgba(88,64,36,.24), rgba(88,64,36,.05) 55%, transparent); pointer-events:none; }
+.tc-status { position:absolute; left:30px; right:26px; top:12px; display:flex; justify-content:space-between;
+  font-family: var(--voz-sc); text-transform:lowercase; font-size:10px; letter-spacing:.14em; color: var(--tinta-32); }
+.tc-folio { position:absolute; bottom:22px; font-family: var(--voz); font-size:12px; letter-spacing:.1em; color: var(--tinta-50); }
+.tc-folio--centro { left:0; right:0; text-align:center; }
+
+/* ══ situação 1 — corpo do livro ═══════════════════════════════ */
+.tc-abertura { padding:78px 40px 0 32px; text-align:center; }
+.tc-cap-num { font-family: var(--voz-sc); text-transform:lowercase; font-size:11px; letter-spacing:.3em; color: var(--tinta-50); }
+.tc-cap-nome { font-family: var(--voz); font-style:italic; font-weight:400; font-size:26px; margin-top:8px; color: var(--tinta); }
+.tc-fleuron { margin:14px auto 22px; display:block; }
+
+.tc-corpo-livro { position:absolute; left:32px; right:40px; top:196px; bottom:22px; overflow:hidden;
+  font-size:16px; line-height:27px; font-weight:400; text-align:justify; hyphens:auto; -webkit-hyphens:auto; color: var(--tinta); }
+.tc-par { text-indent:1.15em; margin-bottom:0; }
+.tc-par--semindent { text-indent:0; }
+.tc-fala { text-indent:1.15em; margin-top:.5em; }
+.tc-capitular {
+  float:left; font-family: var(--voz); font-weight:700; font-size:74px; line-height:78px;
+  padding:2px 7px 0 0; color: var(--verde-tinta);
+}
+.tc-versal-abre { font-family: var(--voz-sc); text-transform:lowercase; letter-spacing:.05em; font-weight:500; }
+.tc-grifo {
+  background-image:
+    linear-gradient(180deg, rgba(230,193,92,0) 10%, rgba(230,193,92,.62) 10%, rgba(230,193,92,.70) 90%, rgba(230,193,92,0) 90%),
+    linear-gradient(90deg, rgba(230,193,92,.30), rgba(214,172,66,.12) 40%, rgba(230,193,92,.34));
+  mix-blend-mode: multiply; box-decoration-break: clone; -webkit-box-decoration-break: clone;
+  padding:.04em .16em; border-radius:3px 7px 4px 6px;
+}
+.tc-consulta { border-bottom:1px dashed rgba(111,104,88,.62); padding-bottom:.5px; cursor:default; }
+.tc-selecao { background: rgba(47,93,58,.15); box-shadow: 0 1px 0 rgba(47,93,58,.55); padding:.04em 0; }
+
+/* painel de dicionário sobreposto */
+.tc-dic { position:absolute; left:0; right:0; bottom:0; height:392px; background:#f8f1e2;
+  background-image: radial-gradient(rgba(96,74,46,.06) .5px, transparent .6px), linear-gradient(180deg, rgba(255,255,255,.5), rgba(0,0,0,.015));
+  background-size:7px 7px, 100% 100%;
+  box-shadow: 0 -22px 44px rgba(48,32,16,.34);
+  padding:16px 26px 0 30px;
+  border-top: 1px solid rgba(124,98,58,.4);
+}
+.tc-dic::before { content:""; position:absolute; top:-7px; left:0; right:0; height:8px; background:#f8f1e2;
+  -webkit-mask-image: radial-gradient(circle at 4px 8px, #000 3.5px, transparent 3.7px);
+  mask-image: radial-gradient(circle at 4px 8px, #000 3.5px, transparent 3.7px);
+  -webkit-mask-size:8px 8px; mask-size:8px 8px; -webkit-mask-repeat:repeat-x; mask-repeat:repeat-x; }
+.tc-dic-corrente { display:flex; justify-content:space-between; align-items:baseline;
+  font-family: var(--voz-sc); text-transform:lowercase; font-size:10px; letter-spacing:.16em; color: rgba(36,31,25,.45);
+  border-bottom:1px solid rgba(36,31,25,.32); padding-bottom:6px; }
+.tc-verbete { font-family: var(--voz); font-size:28px; font-weight:700; margin-top:12px; color:#241f19; }
+.tc-verbete sup { font-size:12px; font-weight:400; color: rgba(36,31,25,.5); }
+.tc-fonetica { font-family: var(--voz); font-style:italic; font-size:12.5px; color: rgba(36,31,25,.58); margin-top:4px; }
+.tc-classe { font-family: var(--voz); font-style:italic; font-size:13.5px; color: rgba(36,31,25,.72); margin-top:7px;
+  border-bottom:1px solid rgba(36,31,25,.16); padding-bottom:9px; }
+.tc-acepcoes { margin-top:10px; }
+.tc-acepcao { font-family: var(--voz); font-size:13.5px; line-height:20px; color:#2c261f; padding-left:19px; text-indent:-19px; margin-bottom:6px; }
+.tc-acepcao b { font-weight:700; margin-right:6px; }
+.tc-acepcao em { color: rgba(36,31,25,.6); }
+.tc-etimologia { font-family: var(--voz); font-style:italic; font-size:11.5px; line-height:16px; color: rgba(36,31,25,.6);
+  border-top:1px solid rgba(36,31,25,.16); padding-top:8px; margin-top:2px; }
+.tc-dic-rodape { position:absolute; left:30px; right:26px; bottom:16px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.tc-salvar { font-family: var(--voz-sc); text-transform:lowercase; font-size:11px; letter-spacing:.1em; color:#f4e7d2;
+  background: var(--verde-tinta); padding:9px 14px; border-radius:2px; box-shadow: 0 2px 0 rgba(30,60,38,.9), 0 6px 12px rgba(48,32,16,.22);
+  transform: rotate(-.6deg); }
+
+/* ══ prancha de espécime — vocabulário mw-prancha ═══════════════ */
+.mk-tipo-c .mw-prancha {
+  position:relative; background:#e9ded0;
+  background-image: radial-gradient(rgba(96,74,46,.06) .5px, transparent .6px); background-size:7px 7px;
+  border:1px solid rgba(124,98,58,.3);
+  box-shadow: 0 14px 30px rgba(48,32,16,.3), inset 0 0 0 1px rgba(255,255,255,.2);
+  padding:34px 30px 26px;
+}
+.mk-tipo-c .mw-prancha-mira { position:absolute; width:11px; height:11px; }
+.mk-tipo-c .mw-prancha-mira::before, .mk-tipo-c .mw-prancha-mira::after { content:""; position:absolute; background: rgba(58,46,32,.5); }
+.mk-tipo-c .mw-prancha-mira::before { left:5px; top:0; width:1px; height:11px; }
+.mk-tipo-c .mw-prancha-mira::after { top:5px; left:0; height:1px; width:11px; }
+.mk-tipo-c .mw-prancha-mira.tl { top:8px; left:8px; } .mk-tipo-c .mw-prancha-mira.tr { top:8px; right:8px; }
+.mk-tipo-c .mw-prancha-mira.bl { bottom:8px; left:8px; } .mk-tipo-c .mw-prancha-mira.br { bottom:8px; right:8px; }
+.mk-tipo-c .mw-prancha-dim { font-family: var(--voz-sc); text-transform:lowercase; font-size:10px; letter-spacing:.06em; color: rgba(58,46,32,.6); text-align:center; margin-top:16px; }
+.mk-tipo-c .mw-prancha-dim b { color: var(--verde-tinta); font-family:var(--voz); text-transform:none; font-weight:700; }
+
+/* ══ situação 2 — título e display ══════════════════════════════ */
+.tc-p2 { width:100%; display:flex; flex-direction:column; gap:0; }
+.tc-p2-cap { text-align:center; padding-bottom:22px; border-bottom:1px solid rgba(58,46,32,.2); }
+.tc-p2-num { font-family: var(--voz-sc); text-transform:lowercase; font-size:12px; letter-spacing:.3em; color: rgba(58,46,32,.5); }
+.tc-p2-nome { font-family: var(--voz); font-style:italic; font-weight:400; font-size:38px; color: var(--tinta); margin-top:10px; }
+.tc-p2-marco { display:flex; align-items:baseline; justify-content:center; gap:18px; padding-top:24px; }
+.tc-p2-num-grande { font-family: var(--voz); font-weight:800; font-size:118px; line-height:.86; color: var(--verde-tinta); letter-spacing:-.01em; }
+.tc-p2-marco-legenda { display:flex; flex-direction:column; gap:4px; }
+.tc-p2-marco-rot { font-family: var(--voz-sc); text-transform:lowercase; font-size:12px; letter-spacing:.2em; color: var(--tinta-70); }
+.tc-p2-marco-sub { font-family: var(--voz); font-style:italic; font-size:14px; color: var(--tinta-50); }
+
+/* ══ situação 3 — número e dado ═════════════════════════════════ */
+.tc-p3 { width:100%; display:flex; flex-direction:column; gap:24px; }
+.tc-p3-tabela { width:100%; border-collapse:collapse; }
+.tc-p3-tabela th { font-family: var(--voz-sc); text-transform:lowercase; font-size:10px; letter-spacing:.14em; color: var(--tinta-50);
+  text-align:center; padding-bottom:8px; border-bottom:1px solid var(--tinta); font-weight:400; }
+.tc-p3-tabela td { text-align:center; padding:10px 4px; border-bottom:1px solid rgba(58,46,32,.16); }
+.tc-p3-tabela .tc-lnum { font-family: var(--voz); font-size:19px; font-weight:600; color: var(--tinta); }
+.tc-p3-hoje td { background: rgba(230,193,92,.18); }
+.tc-p3-nota { font-family: var(--voz); font-style:italic; font-size:12.5px; color: var(--tinta-70); text-align:center; line-height:1.5; }
+.tc-p3-regra { display:flex; gap:22px; align-items:flex-start; border-top:1px dashed rgba(124,98,58,.35); padding-top:18px; }
+.tc-p3-regra > div { flex:1; }
+.tc-p3-regra-rot { font-family: var(--voz-sc); text-transform:lowercase; font-size:10px; letter-spacing:.14em; color: var(--verde-tinta); margin-bottom:8px; }
+.tc-p3-frase { font-family: var(--voz); font-size:15px; line-height:1.6; color: var(--tinta); }
+.tc-caixas { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
+.tc-caixa-numeral { min-width:5ch; text-align:center; padding:8px 6px; border:1px solid rgba(124,98,58,.35); background: rgba(255,255,255,.4); }
+.tc-caixa-numeral b { display:block; font-family: var(--voz); font-size:19px; font-weight:700; color: var(--tinta); font-variant-numeric: lining-nums tabular-nums; }
+.tc-caixa-numeral span { display:block; font-family: var(--voz-sc); text-transform:lowercase; font-size:8.5px; letter-spacing:.06em; color: var(--tinta-50); margin-top:3px; }
+
+/* ══ situação 4 — rótulo e chrome ════════════════════════════════ */
+.tc-p4 { width:100%; display:flex; flex-direction:column; gap:22px; }
+.tc-p4-grupo-rot { font-family: var(--voz); font-style:italic; font-size:12.5px; color: var(--tinta-50); margin-bottom:8px; }
+.tc-p4-chips { display:flex; flex-wrap:wrap; gap:8px 10px; }
+.tc-chip { border:1px solid rgba(124,98,58,.35); background: rgba(255,255,255,.42); padding:6px 11px; }
+.tc-chip--sel { border-color: rgba(47,93,58,.7); background: rgba(230,193,92,.16); }
+.tc-chip-txt { font-family: var(--voz-sc); text-transform:lowercase; color: var(--tinta-70); white-space:nowrap; }
+.tc-chip--8 .tc-chip-txt { font-size:8px; letter-spacing:.22em; }
+.tc-chip--9 .tc-chip-txt { font-size:9.5px; letter-spacing:.2em; }
+.tc-p4-veredito { border-top:1px dashed rgba(124,98,58,.4); padding-top:14px; font-family: var(--voz); font-style:italic; font-size:13.5px; line-height:1.55; color: var(--tinta-70); }
+.tc-p4-veredito b { font-style:normal; font-weight:700; color: var(--verde-tinta); }
+
+/* ══ situação 5 — citação compartilhável ════════════════════════ */
+.tc-p5 { width:440px; }
+.tc-p5-card {
+  background: #f8f1e2; background-image: radial-gradient(rgba(96,74,46,.06) .5px, transparent .6px); background-size:7px 7px;
+  border: 1px solid rgba(124,98,58,.42); border-radius: 4px 8px 5px 9px / 6px 4px 7px 5px;
+  box-shadow: 0 18px 40px rgba(28,16,6,.4);
+  padding:36px 32px 30px;
+}
+.tc-p5-kicker { font-family: var(--voz-sc); text-transform:lowercase; font-size:10.5px; letter-spacing:.26em; color: var(--tinta-50); text-align:center; }
+.tc-p5-fio { width:32px; height:1px; background: var(--tinta-32); margin:11px auto 0; }
+.tc-p5-texto { font-family: var(--voz); font-style:italic; font-weight:400; font-size:23px; line-height:34px; color: var(--tinta); margin-top:20px; text-align:left; }
+.tc-p5-atrib { margin-top:26px; padding-top:16px; border-top:1px solid var(--tinta-32); text-align:center; }
+.tc-p5-obra { font-family: var(--voz-sc); text-transform:lowercase; font-size:13.5px; letter-spacing:.16em; color: var(--tinta-70); }
+.tc-p5-autor { font-family: var(--voz); font-size:12.5px; font-style:italic; color: var(--tinta-50); margin-top:4px; }
+
+/* ══ situação 6 — manuscrito ═════════════════════════════════════ */
+.tc-p6 { width:660px; display:flex; gap:34px; align-items:flex-start; flex-wrap:wrap; }
+.tc-p6-pagina { position:relative; width:300px; min-height:200px; background:#f8f1e2;
+  background-image: radial-gradient(rgba(96,74,46,.06) .5px, transparent .6px); background-size:7px 7px;
+  border:1px solid rgba(124,98,58,.35); padding:20px 22px; box-shadow: 0 8px 18px rgba(48,32,16,.2); }
+.tc-p6-texto { font-family: var(--voz); font-size:14.5px; line-height:23px; color: var(--tinta); }
+.tc-p6-marginalia { font-family: var(--lapis); font-size:17px; line-height:20px; color: rgba(80,72,58,.85); transform: rotate(-3.2deg); margin-top:16px; }
+.tc-p6-traco { width:2px; height:44px; background: linear-gradient(180deg, rgba(111,104,88,0), rgba(111,104,88,.6) 14%, rgba(111,104,88,.55) 86%, rgba(111,104,88,0)); margin-left:8px; transform: rotate(2deg); }
+
+.tc-etiqueta-herbario {
+  position:relative; width:260px; background:#ece2cc;
+  background-image: radial-gradient(rgba(90,70,45,.06) .5px, transparent .6px); background-size:7px 7px;
+  border:1px solid rgba(124,98,58,.42); padding:18px 18px 16px;
+  box-shadow: 0 10px 22px rgba(48,32,16,.3);
+  transform: rotate(1.4deg);
+}
+.tc-eh-rot { font-family: var(--voz-sc); text-transform:lowercase; font-size:10px; letter-spacing:.16em; color: var(--verde-tinta); }
+.tc-eh-num { font-family: var(--lapis); font-size:26px; color: var(--tinta); margin-top:8px; line-height:29px; transform: rotate(-1.5deg); }
+.tc-eh-fio { width:100%; height:1px; background: rgba(124,98,58,.3); margin:12px 0; }
+.tc-eh-nome { font-family: var(--voz); font-style:italic; font-size:14px; color: var(--tinta-70); }
+.tc-eh-especime { font-family: var(--lapis); font-size:19px; color: rgba(80,72,58,.85); margin-top:6px; transform: rotate(-1deg); }
+
+/* ══ situação 7 — microcopy e carta ═════════════════════════════ */
+.tc-corpo-notif { position:absolute; inset:0; padding:0; display:flex; flex-direction:column; }
+.tc-notif-topo { padding:26px 26px 18px; border-bottom:1px solid rgba(58,46,32,.16); }
+.tc-notif-data { font-family: var(--voz-sc); text-transform:lowercase; font-size:11px; letter-spacing:.16em; color: var(--tinta-50); }
+.tc-notif-saudacao { font-family: var(--voz); font-style:italic; font-weight:400; font-size:22px; color: var(--tinta); margin-top:6px; }
+.tc-notif-lista { padding:18px 26px; display:flex; flex-direction:column; gap:16px; overflow:auto; flex:1; }
+.tc-notif-item { border-bottom:1px dashed rgba(124,98,58,.28); padding-bottom:14px; }
+.tc-notif-item:last-child { border-bottom:none; }
+.tc-notif-texto { font-family: var(--voz); font-style:italic; font-size:15px; line-height:21px; color: var(--tinta); }
+.tc-notif-escala { font-family: var(--voz-sc); text-transform:lowercase; font-size:8.5px; letter-spacing:.1em; color: var(--tinta-32); margin-top:5px; }
+
+.tc-carta-wrap { padding:30px 30px 26px; }
+.tc-carta-cabeca { font-family: var(--voz-sc); text-transform:lowercase; font-size:10.5px; letter-spacing:.2em; color: var(--verde-tinta); margin-bottom:16px; }
+.tc-carta { font-family: var(--voz); font-size:15.5px; line-height:24px; color: var(--tinta); }
+.tc-carta p { margin-bottom:12px; }
+.tc-carta em { font-style:italic; }
+
+/* ══ situação 8 — lista densa ════════════════════════════════════ */
+.tc-lista { position:absolute; inset:0; padding:26px 0 0; overflow:auto; }
+.tc-lista-cabeca { padding:0 28px 14px; font-family: var(--voz-sc); text-transform:lowercase; font-size:11px; letter-spacing:.2em; color: var(--tinta-50); border-bottom:1px solid var(--tinta); margin:0 28px; }
+.tc-item-lista { display:flex; align-items:center; gap:14px; padding:15px 28px; border-bottom:1px solid rgba(58,46,32,.14); }
+.tc-item-capa { width:38px; height:54px; flex:0 0 auto; background: linear-gradient(160deg, var(--papel-fundo), var(--papel));
+  border:1px solid rgba(124,98,58,.35); display:flex; align-items:center; justify-content:center;
+  font-family: var(--voz); font-size:16px; font-weight:700; color: var(--tinta-50); }
+.tc-item-txt { flex:1; min-width:0; }
+.tc-item-titulo { font-family: var(--voz); font-weight:500; font-size:15px; line-height:19px; color: var(--tinta); }
+.tc-item-autor { font-family: var(--voz-sc); text-transform:lowercase; font-size:10px; letter-spacing:.1em; color: var(--tinta-50); margin-top:3px; }
+.tc-item-estado { font-family: var(--voz-sc); text-transform:lowercase; font-size:9px; letter-spacing:.08em; color: var(--verde-tinta); text-align:right; white-space:nowrap; }
+.tc-item-origem { font-family: var(--voz); font-style:italic; font-size:10.5px; color: var(--tinta-32); text-align:right; margin-top:3px; }
+
+/* ══ ficha técnica ═══════════════════════════════════════════════ */
+.tc-ficha-wrap { overflow-x:auto; }
+.tc-ficha { width:100%; min-width:920px; border-collapse:collapse; }
+.tc-ficha caption { text-align:left; font-family: var(--voz); font-style:italic; font-size:14px; color: rgba(222,212,189,.6); padding-bottom:14px; }
+.tc-ficha th { font-family: var(--voz-sc); text-transform:lowercase; font-size:11px; letter-spacing:.1em; color: rgba(230,193,92,.85);
+  text-align:left; padding:0 14px 10px 0; border-bottom:2px solid rgba(222,212,189,.4); font-weight:400; }
+.tc-ficha td { font-family: var(--voz); font-size:13.5px; color: rgba(222,212,189,.85); padding:11px 14px 11px 0; border-bottom:1px solid rgba(222,212,189,.14); vertical-align:top; }
+.tc-ficha td:first-child, .tc-ficha th:first-child { padding-left:0; }
+.tc-ficha .tc-fc-nome { font-style:italic; color:#f0e7d2; }
+.tc-ficha .tc-fc-mono { font-family: var(--voz-sc); text-transform:lowercase; font-size:11px; letter-spacing:.04em; color: rgba(222,212,189,.6); }
+.tc-ficha tr:nth-child(even) td { background: rgba(255,255,255,.02); }
+
+/* ══ painel de leitura — 5 faces ═════════════════════════════════ */
+.tc-painel-grade { display:grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap:20px; }
+.tc-painel-card { background:#f3ead9; border:1px solid rgba(124,98,58,.32); padding:20px 20px 18px;
+  box-shadow: 0 8px 18px rgba(48,32,16,.22); border-radius: 3px 6px 4px 7px / 5px 3px 6px 4px; }
+.tc-painel-card--sel { border-color: rgba(47,93,58,.7); box-shadow: 0 0 0 2px rgba(47,93,58,.25), 0 8px 18px rgba(48,32,16,.22); }
+.tc-painel-nome { font-family: var(--voz-sc); text-transform:lowercase; font-size:11px; letter-spacing:.14em; color: var(--verde-tinta); display:flex; justify-content:space-between; }
+.tc-painel-selo { font-family: var(--voz); font-style:italic; font-size:10px; color: var(--tinta-50); }
+.tc-painel-texto { font-size:15.5px; line-height:25px; color: var(--tinta); margin-top:11px; }
+.tc-painel-legenda { font-family: var(--voz-sc); text-transform:lowercase; font-size:9.5px; letter-spacing:.06em; color: var(--tinta-50); margin-top:11px; border-top:1px dashed rgba(124,98,58,.3); padding-top:8px; }
+
+/* ══ prova de estresse ═══════════════════════════════════════════ */
+.tc-estresse-grade { display:grid; grid-template-columns: 1fr 1fr; gap:24px; }
+.tc-estresse-card { background:#f3ead9; border:1px solid rgba(124,98,58,.32); padding:22px 24px; box-shadow: 0 8px 18px rgba(48,32,16,.2); }
+.tc-estresse-rot { font-family: var(--voz-sc); text-transform:lowercase; font-size:10.5px; letter-spacing:.16em; color: var(--verde-tinta); margin-bottom:10px; }
+.tc-estresse-texto { text-align:justify; hyphens:auto; color: var(--tinta); }
+.tc-estresse-veredito { font-family: var(--voz); font-style:italic; font-size:12.5px; color: var(--tinta-70); margin-top:12px; border-top:1px dashed rgba(124,98,58,.3); padding-top:10px; line-height:1.5; }
+.tc-estresse-full { grid-column: 1 / -1; }
+
+@media (max-width:1000px) {
+  .tc-estresse-grade { grid-template-columns:1fr; }
+}
+
+/* ══ colofão ═══════════════════════════════════════════════════ */
+.tc-colofao { max-width:1280px; margin:0 auto; padding:34px 48px 64px; color: rgba(222,212,189,.5);
+  font-family: var(--voz); font-size:14px; line-height:1.85; border-top:1px solid rgba(222,212,189,.14); padding-top:30px; }
+.tc-colofao h3 { font-family: var(--voz-sc); text-transform:lowercase; font-size:13px; letter-spacing:.18em; color: rgba(230,193,92,.85); margin-bottom:14px; }
+.tc-colofao p { margin-bottom:14px; max-width:84ch; }
+.tc-colofao b { color:#f0e7d2; font-weight:700; }
+.tc-colofao em { font-style:italic; color: rgba(230,193,92,.9); }
+.tc-colofao ul { margin:0 0 14px; padding-left:20px; max-width:84ch; }
+.tc-colofao li { margin-bottom:8px; }
+
+@media (max-width:900px) {
+  .tc-cabeca, .tc-corpo, .tc-colofao { padding-left:22px; padding-right:22px; }
+  .tc-carimbo-prova { display:none; }
+  .tc-fone { width:100%; max-width:411px; }
+}
+</style>
+
+<div class="mk-tipo-c">
+
+  <!-- ══════════════════════════ CABEÇA ══════════════════════════ -->
+  <header class="tc-cabeca">
+    <div class="tc-carimbo-prova"><b>prova</b><hr><span>não distribuir</span></div>
+    <div class="tc-kicker">sistema tipográfico C · comparativo de vozes</div>
+    <h1 class="tc-h1">Uma voz <em>— Alegreya, sozinha</em></h1>
+    <p class="tc-tese">O contraste vem de <b>corpo, peso, versalete e tracking</b> — nunca de trocar de fonte. Uma família só, trabalhada a fundo: Alegreya para tudo que se diz, Alegreya SC para o versalete de verdade, Caveat só para o que é escrito à mão. Se a camada de dados do produto — proibida de virar gráfico pela regra 9 — se sustenta numa voz só, os outros sistemas estão pagando por diferenciação que não precisavam.</p>
+    <div class="tc-linha"></div>
+    <p class="tc-nota">amplitude da família — peso, versalete, itálico e as duas famílias de algarismo</p>
+
+    <div class="tc-amplitude">
+      <div class="tc-amp-item"><div class="tc-amp-glifo" style="font-weight:300;font-size:52px;">Aa</div><div class="tc-amp-rot">alegreya 300</div></div>
+      <div class="tc-amp-item"><div class="tc-amp-glifo" style="font-weight:400;font-size:52px;">Aa</div><div class="tc-amp-rot">alegreya 400</div></div>
+      <div class="tc-amp-item"><div class="tc-amp-glifo" style="font-weight:700;font-size:52px;">Aa</div><div class="tc-amp-rot">alegreya 700</div></div>
+      <div class="tc-amp-item"><div class="tc-amp-glifo" style="font-weight:900;font-size:52px;">Aa</div><div class="tc-amp-rot">alegreya 900</div></div>
+      <div class="tc-amp-item"><div class="tc-amp-glifo" style="font-style:italic;font-weight:400;font-size:52px;">Aa</div><div class="tc-amp-rot">itálico</div></div>
+      <div class="tc-amp-item"><div class="tc-amp-glifo" style="font-family:var(--voz-sc);text-transform:lowercase;font-size:44px;">Casmurro</div><div class="tc-amp-rot">alegreya sc — versalete real</div></div>
+      <div class="tc-amp-item"><div class="tc-amp-glifo tc-onum" style="font-size:48px;">1234567890</div><div class="tc-amp-rot">algarismo old-style (onum)</div></div>
+      <div class="tc-amp-item"><div class="tc-amp-glifo tc-lnum" style="font-size:48px;">1234567890</div><div class="tc-amp-rot">algarismo lining + tabular</div></div>
+      <div class="tc-amp-item"><div class="tc-amp-glifo" style="font-family:var(--lapis);font-size:52px;">a mão</div><div class="tc-amp-rot">caveat — só o manuscrito</div></div>
+    </div>
+  </header>
+
+  <div class="tc-corpo">
+
+    <!-- ═══════════════ SITUAÇÃO 1 — TEXTO CORRIDO ═══════════════ -->
+    <section class="tc-modulo tc-situacao">
+      <div class="tc-modulo-cabeca">
+        <div class="tc-modulo-kicker">situação 1</div>
+        <h2 class="tc-modulo-titulo">Texto corrido do livro</h2>
+        <p class="tc-modulo-nota">Justificado, hifenizado, com capitular, versalete de abertura e itálico. O painel de dicionário sobe sobre a página — nunca sai do leitor — e a palavra já consultada carrega o sublinhado tênue de <b style="font-style:normal;color:#e6c15c;">RN-02.17d</b>.</p>
+      </div>
+
+      <div class="tc-etiqueta">
+        <div class="tc-etiqueta-num">situação i</div>
+        <div class="tc-etiqueta-nome">Leitura com consulta</div>
+        <div class="tc-etiqueta-valores"><span>Corpo <b>16px</b></span><span>Entrelinha <b>27px</b></span><span>Capitular <b>74px</b></span></div>
+        <p class="tc-etiqueta-racional">O capitular é a mesma Alegreya em 700 — sem face de display, o peso e o tamanho fazem o trabalho de abrir capítulo.</p>
+      </div>
+
+      <div class="tc-palco">
+        <div class="tc-fone">
+          <div class="tc-tela">
+            <div class="tc-pagina">
+              <div class="tc-lombada"></div>
+              <div class="tc-status"><span>21:47</span><span>78%</span></div>
+
+              <div class="tc-abertura">
+                <div class="tc-cap-num">capítulo primeiro</div>
+                <div class="tc-cap-nome">Do título</div>
+                <svg class="tc-fleuron" width="112" height="9" viewBox="0 0 118 9" aria-hidden="true">
+                  <path d="M2 4.5h44M72 4.5h44" stroke="rgba(36,31,25,.32)" stroke-width="1"/>
+                  <path d="M59 .8 63.4 4.5 59 8.2 54.6 4.5Z" fill="rgba(47,93,58,.55)"/>
+                </svg>
+              </div>
+
+              <div class="tc-corpo-livro">
+                <p class="tc-par tc-par--semindent"><span class="tc-capitular">U</span><span class="tc-versal-abre">ma noite destas,</span> vindo da cidade para o Engenho Novo, encontrei num trem da Central um rapaz aqui do bairro, que eu conheço de vista e de chapéu. Cumprimentou-me, sentou-se ao pé de mim, falou da lua e dos ministros, e acabou recitando-me versos. <span class="tc-grifo">A viagem era curta, e os versos pode ser que não fossem inteiramente maus.</span> Sucedeu, porém, que, como eu estava cansado, fechei os olhos três ou quatro vezes; tanto bastou para que ele interrompesse a leitura e metesse os versos no bolso.</p>
+                <p class="tc-par tc-fala">— Continue, disse eu acordando.</p>
+                <p class="tc-par tc-fala">— Já acabei, murmurou ele.</p>
+                <p class="tc-par tc-fala">— São muito bonitos.</p>
+                <p class="tc-par">Vi-lhe fazer um gesto para tirá-los outra vez do bolso, mas não passou do gesto; estava <span class="tc-consulta">amuado</span>. No dia seguinte entrou a dizer de mim nomes feios, e acabou <span class="tc-selecao">alcunhando-me Dom Casmurro</span>.</p>
+              </div>
+
+              <!-- painel de dicionário sobreposto -->
+              <div class="tc-dic">
+                <div class="tc-dic-corrente"><span>dicionário · sobre a página</span><span>fol. 31</span></div>
+                <div class="tc-verbete">cas·mur·ro<sup>1</sup></div>
+                <div class="tc-fonetica">[kaz.ˈmu.ʁu]</div>
+                <div class="tc-classe">adjetivo e substantivo masculino</div>
+                <div class="tc-acepcoes">
+                  <p class="tc-acepcao"><b>1.</b> Que ou aquele que é teimoso, obstinado; cabeçudo.</p>
+                  <p class="tc-acepcao"><b>2.</b> Ensimesmado, calado, avesso ao convívio; taciturno. <em>“hábitos reclusos e calados”</em></p>
+                  <p class="tc-acepcao"><b>3.</b> <em>Bras.</em> Sorumbático, de humor melancólico e fechado.</p>
+                </div>
+                <p class="tc-etimologia">Etim. controversa; o narrador adverte que o apelido não veio do dicionário, mas dos vizinhos.</p>
+                <div class="tc-dic-rodape">
+                  <span class="tc-salvar">salvar como anotação</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════ SITUAÇÃO 2 — TÍTULO E DISPLAY ═══════════════ -->
+    <section class="tc-modulo tc-situacao">
+      <div class="tc-modulo-cabeca">
+        <div class="tc-modulo-kicker">situação 2</div>
+        <h2 class="tc-modulo-titulo">Título e display</h2>
+        <p class="tc-modulo-nota">Abertura de capítulo com fleurão e capitular; o número grande de celebração — sem face de display própria, o contraste vem só de peso e corpo, dentro da mesma Alegreya.</p>
+      </div>
+
+      <div class="tc-etiqueta">
+        <div class="tc-etiqueta-num">situação ii</div>
+        <div class="tc-etiqueta-nome">Título &amp; marco</div>
+        <div class="tc-etiqueta-valores"><span>Título <b>38px / 400 it.</b></span><span>Marco <b>118px / 800</b></span></div>
+        <p class="tc-etiqueta-racional">O número de marco é Alegreya 800 a 118px contra o título Alegreya 400 itálico a 38px — a mesma família rendendo um cartaz e uma lauda, lado a lado, sem precisar de terceira face.</p>
+      </div>
+
+      <div class="tc-palco">
+        <div class="mw-prancha" style="width:640px;">
+          <div class="mw-prancha-mira tl"></div><div class="mw-prancha-mira tr"></div>
+          <div class="mw-prancha-mira bl"></div><div class="mw-prancha-mira br"></div>
+          <div class="tc-p2">
+            <div class="tc-p2-cap">
+              <div class="tc-p2-num">capítulo primeiro</div>
+              <div class="tc-p2-nome">Do título</div>
+            </div>
+            <div class="tc-p2-marco">
+              <div class="tc-p2-num-grande tc-lnum">100</div>
+              <div class="tc-p2-marco-legenda">
+                <div class="tc-p2-marco-rot">dias de leitura</div>
+                <div class="tc-p2-marco-sub">o marco que Marina ainda vai alcançar</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mw-prancha-dim" style="max-width:640px;">título <b>Alegreya 400 itálico · 38px</b> — marco <b>Alegreya 800 · 118px</b> — mesma família, dois pesos, zero fontes novas</div>
+    </section>
+
+    <!-- ═══════════════ SITUAÇÃO 3 — NÚMERO E DADO ═══════════════ -->
+    <section class="tc-modulo tc-situacao">
+      <div class="tc-modulo-cabeca">
+        <div class="tc-modulo-kicker">situação 3</div>
+        <h2 class="tc-modulo-titulo">Número e dado</h2>
+        <p class="tc-modulo-nota">A tabela da semana com algarismos tabulares e lining; o travessão do dia sem sessão precisa ter a mesma largura dos dígitos. Ao lado, o mesmo numeral em old-style dentro de texto corrido — e a regra de quando usar cada um.</p>
+      </div>
+
+      <div class="tc-etiqueta">
+        <div class="tc-etiqueta-num">situação iii</div>
+        <div class="tc-etiqueta-nome">Semana &amp; dignidade</div>
+        <div class="tc-etiqueta-valores"><span>Tabela <b>lnum + tnum</b></span><span>Prosa <b>onum</b></span></div>
+        <p class="tc-etiqueta-racional">O travessão “—” não é um caractere de largura livre aqui: com tabular-nums ativo ele ocupa exatamente 1ch, a mesma caixa de um dígito — por isso a coluna de quarta-feira não move a régua.</p>
+      </div>
+
+      <div class="tc-palco">
+        <div class="mw-prancha" style="width:660px;">
+          <div class="mw-prancha-mira tl"></div><div class="mw-prancha-mira tr"></div>
+          <div class="mw-prancha-mira bl"></div><div class="mw-prancha-mira br"></div>
+          <div class="tc-p3">
+            <table class="tc-p3-tabela">
+              <thead><tr><th>seg</th><th>ter</th><th>qua</th><th>qui</th><th>sex</th><th>sáb</th><th>dom</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td class="tc-lnum">24</td>
+                  <td class="tc-lnum">—</td>
+                  <td class="tc-lnum">31</td>
+                  <td class="tc-lnum">29</td>
+                  <td class="tc-lnum">—</td>
+                  <td class="tc-lnum">38</td>
+                  <td class="tc-lnum tc-p3-hoje">26</td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="tc-p3-nota">semana <span class="tc-lnum">5</span> de <span class="tc-lnum">7</span> dias — minutos ativos por dia, hoje em destaque</p>
+
+            <div class="tc-p3-regra">
+              <div>
+                <div class="tc-p3-regra-rot">na tabela — lnum + tnum</div>
+                <p class="tc-p3-frase">Colunas exigem que cada dígito ocupe a mesma largura. O <span class="tc-lnum">2h14</span> não pode ser mais estreito que o <span class="tc-lnum">127</span> ao lado.</p>
+              </div>
+              <div>
+                <div class="tc-p3-regra-rot">no texto — onum (padrão)</div>
+                <p class="tc-p3-frase">A ofensiva chegou a <span class="tc-onum">23</span> dias; o recorde de Marina segue em <span class="tc-onum">41</span>. Os algarismos com ascendentes e descendentes correm junto da minúscula, sem furar a linha.</p>
+              </div>
+            </div>
+
+            <div>
+              <div class="tc-p3-regra-rot">a caixa do numeral — dignidade nos extremos</div>
+              <div class="tc-caixas">
+                <div class="tc-caixa-numeral"><b>11 min</b><span>sessão curta</span></div>
+                <div class="tc-caixa-numeral"><b>2h14</b><span>sessão longa</span></div>
+                <div class="tc-caixa-numeral"><b>3</b><span>ofensiva nova</span></div>
+                <div class="tc-caixa-numeral"><b>127</b><span>ofensiva longa</span></div>
+                <div class="tc-caixa-numeral"><b>100</b><span>marco</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mw-prancha-dim" style="max-width:660px;">regra: <b>tabela e caixa de dado → lnum+tnum</b> · <b>prosa e citação → onum</b>. Nunca old-style numa coluna; nunca tabular dentro de uma frase</div>
+    </section>
+
+    <!-- ═══════════════ SITUAÇÃO 4 — RÓTULO E CHROME ═══════════════ -->
+    <section class="tc-modulo tc-situacao">
+      <div class="tc-modulo-cabeca">
+        <div class="tc-modulo-kicker">situação 4</div>
+        <h2 class="tc-modulo-titulo">Rótulo e chrome</h2>
+        <p class="tc-modulo-nota">Sem Courier nem sans, todo kicker vira Alegreya SC. É o teste mais duro da tese de uma voz só — e a resposta não é limpa.</p>
+      </div>
+
+      <div class="tc-etiqueta">
+        <div class="tc-etiqueta-num">situação iv</div>
+        <div class="tc-etiqueta-nome">Kickers reais</div>
+        <div class="tc-etiqueta-valores"><span>Testado <b>8px</b></span><span>Produção <b>9,5px</b></span></div>
+        <p class="tc-etiqueta-racional">8px reprovou: a Alegreya SC tem contraste de traço alto demais para sobreviver a esse corpo com nitidez em telas comuns. 9,5px foi o piso onde o versalete volta a se ler sem esforço.</p>
+      </div>
+
+      <div class="tc-palco">
+        <div class="mw-prancha" style="width:660px; justify-content:flex-start;">
+          <div class="mw-prancha-mira tl"></div><div class="mw-prancha-mira tr"></div>
+          <div class="mw-prancha-mira bl"></div><div class="mw-prancha-mira br"></div>
+          <div class="tc-p4">
+            <div>
+              <div class="tc-p4-grupo-rot">testado a 8px, tracking .22em — reprovado</div>
+              <div class="tc-p4-chips">
+                <div class="tc-chip tc-chip--8"><span class="tc-chip-txt">dias seguidos</span></div>
+                <div class="tc-chip tc-chip--8"><span class="tc-chip-txt">min ativos</span></div>
+                <div class="tc-chip tc-chip--8"><span class="tc-chip-txt">leitura registrada</span></div>
+              </div>
+            </div>
+            <div>
+              <div class="tc-p4-grupo-rot">produção, a 9,5px, tracking .2em — no catálogo real</div>
+              <div class="tc-p4-chips">
+                <div class="tc-chip tc-chip--9 tc-chip--sel"><span class="tc-chip-txt">dias seguidos</span></div>
+                <div class="tc-chip tc-chip--9"><span class="tc-chip-txt">min ativos</span></div>
+                <div class="tc-chip tc-chip--9"><span class="tc-chip-txt">páginas canônicas</span></div>
+                <div class="tc-chip tc-chip--9"><span class="tc-chip-txt">leitura consciente</span></div>
+                <div class="tc-chip tc-chip--9"><span class="tc-chip-txt">leitura registrada</span></div>
+                <div class="tc-chip tc-chip--9"><span class="tc-chip-txt">guardados</span></div>
+                <div class="tc-chip tc-chip--9"><span class="tc-chip-txt">recorde 41</span></div>
+                <div class="tc-chip tc-chip--9"><span class="tc-chip-txt">estilo · focado</span></div>
+                <div class="tc-chip tc-chip--9"><span class="tc-chip-txt">lendo agora · 34%</span></div>
+                <div class="tc-chip tc-chip--9"><span class="tc-chip-txt">domínio público</span></div>
+                <div class="tc-chip tc-chip--9"><span class="tc-chip-txt">epub importado</span></div>
+              </div>
+            </div>
+            <p class="tc-p4-veredito"><b>Veredito:</b> o versalete sustenta o chrome, mas não no piso que uma sans ou um mono aguentariam. 9,5px é o menor corpo em que a Alegreya SC ainda lê como rótulo e não como mancha cinza — a ficha técnica assume esse número como mínimo, não os 8px pedidos.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════ SITUAÇÃO 5 — CITAÇÃO COMPARTILHÁVEL ═══════════════ -->
+    <section class="tc-modulo tc-situacao">
+      <div class="tc-modulo-cabeca">
+        <div class="tc-modulo-kicker">situação 5</div>
+        <h2 class="tc-modulo-titulo">Citação compartilhável</h2>
+        <p class="tc-modulo-nota">A peça aprovada como régua de qualidade do catálogo (§6.4 de <em>direcao-visual.md</em>). Sem contraste de família, a separação do resto vem inteira da composição: kicker, fio, itálico maior, atribuição em versalete.</p>
+      </div>
+
+      <div class="tc-etiqueta">
+        <div class="tc-etiqueta-num">situação v</div>
+        <div class="tc-etiqueta-nome">A Metamorfose</div>
+        <div class="tc-etiqueta-valores"><span>Texto <b>23px itálico</b></span><span>Grifo <b>--pig-ambar · multiply</b></span></div>
+        <p class="tc-etiqueta-racional">O grifo usa o pigmento da leitora, não a cor de marca — a mesma regra do produto se aplica aqui mesmo sem barra de ferramentas visível.</p>
+      </div>
+
+      <div class="tc-palco">
+        <div class="tc-p5">
+          <div class="tc-p5-card">
+            <div class="tc-p5-kicker">citação</div>
+            <div class="tc-p5-fio"></div>
+            <p class="tc-p5-texto">Quando certa manhã Gregor Samsa acordou de sonhos intranquilos, <span class="tc-grifo">encontrou-se em sua cama metamorfoseado num inseto monstruoso</span>.</p>
+            <div class="tc-p5-atrib">
+              <div class="tc-p5-obra">a metamorfose</div>
+              <div class="tc-p5-autor">Franz Kafka</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════ SITUAÇÃO 6 — MANUSCRITO ═══════════════ -->
+    <section class="tc-modulo tc-situacao">
+      <div class="tc-modulo-cabeca">
+        <div class="tc-modulo-kicker">situação 6</div>
+        <h2 class="tc-modulo-titulo">Manuscrito</h2>
+        <p class="tc-modulo-nota">Marginália ao lado do grifo e etiqueta de herbário — o único lugar em que a segunda voz, Caveat, aparece. Tudo o mais nesta prancha ainda é Alegreya.</p>
+      </div>
+
+      <div class="tc-etiqueta">
+        <div class="tc-etiqueta-num">situação vi</div>
+        <div class="tc-etiqueta-nome">Marginália &amp; herbário</div>
+        <div class="tc-etiqueta-valores"><span>Caveat <b>17–26px</b></span></div>
+        <p class="tc-etiqueta-racional">A mão nunca carrega dado — só nota e etiqueta. Número, quando aparece perto dela, continua em Alegreya (ver o “N.º 23” abaixo).</p>
+      </div>
+
+      <div class="tc-palco">
+        <div class="mw-prancha tc-p6" style="width:auto;">
+          <div class="mw-prancha-mira tl"></div><div class="mw-prancha-mira tr"></div>
+          <div class="mw-prancha-mira bl"></div><div class="mw-prancha-mira br"></div>
+
+          <div class="tc-p6-pagina">
+            <p class="tc-p6-texto">Vi-lhe fazer um gesto para tirá-los outra vez do bolso, mas não passou do gesto; estava <span class="tc-grifo">amuado</span>.</p>
+            <div class="tc-p6-marginalia">a frase que já é a história inteira</div>
+          </div>
+
+          <div class="tc-etiqueta-herbario">
+            <div class="tc-eh-rot">herbário · espécime <span class="tc-lnum" style="font-family:var(--voz);text-transform:none;color:var(--tinta);">N.º 23</span></div>
+            <div class="tc-eh-especime">o apelido que virou o livro</div>
+            <div class="tc-eh-fio"></div>
+            <div class="tc-eh-nome">em floração</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════ SITUAÇÃO 7 — MICROCOPY E CARTA ═══════════════ -->
+    <section class="tc-modulo tc-situacao">
+      <div class="tc-modulo-cabeca">
+        <div class="tc-modulo-kicker">situação 7</div>
+        <h2 class="tc-modulo-titulo">Microcopy e carta editorial</h2>
+        <p class="tc-modulo-nota">Duas escalas de prosa na mesma voz: a frase única de notificação, em itálico 15px, e o parágrafo corrido da carta de domingo, em regular 15,5px — o mesmo peso emocional, corpos vizinhos.</p>
+      </div>
+
+      <div class="tc-etiqueta">
+        <div class="tc-etiqueta-num">situação vii</div>
+        <div class="tc-etiqueta-nome">Notificação &amp; carta</div>
+        <div class="tc-etiqueta-valores"><span>Notif. <b>15px it.</b></span><span>Carta <b>15,5px / 24px</b></span></div>
+        <p class="tc-etiqueta-racional">A carta é regular, não itálico — o itálico fica reservado para a voz mais íntima da notificação avulsa.</p>
+      </div>
+
+      <div class="tc-palco">
+        <div class="tc-fone">
+          <div class="tc-tela">
+            <div class="tc-pagina">
+              <div class="tc-corpo-notif">
+                <div class="tc-notif-topo">
+                  <div class="tc-notif-data">22 de agosto</div>
+                  <div class="tc-notif-saudacao">Bom domingo, Marina.</div>
+                </div>
+                <div class="tc-notif-lista">
+                  <div class="tc-notif-item"><p class="tc-notif-texto">Este espécime está descansando. As raízes seguem inteiras — é só retomar.</p><div class="tc-notif-escala">dormência</div></div>
+                  <div class="tc-notif-item"><p class="tc-notif-texto">Duas páginas, e já é a segunda vitória do dia: você começou.</p><div class="tc-notif-escala">início de sessão</div></div>
+                  <div class="tc-notif-item"><p class="tc-notif-texto">Continue quando quiser — o marcador guarda o lugar exato onde você parou.</p><div class="tc-notif-escala">retomada</div></div>
+                  <div class="tc-notif-item"><p class="tc-notif-texto">Sessão de imersão: 34 minutos sem levantar os olhos.</p><div class="tc-notif-escala">leitura consciente</div></div>
+                  <div class="tc-notif-item"><p class="tc-notif-texto">18 minutos de foco hoje. Seu jardim agradece.</p><div class="tc-notif-escala">fechamento do dia</div></div>
+                  <div class="tc-notif-item"><p class="tc-notif-texto">Da última vez que você abriu <em>A Metamorfose</em>, foram 21 minutos. Hoje, 26 — e mais tempo em blocos de foco contínuo.</p><div class="tc-notif-escala">comparação de sessão</div></div>
+                  <div class="tc-notif-item"><p class="tc-notif-texto">Comparado só com você: a semana anterior teve 2h34 de leitura.</p><div class="tc-notif-escala">comparação semanal</div></div>
+                  <div class="tc-notif-item"><p class="tc-notif-texto">Seu jardim floresceu cem vezes seguidas. A marca fica guardada — mesmo se um dia a sequência descansar.</p><div class="tc-notif-escala">marco de 100</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tc-fone">
+          <div class="tc-tela">
+            <div class="tc-pagina">
+              <div class="tc-carta-wrap">
+                <div class="tc-carta-cabeca">carta editorial · domingo</div>
+                <div class="tc-carta">
+                  <p>Querida Marina,</p>
+                  <p>esta semana você abriu o livro em cinco dos sete dias — e não foi qualquer leitura: quase meia hora por sessão, quase sempre voltando para <em>A Metamorfose</em>, do jeito de quem não está com pressa de terminar.</p>
+                  <p>Faltam sete dias para o seu próximo marco, os 30. A ofensiva segue em 23, e o recorde de 41 está logo ali, à vista.</p>
+                  <p>Até semana que vem.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════ SITUAÇÃO 8 — LISTA DENSA ═══════════════ -->
+    <section class="tc-modulo tc-situacao">
+      <div class="tc-modulo-cabeca">
+        <div class="tc-modulo-kicker">situação 8</div>
+        <h2 class="tc-modulo-titulo">Lista densa</h2>
+        <p class="tc-modulo-nota">Biblioteca: título, autor, estado e origem disputando pouco espaço. Sem sans para separar autor de título, a separação vem de Alegreya regular contra Alegreya SC — a mesma dupla usada em toda a interface.</p>
+      </div>
+
+      <div class="tc-etiqueta">
+        <div class="tc-etiqueta-num">situação viii</div>
+        <div class="tc-etiqueta-nome">Biblioteca</div>
+        <div class="tc-etiqueta-valores"><span>Título <b>15px / 500</b></span><span>Autor <b>SC 10px</b></span></div>
+        <p class="tc-etiqueta-racional"><em style="font-style:italic;">Memórias Póstumas de Brás Cubas</em> é o teste: não cabe numa linha a 15px em 260px de largura — decidido quebrar em duas antes de truncar, porque truncar título é o único gesto vetado aqui.</p>
+      </div>
+
+      <div class="tc-palco">
+        <div class="tc-fone">
+          <div class="tc-tela">
+            <div class="tc-pagina">
+              <div class="tc-lista">
+                <div class="tc-lista-cabeca">biblioteca · 4 obras</div>
+
+                <div class="tc-item-lista">
+                  <div class="tc-item-capa">D</div>
+                  <div class="tc-item-txt">
+                    <div class="tc-item-titulo">Dom Casmurro</div>
+                    <div class="tc-item-autor">Machado de Assis</div>
+                  </div>
+                  <div>
+                    <div class="tc-item-estado">lendo agora · 34%</div>
+                    <div class="tc-item-origem">domínio público</div>
+                  </div>
+                </div>
+
+                <div class="tc-item-lista">
+                  <div class="tc-item-capa">M</div>
+                  <div class="tc-item-txt">
+                    <div class="tc-item-titulo">Memórias Póstumas de Brás Cubas</div>
+                    <div class="tc-item-autor">Machado de Assis</div>
+                  </div>
+                  <div>
+                    <div class="tc-item-estado">guardados</div>
+                    <div class="tc-item-origem">domínio público</div>
+                  </div>
+                </div>
+
+                <div class="tc-item-lista">
+                  <div class="tc-item-capa">O</div>
+                  <div class="tc-item-txt">
+                    <div class="tc-item-titulo">O Cortiço</div>
+                    <div class="tc-item-autor">Aluísio Azevedo</div>
+                  </div>
+                  <div>
+                    <div class="tc-item-estado">guardados</div>
+                    <div class="tc-item-origem">domínio público</div>
+                  </div>
+                </div>
+
+                <div class="tc-item-lista">
+                  <div class="tc-item-capa">A</div>
+                  <div class="tc-item-txt">
+                    <div class="tc-item-titulo">A Metamorfose</div>
+                    <div class="tc-item-autor">Franz Kafka</div>
+                  </div>
+                  <div>
+                    <div class="tc-item-estado">leitura registrada</div>
+                    <div class="tc-item-origem">epub importado</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════ FICHA TÉCNICA ═══════════════ -->
+    <section class="tc-modulo">
+      <div class="tc-modulo-cabeca">
+        <div class="tc-modulo-kicker">ficha técnica</div>
+        <h2 class="tc-modulo-titulo">A escala completa</h2>
+        <p class="tc-modulo-nota">Sendo um sistema de uma voz, esta tabela é o produto principal: é ela que prova que a diferenciação existe sem uma segunda fonte. Entrelinha sempre em pixels inteiros — <b style="color:#e6c15c;">RN</b> §4.1 de <em>direcao-visual.md</em>.</p>
+      </div>
+
+      <div class="tc-ficha-wrap">
+        <table class="tc-ficha">
+          <caption>índice de usos — variante, corpo, peso, entrelinha, tracking, recursos OpenType</caption>
+          <thead>
+            <tr><th>uso</th><th>variante</th><th>corpo</th><th>peso</th><th>entrelinha</th><th>tracking</th><th>opentype</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="tc-fc-nome">Corpo de leitura, justificado</td><td class="tc-fc-mono">alegreya</td><td>16px</td><td>400</td><td>27px</td><td>0</td><td class="tc-fc-mono">onum</td></tr>
+            <tr><td class="tc-fc-nome">Capitular de abertura</td><td class="tc-fc-mono">alegreya</td><td>74px</td><td>700</td><td>78px</td><td>0</td><td class="tc-fc-mono">—</td></tr>
+            <tr><td class="tc-fc-nome">Versalete de abertura de parágrafo</td><td class="tc-fc-mono">alegreya sc</td><td>16px</td><td>500</td><td>27px</td><td>.05em</td><td class="tc-fc-mono">smcp nativo</td></tr>
+            <tr><td class="tc-fc-nome">Título de capítulo</td><td class="tc-fc-mono">alegreya itálico</td><td>26–38px</td><td>400</td><td>32–44px</td><td>.01em</td><td class="tc-fc-mono">onum</td></tr>
+            <tr><td class="tc-fc-nome">Número de celebração / marco</td><td class="tc-fc-mono">alegreya</td><td>118px</td><td>800</td><td>102px</td><td>-.01em</td><td class="tc-fc-mono">lnum, tnum</td></tr>
+            <tr><td class="tc-fc-nome">Tabela de dado (coluna)</td><td class="tc-fc-mono">alegreya</td><td>19px</td><td>600</td><td>26px</td><td>.02em</td><td class="tc-fc-mono">lnum, tnum</td></tr>
+            <tr><td class="tc-fc-nome">Número em texto corrido</td><td class="tc-fc-mono">alegreya</td><td>15–16px</td><td>400</td><td>24–27px</td><td>0</td><td class="tc-fc-mono">onum</td></tr>
+            <tr><td class="tc-fc-nome">Caixa de dignidade (numeral isolado)</td><td class="tc-fc-mono">alegreya</td><td>19px</td><td>700</td><td>22px</td><td>0</td><td class="tc-fc-mono">lnum, tnum</td></tr>
+            <tr><td class="tc-fc-nome">Kicker / rótulo de chrome</td><td class="tc-fc-mono">alegreya sc</td><td>9,5px <span style="opacity:.6">(8px reprovado)</span></td><td>500</td><td>12px</td><td>.20em</td><td class="tc-fc-mono">smcp nativo</td></tr>
+            <tr><td class="tc-fc-nome">Citação compartilhável</td><td class="tc-fc-mono">alegreya itálico</td><td>23px</td><td>400</td><td>35px</td><td>.003em</td><td class="tc-fc-mono">onum</td></tr>
+            <tr><td class="tc-fc-nome">Atribuição de citação (obra)</td><td class="tc-fc-mono">alegreya sc</td><td>13,5px</td><td>500</td><td>17px</td><td>.16em</td><td class="tc-fc-mono">smcp nativo</td></tr>
+            <tr><td class="tc-fc-nome">Manuscrito / marginália</td><td class="tc-fc-mono">caveat</td><td>17px</td><td>500</td><td>20px</td><td>0</td><td class="tc-fc-mono">—</td></tr>
+            <tr><td class="tc-fc-nome">Manuscrito / etiqueta de herbário</td><td class="tc-fc-mono">caveat</td><td>19–26px</td><td>500–600</td><td>22–30px</td><td>0</td><td class="tc-fc-mono">—</td></tr>
+            <tr><td class="tc-fc-nome">Microcopy / notificação única</td><td class="tc-fc-mono">alegreya itálico</td><td>15px</td><td>400</td><td>21px</td><td>0</td><td class="tc-fc-mono">onum</td></tr>
+            <tr><td class="tc-fc-nome">Carta editorial (parágrafo)</td><td class="tc-fc-mono">alegreya</td><td>15,5px</td><td>400</td><td>24px</td><td>0</td><td class="tc-fc-mono">onum</td></tr>
+            <tr><td class="tc-fc-nome">Lista densa — título</td><td class="tc-fc-mono">alegreya</td><td>15px</td><td>500</td><td>19px</td><td>0</td><td class="tc-fc-mono">onum</td></tr>
+            <tr><td class="tc-fc-nome">Lista densa — autor</td><td class="tc-fc-mono">alegreya sc</td><td>10px</td><td>500</td><td>13px</td><td>.10em</td><td class="tc-fc-mono">smcp nativo</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ═══════════════ PAINEL DE LEITURA ═══════════════ -->
+    <section class="tc-modulo">
+      <div class="tc-modulo-cabeca">
+        <div class="tc-modulo-kicker">painel de leitura</div>
+        <h2 class="tc-modulo-titulo">As faces oferecidas ao leitor</h2>
+        <p class="tc-modulo-nota">Decisão separada da tipografia da marca: o sistema de interface não tem sans, mas quem lê precisa poder escolher uma para o texto do livro. Cinco faces realmente distintas, pré-visualizadas sobre o texto real da obra (<b style="color:#e6c15c;">RN-02.16e</b>) — nenhuma é paga (<b style="color:#e6c15c;">RN-02.16d</b>).</p>
+      </div>
+
+      <div class="tc-painel-grade">
+        <div class="tc-painel-card tc-painel-card--sel">
+          <div class="tc-painel-nome">alegreya <span class="tc-painel-selo">— padrão do sistema</span></div>
+          <p class="tc-painel-texto" style="font-family: var(--leit-alegreya);">Cumprimentou-me, sentou-se ao pé de mim, falou da lua e dos ministros, e acabou recitando-me versos.</p>
+          <div class="tc-painel-legenda">raiz caligráfica · desenhada para literatura</div>
+        </div>
+        <div class="tc-painel-card">
+          <div class="tc-painel-nome">spectral</div>
+          <p class="tc-painel-texto" style="font-family: var(--leit-spectral); font-weight:400;">Cumprimentou-me, sentou-se ao pé de mim, falou da lua e dos ministros, e acabou recitando-me versos.</p>
+          <div class="tc-painel-legenda">transitional · a serif do sistema Papel</div>
+        </div>
+        <div class="tc-painel-card">
+          <div class="tc-painel-nome">eb garamond</div>
+          <p class="tc-painel-texto" style="font-family: var(--leit-garamond);">Cumprimentou-me, sentou-se ao pé de mim, falou da lua e dos ministros, e acabou recitando-me versos.</p>
+          <div class="tc-painel-legenda">old-style clássica · a mais estreita das quatro</div>
+        </div>
+        <div class="tc-painel-card">
+          <div class="tc-painel-nome">public sans <span class="tc-painel-selo">— a sans obrigatória</span></div>
+          <p class="tc-painel-texto" style="font-family: var(--leit-sans);">Cumprimentou-me, sentou-se ao pé de mim, falou da lua e dos ministros, e acabou recitando-me versos.</p>
+          <div class="tc-painel-legenda">humanista, neutra · decisão do leitor, não da marca</div>
+        </div>
+        <div class="tc-painel-card">
+          <div class="tc-painel-nome">atkinson hyperlegible <span class="tc-painel-selo">— alta legibilidade</span></div>
+          <p class="tc-painel-texto" style="font-family: var(--leit-atkinson);">Cumprimentou-me, sentou-se ao pé de mim, falou da lua e dos ministros, e acabou recitando-me versos.</p>
+          <div class="tc-painel-legenda">formas desambiguadas · a lacuna de acessibilidade que nenhuma spec exigia</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════ PROVA DE ESTRESSE ═══════════════ -->
+    <section class="tc-modulo">
+      <div class="tc-modulo-cabeca">
+        <div class="tc-modulo-kicker">prova de estresse</div>
+        <h2 class="tc-modulo-titulo">Os extremos do corpo</h2>
+        <p class="tc-modulo-nota">O mesmo parágrafo a 12pt e a 20pt — os limites do controle de corpo — mais a Atkinson Hyperlegible aplicada ao leitor real. Um sistema de uma voz costuma quebrar nos extremos; aqui está onde.</p>
+      </div>
+
+      <div class="tc-estresse-grade">
+        <div class="tc-estresse-card">
+          <div class="tc-estresse-rot">12pt (16px) — o piso</div>
+          <p class="tc-estresse-texto" style="font-family: var(--voz); font-size:16px; line-height:24px;">Cumprimentou-me, sentou-se ao pé de mim, falou da lua e dos ministros, e acabou recitando-me versos. A viagem era curta, e os versos pode ser que não fossem inteiramente maus.</p>
+          <p class="tc-estresse-veredito">Sustenta. O caráter caligráfico de Alegreya fica discreto neste corpo — lê como uma serif de texto comum, sem chamar atenção para si.</p>
+        </div>
+        <div class="tc-estresse-card">
+          <div class="tc-estresse-rot">20pt (26,7px) — o teto</div>
+          <p class="tc-estresse-texto" style="font-family: var(--voz); font-size:26.7px; line-height:38px;">Cumprimentou-me, sentou-se ao pé de mim, falou da lua e dos ministros, e acabou recitando-me versos.</p>
+          <p class="tc-estresse-veredito">Aqui a tese custa caro: nos ascendentes e nos terminais caligráficos de Alegreya aparecem em pleno relevo, e o texto começa a competir consigo mesmo por atenção — um leitor que sobe o corpo por baixa visão está sendo servido por uma face mais decorativa do que precisaria.</p>
+        </div>
+        <div class="tc-estresse-card tc-estresse-full">
+          <div class="tc-estresse-rot">atkinson hyperlegible aplicada ao leitor real — 17px / 27px</div>
+          <p class="tc-estresse-texto" style="font-family: var(--leit-atkinson); font-size:17px; line-height:27px; max-width:64ch;">Cumprimentou-me, sentou-se ao pé de mim, falou da lua e dos ministros, e acabou recitando-me versos. A viagem era curta, e os versos pode ser que não fossem inteiramente maus. Sucedeu, porém, que, como eu estava cansado, fechei os olhos três ou quatro vezes.</p>
+          <p class="tc-estresse-veredito">É exatamente aqui que a decisão de manter uma sans fora do sistema de marca, mas dentro do painel do leitor, se paga: quem precisa de Atkinson não herda nenhuma das fragilidades de Alegreya nos extremos — troca de família por completo, sem perder o registro de leitura (marcador, fólio, corte) que continua em Alegreya ao redor.</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ══════════════════════════ COLOFÃO ══════════════════════════ -->
+  <footer class="tc-colofao">
+    <h3>colofão</h3>
+    <p>Composto inteiramente em <b>Alegreya</b> — corpo, display, número, rótulo e citação — e <b>Alegreya SC</b> para todo versalete, a mesma família em outra face, nunca <code style="font-family:var(--voz-sc);text-transform:lowercase;">font-variant: small-caps</code> sintético. <b>Caveat</b> aparece só onde o produto já pede uma mão: marginália e etiqueta de herbário. O painel de leitura soma <b>Spectral</b>, <b>EB Garamond</b>, <b>Public Sans</b> e <b>Atkinson Hyperlegible</b> — decisão do leitor sobre o próprio texto, separada da voz da marca.</p>
+
+    <p><b>Onde a tese se sustentou.</b> O corpo de leitura (situação 1) não pediu a alternativa Spectral em nenhum momento — Alegreya tem raiz caligráfica desenhada para literatura e carrega um parágrafo justificado de 16px/27px com a mesma autoridade que qualquer serif de texto dedicada. A citação (situação 5) se separa do corpo só por composição — kicker, fio, itálico maior, atribuição em versalete — sem precisar de uma segunda família, confirmando a aposta central. E a dupla numeral (situação 3) funcionou como o enunciado previa: <em>onum</em> em prosa, <em>lnum tnum</em> em coluna, sem exceção.</p>
+
+    <p><b>Onde ela cedeu.</b> Duas rachaduras, nomeadas:</p>
+    <ul>
+      <li><b>Situação 4 — o rótulo.</b> Versalete a 8px com tracking largo <em>não</em> funcionou: o contraste de traço de Alegreya SC — alto o bastante para dar caráter ao versalete grande — perde nitidez abaixo de ~9,5px em corpo de chrome. A ficha técnica assume 9,5px como piso de produção, não os 8px pedidos. É uma concessão pequena, mas é a única situação em que a tese de "uma voz" produziu um número diferente do que o sistema com mono conseguiria entregar sem esforço.</li>
+      <li><b>Prova de estresse a 20pt.</b> No teto do controle de corpo, o caráter caligráfico de Alegreya deixa de ser discreto e vira decoração — exatamente o público que sobe o corpo por necessidade de legibilidade é quem menos deveria receber uma face mais expressiva. A saída não foi trocar de família (isso quebraria a tese em todo o resto do sistema): foi manter Atkinson Hyperlegible como opção separada no painel do leitor, disponível antes que alguém precise empurrar Alegreya além do que ela aguenta bem.</li>
+    </ul>
+
+    <p><b>Sobre a alternativa Spectral.</b> Não foi necessária. Alegreya sustentou o corpo de leitura em todas as oito situações sem exigir a troca declarada no brief — a única ressalva registrada é de <em>corpo</em> (o kicker a 9,5px, o teto de 20pt), nunca de <em>família</em>. Se este sistema perder a comparação, não vai ser porque a voz falhou em carregar dado — a situação 3 prova que carrega — mas porque quem olha para as quatro faces do Sistema A ou as três do B sente uma variedade que uma voz só, por definição, nunca vai oferecer.</p>
+
+    <p>Cores e mecânica de <em>direcao-visual.md</em> §3–§4: <b>--verde-tinta #2f5d3a</b> como acento sobre papel, os quatro pigmentos de grifo intocados, grão 7×7px, bordas e sombras marrom-quentes, cantos irregulares. Nenhuma superfície pautada nesta peça — na dúvida entre alinhar, interromper e remover (§4.1), a saída padrão foi remover: só o grão de papel, sem pauta, em todas as pranchas e telas.</p>
+  </footer>
+
+</div>

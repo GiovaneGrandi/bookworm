@@ -1,0 +1,1115 @@
+<title>Catálogo Papel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=EB+Garamond:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Caveat:wght@400;600&family=Public+Sans:wght@400;500;600&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════════════════
+   BookWorm · CATÁLOGO DO DESIGN SYSTEM
+   Referência viva de specs/design-system.md. Substitui leitor-papel.html
+   e telas-papel.html nesse papel (RN-DS.19).
+   Identidade fixa (papel sobre mesa verde-escura), não segue o tema do
+   visualizador — mesma convenção dos mockups-irmãos.
+   Escopado inteiramente sob .mk-ds.
+   ══════════════════════════════════════════════════════════════════════ */
+
+.mk-ds {
+  /* ─── CAMADA 1 · PIGMENTOS — nunca lidos por um componente (RN-DS.1) ─── */
+  --tinta:        #241f19;
+  --tinta-70:     rgba(36,31,25,.72);
+  --tinta-50:     rgba(36,31,25,.52);
+  --tinta-32:     rgba(36,31,25,.34);
+  --tinta-16:     rgba(36,31,25,.16);
+  --papel:        #f3ead9;
+  --papel-fundo:  #efe3ce;
+  --grafite:      #6f6858;
+  --verde-tinta:  #2f5d3a;
+  --ambar:        #e6c15c;
+  --mesa:         #1e2320;
+  --pig-ambar:    #e7c25e;
+  --pig-oliva:    #a8b07a;
+  --pig-tinta:    #93a9c0;
+  --pig-carmim:   #d79aa2;
+
+  /* vozes */
+  --serif:    'Spectral', 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  --garamond: 'EB Garamond', 'Spectral', Garamond, Georgia, serif;
+  --mono:     'Courier Prime', 'Courier New', Courier, monospace;
+  --lapis:    'Caveat', 'Segoe Script', 'Bradley Hand', cursive;
+  --leit-sans:      'Public Sans', 'Segoe UI', Arial, sans-serif;
+  --leit-acessivel: 'Atkinson Hyperlegible', Arial, sans-serif;
+
+  /* ─── ESCALA TÔNICA · razão 3, ancorada em 27px (RN-DS.4, RN-DS.5) ─── */
+  --esp-0: 0;    --esp-1: 3px;  --esp-2: 6px;  --esp-3: 9px;  --esp-4: 12px;
+  --esp-5: 18px; --esp-6: 27px; --esp-7: 36px; --esp-8: 54px; --esp-9: 81px;
+
+  /* ─── GEOMETRIA ─── */
+  --raio-nenhum: 0;
+  --raio-minimo: 2px;
+  --raio-irregular-p: 3px 6px 4px 7px / 5px 3px 6px 4px;
+  --raio-irregular-m: 4px 7px 5px 8px / 6px 4px 7px 5px;
+  --raio-circulo: 50%;
+  --gir-plaqueta:   -0.5deg;
+  --gir-rotulo:     -0.7deg;
+  --gir-etiqueta:   -1.6deg;
+  --gir-fita:       -2.4deg;
+  --gir-marginalia: -3.5deg;
+  --gir-carimbo:    -9deg;
+
+  /* ─── MOVIMENTO ─── */
+  --mov-instantaneo: 90ms;
+  --mov-curto:       160ms;
+  --mov-medio:       260ms;
+  --mov-longo:       420ms;
+  --mov-cerimonia:   900ms;
+  --curva-assentar: cubic-bezier(.2,.7,.3,1);
+  --curva-carimbo:  cubic-bezier(.3,1.6,.5,1);
+  --curva-sair:     cubic-bezier(.5,0,.85,.3);
+
+  /* ─── CAMADA 2 · SUPERFÍCIE PADRÃO: a mesa ─── */
+  --sup-fundo:      var(--mesa);
+  --sup-tinta:      #e8dcc4;
+  --sup-tinta-fraca: rgba(232,220,196,.62);
+  --sup-acento:     var(--ambar);
+  --sup-borda:      rgba(232,220,196,.20);
+  --sup-sombra:     0 10px 22px rgba(0,0,0,.45);
+  --sup-sombra-p:   0 2px 6px rgba(0,0,0,.38);
+  --sup-sombra-g:   0 34px 60px rgba(0,0,0,.62);
+
+  background: var(--sup-fundo);
+  color: var(--sup-tinta);
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 27px;
+  padding: var(--esp-8) var(--esp-6) var(--esp-9);
+  -webkit-font-smoothing: antialiased;
+}
+.mk-ds *, .mk-ds *::before, .mk-ds *::after { box-sizing: border-box; }
+
+/* ══ CAMADA 2 · OS MATERIAIS ══════════════════════════════════════════
+   Cada material rebinda os cinco: fundo, tinta, acento, borda, sombra.
+   Nunca um subconjunto (RN-DS.3). Sobre papel a sombra é marrom-quente;
+   sobre superfície escura, neutra profunda (RN-DS.6).            ══════ */
+
+.bw-sup-papel, .bw-sup-papel-fundo, .bw-sup-sepia,
+.bw-sup-kraft, .bw-sup-vegetal {
+  --sup-sombra-p: 0 2px 5px rgba(48,32,16,.22);
+  --sup-sombra:   0 8px 16px rgba(48,32,16,.28);
+  --sup-sombra-g: 0 18px 34px rgba(48,32,16,.34);
+  color: var(--sup-tinta);
+  background-color: var(--sup-fundo);
+  background-image:
+    radial-gradient(circle at 16% 8%, rgba(255,255,255,.5), transparent 46%),
+    radial-gradient(var(--sup-grao) .5px, transparent .6px);
+  background-size: 100% 100%, 7px 7px;
+}
+.bw-sup-papel {
+  --sup-fundo: #f3ead9; --sup-tinta: #241f19;
+  --sup-tinta-fraca: rgba(36,31,25,.72);
+  --sup-acento: #2f5d3a; --sup-borda: rgba(124,98,58,.34);
+  --sup-grao: rgba(96,74,46,.075);
+}
+.bw-sup-papel-fundo {
+  --sup-fundo: #efe3ce; --sup-tinta: #241f19;
+  --sup-tinta-fraca: rgba(36,31,25,.72);
+  --sup-acento: #2f5d3a; --sup-borda: rgba(124,98,58,.36);
+  --sup-grao: rgba(96,74,46,.085);
+}
+.bw-sup-sepia {
+  --sup-fundo: #e7d5b4; --sup-tinta: #3a2e20;
+  --sup-tinta-fraca: rgba(58,46,32,.74);
+  --sup-acento: #2f5d3a; --sup-borda: rgba(110,84,46,.40);
+  --sup-grao: rgba(90,60,30,.09);
+}
+.bw-sup-kraft {
+  --sup-fundo: #c8a97e; --sup-tinta: #2b2117;
+  --sup-tinta-fraca: rgba(43,33,23,.78);
+  --sup-acento: #8a5a12; --sup-borda: rgba(70,48,20,.42);
+  --sup-grao: rgba(70,48,20,.14);
+}
+.bw-sup-vegetal {
+  --sup-fundo: #efe4c8; --sup-tinta: #241f19;
+  --sup-tinta-fraca: rgba(36,31,25,.72);
+  --sup-acento: #2f5d3a; --sup-borda: rgba(124,98,58,.30);
+  --sup-grao: rgba(96,74,46,.05);
+}
+.bw-sup-carvao, .bw-sup-cianotipo, .bw-sup-mesa {
+  --sup-sombra-p: 0 2px 6px rgba(0,0,0,.38);
+  --sup-sombra:   0 10px 22px rgba(0,0,0,.45);
+  --sup-sombra-g: 0 34px 60px rgba(0,0,0,.62);
+  color: var(--sup-tinta);
+  background-color: var(--sup-fundo);
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,.06), transparent 60%),
+    radial-gradient(var(--sup-grao) .5px, transparent .6px);
+  background-size: 100% 100%, 7px 7px;
+}
+.bw-sup-carvao {
+  --sup-fundo: #221f1b; --sup-tinta: #e8dcc4;
+  --sup-tinta-fraca: rgba(232,220,196,.76);
+  --sup-acento: #e6c15c; --sup-borda: rgba(232,220,196,.22);
+  --sup-grao: rgba(255,255,255,.045);
+}
+.bw-sup-cianotipo {
+  --sup-fundo: #1d3a56; --sup-tinta: #dce8f2;
+  --sup-tinta-fraca: rgba(220,232,242,.78);
+  --sup-acento: #dce8f2; --sup-borda: rgba(220,232,242,.24);
+  --sup-grao: rgba(255,255,255,.05);
+}
+.bw-sup-mesa {
+  --sup-fundo: #1e2320; --sup-tinta: #e8dcc4;
+  --sup-tinta-fraca: rgba(232,220,196,.62);
+  --sup-acento: #e6c15c; --sup-borda: rgba(232,220,196,.20);
+  --sup-grao: rgba(255,255,255,.04);
+}
+
+/* ══ TIPOGRAFIA · escala de direcao-visual.md §3.2, sem desvio ═══════ */
+.bw-kicker-micro {
+  font-family: var(--mono); font-size: 7.5px; font-weight: 400;
+  line-height: 12px; letter-spacing: .20em; text-transform: uppercase;
+  color: var(--sup-tinta-fraca);
+}
+.bw-kicker {
+  font-family: var(--mono); font-size: 8.5px; font-weight: 700;
+  line-height: 13px; letter-spacing: .26em; text-transform: uppercase;
+  color: var(--sup-tinta-fraca);
+}
+.bw-kicker-abertura {
+  font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+  line-height: 16px; letter-spacing: .34em; text-transform: uppercase;
+  color: var(--sup-acento);
+}
+.bw-corpo   { font-size: 16px; line-height: 27px; }
+.bw-micro   { font-size: 17px; font-weight: 300; font-style: italic; line-height: 24px; }
+.bw-titulo-cap {
+  font-size: 27px; font-weight: 300; font-style: italic;
+  line-height: 32px; letter-spacing: .01em;
+}
+.bw-numero-celebracao {
+  font-size: 96px; font-weight: 600; line-height: 1;
+  font-variant-numeric: tabular-nums; letter-spacing: -.01em;
+}
+.bw-dado-tabular {
+  font-size: 22px; font-weight: 600; line-height: 27px;
+  font-variant-numeric: tabular-nums;
+}
+.bw-manuscrito { font-family: var(--lapis); font-size: 22px; font-weight: 600; line-height: 24px; }
+
+/* ══ ESTRUTURA DO CATÁLOGO ══════════════════════════════════════════ */
+.ds-topo { max-width: 780px; margin: 0 auto var(--esp-9); }
+.ds-topo h1 {
+  font-size: 64px; font-weight: 300; font-style: italic;
+  line-height: 68px; margin: var(--esp-4) 0 var(--esp-5);
+  text-wrap: balance; letter-spacing: -.01em;
+}
+.ds-topo p { max-width: 62ch; color: var(--sup-tinta-fraca); margin: 0 0 var(--esp-4); }
+.ds-topo a { color: var(--sup-acento); text-underline-offset: 3px; }
+
+.ds-prancha { max-width: 980px; margin: 0 auto var(--esp-9); }
+.ds-prancha > header {
+  display: flex; align-items: baseline; gap: var(--esp-4);
+  border-bottom: 1px solid var(--sup-borda);
+  padding-bottom: var(--esp-3); margin-bottom: var(--esp-6);
+}
+.ds-prancha > header h2 {
+  font-size: 27px; font-weight: 300; font-style: italic;
+  line-height: 32px; margin: 0; flex: 1;
+}
+.ds-secao-id {
+  font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+  letter-spacing: .34em; text-transform: uppercase; color: var(--sup-acento);
+}
+.ds-nota {
+  font-size: 17px; font-weight: 300; font-style: italic; line-height: 24px;
+  color: var(--sup-tinta-fraca); max-width: 64ch; margin: 0 0 var(--esp-6);
+}
+.ds-nota strong { font-weight: 500; font-style: normal; color: var(--sup-tinta); }
+.ds-nota code, .ds-corpo code {
+  font-family: var(--mono); font-size: 13px; font-style: normal;
+  background: rgba(232,220,196,.10); padding: var(--esp-0) var(--esp-1);
+}
+
+.ds-grade { display: grid; gap: var(--esp-5); }
+.ds-g2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.ds-g3 { grid-template-columns: repeat(auto-fit, minmax(216px, 1fr)); }
+.ds-g4 { grid-template-columns: repeat(auto-fit, minmax(162px, 1fr)); }
+.ds-linha { display: flex; flex-wrap: wrap; gap: var(--esp-5); align-items: flex-start; }
+
+.ds-rolagem { overflow-x: auto; }
+.ds-tabela {
+  width: 100%; border-collapse: collapse; font-size: 16px; line-height: 27px;
+  min-width: 620px;
+}
+.ds-tabela th {
+  font-family: var(--mono); font-size: 8.5px; font-weight: 700;
+  letter-spacing: .26em; text-transform: uppercase; text-align: left;
+  color: var(--sup-tinta-fraca); padding: var(--esp-2) var(--esp-4) var(--esp-2) 0;
+  border-bottom: 1px solid var(--sup-borda); white-space: nowrap;
+}
+.ds-tabela td {
+  padding: var(--esp-3) var(--esp-4) var(--esp-3) 0;
+  border-bottom: 1px solid var(--sup-borda); vertical-align: top;
+}
+.ds-tabela td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ds-tabela code { font-family: var(--mono); font-size: 13px; }
+
+/* ══ COMPONENTES · bw- ══════════════════════════════════════════════ */
+
+/* folha — superfície de conteúdo */
+.bw-folha {
+  padding: var(--esp-5);
+  border: 1px solid var(--sup-borda);
+  border-radius: var(--raio-nenhum);
+  box-shadow: var(--sup-sombra), inset 0 1px 0 rgba(255,255,255,.28);
+}
+
+/* ficha de fichário — pautada, e a pauta ORNA: passo 27px = --esp-6 */
+.bw-ficha {
+  padding: var(--esp-6) var(--esp-5);
+  border: 1px solid var(--sup-borda);
+  box-shadow: var(--sup-sombra), inset 0 1px 0 rgba(255,255,255,.28);
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0, transparent 26px,
+      rgba(124,98,58,.20) 26px, rgba(124,98,58,.20) 27px),
+    radial-gradient(var(--sup-grao) .5px, transparent .6px);
+  background-size: 100% 27px, 7px 7px;
+  background-position: 0 0, 0 0;
+}
+.bw-ficha > * { line-height: 27px; margin: 0; }
+
+/* cartão solto */
+.bw-cartao {
+  padding: var(--esp-5);
+  border: 1px solid var(--sup-borda);
+  border-radius: var(--raio-irregular-m);
+  box-shadow: var(--sup-sombra), inset 0 1px 0 rgba(255,255,255,.28);
+}
+
+/* plaqueta */
+.bw-plaqueta {
+  display: inline-block; padding: var(--esp-2) var(--esp-4);
+  border: 1px solid var(--sup-borda); border-radius: var(--raio-minimo);
+  box-shadow: var(--sup-sombra-p);
+  transform: rotate(var(--gir-plaqueta));
+}
+
+/* etiqueta datilografada */
+.bw-etiqueta {
+  display: inline-block; padding: var(--esp-1) var(--esp-3);
+  font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+  letter-spacing: .34em; text-transform: uppercase; line-height: 16px;
+  border: 1px solid var(--sup-borda);
+  transform: rotate(var(--gir-rotulo));
+  box-shadow: var(--sup-sombra-p);
+}
+
+/* botão de papel — relevo sólido 2px, sem gradiente (P-9) */
+.bw-botao {
+  font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+  letter-spacing: .34em; text-transform: uppercase; line-height: 16px;
+  padding: var(--esp-3) var(--esp-5); min-height: 48px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--sup-acento); border-radius: var(--raio-nenhum);
+  background: var(--sup-acento); color: var(--sup-fundo);
+  box-shadow: 0 2px 0 rgba(0,0,0,.35);
+  cursor: pointer; transition: transform var(--mov-instantaneo) var(--curva-assentar),
+                              box-shadow var(--mov-instantaneo) var(--curva-assentar);
+}
+.bw-botao:hover { filter: brightness(1.06); }
+.bw-botao:active { transform: translateY(2px); box-shadow: 0 0 0 rgba(0,0,0,.35); }
+.bw-botao:focus-visible { outline: 2px solid var(--sup-acento); outline-offset: 3px; }
+.bw-botao--secundario {
+  background: transparent; color: var(--sup-tinta);
+  border: 1px solid var(--sup-borda); box-shadow: 0 2px 0 var(--sup-borda);
+}
+.bw-botao--texto {
+  background: transparent; color: var(--sup-acento);
+  border-color: transparent; box-shadow: none; padding: var(--esp-3) var(--esp-2);
+}
+.bw-botao[disabled], .bw-botao--desabilitado {
+  background: transparent; color: var(--sup-tinta-fraca);
+  border: 1px dashed var(--sup-borda); box-shadow: none;
+  cursor: not-allowed; filter: none;
+}
+
+/* chip */
+.bw-chip {
+  font-family: var(--mono); font-size: 8.5px; font-weight: 700;
+  letter-spacing: .26em; text-transform: uppercase; line-height: 13px;
+  padding: var(--esp-2) var(--esp-4); min-height: 48px;
+  display: inline-flex; align-items: center;
+  border: 1px solid var(--sup-borda); border-radius: var(--raio-minimo);
+  color: var(--sup-tinta-fraca); background: transparent; cursor: pointer;
+  transition: all var(--mov-curto) var(--curva-assentar);
+}
+.bw-chip--selecionado {
+  border-color: color-mix(in srgb, var(--sup-acento) 70%, transparent);
+  background: color-mix(in srgb, var(--ambar) 16%, transparent);
+  color: var(--sup-tinta);
+}
+.bw-chip:focus-visible { outline: 2px solid var(--sup-acento); outline-offset: 2px; }
+
+/* carimbo (P-8) */
+.bw-carimbo {
+  width: 96px; height: 96px; min-width: 48px; min-height: 48px;
+  border-radius: var(--raio-circulo);
+  border: 2px solid color-mix(in srgb, var(--sup-acento) 72%, transparent);
+  color: var(--sup-acento);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  transform: rotate(var(--gir-carimbo)); text-align: center;
+  font-family: var(--mono); font-weight: 700;
+  box-shadow: inset 0 0 0 3px color-mix(in srgb, var(--sup-acento) 14%, transparent);
+}
+.bw-carimbo b { font-size: 22px; letter-spacing: 0; line-height: 27px; display: block;
+                font-variant-numeric: tabular-nums; }
+.bw-carimbo span { font-size: 7.5px; letter-spacing: .20em; line-height: 12px; }
+
+/* grifo (P-7) */
+.bw-grifo {
+  mix-blend-mode: multiply;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+  padding: .04em .16em;
+}
+.bw-grifo--ambar  { background: var(--pig-ambar); }
+.bw-grifo--oliva  { background: var(--pig-oliva); }
+.bw-grifo--tinta  { background: var(--pig-tinta); }
+.bw-grifo--carmim { background: var(--pig-carmim); }
+
+/* marginália */
+.bw-marginalia {
+  font-family: var(--lapis); font-size: 16px; line-height: 18px;
+  color: var(--grafite); transform: rotate(var(--gir-marginalia));
+  display: inline-block;
+}
+
+/* deslizante */
+.bw-deslizante { display: flex; align-items: center; gap: var(--esp-4); min-height: 48px; }
+.bw-deslizante-trilho {
+  flex: 1; height: var(--esp-1); background: var(--sup-borda); position: relative;
+}
+.bw-deslizante-punho {
+  position: absolute; top: 50%; left: 62%;
+  width: var(--esp-5); height: var(--esp-5); margin: calc(var(--esp-5) / -2) 0 0 calc(var(--esp-5) / -2);
+  background: var(--sup-acento); border-radius: var(--raio-circulo);
+  box-shadow: var(--sup-sombra-p);
+}
+
+/* alternador */
+.bw-alternador {
+  width: var(--esp-8); height: var(--esp-6); padding: var(--esp-1);
+  border: 1px solid var(--sup-borda); display: inline-flex; align-items: center;
+  background: transparent;
+}
+.bw-alternador i {
+  width: var(--esp-6); height: 100%; background: var(--sup-tinta-fraca); display: block;
+  transition: transform var(--mov-curto) var(--curva-assentar);
+}
+.bw-alternador--ligado { border-color: color-mix(in srgb, var(--sup-acento) 70%, transparent);
+                         background: color-mix(in srgb, var(--ambar) 16%, transparent); }
+.bw-alternador--ligado i { background: var(--sup-acento); transform: translateX(100%); }
+
+/* pigmentos — a ferramenta da leitora */
+.bw-pigmentos { display: flex; gap: var(--esp-2); }
+.bw-pigmento {
+  width: 48px; height: 48px; border: 1px solid var(--sup-borda);
+  border-radius: var(--raio-circulo); cursor: pointer;
+}
+.bw-pigmento--selecionado {
+  border: 2px solid color-mix(in srgb, var(--sup-acento) 70%, transparent);
+  box-shadow: 0 0 0 var(--esp-1) color-mix(in srgb, var(--ambar) 16%, transparent);
+}
+
+/* item de lista — achado pela verificação de cobertura */
+.bw-item {
+  display: flex; align-items: center; gap: var(--esp-4);
+  padding: var(--esp-4) var(--esp-5); min-height: 48px;
+  border-bottom: 1px solid var(--sup-borda); cursor: pointer;
+  transition: background var(--mov-curto) var(--curva-assentar);
+}
+.bw-item:last-child { border-bottom: none; }
+.bw-item:hover { background: color-mix(in srgb, var(--ambar) 10%, transparent); }
+.bw-item-titulo { flex: 1; font-size: 16px; line-height: 27px; }
+.bw-item-dado { font-variant-numeric: tabular-nums; color: var(--sup-tinta-fraca); font-size: 16px; }
+
+/* área de importação de EPUB */
+.bw-importar {
+  padding: var(--esp-6); text-align: center;
+  border: 1.5px dashed var(--sup-acento); color: var(--sup-tinta);
+  display: flex; flex-direction: column; gap: var(--esp-3); align-items: center;
+}
+
+/* campo de texto */
+.bw-campo {
+  width: 100%; padding: var(--esp-3) var(--esp-4); min-height: 48px;
+  font-family: var(--serif); font-size: 16px; line-height: 27px;
+  color: var(--sup-tinta); background: transparent;
+  border: 1px solid var(--sup-borda); border-radius: var(--raio-nenhum);
+}
+.bw-campo:focus { outline: 2px solid var(--sup-acento); outline-offset: 2px; }
+.bw-campo--erro { border-color: var(--sup-acento); border-width: 2px; }
+
+/* seletor segmentado */
+.bw-segmentado { display: inline-flex; border: 1px solid var(--sup-borda); }
+.bw-segmentado > span {
+  padding: var(--esp-3) var(--esp-5); min-height: 48px; display: flex; align-items: center;
+  font-family: var(--mono); font-size: 8.5px; font-weight: 700;
+  letter-spacing: .26em; text-transform: uppercase; line-height: 13px;
+  color: var(--sup-tinta-fraca); cursor: pointer;
+  border-right: 1px solid var(--sup-borda);
+}
+.bw-segmentado > span:last-child { border-right: none; }
+.bw-segmentado > span[aria-selected="true"] {
+  background: color-mix(in srgb, var(--ambar) 16%, transparent); color: var(--sup-tinta);
+}
+
+/* lâmina de herbário */
+.bw-lamina {
+  padding: var(--esp-5); border: 1px solid var(--sup-borda);
+  box-shadow: var(--sup-sombra-p);
+  display: flex; flex-direction: column; gap: var(--esp-2); align-items: center;
+  text-align: center;
+}
+
+/* estado vazio — com arte (P-12) */
+.bw-vazio {
+  padding: var(--esp-7) var(--esp-5); text-align: center;
+  display: flex; flex-direction: column; gap: var(--esp-4); align-items: center;
+}
+
+/* celebração */
+.bw-celebracao {
+  padding: var(--esp-7) var(--esp-5); text-align: center;
+  display: flex; flex-direction: column; gap: var(--esp-4); align-items: center;
+}
+
+/* marca não removível (RN-08.13) */
+.bw-marca {
+  font-family: var(--mono); font-size: 7.5px; font-weight: 700;
+  letter-spacing: .20em; text-transform: uppercase; line-height: 12px;
+  color: var(--sup-tinta-fraca);
+}
+
+/* card cheio 9:16 e adesivo */
+.bw-card-cheio {
+  aspect-ratio: 9/16; padding: var(--esp-5);
+  display: flex; flex-direction: column; justify-content: space-between;
+  border: 1px solid var(--sup-borda); box-shadow: var(--sup-sombra);
+}
+.bw-adesivo {
+  display: inline-flex; flex-direction: column; gap: var(--esp-1); align-items: center;
+  padding: var(--esp-4) var(--esp-5);
+  border: 1px solid var(--sup-borda); border-radius: var(--raio-irregular-p);
+  box-shadow: var(--sup-sombra); transform: rotate(var(--gir-plaqueta));
+}
+
+/* régua de tiques (P-11) */
+.bw-regua { display: flex; align-items: flex-end; gap: var(--esp-1); height: var(--esp-8); }
+.bw-regua i { width: var(--esp-2); background: var(--sup-acento); display: block; }
+.bw-regua i.fraco { background: var(--sup-tinta-fraca); }
+
+/* mapa de constância — densidade de tinta, não heat map */
+.bw-mapa-constancia { display: grid; grid-template-columns: repeat(14, 1fr); gap: var(--esp-1); }
+.bw-mapa-constancia i { aspect-ratio: 1; display: block; border: 1px solid var(--sup-borda); }
+
+/* abas de fichário — navegação de primeiro nível (§10) */
+.bw-abas-fichario {
+  display: flex; gap: var(--esp-2); align-items: flex-end;
+  padding: var(--esp-6) var(--esp-4) 0;
+  background: var(--mesa); border: 1px solid rgba(232,220,196,.14);
+}
+.bw-aba {
+  flex: 1; text-align: center; padding: var(--esp-4) var(--esp-2) var(--esp-5);
+  min-height: 48px; cursor: pointer;
+  font-family: var(--mono); font-size: 8.5px; font-weight: 700;
+  letter-spacing: .26em; text-transform: uppercase; line-height: 13px;
+  background: #d9caab; color: rgba(36,31,25,.72);
+  border: 1px solid rgba(124,98,58,.42); border-bottom: none;
+  border-radius: 3px 6px 0 0;
+  transform: translateY(var(--esp-2)) rotate(-0.5deg);
+  transition: transform var(--mov-curto) var(--curva-assentar);
+}
+.bw-aba:nth-child(even) { transform: translateY(var(--esp-2)) rotate(0.5deg); }
+.bw-aba--ativa {
+  background: #f3ead9; color: #241f19; transform: translateY(0) rotate(0deg);
+  box-shadow: 0 -6px 14px rgba(0,0,0,.28);
+}
+.bw-aba--ativa:nth-child(even) { transform: translateY(0) rotate(0deg); }
+
+/* estados */
+.ds-estado {
+  display: grid; grid-template-columns: 132px 1fr; gap: var(--esp-4);
+  align-items: center; padding: var(--esp-4) 0;
+  border-bottom: 1px solid var(--sup-borda);
+}
+.ds-estado:last-child { border-bottom: none; }
+
+/* amostras de cor */
+.ds-amostra { display: flex; flex-direction: column; gap: var(--esp-2); }
+.ds-chapa { height: var(--esp-8); border: 1px solid var(--sup-borda); }
+.ds-medida {
+  font-family: var(--mono); font-size: 8.5px; font-weight: 700;
+  letter-spacing: .26em; text-transform: uppercase; line-height: 13px;
+  color: var(--sup-tinta-fraca);
+}
+.ds-medida b { color: var(--sup-tinta); font-variant-numeric: tabular-nums; }
+.ds-reprova { color: #d79aa2; }
+
+/* espécime de material */
+.ds-especime { padding: var(--esp-5); border: 1px solid var(--sup-borda); min-height: 162px;
+               display: flex; flex-direction: column; gap: var(--esp-2); }
+.ds-especime .marca { display: inline-block; width: var(--esp-6); height: var(--esp-6);
+                      background: var(--sup-acento); border-radius: var(--raio-circulo); }
+
+/* barras da escala de espaçamento */
+.ds-esp-linha { display: flex; align-items: center; gap: var(--esp-4); }
+.ds-esp-barra { background: var(--sup-acento); height: var(--esp-4); }
+.ds-esp-nome { font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+               letter-spacing: .20em; width: 90px; color: var(--sup-tinta); }
+.ds-esp-val  { font-variant-numeric: tabular-nums; color: var(--sup-tinta-fraca); font-size: 16px; }
+
+/* demonstração de sombra */
+.ds-sombra-caixa { height: var(--esp-9); border: 1px solid var(--sup-borda); }
+
+/* prova da pauta */
+.ds-pauta-ok, .ds-pauta-erro { padding: var(--esp-6) var(--esp-5); border: 1px solid var(--sup-borda); }
+.ds-pauta-ok {
+  background-image: repeating-linear-gradient(to bottom,
+    transparent 0, transparent 26px, rgba(124,98,58,.22) 26px, rgba(124,98,58,.22) 27px);
+  background-size: 100% 27px;
+}
+.ds-pauta-ok p { line-height: 27px; margin: 0; }
+.ds-pauta-erro {
+  background-image: repeating-linear-gradient(to bottom,
+    transparent 0, transparent 25px, rgba(124,98,58,.22) 25px, rgba(124,98,58,.22) 26px);
+  background-size: 100% 26px;
+}
+.ds-pauta-erro p { line-height: 28.8px; margin: 0; }
+
+.ds-veredito {
+  font-family: var(--mono); font-size: 8.5px; font-weight: 700;
+  letter-spacing: .26em; text-transform: uppercase; line-height: 13px;
+  padding: var(--esp-1) var(--esp-2); border: 1px solid currentColor; display: inline-block;
+}
+.v-ok      { color: #a8b07a; }
+.v-hipotese{ color: #e6c15c; }
+.v-quebra  { color: #d79aa2; }
+
+.ds-rodape {
+  max-width: 980px; margin: var(--esp-9) auto 0; padding-top: var(--esp-6);
+  border-top: 1px solid var(--sup-borda); color: var(--sup-tinta-fraca);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mk-ds *, .mk-ds *::before, .mk-ds *::after {
+    transition-duration: 1ms !important; animation-duration: 1ms !important;
+  }
+}
+</style>
+
+<div class="mk-ds">
+
+<header class="ds-topo">
+  <div class="bw-kicker-abertura">BookWorm · Design System · v1</div>
+  <h1>O catálogo do Papel</h1>
+  <p class="bw-corpo">Esta prancha é a referência viva de <a href="../specs/design-system.md">specs/design-system.md</a>. Onde o documento afirma, aqui se vê — e o que não renderiza aqui é erro de especificação, não de mockup.</p>
+  <p class="bw-corpo">Ela substitui <code>leitor-papel.html</code> e <code>telas-papel.html</code> como referência normativa (<code>RN-DS.19</code>). Aquelas peças passam a ser evidência histórica, em débito declarado.</p>
+  <p class="ds-nota">Os números de contraste impressos ao longo do catálogo são <strong>calculados</strong>, não estimados: WCAG 2.1, tinta e acento contra o próprio fundo de cada material.</p>
+</header>
+
+<!-- ══ §2 · CAMADAS DE TOKEN ═══════════════════════════════════════ -->
+<section class="ds-prancha">
+  <header><span class="ds-secao-id">§2</span><h2>As três camadas</h2></header>
+  <p class="ds-nota">Um componente <strong>nunca</strong> lê um pigmento direto (<code>RN-DS.1</code>). Ele vive dentro de uma superfície e lê só <code>--sup-*</code>. É o que faz a regra “o verde vive sobre papel” virar mecânica em vez de disciplina.</p>
+
+  <div class="bw-kicker" style="margin-bottom:var(--esp-4)">Camada 1 · pigmentos</div>
+  <div class="ds-grade ds-g4" style="margin-bottom:var(--esp-8)">
+    <div class="ds-amostra"><div class="ds-chapa" style="background:#241f19"></div><div class="ds-medida">tinta <b>#241f19</b></div></div>
+    <div class="ds-amostra"><div class="ds-chapa" style="background:#f3ead9"></div><div class="ds-medida">papel <b>#f3ead9</b></div></div>
+    <div class="ds-amostra"><div class="ds-chapa" style="background:#2f5d3a"></div><div class="ds-medida">verde-tinta <b>#2f5d3a</b></div></div>
+    <div class="ds-amostra"><div class="ds-chapa" style="background:#e6c15c"></div><div class="ds-medida">âmbar <b>#e6c15c</b></div></div>
+    <div class="ds-amostra"><div class="ds-chapa" style="background:#1e2320"></div><div class="ds-medida">mesa <b>#1e2320</b></div></div>
+    <div class="ds-amostra"><div class="ds-chapa" style="background:#e7c25e"></div><div class="ds-medida">pig âmbar</div></div>
+    <div class="ds-amostra"><div class="ds-chapa" style="background:#a8b07a"></div><div class="ds-medida">pig oliva</div></div>
+    <div class="ds-amostra"><div class="ds-chapa" style="background:#93a9c0"></div><div class="ds-medida">pig tinta</div></div>
+    <div class="ds-amostra"><div class="ds-chapa" style="background:#d79aa2"></div><div class="ds-medida">pig carmim</div></div>
+  </div>
+
+  <div class="bw-kicker" style="margin-bottom:var(--esp-4)">Camada 2 · as oito superfícies</div>
+  <p class="ds-nota">Cada material rebinda os cinco — fundo, tinta, acento, borda, sombra (<code>RN-DS.3</code>). Repare que o acento <em>muda</em>: kraft vira marrom, carvão e mesa viram âmbar, cianótipo vira o próprio azul-claro. O verde não sobreviveria a nenhum dos três.</p>
+  <div class="ds-grade ds-g3">
+    <div class="ds-especime bw-sup-papel">
+      <div class="bw-kicker">papel</div><span class="marca"></span>
+      <div class="bw-corpo">Superfície padrão.</div>
+      <div class="ds-medida">tinta <b>13,68</b> · acento <b>6,40</b></div>
+    </div>
+    <div class="ds-especime bw-sup-papel-fundo">
+      <div class="bw-kicker">papel-fundo</div><span class="marca"></span>
+      <div class="bw-corpo">Folha ao fundo.</div>
+      <div class="ds-medida">tinta <b>12,88</b> · acento <b>6,02</b></div>
+    </div>
+    <div class="ds-especime bw-sup-sepia">
+      <div class="bw-kicker">sépia</div><span class="marca"></span>
+      <div class="bw-corpo">Peça envelhecida.</div>
+      <div class="ds-medida">tinta <b>9,16</b> · acento <b>5,30</b></div>
+    </div>
+    <div class="ds-especime bw-sup-kraft">
+      <div class="bw-kicker">kraft</div><span class="marca"></span>
+      <div class="bw-corpo">Card.</div>
+      <div class="ds-medida">tinta <b>7,08</b> · <span class="ds-reprova">acento <b>2,66</b> reprova</span></div>
+    </div>
+    <div class="ds-especime bw-sup-vegetal">
+      <div class="bw-kicker">vegetal</div><span class="marca"></span>
+      <div class="bw-corpo">Sobreposição translúcida.</div>
+      <div class="ds-medida">tinta <b>12,92</b> · acento <b>6,04</b></div>
+    </div>
+    <div class="ds-especime bw-sup-carvao">
+      <div class="bw-kicker">carvão</div><span class="marca"></span>
+      <div class="bw-corpo">Card escuro.</div>
+      <div class="ds-medida">tinta <b>12,08</b> · acento <b>9,49</b></div>
+    </div>
+    <div class="ds-especime bw-sup-cianotipo">
+      <div class="bw-kicker">cianótipo</div><span class="marca"></span>
+      <div class="bw-corpo">Cianotipia.</div>
+      <div class="ds-medida">tinta <b>9,41</b> · acento <b>9,41</b></div>
+    </div>
+    <div class="ds-especime bw-sup-mesa">
+      <div class="bw-kicker">mesa</div><span class="marca"></span>
+      <div class="bw-corpo">Pano de fundo. Sem texto de leitura.</div>
+      <div class="ds-medida">tinta <b>11,75</b> · acento <b>9,23</b></div>
+    </div>
+  </div>
+
+  <div class="bw-kicker" style="margin:var(--esp-8) 0 var(--esp-4)">As tintas fracas · piso de texto</div>
+  <p class="ds-nota">Duas destas <strong>não podem carregar texto de tamanho nenhum</strong> — e o levantamento achou 60 usos delas como cor de texto, kickers inclusive. É o que <code>RN-DS.11</code> corrige.</p>
+  <div class="bw-folha bw-sup-papel">
+    <div class="ds-grade ds-g4">
+      <div class="ds-amostra">
+        <div style="color:#5e584f;font-size:16px;line-height:27px">tinta-70</div>
+        <div class="ds-medida" style="color:rgba(36,31,25,.72)"><b>5,89:1</b> · texto ok</div>
+      </div>
+      <div class="ds-amostra">
+        <div style="color:#878075;font-size:16px;line-height:27px">tinta-50</div>
+        <div class="ds-medida" style="color:rgba(36,31,25,.72)"><b>3,27:1</b> · só ≥22px</div>
+      </div>
+      <div class="ds-amostra">
+        <div style="color:#ada598;font-size:16px;line-height:27px">tinta-32</div>
+        <div class="ds-medida ds-reprova" style="color:#a8453f"><b>2,04:1</b> · nunca texto</div>
+      </div>
+      <div class="ds-amostra">
+        <div style="color:#d2caba;font-size:16px;line-height:27px">tinta-16</div>
+        <div class="ds-medida ds-reprova" style="color:#a8453f"><b>1,36:1</b> · nunca texto</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ §3 · ESCALA TÔNICA ══════════════════════════════════════════ -->
+<section class="ds-prancha">
+  <header><span class="ds-secao-id">§3</span><h2>A escala tônica</h2></header>
+  <p class="ds-nota">Antes desta tabela havia <strong>49 valores distintos</strong> de espaçamento nos mockups — todo inteiro de 1 a 20 em uso. A escala é ancorada em <strong>27px</strong>, que já é a entrelinha do corpo e o passo da pauta: um sistema numérico só, como <code>RN-DS.5</code> exige.</p>
+  <div class="bw-folha bw-sup-papel">
+    <div class="ds-grade" style="gap:var(--esp-2)">
+      <div class="ds-esp-linha"><span class="ds-esp-nome">esp-1</span><span class="ds-esp-barra" style="width:3px"></span><span class="ds-esp-val">3px</span></div>
+      <div class="ds-esp-linha"><span class="ds-esp-nome">esp-2</span><span class="ds-esp-barra" style="width:6px"></span><span class="ds-esp-val">6px</span></div>
+      <div class="ds-esp-linha"><span class="ds-esp-nome">esp-3</span><span class="ds-esp-barra" style="width:9px"></span><span class="ds-esp-val">9px</span></div>
+      <div class="ds-esp-linha"><span class="ds-esp-nome">esp-4</span><span class="ds-esp-barra" style="width:12px"></span><span class="ds-esp-val">12px</span></div>
+      <div class="ds-esp-linha"><span class="ds-esp-nome">esp-5</span><span class="ds-esp-barra" style="width:18px"></span><span class="ds-esp-val">18px</span></div>
+      <div class="ds-esp-linha"><span class="ds-esp-nome">esp-6</span><span class="ds-esp-barra" style="width:27px"></span><span class="ds-esp-val">27px · o ancoradouro</span></div>
+      <div class="ds-esp-linha"><span class="ds-esp-nome">esp-7</span><span class="ds-esp-barra" style="width:36px"></span><span class="ds-esp-val">36px</span></div>
+      <div class="ds-esp-linha"><span class="ds-esp-nome">esp-8</span><span class="ds-esp-barra" style="width:54px"></span><span class="ds-esp-val">54px</span></div>
+      <div class="ds-esp-linha"><span class="ds-esp-nome">esp-9</span><span class="ds-esp-barra" style="width:81px"></span><span class="ds-esp-val">81px</span></div>
+    </div>
+  </div>
+
+  <div class="bw-kicker" style="margin:var(--esp-8) 0 var(--esp-4)">A prova da pauta</div>
+  <p class="ds-nota">À esquerda, passo 27px com entrelinha 27px: o texto <strong>assenta sobre</strong> o traço. À direita, passo 26px com entrelinha 28,8px — a deriva acumula e o texto sai do registro em poucas linhas. É o defeito que mais rápido denuncia papel falso.</p>
+  <div class="ds-grade ds-g2">
+    <div class="ds-pauta-ok bw-sup-papel">
+      <div class="bw-kicker" style="margin-bottom:var(--esp-6)">em registro</div>
+      <p>A folha promete que o conteúdo se apoia nas linhas.</p>
+      <p>O olho cobra a promessa mesmo sem saber nomeá-la.</p>
+      <p>Aqui o passo e a entrelinha são o mesmo inteiro.</p>
+      <p>Nada deriva, e a página lê como impressa.</p>
+    </div>
+    <div class="ds-pauta-erro bw-sup-papel">
+      <div class="bw-kicker" style="margin-bottom:var(--esp-6)">fora de registro</div>
+      <p>A folha promete que o conteúdo se apoia nas linhas.</p>
+      <p>O olho cobra a promessa mesmo sem saber nomeá-la.</p>
+      <p>Aqui o passo e a entrelinha discordam por pouco.</p>
+      <p>A deriva acumula, e a página lê como desalinhada.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ §4 · GEOMETRIA ══════════════════════════════════════════════ -->
+<section class="ds-prancha">
+  <header><span class="ds-secao-id">§4</span><h2>Geometria</h2></header>
+  <p class="ds-nota">Raio zero é o padrão. Onde há canto arredondado, os quatro diferem — e o círculo é exclusivo de carimbo e selo (<code>RN-DS.8</code>).</p>
+  <div class="ds-grade ds-g4" style="margin-bottom:var(--esp-8)">
+    <div class="bw-folha bw-sup-papel" style="border-radius:0"><div class="bw-kicker">raio-nenhum</div><div class="bw-corpo">padrão</div></div>
+    <div class="bw-folha bw-sup-papel" style="border-radius:2px"><div class="bw-kicker">raio-minimo</div><div class="bw-corpo">2px</div></div>
+    <div class="bw-folha bw-sup-papel" style="border-radius:3px 6px 4px 7px / 5px 3px 6px 4px"><div class="bw-kicker">irregular-p</div><div class="bw-corpo">cartão pequeno</div></div>
+    <div class="bw-folha bw-sup-papel" style="border-radius:4px 7px 5px 8px / 6px 4px 7px 5px"><div class="bw-kicker">irregular-m</div><div class="bw-corpo">cartão</div></div>
+  </div>
+
+  <div class="bw-kicker" style="margin-bottom:var(--esp-4)">Sombra · a exceção declarada</div>
+  <p class="ds-nota">A regra 5 proíbe preto neutro, e o levantamento achou <strong>10 violações</strong>. Elas não eram desleixo: eram objetos sobre a mesa, onde marrom-quente não lê. Agora <code>--sup-sombra</code> é rebindado pela superfície (<code>RN-DS.6</code>) e as duas colunas abaixo estão <em>ambas</em> corretas.</p>
+  <div class="ds-grade ds-g2" style="margin-bottom:var(--esp-8)">
+    <div class="bw-folha bw-sup-papel">
+      <div class="bw-kicker" style="margin-bottom:var(--esp-5)">sobre papel · marrom-quente</div>
+      <div class="ds-grade" style="gap:var(--esp-5)">
+        <div class="ds-sombra-caixa bw-sup-papel" style="box-shadow:0 2px 5px rgba(48,32,16,.22)"></div>
+        <div class="ds-sombra-caixa bw-sup-papel" style="box-shadow:0 8px 16px rgba(48,32,16,.28)"></div>
+        <div class="ds-sombra-caixa bw-sup-papel" style="box-shadow:0 18px 34px rgba(48,32,16,.34)"></div>
+      </div>
+    </div>
+    <div class="bw-folha bw-sup-carvao">
+      <div class="bw-kicker" style="margin-bottom:var(--esp-5)">sobre superfície escura · neutra profunda</div>
+      <div class="ds-grade" style="gap:var(--esp-5)">
+        <div class="ds-sombra-caixa bw-sup-carvao" style="box-shadow:0 2px 6px rgba(0,0,0,.38)"></div>
+        <div class="ds-sombra-caixa bw-sup-carvao" style="box-shadow:0 10px 22px rgba(0,0,0,.45)"></div>
+        <div class="ds-sombra-caixa bw-sup-carvao" style="box-shadow:0 34px 60px rgba(0,0,0,.62)"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bw-kicker" style="margin-bottom:var(--esp-4)">Rotação · seis, não cinquenta e quatro</div>
+  <div class="bw-folha bw-sup-papel">
+    <div class="ds-linha">
+      <span class="bw-plaqueta bw-sup-papel"><span class="bw-kicker">plaqueta −0,5°</span></span>
+      <span class="bw-etiqueta bw-sup-papel">rótulo −0,7°</span>
+      <span class="bw-manuscrito" style="transform:rotate(-1.6deg);display:inline-block">etiqueta −1,6°</span>
+      <span class="bw-marginalia">marginália −3,5°</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══ §5 · PRIMITIVAS ═════════════════════════════════════════════ -->
+<section class="ds-prancha">
+  <header><span class="ds-secao-id">§5</span><h2>As doze primitivas</h2></header>
+  <p class="ds-nota">As onze regras de assinatura mecânica, nomeadas e renderizadas. A tradução de cada uma para React Native está em §11 — e seis delas ainda são hipótese.</p>
+  <div class="ds-grade ds-g3">
+    <div class="bw-folha bw-sup-papel"><div class="bw-kicker">P-1 · grão</div><div class="bw-corpo">Textura 7×7px, fina demais para criar expectativa de alinhamento.</div></div>
+    <div class="bw-folha bw-sup-papel"><div class="bw-kicker">P-2 · luz na folha</div><div class="bw-corpo">A folha é iluminada de fora da tela, pelo alto à esquerda.</div></div>
+    <div class="bw-folha bw-sup-papel"><div class="bw-kicker">P-3 · relevo</div><div class="bw-corpo">Borda superior clara: o objeto tem espessura.</div></div>
+    <div class="bw-folha bw-sup-papel" style="box-shadow:0 8px 16px rgba(48,32,16,.28)"><div class="bw-kicker">P-4 · sombra</div><div class="bw-corpo">Três alturas, rebindadas por superfície.</div></div>
+    <div class="bw-folha bw-sup-papel" style="transform:rotate(-0.7deg)"><div class="bw-kicker">P-5 · rotação</div><div class="bw-corpo">Nada é ortogonal; nada repete o mesmo desvio.</div></div>
+    <div class="bw-folha bw-sup-papel" style="border-radius:4px 7px 5px 8px / 6px 4px 7px 5px"><div class="bw-kicker">P-6 · raio irregular</div><div class="bw-corpo">Os quatro cantos diferem. <strong>Não atravessa para RN.</strong></div></div>
+    <div class="bw-folha bw-sup-papel">
+      <div class="bw-kicker">P-7 · grifo</div>
+      <div class="bw-corpo">O pigmento <span class="bw-grifo bw-grifo--ambar">escurece o que está sob ele</span>, como marca-texto de verdade.</div>
+    </div>
+    <div class="bw-folha bw-sup-papel" style="display:flex;flex-direction:column;gap:var(--esp-4);align-items:flex-start">
+      <div class="bw-kicker">P-8 · carimbo</div>
+      <div class="bw-carimbo bw-sup-papel"><b>23</b><span>dias</span></div>
+    </div>
+    <div class="bw-folha bw-sup-papel" style="display:flex;flex-direction:column;gap:var(--esp-4);align-items:flex-start">
+      <div class="bw-kicker">P-9 · botão de papel</div>
+      <button class="bw-botao bw-sup-papel">Continuar</button>
+    </div>
+    <div class="bw-ficha bw-sup-papel">
+      <div class="bw-kicker">P-10 · interromper</div>
+      <div class="bw-corpo">O objeto pousado é opaco</div>
+      <span class="bw-plaqueta bw-sup-papel" style="margin-top:var(--esp-1)"><span class="bw-kicker">tapa a pauta</span></span>
+    </div>
+    <div class="bw-folha bw-sup-papel"><div class="bw-kicker">P-11 · métrica é tipografia</div><div class="bw-dado-tabular">1.204</div><div class="bw-kicker-micro">páginas canônicas</div></div>
+    <div class="bw-folha bw-sup-sepia"><div class="bw-kicker">P-12 · dormência com arte</div><div class="bw-corpo">O estado de ausência recebe o mesmo investimento do estado ativo.</div></div>
+  </div>
+</section>
+
+<!-- ══ §6 · COMPONENTES ════════════════════════════════════════════ -->
+<section class="ds-prancha">
+  <header><span class="ds-secao-id">§6</span><h2>Componentes do MVP</h2></header>
+  <p class="ds-nota">Derivados das telas dos módulos do corte, não da imaginação. Cada um declara a superfície em que vive, os estados que se aplicam e <strong>o que anuncia ao leitor de tela</strong> — um carimbo que anuncia “imagem” é defeito (<code>RN-DS.12</code>).</p>
+
+  <div class="bw-kicker" style="margin-bottom:var(--esp-4)">Controles</div>
+  <div class="bw-folha bw-sup-papel" style="margin-bottom:var(--esp-8)">
+    <div class="ds-linha" style="margin-bottom:var(--esp-6)">
+      <button class="bw-botao">Primário</button>
+      <button class="bw-botao bw-botao--secundario">Secundário</button>
+      <button class="bw-botao bw-botao--texto">Texto</button>
+      <button class="bw-botao" disabled>Desabilitado</button>
+    </div>
+    <div class="ds-linha" style="margin-bottom:var(--esp-6)">
+      <span class="bw-chip">Em leitura</span>
+      <span class="bw-chip bw-chip--selecionado">Estante</span>
+      <span class="bw-chip">Importados</span>
+    </div>
+    <div class="ds-grade ds-g2">
+      <div>
+        <div class="bw-kicker" style="margin-bottom:var(--esp-2)">Corpo do texto</div>
+        <div class="bw-deslizante">
+          <span class="bw-kicker-micro">A</span>
+          <span class="bw-deslizante-trilho"><i class="bw-deslizante-punho"></i></span>
+          <span class="bw-dado-tabular" style="font-size:22px">16</span>
+        </div>
+      </div>
+      <div>
+        <div class="bw-kicker" style="margin-bottom:var(--esp-2)">Pigmento de grifo</div>
+        <div class="bw-pigmentos">
+          <span class="bw-pigmento bw-pigmento--selecionado" style="background:#e7c25e"></span>
+          <span class="bw-pigmento" style="background:#a8b07a"></span>
+          <span class="bw-pigmento" style="background:#93a9c0"></span>
+          <span class="bw-pigmento" style="background:#d79aa2"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bw-kicker" style="margin-bottom:var(--esp-4)">Entrada e escolha</div>
+  <div class="bw-folha bw-sup-papel" style="margin-bottom:var(--esp-8)">
+    <div class="ds-grade ds-g2">
+      <div>
+        <label class="bw-kicker" for="ds-campo" style="display:block;margin-bottom:var(--esp-2)">Nome da coleção</label>
+        <input class="bw-campo bw-sup-papel" id="ds-campo" type="text" value="Clássicos brasileiros">
+      </div>
+      <div>
+        <div class="bw-kicker" style="margin-bottom:var(--esp-2)">Período</div>
+        <div class="bw-segmentado" role="tablist">
+          <span role="tab" aria-selected="true">Semana</span>
+          <span role="tab" aria-selected="false">Mês</span>
+          <span role="tab" aria-selected="false">Ano</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bw-kicker" style="margin-bottom:var(--esp-4)">Ausência e cerimônia · as duas recebem arte</div>
+  <div class="ds-grade ds-g3" style="margin-bottom:var(--esp-8)">
+    <div class="bw-folha bw-sup-papel" style="padding:var(--esp-0)">
+      <div class="bw-vazio">
+        <span class="bw-manuscrito" style="color:var(--grafite)">nenhuma obra ainda</span>
+        <span class="bw-corpo" style="max-width:28ch">A estante começa vazia. É assim que toda biblioteca começou.</span>
+        <button class="bw-botao bw-botao--secundario">Importar EPUB</button>
+      </div>
+    </div>
+    <div class="bw-folha bw-sup-papel" style="padding:var(--esp-0)">
+      <div class="bw-celebracao">
+        <div class="bw-carimbo bw-sup-papel"><b>50</b><span>dias</span></div>
+        <span class="bw-titulo-cap">Cinquenta dias</span>
+        <span class="bw-corpo" style="max-width:28ch">Sua ofensiva mais longa até aqui.</span>
+      </div>
+    </div>
+    <div class="bw-lamina bw-sup-sepia">
+      <span class="bw-kicker">herbário · marco</span>
+      <span class="bw-numero-celebracao" style="font-size:64px">12</span>
+      <span class="bw-manuscrito">obras concluídas</span>
+      <span class="bw-kicker-micro">desde março de 2026</span>
+    </div>
+  </div>
+
+  <div class="bw-kicker" style="margin-bottom:var(--esp-4)">Compartilhamento · as duas formas do mesmo dado</div>
+  <p class="ds-nota">O card cheio <strong>substitui</strong> a foto de quem posta; o adesivo a <strong>acompanha</strong>. A marca é não removível nos dois (<code>RN-08.13</code>) — e num adesivo ela precisa sobreviver sem a superfície de papel que a sustenta.</p>
+  <div class="ds-grade ds-g3" style="margin-bottom:var(--esp-8)">
+    <div class="bw-card-cheio bw-sup-carvao">
+      <span class="bw-kicker">sessão de hoje</span>
+      <div>
+        <div class="bw-numero-celebracao" style="font-size:64px">42</div>
+        <div class="bw-kicker-micro">minutos de tempo ativo</div>
+      </div>
+      <span class="bw-marca">BookWorm</span>
+    </div>
+    <div class="bw-card-cheio bw-sup-sepia">
+      <span class="bw-kicker">grande sertão: veredas</span>
+      <div class="bw-corpo" style="font-family:var(--garamond);font-size:23px;line-height:36px;font-style:italic">Viver é muito perigoso.</div>
+      <span class="bw-marca">BookWorm</span>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center">
+      <span class="bw-adesivo bw-sup-papel">
+        <span class="bw-kicker">18 páginas</span>
+        <span class="bw-numero-celebracao" style="font-size:64px">23</span>
+        <span class="bw-kicker-micro">dias seguidos</span>
+        <span class="bw-marca">BookWorm</span>
+      </span>
+    </div>
+  </div>
+
+  <div class="bw-kicker" style="margin-bottom:var(--esp-4)">Dado · sempre tipografia</div>
+  <div class="ds-grade ds-g2" style="margin-bottom:var(--esp-8)">
+    <div class="bw-folha bw-sup-papel">
+      <div class="bw-kicker">ofensiva</div>
+      <div class="bw-numero-celebracao">23</div>
+      <div class="bw-kicker-micro">dias consecutivos</div>
+    </div>
+    <div class="bw-folha bw-sup-papel">
+      <div class="bw-kicker" style="margin-bottom:var(--esp-4)">régua de tiques · 14 dias</div>
+      <div class="bw-regua">
+        <i style="height:40%"></i><i style="height:65%"></i><i style="height:30%"></i>
+        <i style="height:80%"></i><i style="height:55%"></i><i class="fraco" style="height:12%"></i>
+        <i style="height:70%"></i><i style="height:90%"></i><i style="height:45%"></i>
+        <i style="height:60%"></i><i class="fraco" style="height:12%"></i><i style="height:75%"></i>
+        <i style="height:100%"></i><i style="height:50%"></i>
+      </div>
+      <div class="bw-kicker-micro" style="margin-top:var(--esp-2)">tique fraco = dia sem sessão</div>
+    </div>
+    <div class="bw-folha bw-sup-papel">
+      <div class="bw-kicker" style="margin-bottom:var(--esp-4)">mapa de constância · densidade de tinta</div>
+      <div class="bw-mapa-constancia">
+        <i style="background:rgba(47,93,58,.85)"></i><i style="background:rgba(47,93,58,.55)"></i><i></i>
+        <i style="background:rgba(47,93,58,.95)"></i><i style="background:rgba(47,93,58,.35)"></i>
+        <i style="background:rgba(47,93,58,.70)"></i><i></i>
+        <i style="background:rgba(47,93,58,.90)"></i><i style="background:rgba(47,93,58,.60)"></i>
+        <i style="background:rgba(47,93,58,.45)"></i><i style="background:rgba(47,93,58,.80)"></i>
+        <i></i><i style="background:rgba(47,93,58,.65)"></i><i style="background:rgba(47,93,58,1)"></i>
+      </div>
+      <div class="bw-kicker-micro" style="margin-top:var(--esp-2)">quanto mais constante, mais saturada a marca</div>
+    </div>
+    <div class="bw-ficha bw-sup-papel">
+      <div class="bw-kicker">ficha de sessão</div>
+      <div class="bw-corpo">Tempo ativo &nbsp;&nbsp; 42 min</div>
+      <div class="bw-corpo">Páginas canônicas &nbsp;&nbsp; 18</div>
+      <div class="bw-corpo">Leitura Consciente &nbsp;&nbsp; 71</div>
+    </div>
+  </div>
+
+  <div class="bw-kicker" style="margin-bottom:var(--esp-4)">Lista e importação · achados pela verificação de cobertura</div>
+  <p class="ds-nota">Estes dois não vieram do levantamento: vieram de tentar montar cada tela do MVP <strong>só com o inventário</strong>. “Histórico de sessões” e “Importar EPUB” não fechavam. A linha tocável de lista é o componente mais usado de qualquer app e passou despercebida justamente por isso.</p>
+  <div class="ds-grade ds-g2" style="margin-bottom:var(--esp-8)">
+    <div class="bw-folha bw-sup-papel" style="padding:var(--esp-0)">
+      <div class="bw-kicker" style="padding:var(--esp-5) var(--esp-5) var(--esp-2)">histórico de sessões</div>
+      <div class="bw-item"><span class="bw-item-titulo">Grande Sertão: Veredas</span><span class="bw-item-dado">42 min</span></div>
+      <div class="bw-item"><span class="bw-item-titulo">A Cidade e as Serras</span><span class="bw-item-dado">18 min</span></div>
+      <div class="bw-item"><span class="bw-item-titulo">Memórias Póstumas</span><span class="bw-item-dado">63 min</span></div>
+    </div>
+    <div class="bw-folha bw-sup-papel">
+      <div class="bw-kicker" style="margin-bottom:var(--esp-4)">importar obra</div>
+      <div class="bw-importar">
+        <span class="bw-manuscrito">solte o arquivo aqui</span>
+        <span class="bw-kicker-micro">EPUB 3 · fica só no seu aparelho</span>
+        <button class="bw-botao bw-botao--secundario">Escolher arquivo</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="bw-kicker" style="margin-bottom:var(--esp-4)">Leitura</div>
+  <div class="bw-folha bw-sup-papel" style="margin-bottom:var(--esp-8)">
+    <p class="bw-corpo" style="max-width:62ch;margin:0 0 var(--esp-4)">O corpo da obra corre em Spectral a 16px sobre entrelinha de 27px. A leitora escolhe entre cinco faces — <span class="bw-grifo bw-grifo--oliva">e o grifo é ferramenta dela</span>, não cor da marca. Os quatro pigmentos passam AA com tinta por cima, entre 5,71 e 8,19:1.</p>
+    <span class="bw-marginalia">conferir depois —</span>
+  </div>
+
+  <div class="bw-kicker" style="margin-bottom:var(--esp-4)">Dormência · a arte do estado de ausência</div>
+  <div class="bw-ficha bw-sup-sepia">
+    <div class="bw-kicker">guardados</div>
+    <div class="bw-corpo">A marca de <strong>23 dias</strong> fica guardada aqui.</div>
+    <div class="bw-corpo">Ofensiva atual &nbsp;&nbsp; 0 &nbsp;·&nbsp; Recorde &nbsp;&nbsp; 41</div>
+    <div class="bw-corpo" style="font-style:italic">Os três números — não dois.</div>
+  </div>
+</section>
+
+<!-- ══ §7 · ESTADOS ════════════════════════════════════════════════ -->
+<section class="ds-prancha">
+  <header><span class="ds-secao-id">§7</span><h2>O contrato de estados</h2></header>
+  <p class="ds-nota">Oito estados, um contrato só. <strong>Vazio e dormência recebem arte</strong> — uma dormência feia pune; uma dormência linda convida (<code>RN-DS.16</code>).</p>
+  <div class="bw-folha bw-sup-papel">
+    <div class="ds-estado"><span class="bw-kicker">repouso</span><button class="bw-botao">Começar a ler</button></div>
+    <div class="ds-estado"><span class="bw-kicker">pressionado</span><button class="bw-botao" style="transform:translateY(2px);box-shadow:0 0 0 rgba(0,0,0,.35)">Começar a ler</button></div>
+    <div class="ds-estado"><span class="bw-kicker">selecionado</span><span class="bw-chip bw-chip--selecionado">Estante</span></div>
+    <div class="ds-estado"><span class="bw-kicker">desabilitado</span><button class="bw-botao" disabled>Começar a ler</button></div>
+    <div class="ds-estado"><span class="bw-kicker">carregando</span><span class="bw-corpo" style="color:rgba(36,31,25,.72)">A superfície permanece; o dado chega. Nunca um giro genérico.</span></div>
+    <div class="ds-estado"><span class="bw-kicker">vazio</span><span class="bw-corpo">Nenhuma obra ainda. <button class="bw-botao bw-botao--texto">Importar EPUB</button></span></div>
+    <div class="ds-estado"><span class="bw-kicker">erro</span><span class="bw-corpo" style="border-left:2px solid #2f5d3a;padding-left:var(--esp-4)">O arquivo não abriu: não é um EPUB 3. Tente outro arquivo.</span></div>
+    <div class="ds-estado"><span class="bw-kicker">offline</span><span class="bw-corpo"><span class="bw-etiqueta bw-sup-papel">sem conexão</span> &nbsp; A leitura continua; sincroniza depois.</span></div>
+  </div>
+</section>
+
+<!-- ══ §9 · MOVIMENTO ══════════════════════════════════════════════ -->
+<section class="ds-prancha">
+  <header><span class="ds-secao-id">§9</span><h2>Movimento e háptico</h2></header>
+  <p class="ds-nota"><strong>Papel não quica.</strong> <code>--curva-carimbo</code> é a única com overshoot no sistema, e existe porque um carimbo real recua ao bater (<code>RN-DS.15</code>). Passe o cursor pelo botão de <em>Começar a ler</em> acima para sentir <code>--mov-instantaneo</code>.</p>
+  <div class="ds-rolagem">
+    <table class="ds-tabela">
+      <thead><tr><th>Token</th><th>Valor</th><th>Uso</th></tr></thead>
+      <tbody>
+        <tr><td><code>--mov-instantaneo</code></td><td class="num">90ms</td><td>Resposta ao toque</td></tr>
+        <tr><td><code>--mov-curto</code></td><td class="num">160ms</td><td>Chip, aba, alternador</td></tr>
+        <tr><td><code>--mov-medio</code></td><td class="num">260ms</td><td>Painel entra, ficha vira</td></tr>
+        <tr><td><code>--mov-longo</code></td><td class="num">420ms</td><td>Transição de tela</td></tr>
+        <tr><td><code>--mov-cerimonia</code></td><td class="num">900ms</td><td>Carimbo, celebração, marco</td></tr>
+        <tr><td><code>--curva-assentar</code></td><td class="num">.2,.7,.3,1</td><td>O objeto pousa e para</td></tr>
+        <tr><td><code>--curva-carimbo</code></td><td class="num">.3,1.6,.5,1</td><td>Impacto seco com micro-recuo</td></tr>
+        <tr><td><code>--curva-sair</code></td><td class="num">.5,0,.85,.3</td><td>Sai sem despedida</td></tr>
+        <tr><td><code>hap-leve</code> · <code>hap-seco</code> · <code>hap-duplo</code></td><td class="num">—</td><td>Nada em rolagem, virada comum ou ocioso</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ══ §10 · NAVEGAÇÃO ═════════════════════════════════════════════ -->
+<section class="ds-prancha">
+  <header><span class="ds-secao-id">§10</span><h2>Navegação global</h2></header>
+  <p class="ds-nota">Fecha <code>Q-DV.3</code>, que registrava que <strong>nenhum módulo especifica a navegação do app</strong>. Quatro destinos. A aba de divisória de fichário é o único objeto de papelaria que existe <em>para separar seções</em> — metáfora e função coincidem, que é o teste imposto à herança de telas: traduzir, não copiar.</p>
+  <div class="bw-abas-fichario" style="margin-bottom:var(--esp-6)">
+    <div class="bw-aba bw-aba--ativa">Jardim</div>
+    <div class="bw-aba">Biblioteca</div>
+    <div class="bw-aba">Caderno</div>
+    <div class="bw-aba">Desempenho</div>
+  </div>
+  <p class="ds-nota">As abas são <strong>opacas e interrompem a mesa</strong> (<code>P-10</code>), não flutuam sobre ela. A ativa avança e fica reta; as inativas recuam com rotação alternada. Perfil e Configurações <em>não</em> são destinos de primeiro nível — num MVP sem perfil público, promovê-los a par de Biblioteca mentiria sobre a importância deles.</p>
+  <div class="ds-rolagem">
+    <table class="ds-tabela">
+      <thead><tr><th>Forma considerada</th><th>Veredito</th></tr></thead>
+      <tbody>
+        <tr><td><strong>A — Abas de fichário</strong>, barra inferior</td><td><span class="ds-veredito v-ok">escolhida</span></td></tr>
+        <tr><td><strong>B — Lombadas na base</strong></td><td>Descartada. Lombada significa <em>obra</em>; usá-la para “Desempenho” mente sobre o que o objeto é</td></tr>
+        <tr><td><strong>C — A mesa como navegação</strong>, sem barra</td><td>Direção de longo prazo. A mais fiel à tese e a mais cara: obriga voltar a um destino-raiz a cada troca, o que atrita com um app de hábito diário</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="ds-nota" style="margin-top:var(--esp-6)"><code>RN-DS.18</code> — <strong>o leitor é modo, não destino.</strong> Entrar no leitor esconde as abas; sair as devolve.</p>
+</section>
+
+<!-- ══ §11 · ANEXO RN ══════════════════════════════════════════════ -->
+<section class="ds-prancha">
+  <header><span class="ds-secao-id">§11</span><h2>O que atravessa para o Android</h2></header>
+  <p class="ds-nota">A assinatura foi desenhada em CSS; o produto será React Native, Android primeiro. <strong>Seis das treze linhas ainda são hipótese</strong> — e nenhuma sai de “não verificado” sem captura de tela de um app real (<code>RN-DS.20</code>).</p>
+  <div class="ds-rolagem">
+    <table class="ds-tabela">
+      <thead><tr><th>Primitiva</th><th>Situação em RN</th><th>Degradação</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td><code>P-1</code> grão</td><td>Sem gradientes nativos</td><td>PNG 7×7 tileável — a mesma arte nas duas plataformas</td><td><span class="ds-veredito v-hipotese">a produzir</span></td></tr>
+        <tr><td><code>P-2</code> luz na folha</td><td>Depende de versão</td><td>Cor sólida mais clara</td><td><span class="ds-veredito v-hipotese">não verificado</span></td></tr>
+        <tr><td><code>P-3</code> relevo</td><td>Depende de versão</td><td><code>View</code> de 1px sobreposta</td><td><span class="ds-veredito v-hipotese">não verificado</span></td></tr>
+        <tr><td><code>P-4</code> sombra</td><td><code>elevation</code> não colore sombra</td><td>Relevo sólido + borda inferior</td><td><span class="ds-veredito v-hipotese">não verificado</span></td></tr>
+        <tr><td><code>P-5</code> rotação</td><td>Suportado</td><td>—</td><td><span class="ds-veredito v-ok">atravessa</span></td></tr>
+        <tr><td><code>P-6</code> raio irregular</td><td><strong>Eixo duplo não existe</strong></td><td>Raio por canto; a imperfeição migra para rotação e borda</td><td><span class="ds-veredito v-quebra">confirmada</span></td></tr>
+        <tr><td><code>P-7</code> grifo</td><td><code>clone</code> sem equivalente</td><td>Cor pré-multiplicada + destaque por linha</td><td><span class="ds-veredito v-hipotese">não verificado</span></td></tr>
+        <tr><td><code>P-8</code> carimbo</td><td>Suportado</td><td>—</td><td><span class="ds-veredito v-ok">atravessa</span></td></tr>
+        <tr><td><code>P-9</code> botão de papel</td><td>Depende de versão</td><td>Nenhuma prevista</td><td><span class="ds-veredito v-hipotese">não verificado</span></td></tr>
+        <tr><td><code>P-10</code> interromper pauta</td><td>Suportado</td><td>—</td><td><span class="ds-veredito v-ok">atravessa</span></td></tr>
+        <tr><td><code>P-11</code> métrica tipográfica</td><td><code>fontVariant</code> suportado</td><td>—</td><td><span class="ds-veredito v-ok">atravessa</span></td></tr>
+        <tr><td>Versalete</td><td>Não confiável no Android</td><td>Face Spectral SC real, ou sai da escala</td><td><span class="ds-veredito v-hipotese">não verificado</span></td></tr>
+        <tr><td>Corpo justificado</td><td><strong>Hifenização não exposta</strong></td><td>Sem hifenização o justificado abre rios: provável alinhado à esquerda</td><td><span class="ds-veredito v-hipotese">a medir</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ══ §12 · ACHADOS ═══════════════════════════════════════════════ -->
+<section class="ds-prancha">
+  <header><span class="ds-secao-id">§12</span><h2>O que a medição encontrou</h2></header>
+  <p class="ds-nota">Os quatro primeiros são consequência de não haver sistema. Os três últimos são defeitos que só apareceram porque alguém mediu.</p>
+  <div class="ds-rolagem">
+    <table class="ds-tabela">
+      <thead><tr><th>Achado</th><th>Número</th><th>Encaminhamento</th></tr></thead>
+      <tbody>
+        <tr><td>Classes com reuso zero entre as três peças</td><td class="num">140 · 133 · 128</td><td>Prefixo único <code>bw-</code></td></tr>
+        <tr><td><code>box-shadow</code> distintos para 60 usos</td><td class="num">51</td><td>Três alturas</td></tr>
+        <tr><td>Valores de espaçamento distintos</td><td class="num">49</td><td>Escala tônica</td></tr>
+        <tr><td><code>rotate</code> distintos para 86 usos</td><td class="num">54</td><td>Seis rotações nomeadas</td></tr>
+        <tr><td>Violações da regra 5 — sombra preta neutra</td><td class="num">10</td><td>Viram exceção declarada: <code>RN-DS.6</code></td></tr>
+        <tr><td>Violações da regra 4 — borda cinza ou preta</td><td class="num">0</td><td>A única regra que se sustentou sozinha</td></tr>
+        <tr><td>Tinta fraca usada como cor de <strong>texto</strong></td><td class="num">60</td><td><code>RN-DS.11</code> — inclui kickers</td></tr>
+        <tr><td>Acento que reprova em contraste</td><td class="num">1</td><td>Kraft, 2,66:1 — <code>Q-DS.1</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<footer class="ds-rodape">
+  <div class="bw-kicker" style="margin-bottom:var(--esp-4)">Cinco questões seguem abertas</div>
+  <p class="bw-corpo" style="max-width:64ch"><code>Q-DS.1</code> o acento do kraft reprova · <code>Q-DS.2</code> os temas de card contradizem o pilar, e lido ao pé da letra o MVP entrega zero cards na identidade do próprio produto · <code>Q-DS.3</code> tema e superfície são a mesma coisa com dois nomes · <code>Q-DS.4</code> a escala nunca foi testada em tela cheia · <code>Q-DS.5</code> seis das treze linhas do anexo RN são hipótese.</p>
+  <p class="bw-kicker-micro" style="margin-top:var(--esp-6)">BookWorm · catálogo do design system · referência de specs/design-system.md</p>
+</footer>
+
+</div>
