@@ -10,15 +10,13 @@
 
 ## Operação em curso — Plano do primeiro protótipo (`planos/2026-08-23-primeiro-prototipo-mvp.md`)
 
-**Estágios 0, 1 e 2 concluídos.** Próxima ação: abrir sessão nova, **commitar o Estágio 2**
-(working tree tem tudo pronto, só falta `git commit` — ver Pendências) e executar o **Estágio 3**
+**Estágios 0, 1 e 2 concluídos.** Próxima ação: abrir sessão nova e executar o **Estágio 3**
 (`packages/core`: apuração da sessão). Ler a seção "Estágio 3" do plano antes de começar; não
 reler o restante.
 
 ### O que já foi verificado — não repetir
 
-- `git log` tem dois commits (estado zero; Estágio 1). O Estágio 2 está pronto no working tree,
-  **ainda não commitado**.
+- `git log` tem três commits: estado zero, Estágio 1, Estágio 2.
 - Monorepo existe e funciona: `apps/app` e `apps/api` (scaffolds vazios), `packages/core`
   (índice de caracteres, RN-02.10/RN-03.2/RN-03.3/RN-02.1f/RN-ST.8/RN-TEL.27/RN-ST.7, todos com
   teste nomeado pelo ID), `packages/db` (vazio até Estágio 6), `packages/design` (pigmentos,
