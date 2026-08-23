@@ -452,25 +452,30 @@ Desenho: quatro abas na borda inferior, opacas — **interrompem a mesa** (`P-10
 
 | Primitiva | CSS | React Native | Degradação | Status |
 |---|---|---|---|---|
-| `P-1` Grão | `radial-gradient` + `background-size: 7px 7px` | **Asset compartilhado**: PNG 7×7 tileável via `ImageBackground` (`resizeMode: repeat`) | Nenhuma — a mesma arte serve as duas plataformas | **a produzir** |
-| `P-2` Luz na folha | `radial-gradient` de canto | Gradiente nativo depende de versão/arquitetura | Fallback: cor sólida ligeiramente mais clara | não verificado |
-| `P-3` Relevo | `box-shadow: inset` | `boxShadow` depende de versão | Fallback: `View` de 1px sobreposta | não verificado |
-| `P-4` Sombra | `box-shadow` colorido | `elevation` do Android **não colore sombra**; `boxShadow` depende de versão | Fallback: relevo sólido + borda inferior — que já é `P-9` | não verificado |
+| `P-1` Grão | `radial-gradient` + `background-size: 7px 7px` | **Asset compartilhado**: PNG 7×7 tileável via `ImageBackground` (`resizeMode: repeat`) | Nenhuma — a mesma arte serve as duas plataformas | **atravessa** |
+| `P-2` Luz na folha | `radial-gradient` de canto | `View` nativa não tem gradiente radial | Círculo sólido de borda dura, não um esmaecimento — efeito perceptível, menos sutil que o CSS | **degrada** |
+| `P-3` Relevo | `box-shadow: inset` | `borderTopWidth` 1px claro | Renderiza, mas discreto demais para ler como relevo numa captura comum; precisa de luz ambiente real | **degrada** |
+| `P-4` Sombra | `box-shadow` colorido | `style.boxShadow` (sintaxe CSS) **funciona nativamente** no RN 0.86/Fabric, sem fallback | Nenhuma — achado melhor que o previsto | **atravessa** |
 | `P-5` Rotação | `transform: rotate()` | `transform: [{rotate}]` | Nenhuma | **atravessa** |
 | `P-6` Raio irregular | `4px 7px 5px 8px / 6px 4px 7px 5px` | **Eixo duplo não existe em RN** | Raio por canto, só o primeiro eixo. A imperfeição migra para `P-5` e para a borda | **confirmada** |
-| `P-7` Grifo | `mix-blend-mode: multiply` + `box-decoration-break: clone` | `mixBlendMode` depende de versão; `clone` **não tem equivalente** | Cor pré-multiplicada (valores já calculados em §8) + destaque por linha | não verificado |
+| `P-7` Grifo | `mix-blend-mode: multiply` + `box-decoration-break: clone` | `style.mixBlendMode: 'multiply'` **funciona nativamente** no RN 0.86/Fabric | `clone` não tem equivalente (destaque não continua em quebra de linha automaticamente testada), mas o escurecimento em si atravessa sem overlay | **atravessa** |
 | `P-8` Carimbo | Rotação + opacidade + `border-radius: 50%` | Atravessa | Nenhuma | **atravessa** |
-| `P-9` Botão de papel | `box-shadow` sólido 2px | `boxShadow` ou `View` aninhada | Nenhuma prevista | não verificado |
+| `P-9` Botão de papel | `box-shadow` sólido 2px | `borderBottomWidth` sólido | Nenhuma no estado estático; afundar ao toque não medido (é interação, não primitiva — ver Estágio 5/7) | **atravessa** |
 | `P-10` Interromper pauta | Fundo opaco sobre `background-image` | Atravessa | Nenhuma | **atravessa** |
 | `P-11` Métrica tipográfica | `font-variant-numeric: tabular-nums` | `fontVariant: ['tabular-nums']` | Nenhuma | **atravessa** |
-| — Versalete | `font-variant: small-caps` (sintético) | `fontVariant: small-caps` **não confiável no Android** | Face Spectral SC real, ou o versalete sai da escala | não verificado |
-| — Corpo justificado | `text-align: justify; hyphens: auto` | Justify limitado por API; **hifenização não exposta** | Sem hifenização, justificado abre rios: provável alinhamento à esquerda no Android | **a medir** |
+| — Versalete | `font-variant: small-caps` (sintético) | `fontVariant: small-caps` **sem efeito visível no Android** | Texto permanece em minúsculas normais. Precisa de face SC real, ou o versalete sai da escala | **não atravessa** |
+| — Corpo justificado | `text-align: justify; hyphens: auto` | `textAlign: 'justify'` **funciona no Android** (bordas retas dos dois lados, exceto última linha); `hyphens: auto` continua sem equivalente | Sem hifenização, justificado abre rios em texto estreito — mas o alinhamento em si atravessa, contra a expectativa de que cairia para a esquerda | **atravessa parcialmente** |
+
+Medido em app de prova real (Estágio 1 do plano do primeiro protótipo), Expo SDK 57 / RN 0.86,
+AVD Android 14 (API 34) — relatório completo com capturas em `specs/medicao-app-de-prova.md`.
+Nenhuma das doze primitivas exigiu Skia neste app de prova; `P-4` e `P-7` foram os achados que
+mais surpreenderam, atravessando nativamente onde a hipótese era de fallback obrigatório.
 
 ### Como verificar
 
 Um app RN Android mínimo que renderize as doze primitivas lado a lado, na versão que o projeto fixar. Cada linha só sai de `não verificado` com captura de tela. Enquanto isso não existir, **as linhas ficam como estão** e nenhum mockup promete o que elas descrevem.
 
-- `RN-DS.20` — **Nada no Anexo A é declarado verificado sem medição em app real.**
+- `RN-DS.20` — **Nada no Anexo A é declarado verificado sem medição em app real.** ✅ Cumprido nesta rodada — nenhuma linha permanece `não verificado`.
 
 ---
 

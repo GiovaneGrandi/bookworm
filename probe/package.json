@@ -1,0 +1,36 @@
+{
+  "name": "probe",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "dependencies": {
+    "@shopify/react-native-skia": "2.6.2",
+    "expo": "~57.0.15",
+    "expo-asset": "~57.0.13",
+    "expo-build-properties": "~57.0.13",
+    "expo-file-system": "~57.0.5",
+    "expo-keep-awake": "~57.0.1",
+    "expo-status-bar": "~57.0.1",
+    "react": "19.2.3",
+    "react-native": "0.86.2",
+    "react-native-readium": "^5.0.0",
+    "react-native-svg": "15.15.4"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.2",
+    "pdfkit": "^0.19.1",
+    "pngjs": "^7.0.0",
+    "typescript": "~6.0.3"
+  },
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web"
+  },
+  "private": true,
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@shopify/react-native-skia"
+    ]
+  }
+}
