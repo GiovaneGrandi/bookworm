@@ -19,6 +19,7 @@ import { useSuperficie } from '../../src/componentes/useSuperficie.js';
 import { CenaDoJardim } from '../../src/jardim/CenaDoJardim.js';
 import { sincronizarNotificacoesDeEngajamento } from '../../src/notificacoes/servico.js';
 import {
+  haCelebracaoPendenteHoje,
   obterOfensivaAtual,
   obterProgressoDeHoje,
   processarCongelamentoAutomatico,
@@ -65,6 +66,14 @@ export default function TelaJardim() {
   useFocusEffect(
     useCallback(() => {
       void (async () => {
+        // RN-04.10d — a conquista pendente sobrevive a quantos fechamentos de app forem
+        // necessários: mora no banco, não em memória de uma tela. O Jardim é a tela de entrada,
+        // então é aqui que ela ressurge se o resumo nunca chegou a ser visto.
+        if (await haCelebracaoPendenteHoje('leitura')) {
+          router.replace({ pathname: '/resumo', params: { celebracaoPendente: '1' } });
+          return;
+        }
+
         const congelamento = await processarCongelamentoAutomatico('leitura');
         const [ofensiva, progresso] = await Promise.all([
           obterOfensivaAtual('leitura'),

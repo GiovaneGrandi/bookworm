@@ -555,6 +555,27 @@ export async function avaliarEAtualizarHoje(
   return { pendente: celebracaoEstado === 'pendente' };
 }
 
+/** RN-04.10d — se o app morrer antes de exibir a celebração, ela precisa aparecer na próxima
+ * abertura. Chamado pelo Jardim a cada foco: uma pendência sobrevive a quantos fechamentos de app
+ * forem necessários, porque mora no banco (`dia_ofensiva.celebracao_estado`), não em memória de
+ * uma tela específica. */
+export async function haCelebracaoPendenteHoje(eixo: Eixo = 'leitura'): Promise<boolean> {
+  const db = abrirBanco();
+  const hoje = diaLocalDeHoje();
+  const [linha] = await db
+    .select({ celebracaoEstado: diaOfensiva.celebracaoEstado })
+    .from(diaOfensiva)
+    .where(
+      and(
+        eq(diaOfensiva.usuarioId, USUARIO_LOCAL),
+        eq(diaOfensiva.eixo, eixo),
+        eq(diaOfensiva.dia, hoje)
+      )
+    )
+    .limit(1);
+  return linha?.celebracaoEstado === 'pendente';
+}
+
 /** RN-04.10d/e — consumida uma única vez; chamado pela tela de resumo depois de mostrar a
  * celebração. */
 export async function consumirCelebracaoPendente(eixo: Eixo = 'leitura'): Promise<void> {
