@@ -11,12 +11,22 @@
 // pendente — o indicador nativo do react-native-readium não expõe prop para os 3 níveis, decisão
 // do usuário via `AskUserQuestion` de adiar só esse controle (ver `.claude/retomada.md`). A
 // ocultação automática após 3s do resto do modo imersivo também segue pendente.
+//
+// Estágio 7 passo 7 (RN-02.17, resposta a gesto): a curva de desaceleração da virada de página e
+// o preenchimento progressivo do grifo (RN-02.17b/c) exigem patch nativo no Readium/WebView — sem
+// hook exposto por `ReadiumView.nitro.ts` — e ficaram fora desta rodada por decisão do usuário via
+// `AskUserQuestion`. O que dá para controlar por aqui foi implementado: um toque háptico leve a
+// cada virada de página, a cada grifo/anotação salvos e a cada consulta ao dicionário, todos atrás
+// da chave única `prefs.retornoSensorialAtivo` (RN-02.17f, painel de preferências do passo 5) via
+// `hapticoSeAtivo`. RN-02.17d (vestígio do dicionário) reaproveita o mecanismo de decoração do
+// passo 6: toda consulta já feita na obra reaparece como sublinhado ao reabrir a leitura.
 import { type IndiceDeCaracteres, posicaoEmCaracteres } from '@bookworm/core/src/indice/index.js';
 import {
   PREFERENCIAS_LEITURA_PADRAO,
   type PreferenciasDeLeitura,
   paraPreferenciasDeNavegador,
 } from '@bookworm/core/src/leitor/index.js';
+import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -26,10 +36,12 @@ import { useUnistyles } from 'react-native-unistyles';
 import { marcarComoConcluido, marcarComoLendo } from '../src/biblioteca/consultas.js';
 import { consultarTermo, type ResultadoDicionario } from '../src/leitor/dicionario.js';
 import {
+  type ConsultaSalva,
   criarAnotacao,
   criarConsultaDicionario,
   criarDestaque,
   type DestaqueSalvo,
+  listarConsultasDaObra,
   listarDestaquesDaObra,
 } from '../src/leitor/interacoes.js';
 import { PainelDeLeitura } from '../src/leitor/PainelDeLeitura.js';
@@ -80,8 +92,10 @@ export default function Leitor() {
   const [prefs, setPrefs] = useState<PreferenciasDeLeitura>(PREFERENCIAS_LEITURA_PADRAO);
   const [painelAberto, setPainelAberto] = useState(false);
   const [destaques, setDestaques] = useState<DestaqueSalvo[]>([]);
+  const [consultas, setConsultas] = useState<ConsultaSalva[]>([]);
   const [interacao, setInteracao] = useState<InteracaoPendente | null>(null);
   const [resultadoDicionario, setResultadoDicionario] = useState<ResultadoDicionario | null>(null);
+  const primeiraLocalizacao = useRef(true);
   const { theme } = useUnistyles();
 
   useEffect(() => {
@@ -91,10 +105,22 @@ export default function Leitor() {
   useEffect(() => {
     if (!obraId) return;
     void listarDestaquesDaObra(obraId).then(setDestaques);
+    void listarConsultasDaObra(obraId).then(setConsultas);
   }, [obraId]);
 
+  // RN-02.17f — a chave única de retorno sensorial (painel de preferências, passo 5) governa todo
+  // háptico deste arquivo; nenhuma chamada a `expo-haptics` passa por fora dela.
+  const hapticoSeAtivo = useCallback(
+    (estilo: Haptics.ImpactFeedbackStyle = Haptics.ImpactFeedbackStyle.Light) => {
+      if (prefs.retornoSensorialAtivo) void Haptics.impactAsync(estilo);
+    },
+    [prefs.retornoSensorialAtivo]
+  );
+
   // RN-02.18/RN-02.20 — todo destaque já feito reaparece ao reabrir a obra; a cor vem só de
-  // `theme.grifo` (RN-DS.1), nunca de um hex repetido aqui.
+  // `theme.grifo` (RN-DS.1), nunca de um hex repetido aqui. RN-02.17d — a mesma reconstrução vale
+  // para o vestígio do dicionário, um sublinhado tênue (`sup.papel.tintaFraca`) sobre cada termo
+  // já consultado.
   const grupoDeDecoracoes = useMemo<DecorationGroup[]>(
     () => [
       {
@@ -105,8 +131,16 @@ export default function Leitor() {
           style: { type: 'highlight', tint: theme.grifo[d.pigmento] },
         })),
       },
+      {
+        name: 'consultas-dicionario',
+        decorations: consultas.map((c) => ({
+          id: c.id,
+          locator: c.locator,
+          style: { type: 'underline', tint: theme.sup.papel.tintaFraca },
+        })),
+      },
     ],
-    [destaques, theme]
+    [destaques, consultas, theme]
   );
 
   const aoAcionarSelecao = useCallback(
@@ -120,12 +154,19 @@ export default function Leitor() {
         setResultadoDicionario(resultado);
         const sessaoId = useMaquinaSessao.getState().sessaoId;
         if (sessaoId && obraId) {
-          await criarConsultaDicionario(sessaoId, obraId, evento.locator, evento.selectedText);
+          const salva = await criarConsultaDicionario(
+            sessaoId,
+            obraId,
+            evento.locator,
+            evento.selectedText
+          );
+          setConsultas((atuais) => [...atuais, salva]);
+          hapticoSeAtivo();
           await useMaquinaSessao.getState().sinalInteracaoQualitativa('dicionario');
         }
       })();
     },
-    [obraId]
+    [obraId, hapticoSeAtivo]
   );
 
   const aoEscolherPigmento = useCallback(
@@ -134,10 +175,11 @@ export default function Leitor() {
       if (!interacao || !obraId || !sessaoId) return;
       const salvo = await criarDestaque(sessaoId, obraId, interacao.locator, pigmento);
       setDestaques((atuais) => [...atuais, salvo]);
+      hapticoSeAtivo();
       await useMaquinaSessao.getState().sinalInteracaoQualitativa('destaque');
       setInteracao(null);
     },
-    [interacao, obraId]
+    [interacao, obraId, hapticoSeAtivo]
   );
 
   const aoSalvarNota = useCallback(
@@ -145,10 +187,11 @@ export default function Leitor() {
       const sessaoId = useMaquinaSessao.getState().sessaoId;
       if (!interacao || !obraId || !sessaoId) return;
       await criarAnotacao(sessaoId, obraId, interacao.locator, texto);
+      hapticoSeAtivo();
       await useMaquinaSessao.getState().sinalInteracaoQualitativa('nota');
       setInteracao(null);
     },
-    [interacao, obraId]
+    [interacao, obraId, hapticoSeAtivo]
   );
 
   // RN-02.16e — pré-visualização ao vivo: todo ajuste chega aqui e recalcula o objeto que a
@@ -207,6 +250,15 @@ export default function Leitor() {
   const aoMudarLocalizacao = useCallback(
     (locator: Locator) => {
       if (!obra || !locator.locations) return;
+      // RN-02.17a/RN-02.17b — resposta imediata à virada de página; a curva de desaceleração em
+      // si é do pager nativo do Readium (sem hook exposto, ver .claude/retomada.md), então esta
+      // rodada responde com o que dá para controlar daqui: um toque háptico por virada. A
+      // primeira localização é a abertura da obra, não uma virada — não dispara.
+      if (primeiraLocalizacao.current) {
+        primeiraLocalizacao.current = false;
+      } else {
+        hapticoSeAtivo();
+      }
       const indice = obra.indiceCaracteres as IndiceDeCaracteres;
       try {
         const caracteres = posicaoEmCaracteres(indice, locator.href, locator.locations.progression);
@@ -217,7 +269,7 @@ export default function Leitor() {
         // correspondente, não há o que sinalizar.
       }
     },
-    [obra, sinalPosicao]
+    [obra, sinalPosicao, hapticoSeAtivo]
   );
 
   if (carregando || !obra) {

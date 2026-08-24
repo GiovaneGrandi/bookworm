@@ -4,53 +4,68 @@
 > Regras de uso em `CLAUDE.md` §Retomada barata. Só entra aqui o que **não** é re-derivável
 > por grep no repositório. Operação fechada, seção apagada. Não replicar no vault.
 
-**Atualizado em:** 23/08/2026
+**Atualizado em:** 24/08/2026
 
 ---
 
 ## Operação em curso — Plano do primeiro protótipo (`planos/2026-08-23-primeiro-prototipo-mvp.md`)
 
-**Estágios 0–7-fundação, Estágio 7 passos 2/3/5 e Estágio 8-fundação commitados** (`git log`: até
-`5e75764`). Usuário pediu, em sequência: voltar ao que faltava do Estágio 7 antes de fechar o 8 →
+**Estágios 0–7-fundação, Estágio 7 passos 2/3/5/6 e Estágio 8-fundação commitados** (`git log`: até
+`1294411`). Usuário pediu, em sequência: voltar ao que faltava do Estágio 7 antes de fechar o 8 →
 "Estante primeiro, sozinha" (passo 3) → "passo 5" (painel de leitura) → "passo 6"
-(destaques/anotações/dicionário, **implementado nesta rodada, ainda não commitado**).
+(destaques/anotações/dicionário) → "passo 7" (resposta a gesto, **implementado nesta rodada, ainda
+não commitado**).
 
-Falta do Estágio 7: passo 7 (resposta a gesto — `R-2` avisa que isso **é** o produto, não pode ser
-apressado), e `RN-02.13a` (nível da âncora de posição) que ficou de fora do passo 5 por decisão do
-usuário — o indicador nativo do react-native-readium (`PositionLabelManager.kt`) não expõe prop
-para desligar/trocar, exigiria patch na lib Android.
+Falta do Estágio 7 depois deste commit: só `RN-02.13a` (nível da âncora de posição), que ficou de
+fora do passo 5 por decisão do usuário — o indicador nativo do react-native-readium
+(`PositionLabelManager.kt`) não expõe prop para desligar/trocar, exigiria patch na lib Android. Com
+o passo 7 commitado, o Estágio 7 fecha por completo exceto por esse item adiado (não bloqueia
+seguir para o Estágio 8 — decisão já tomada ao adiar RN-02.13a no passo 5).
 
-### O que foi construído (passo 6 — destaques, anotações, dicionário)
+### O que foi construído (passo 7 — resposta a gesto, RN-02.17)
 
-Schema (`destaque`, `anotacao`, `consulta_dicionario`) e a sinalização de instrumentação
-(`useMaquinaSessao.sinalInteracaoQualitativa`, RN-TEL.19) **já existiam desde o Estágio 3/6** —
-esta rodada foi só integração:
+Decisão do usuário via `AskUserQuestion`: "Adiar o que exige patch, fazer o resto". Ficaram de fora
+— exigem patch nativo no Readium/WebView, sem hook exposto em `ReadiumView.nitro.ts` (grep
+confirmou ausência de config de animação/transição/duração antes de propor o escopo):
+- RN-02.17b — curva de desaceleração da virada de página (e o som de página, escopo cortado por
+  mim à parte: não há asset de áudio nem `expo-av`/`expo-audio` instalado).
+- RN-02.17c — preenchimento progressivo ("absorção de tinta") do grifo.
 
-- **`apps/app/src/leitor/interacoes.ts`** (novo) — `criarDestaque`, `criarAnotacao`,
-  `criarConsultaDicionario`, `listarDestaquesDaObra`.
-- **`apps/app/src/leitor/dicionario.ts`** (novo) — `consultarTermo` via `dictionaryapi.dev`
-  (gratuito, sem chave). RN-02.20 pede "offline embarcado, com queda para online" — o embarcado é
-  o próprio `Q-02.4`/`Q-ST.7` do plano, questão em aberto que a spec já marca como "não bloqueia";
-  esta rodada implementa só a consulta online.
-- **`apps/app/src/leitor/PainelInteracoes.tsx`** (novo) — três modos (grifar/anotar/dicionário)
-  numa folha sobreposta, nunca uma rota nova (RN-02.20). Pastilhas de pigmento reusam
-  `theme.grifo.*` (nunca `pigmento` direto — RN-DS.1, testado pelo scan estático).
-- **`apps/app/app/leitor.tsx`** — `ReadiumView` ganhou `selectionActions` (3 ações nativas:
-  Grifar/Anotar/Dicionário, aparecem na barra de seleção de texto **nativa** do Android) e
-  `decorations` (destaques existentes da obra, recarregados a cada abertura — RN-02.18 "não é
-  efêmero por sessão"). `onSelectionAction` abre `PainelInteracoes` no modo certo.
+O que foi implementado:
+- **`apps/app/src/leitor/interacoes.ts`** — `criarConsultaDicionario` passou a retornar
+  `ConsultaSalva` (antes `void`); novo `listarConsultasDaObra(obraId)` alimenta o vestígio
+  permanente (RN-02.17d) do mesmo jeito que `listarDestaquesDaObra` já fazia para os destaques.
+- **`apps/app/app/leitor.tsx`** — `hapticoSeAtivo` (usa `expo-haptics`, já era dependência, sem
+  rebuild) centraliza todo háptico do arquivo atrás da chave única `prefs.retornoSensorialAtivo`
+  (RN-02.17f, já existia desde o passo 5 mas não era lida por nada até agora). Chamado em: virada
+  de página (`aoMudarLocalizacao`, pula a primeira localização — é abertura da obra, não virada),
+  grifo salvo, anotação salva, consulta ao dicionário concluída. `grupoDeDecoracoes` ganhou um
+  segundo `DecorationGroup` ("consultas-dicionario") com `type: 'underline'`, tint
+  `theme.sup.papel.tintaFraca` — o vestígio do RN-02.17d.
 
-### Validado ao vivo — a seleção nativa de texto funciona de ponta a ponta
+### Validado ao vivo (passo 7)
 
-**Confirmação real, não inferência**: seleção de texto por toque-e-segure no `ReadiumView` abriu a
-barra de seleção **nativa do Android** com os três rótulos certos ("Grifar", "Anotar",
-"Dicionário") sobre o trecho "rabbit-hole" — prova que `selectionActions`/`onSelectionAction`
-funcionam de verdade neste ambiente (isso não é um `Pressable` nosso, é UI do sistema, então não
-sofre do problema de toque via `adb` descrito abaixo). Tocar "Grifar" abriu `PainelInteracoes` com
-as 4 pastilhas de pigmento certas e o trecho citado. **Não confirmado**: tocar numa pastilha
-efetivamente grava o destaque e ele aparece como decoração — a mesma limitação de toque via `adb`
-dentro de painéis sobrepostos ao `ReadiumView` (já documentada para o passo 5) impediu testar essa
-última etapa. O app não travou em nenhum momento (`logcat` limpo de fatal/exception no fluxo).
+Fluxo de fumaça no emulador: relançar o app limpo → abrir "alice" pela Biblioteca (sem crash com o
+segundo `DecorationGroup` presente) → 3 swipes de página (`adb shell input swipe 800 1200 200 1200
+150`) para exercitar o caminho do háptico em `aoMudarLocalizacao` → `logcat` sem
+FATAL/Exception/erro no fluxo, avanço de página confirmado por screenshot (3/83) → `KEYCODE_BACK` →
+screenshot confirma volta limpa para a Biblioteca, nenhum estado preso. **Não confirmado** (mesma
+limitação de toque via `adb` em painel sobreposto ao `ReadiumView`, documentada abaixo): se o
+háptico realmente dispara (não é observável por `adb`/screenshot); se o sublinhado de vestígio do
+dicionário renderiza certo — nenhuma consulta foi de fato concluída ao vivo nesta rodada para
+produzir uma decoração real.
+
+### Pendências de teste com toque real (acumuladas — passos 5, 6 e 7)
+
+Nenhuma etapa de toque *dentro* de um painel sobreposto ao `ReadiumView` foi confirmada com toque
+real ainda (só a barra de seleção nativa, que não é um painel nosso). Antes de considerar o
+Estágio 7 validado de ponta a ponta, falta testar com toque real (mouse na janela do emulador ou
+aparelho físico):
+- Passo 5: os 9 controles do painel de preferências realmente mudam o texto renderizado.
+- Passo 6: tocar uma pastilha de pigmento grava o destaque e ele aparece como grifo; salvar
+  anotação persiste; consulta ao dicionário busca online e mostra definição/erro.
+- Passo 7: sentir o retorno háptico de fato (virada de página, grifo, nota, dicionário); ver o
+  sublinhado de vestígio do dicionário aparecer após uma consulta real.
 
 ### Achado consolidado — toque via `adb` não confiável em qualquer painel sobreposto ao `ReadiumView`
 
@@ -67,13 +82,15 @@ físico), como já confirmado para o rodapé de abas em sessão anterior.
 
 ### Próxima ação concreta
 
-Pedir confirmação e commitar o Estágio 7 passo 6. **Antes de dar o passo 6 por fechado de
-verdade**, testar com toque real: tocar uma pastilha de pigmento grava o destaque e ele aparece
-como grifo no texto; salvar uma anotação persiste; a consulta ao dicionário busca online e mostra
-definição/erro. (O mesmo vale para o passo 5, ainda não confirmado com toque real.) Depois: passo
-7 (resposta a gesto). Ainda pendente, não decidido: se `leitor-debug.tsx` deve ganhar uma entrada
-de UI de volta (perdeu a que tinha na rescrita do Jardim, Estágio 8 fundação) ou ficar sem uma por
-enquanto.
+Pedir confirmação e commitar o Estágio 7 passo 7 (`interacoes.ts` + `leitor.tsx`, ver acima) —
+`git status` mostra as duas mudanças pendentes. Isso fecha o Estágio 7 por completo (exceto
+RN-02.13a, adiado). Depois: retomar o Estágio 8 (fundação já commitada em `913ec66`; falta ver no
+plano o que ficou de fora — arte do Jardim, notificações, congelamento automático, edição de meta),
+conforme pedido original do usuário "depois concluímos o 8" — mas confirmar com o usuário antes de
+assumir isso como próximo passo automático. As pendências de teste com toque real (seção acima)
+seguem em aberto independente do que vier a seguir. Ainda pendente, não decidido: se
+`leitor-debug.tsx` deve ganhar uma entrada de UI de volta (perdeu a que tinha na rescrita do
+Jardim, Estágio 8 fundação) ou ficar sem uma por enquanto.
 
 ### O que já foi verificado — não repetir
 

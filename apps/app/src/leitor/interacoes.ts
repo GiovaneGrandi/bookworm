@@ -42,16 +42,31 @@ export async function criarAnotacao(
     .values({ id: criarUlid(), sessaoId, obraId, locator, texto, criadaEm: new Date() });
 }
 
+export type ConsultaSalva = { id: string; locator: Locator; termo: string };
+
 export async function criarConsultaDicionario(
   sessaoId: string,
   obraId: string,
   locator: Locator,
   termo: string
-): Promise<void> {
+): Promise<ConsultaSalva> {
   const db = abrirBanco();
+  const id = criarUlid();
   await db
     .insert(consultaDicionario)
-    .values({ id: criarUlid(), sessaoId, obraId, locator, termo, criadaEm: new Date() });
+    .values({ id, sessaoId, obraId, locator, termo, criadaEm: new Date() });
+  return { id, locator, termo };
+}
+
+/** RN-02.17d — vestígio permanente: toda consulta já feita na obra reaparece como sublinhado ao
+ * reabrir a leitura, do mesmo jeito que os destaques (RN-02.18) já fazem. */
+export async function listarConsultasDaObra(obraId: string): Promise<ConsultaSalva[]> {
+  const db = abrirBanco();
+  const linhas = await db
+    .select()
+    .from(consultaDicionario)
+    .where(eq(consultaDicionario.obraId, obraId));
+  return linhas.map((l) => ({ id: l.id, locator: l.locator as Locator, termo: l.termo }));
 }
 
 /** Alimenta os `decorations` do `ReadiumView` — todo destaque já feito na obra, para reabrir a
