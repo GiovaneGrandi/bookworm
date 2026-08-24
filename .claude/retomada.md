@@ -75,8 +75,12 @@ alarme `RTC_WAKEUP` real, no horário exato (20:00 hoje), tag
 `expo.modules.notifications.NOTIFICATION_EVENT` — e **nenhum** alarme de "ofensiva em risco"
 (correto: ofensiva ainda não existe, `ofensivaAtivaDias` = 0 < 3). Esta foi a validação mais forte
 das três desta sessão porque `dumpsys alarm` prova o agendamento real no SO, não só ausência de
-crash. **Não validado**: o disparo de fato (esperar até 20h), a supressão durante sessão ativa
-(RN-02.14) e o cancelamento quando a meta é cumprida no meio do dia.
+crash. **Disparo de fato confirmado** numa checagem seguinte, sem intervenção: o relógio real do
+emulador chegou às 20h, o alarme disparou de verdade e a notificação "Um convite para ler" / "Sua
+leitura de hoje está esperando, sem pressa." apareceu na cortina do Android com a cópia exata —
+visto tanto por `dumpsys notification` quanto por screenshot. `expo-notifications` logou "will not
+trigger in the future, removing" ao processá-la. **Ainda não validado**: a supressão durante
+sessão ativa (RN-02.14) e o cancelamento quando a meta é cumprida no meio do dia.
 
 ### Achado de ambiente — instalar um módulo nativo novo exige `expo prebuild`
 Diferente de código JS/TS puro, adicionar uma dependência com módulo nativo (`expo-notifications`)
