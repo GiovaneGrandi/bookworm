@@ -206,7 +206,13 @@ describe('bw-celebracao', () => {
 describe('bw-dormencia', () => {
   it('mostra os três números (RN-04.14a)', async () => {
     const { toJSON } = await render(
-      <BwDormencia contagemEncerrada={23} melhorMarca={41} mensagem="Volte quando puder." />
+      <BwDormencia
+        contagemEncerrada={23}
+        melhorMarca={41}
+        mensagem="Volte quando puder."
+        tamanhoPermanente={57}
+        marcosAlcancados={[7, 30]}
+      />
     );
     expect(toJSON()).toMatchSnapshot();
   });

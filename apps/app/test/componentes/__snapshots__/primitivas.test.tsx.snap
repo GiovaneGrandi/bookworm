@@ -948,31 +948,12 @@ exports[`bw-dormencia mostra os três números (RN-04.14a) 1`] = `
     style={
       {
         "borderRadius": 4,
-        "height": 100,
+        "height": 160,
         "overflow": "hidden",
-        "width": 160,
+        "width": 280,
       }
     }
-  >
-    <View
-      pointerEvents="none"
-      style={
-        [
-          {
-            "borderRadius": 60,
-            "height": 120,
-            "left": -30,
-            "position": "absolute",
-            "top": -30,
-            "width": 120,
-          },
-          {
-            "backgroundColor": "rgba(255,255,255,0.12)",
-          },
-        ]
-      }
-    />
-  </View>
+  />
   <View
     style={
       {

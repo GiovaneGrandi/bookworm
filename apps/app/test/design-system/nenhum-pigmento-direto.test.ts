@@ -17,6 +17,12 @@ const raizSrc = join(__dirname, '..', '..', 'src');
 // (RN-DS.1: "só uma superfície pode lê-lo").
 const ARQUIVO_AUTORIZADO = join(raizSrc, 'tema', 'unistyles.ts');
 
+// `design-system.md` §6.5: "a cena do jardim não é componente" — é arte ilustrada 2D com paleta
+// própria (`mvp.md` §9), não uma peça que declara superfície. A coincidência de valor com um
+// pigmento nomeado (a folhagem viva deriva de `--verde-tinta` de propósito, RN-04.23) não é o
+// sintoma que RN-DS.1 persegue.
+const ARQUIVOS_ISENTOS_DE_PIGMENTO_LITERAL = [join(raizSrc, 'jardim', 'paletaPlanta.ts')];
+
 function listarArquivos(dir: string): string[] {
   const arquivos: string[] = [];
   for (const entrada of readdirSync(dir)) {
@@ -56,6 +62,7 @@ describe('RN-DS.1, RN-ST.3', () => {
 
   it('nenhum componente repete o valor literal de um pigmento nomeado — só via theme.sup/theme.semantico/theme.grifo', () => {
     const violacoes = conteudoPorArquivo
+      .filter(({ arquivo }) => !ARQUIVOS_ISENTOS_DE_PIGMENTO_LITERAL.includes(arquivo))
       .filter(({ conteudo }) => VALORES_DE_PIGMENTO.some((valor) => conteudo.includes(valor)))
       .map(({ arquivo }) => arquivo);
     expect(violacoes).toEqual([]);

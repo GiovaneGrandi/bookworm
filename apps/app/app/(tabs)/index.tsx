@@ -1,8 +1,7 @@
-// Jardim — casa do hábito: ofensiva, meta do dia, canteiro (design-system.md §10). Esta rodada
-// (Estágio 8, fundação): estado real de ofensiva/meta, sem a arte completa do canteiro em Skia —
-// o estágio (broto/muda/planta florida/árvore/bosque) aparece como rótulo, não ilustração; vida
-// ambiente (J-11) e os 4 cosméticos de marco ficam para a rodada que trouxer a arte.
-import { estadoDoJardim } from '@bookworm/core/src/ofensiva/index.js';
+// Jardim — casa do hábito: ofensiva, meta do dia, canteiro (design-system.md §10). Estágio 8: o
+// canteiro é arte ilustrada de verdade (`CenaDoJardim`, Skia) — os 5 estágios, o acervo que rega o
+// jardim, os 4 cosméticos de marco e a vida ambiente (`mvp.md` §9, `J-11`).
+import { avaliarMarcos, estadoDoJardim } from '@bookworm/core/src/ofensiva/index.js';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Text, View } from 'react-native';
@@ -17,6 +16,7 @@ import {
   BwVazio,
 } from '../../src/componentes/index.js';
 import { useSuperficie } from '../../src/componentes/useSuperficie.js';
+import { CenaDoJardim } from '../../src/jardim/CenaDoJardim.js';
 import { sincronizarNotificacoesDeEngajamento } from '../../src/notificacoes/servico.js';
 import {
   obterOfensivaAtual,
@@ -42,11 +42,19 @@ const ROTULO_UNIDADE: Record<string, string> = {
 type EstadoTela =
   | { tipo: 'carregando' }
   | { tipo: 'nunca_leu' }
-  | { tipo: 'dormente'; contagemEncerrada: number; melhorMarca: number }
+  | {
+      tipo: 'dormente';
+      contagemEncerrada: number;
+      melhorMarca: number;
+      tamanhoPermanente: number;
+      marcosAlcancados: number[];
+    }
   | {
       tipo: 'vivo';
       contagemAtual: number;
-      estagio: string;
+      estagio: 'broto' | 'muda' | 'planta_florida' | 'arvore' | 'bosque';
+      tamanhoPermanente: number;
+      marcosAlcancados: number[];
       progresso: { realizado: number; meta: number; unidade: string } | null;
     };
 
@@ -78,17 +86,22 @@ export default function TelaJardim() {
           return;
         }
         const jardim = estadoDoJardim(ofensiva);
+        const marcosAlcancados = avaliarMarcos(ofensiva);
         if (jardim.estado === 'dormente') {
           setEstado({
             tipo: 'dormente',
             contagemEncerrada: jardim.contagemEncerrada ?? 0,
             melhorMarca: jardim.melhorMarca,
+            tamanhoPermanente: jardim.tamanhoPermanente,
+            marcosAlcancados,
           });
         } else {
           setEstado({
             tipo: 'vivo',
             contagemAtual: ofensiva.contagemAtual,
             estagio: jardim.estagio,
+            tamanhoPermanente: jardim.tamanhoPermanente,
+            marcosAlcancados,
             progresso,
           });
         }
@@ -120,6 +133,8 @@ export default function TelaJardim() {
           contagemEncerrada={estado.contagemEncerrada}
           melhorMarca={estado.melhorMarca}
           mensagem="Ler hoje replanta a ofensiva, com a paleta viva de volta na hora."
+          tamanhoPermanente={estado.tamanhoPermanente}
+          marcosAlcancados={estado.marcosAlcancados}
         />
         <BwBotao
           superficie="mesa"
@@ -140,6 +155,16 @@ export default function TelaJardim() {
             aoDispensar={() => setAvisoCongelamento(null)}
           />
         )}
+        <View style={{ width: 280, height: 160, borderRadius: 4, overflow: 'hidden' }}>
+          <CenaDoJardim
+            estagio={estado.estagio}
+            estado="vivo"
+            tamanhoPermanente={estado.tamanhoPermanente}
+            marcosAlcancados={estado.marcosAlcancados}
+            largura={280}
+            altura={160}
+          />
+        </View>
         <BwNumeroCelebracao
           superficie="mesa"
           numero={estado.contagemAtual}

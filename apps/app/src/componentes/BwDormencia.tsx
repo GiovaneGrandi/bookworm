@@ -1,9 +1,10 @@
-// `bw-dormencia` — ofensiva quebrada (P-12, design-system.md §6.6; RN-04.25, RN-04.14a). Mesma
-// composição de P-2/P-4 em paleta de mesa (Anexo A: "atravessa", mesma ressalva de P-2). Anuncia
+// `bw-dormencia` — ofensiva quebrada (P-12, design-system.md §6.6; RN-04.25, RN-04.14a). Anuncia
 // os três números: zero corrente, marca encerrada, recorde — nunca omite a sequência encerrada,
-// nunca a mostra como se ainda estivesse correndo (RN-04.14a).
+// nunca a mostra como se ainda estivesse correndo (RN-04.14a). A arte é a mesma `CenaDoJardim` do
+// estado vivo, forçada a `estagio="broto"` (RN-04.23: o canteiro ativo recua na quebra) mas com o
+// acervo e os cosméticos de marco intactos (RN-04.27) — dormência bonita, não apagada (J-13).
 import { StyleSheet, Text, View } from 'react-native';
-import { LuzSobreAFolha } from '../primitivas/LuzSobreAFolha.js';
+import { CenaDoJardim } from '../jardim/CenaDoJardim.js';
 import { fontFamilyPara } from '../tema/fontes.js';
 import { useSuperficie } from './useSuperficie.js';
 
@@ -11,9 +12,17 @@ type Props = {
   contagemEncerrada: number;
   melhorMarca: number;
   mensagem: string;
+  tamanhoPermanente: number;
+  marcosAlcancados: number[];
 };
 
-export function BwDormencia({ contagemEncerrada, melhorMarca, mensagem }: Props) {
+export function BwDormencia({
+  contagemEncerrada,
+  melhorMarca,
+  mensagem,
+  tamanhoPermanente,
+  marcosAlcancados,
+}: Props) {
   // A dormência é sempre sobre a mesa, dessaturada — não é uma superfície escolhível por prop.
   const sup = useSuperficie('mesa');
 
@@ -24,7 +33,14 @@ export function BwDormencia({ contagemEncerrada, melhorMarca, mensagem }: Props)
       style={[styles.raiz, { backgroundColor: sup.fundo }]}
     >
       <View style={styles.palcoDaArte}>
-        <LuzSobreAFolha intensidade={0.12} />
+        <CenaDoJardim
+          estagio="broto"
+          estado="dormente"
+          tamanhoPermanente={tamanhoPermanente}
+          marcosAlcancados={marcosAlcancados}
+          largura={280}
+          altura={160}
+        />
       </View>
       <View style={styles.numeros}>
         <NumeroPequeno sup={sup} rotulo="corrente" valor={0} />
@@ -73,7 +89,7 @@ function NumeroPequeno({
 
 const styles = StyleSheet.create({
   raiz: { alignItems: 'center', gap: 18, padding: 27 },
-  palcoDaArte: { width: 160, height: 100, overflow: 'hidden', borderRadius: 4 },
+  palcoDaArte: { width: 280, height: 160, overflow: 'hidden', borderRadius: 4 },
   numeros: { flexDirection: 'row', gap: 27 },
   numeroPequeno: { alignItems: 'center', gap: 3 },
   valor: { fontSize: 34, fontVariant: ['tabular-nums'] },
