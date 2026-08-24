@@ -20,18 +20,37 @@ import {
 import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
-import type { Locator } from 'react-native-readium';
+import type { DecorationGroup, Locator, SelectionActionEvent } from 'react-native-readium';
 import { ReadiumView } from 'react-native-readium';
+import { useUnistyles } from 'react-native-unistyles';
 import { marcarComoConcluido, marcarComoLendo } from '../src/biblioteca/consultas.js';
+import { consultarTermo, type ResultadoDicionario } from '../src/leitor/dicionario.js';
+import {
+  criarAnotacao,
+  criarConsultaDicionario,
+  criarDestaque,
+  type DestaqueSalvo,
+  listarDestaquesDaObra,
+} from '../src/leitor/interacoes.js';
 import { PainelDeLeitura } from '../src/leitor/PainelDeLeitura.js';
+import { type ModoInteracao, PainelInteracoes } from '../src/leitor/PainelInteracoes.js';
 import {
   obterPreferenciasDeLeitura,
   salvarPreferenciasDeLeitura,
 } from '../src/leitor/preferencias.js';
 import { useCarregarObra } from '../src/leitor/useCarregarObra.js';
 import { avaliarEAtualizarHoje } from '../src/ofensiva/servico.js';
+import type { NomePigmentoDeGrifo } from '../src/primitivas/Grifo.js';
 import { useMaquinaSessao } from '../src/sessao/maquina.js';
 import { iniciarSinaisDeSessao } from '../src/sessao/sinais.js';
+
+const ACOES_DE_SELECAO = [
+  { id: 'grifar', label: 'Grifar' },
+  { id: 'anotar', label: 'Anotar' },
+  { id: 'dicionario', label: 'Dicionário' },
+];
+
+type InteracaoPendente = { modo: ModoInteracao; locator: Locator; texto: string };
 
 /** RN-02.6 — "sugerido ao atingir 100% de progresso". O índice indexa todo o spine, inclusive
  * capa e ficha catalográfica (RN-02.10 excluiria esses recursos do progresso "de verdade", mas o
@@ -60,10 +79,77 @@ export default function Leitor() {
   const progressoRef = useRef(0);
   const [prefs, setPrefs] = useState<PreferenciasDeLeitura>(PREFERENCIAS_LEITURA_PADRAO);
   const [painelAberto, setPainelAberto] = useState(false);
+  const [destaques, setDestaques] = useState<DestaqueSalvo[]>([]);
+  const [interacao, setInteracao] = useState<InteracaoPendente | null>(null);
+  const [resultadoDicionario, setResultadoDicionario] = useState<ResultadoDicionario | null>(null);
+  const { theme } = useUnistyles();
 
   useEffect(() => {
     void obterPreferenciasDeLeitura().then(setPrefs);
   }, []);
+
+  useEffect(() => {
+    if (!obraId) return;
+    void listarDestaquesDaObra(obraId).then(setDestaques);
+  }, [obraId]);
+
+  // RN-02.18/RN-02.20 — todo destaque já feito reaparece ao reabrir a obra; a cor vem só de
+  // `theme.grifo` (RN-DS.1), nunca de um hex repetido aqui.
+  const grupoDeDecoracoes = useMemo<DecorationGroup[]>(
+    () => [
+      {
+        name: 'destaques',
+        decorations: destaques.map((d) => ({
+          id: d.id,
+          locator: d.locator,
+          style: { type: 'highlight', tint: theme.grifo[d.pigmento] },
+        })),
+      },
+    ],
+    [destaques, theme]
+  );
+
+  const aoAcionarSelecao = useCallback(
+    (evento: SelectionActionEvent) => {
+      const modo = evento.actionId as ModoInteracao;
+      setInteracao({ modo, locator: evento.locator, texto: evento.selectedText });
+      if (modo !== 'dicionario') return;
+      setResultadoDicionario(null);
+      void (async () => {
+        const resultado = await consultarTermo(evento.selectedText);
+        setResultadoDicionario(resultado);
+        const sessaoId = useMaquinaSessao.getState().sessaoId;
+        if (sessaoId && obraId) {
+          await criarConsultaDicionario(sessaoId, obraId, evento.locator, evento.selectedText);
+          await useMaquinaSessao.getState().sinalInteracaoQualitativa('dicionario');
+        }
+      })();
+    },
+    [obraId]
+  );
+
+  const aoEscolherPigmento = useCallback(
+    async (pigmento: NomePigmentoDeGrifo) => {
+      const sessaoId = useMaquinaSessao.getState().sessaoId;
+      if (!interacao || !obraId || !sessaoId) return;
+      const salvo = await criarDestaque(sessaoId, obraId, interacao.locator, pigmento);
+      setDestaques((atuais) => [...atuais, salvo]);
+      await useMaquinaSessao.getState().sinalInteracaoQualitativa('destaque');
+      setInteracao(null);
+    },
+    [interacao, obraId]
+  );
+
+  const aoSalvarNota = useCallback(
+    async (texto: string) => {
+      const sessaoId = useMaquinaSessao.getState().sessaoId;
+      if (!interacao || !obraId || !sessaoId) return;
+      await criarAnotacao(sessaoId, obraId, interacao.locator, texto);
+      await useMaquinaSessao.getState().sinalInteracaoQualitativa('nota');
+      setInteracao(null);
+    },
+    [interacao, obraId]
+  );
 
   // RN-02.16e — pré-visualização ao vivo: todo ajuste chega aqui e recalcula o objeto que a
   // Readium recebe, sem tocar em posição, sessão ou reiniciar a leitura.
@@ -143,6 +229,9 @@ export default function Leitor() {
       <ReadiumView
         file={{ url: obra.caminhoArquivo }}
         preferences={preferenciasDeNavegador}
+        decorations={grupoDeDecoracoes}
+        selectionActions={ACOES_DE_SELECAO}
+        onSelectionAction={aoAcionarSelecao}
         onLocationChange={aoMudarLocalizacao}
         style={styles.leitor}
       />
@@ -170,6 +259,16 @@ export default function Leitor() {
       </Pressable>
       {painelAberto && (
         <PainelDeLeitura prefs={prefs} aoMudarAoVivo={setPrefs} aoSoltar={aoSoltarPreferencia} />
+      )}
+      {interacao && (
+        <PainelInteracoes
+          modo={interacao.modo}
+          textoSelecionado={interacao.texto}
+          aoEscolherPigmento={(pigmento) => void aoEscolherPigmento(pigmento)}
+          aoSalvarNota={(texto) => void aoSalvarNota(texto)}
+          aoFechar={() => setInteracao(null)}
+          resultadoDicionario={resultadoDicionario}
+        />
       )}
     </View>
   );
