@@ -1,0 +1,1 @@
+ALTER TABLE `ofensiva` ADD `ultimo_dia_processado_congelamento` text;

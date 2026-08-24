@@ -5,16 +5,25 @@
 import { estadoDoJardim } from '@bookworm/core/src/ofensiva/index.js';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 import {
+  BwBotao,
   BwCarimbo,
+  BwCartao,
   BwDormencia,
   BwFolha,
   BwNumeroCelebracao,
   BwProgressoDia,
   BwVazio,
 } from '../../src/componentes/index.js';
-import { obterOfensivaAtual, obterProgressoDeHoje } from '../../src/ofensiva/servico.js';
+import { useSuperficie } from '../../src/componentes/useSuperficie.js';
+import { sincronizarNotificacoesDeEngajamento } from '../../src/notificacoes/servico.js';
+import {
+  obterOfensivaAtual,
+  obterProgressoDeHoje,
+  processarCongelamentoAutomatico,
+} from '../../src/ofensiva/servico.js';
+import { fontFamilyPara } from '../../src/tema/fontes.js';
 
 const ROTULO_ESTAGIO: Record<string, string> = {
   broto: 'Broto',
@@ -43,14 +52,27 @@ type EstadoTela =
 
 export default function TelaJardim() {
   const [estado, setEstado] = useState<EstadoTela>({ tipo: 'carregando' });
+  const [avisoCongelamento, setAvisoCongelamento] = useState<string | null>(null);
 
   useFocusEffect(
     useCallback(() => {
       void (async () => {
+        const congelamento = await processarCongelamentoAutomatico('leitura');
         const [ofensiva, progresso] = await Promise.all([
           obterOfensivaAtual('leitura'),
           obterProgressoDeHoje('leitura'),
         ]);
+        void sincronizarNotificacoesDeEngajamento('leitura');
+
+        // GAM-08/RN-04.17 — aviso claro, não-punitivo: só aparece na rodada que de fato protegeu
+        // um dia, nunca de novo depois (o job é idempotente por dia).
+        if (congelamento.diasProtegidosNestaRodada.length > 0 && ofensiva) {
+          const plural = congelamento.diasProtegidosNestaRodada.length > 1 ? 's' : '';
+          setAvisoCongelamento(
+            `Usamos ${congelamento.diasProtegidosNestaRodada.length} congelamento${plural} para proteger seus ${ofensiva.contagemAtual} dias. Restam ${congelamento.estoqueRestante}.`
+          );
+        }
+
         if (!ofensiva) {
           setEstado({ tipo: 'nunca_leu' });
           return;
@@ -99,6 +121,12 @@ export default function TelaJardim() {
           melhorMarca={estado.melhorMarca}
           mensagem="Ler hoje replanta a ofensiva, com a paleta viva de volta na hora."
         />
+        <BwBotao
+          superficie="mesa"
+          variante="texto"
+          rotulo="Ajustar meta"
+          aoTocar={() => router.push('/meta')}
+        />
       </BwFolha>
     );
   }
@@ -106,6 +134,12 @@ export default function TelaJardim() {
   return (
     <BwFolha superficie="mesa" anuncio="Jardim">
       <View style={{ alignItems: 'center', gap: 27, padding: 27 }}>
+        {avisoCongelamento && (
+          <AvisoCongelamento
+            mensagem={avisoCongelamento}
+            aoDispensar={() => setAvisoCongelamento(null)}
+          />
+        )}
         <BwNumeroCelebracao
           superficie="mesa"
           numero={estado.contagemAtual}
@@ -120,7 +154,42 @@ export default function TelaJardim() {
             unidade={ROTULO_UNIDADE[estado.progresso.unidade] ?? estado.progresso.unidade}
           />
         )}
+        <BwBotao
+          superficie="mesa"
+          variante="texto"
+          rotulo="Ajustar meta"
+          aoTocar={() => router.push('/meta')}
+        />
       </View>
     </BwFolha>
+  );
+}
+
+/** GAM-08/RN-04.17 — convite, nunca cobrança (mesma disciplina de copy de `RN-01.16`): informa o
+ * que aconteceu e quanto resta, sem alarme. Tocar dispensa — não é modal, é uma ficha a mais sobre
+ * a mesa. */
+function AvisoCongelamento({
+  mensagem,
+  aoDispensar,
+}: {
+  mensagem: string;
+  aoDispensar: () => void;
+}) {
+  const sup = useSuperficie('mesa');
+  return (
+    <BwCartao superficie="mesa" aoTocar={aoDispensar}>
+      <Text
+        accessibilityRole="text"
+        style={{
+          color: sup.tinta,
+          fontFamily: fontFamilyPara('spectral', '400'),
+          fontSize: 14,
+          lineHeight: 21,
+          maxWidth: 260,
+        }}
+      >
+        {mensagem}
+      </Text>
+    </BwCartao>
   );
 }

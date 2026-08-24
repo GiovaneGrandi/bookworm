@@ -51,6 +51,10 @@ import {
   salvarPreferenciasDeLeitura,
 } from '../src/leitor/preferencias.js';
 import { useCarregarObra } from '../src/leitor/useCarregarObra.js';
+import {
+  sincronizarNotificacoesDeEngajamento,
+  suprimirNotificacoesDeEngajamento,
+} from '../src/notificacoes/servico.js';
 import { avaliarEAtualizarHoje } from '../src/ofensiva/servico.js';
 import type { NomePigmentoDeGrifo } from '../src/primitivas/Grifo.js';
 import { useMaquinaSessao } from '../src/sessao/maquina.js';
@@ -217,6 +221,9 @@ export default function Leitor() {
     abriuSessaoPara.current = obraId;
     void marcarComoLendo(obraId);
     void useMaquinaSessao.getState().abrirObra(obraId);
+    // RN-02.14 — sessão ativa suprime as notificações de engajamento; os dois pontos de
+    // encerramento abaixo reagendam ao sair.
+    void suprimirNotificacoesDeEngajamento();
   }, [obraId]);
 
   useEffect(() => {
@@ -229,6 +236,7 @@ export default function Leitor() {
         const tinhaSessao = useMaquinaSessao.getState().sessaoId !== null;
         await useMaquinaSessao.getState().encerrar('fechado_pelo_leitor');
         if (tinhaSessao) await avaliarEAtualizarHoje('leitura');
+        await sincronizarNotificacoesDeEngajamento('leitura');
       })();
     };
   }, []);
@@ -241,6 +249,7 @@ export default function Leitor() {
       if (confirmou) await marcarComoConcluido(obraId);
     }
     const { pendente } = tinhaSessao ? await avaliarEAtualizarHoje('leitura') : { pendente: false };
+    await sincronizarNotificacoesDeEngajamento('leitura');
     router.replace({
       pathname: '/resumo',
       params: { obraId: obraId ?? '', celebracaoPendente: pendente ? '1' : '0' },

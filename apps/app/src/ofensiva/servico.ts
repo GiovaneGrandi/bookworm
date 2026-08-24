@@ -5,11 +5,17 @@
 // (RN-04.10f) e nunca mostra nada aqui — quem decide o que aparece na tela é `resumo.tsx`.
 import {
   type AgregadoDiario,
+  alterarMeta,
+  aplicarCongelamento,
   avaliarMeta,
+  CONSTANTES_OFENSIVA_PADRAO,
+  concederCongelamentoMensal,
   type DiaParaOfensiva,
   type Eixo,
   type MetaDiaria,
   type Ofensiva,
+  type PedidoAlteracaoMeta,
+  type ResultadoAlteracaoMeta,
   recalcularAgregados,
   recalcularOfensiva,
   type SessaoParaAgregado,
@@ -20,27 +26,35 @@ import {
   diaOfensiva,
   metaDiaria,
   sessaoLeitura,
+  congelamento as tabelaCongelamento,
   ofensiva as tabelaOfensiva,
   USUARIO_LOCAL,
 } from '@bookworm/db';
-import { and, asc, eq, gte, lt } from 'drizzle-orm';
+import { and, asc, eq, gte, isNull, lt } from 'drizzle-orm';
 import { abrirBanco } from '../persistencia/db.js';
 
-/** RN-04.4 — dentro da faixa permitida (5–480 min); valor de partida até a tela de meta existir. */
+/** RN-04.4 — dentro da faixa permitida (5–480 min); valor de partida antes de qualquer alteração
+ * pela tela de meta (`app/meta.tsx`). */
 const META_PADRAO_MINUTOS = 20;
 
-function diaLocalDeHoje(): string {
-  const agora = new Date();
-  const ano = agora.getFullYear();
-  const mes = String(agora.getMonth() + 1).padStart(2, '0');
-  const dia = String(agora.getDate()).padStart(2, '0');
+function diaLocalDe(data: Date): string {
+  const ano = data.getFullYear();
+  const mes = String(data.getMonth() + 1).padStart(2, '0');
+  const dia = String(data.getDate()).padStart(2, '0');
   return `${ano}-${mes}-${dia}`;
 }
 
-function proximoDia(dia: string): string {
+function diaLocalDeHoje(): string {
+  return diaLocalDe(new Date());
+}
+
+function somarDias(dia: string, delta: number): string {
   const [ano, mes, d] = dia.split('-').map(Number);
-  const data = new Date(ano!, mes! - 1, d! + 1);
-  return `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}-${String(data.getDate()).padStart(2, '0')}`;
+  return diaLocalDe(new Date(ano!, mes! - 1, d! + delta));
+}
+
+function proximoDia(dia: string): string {
+  return somarDias(dia, 1);
 }
 
 async function obterOuCriarMetaVigente(eixo: Eixo, hoje: string): Promise<MetaDiaria> {
@@ -82,6 +96,42 @@ async function obterOuCriarMetaVigente(eixo: Eixo, hoje: string): Promise<MetaDi
     direcaoAlteracao: 'inicial',
     proximaAlteracaoPermitidaEm: null,
   };
+}
+
+/** Leitura pela tela de meta (`app/meta.tsx`) — a meta vigente hoje, criando a padrão (RN-04.4) se
+ * o usuário nunca definiu nenhuma. */
+export async function obterMetaVigente(eixo: Eixo = 'leitura'): Promise<MetaDiaria> {
+  return obterOuCriarMetaVigente(eixo, diaLocalDeHoje());
+}
+
+/** RN-04.4–RN-04.9 — decide e, se permitida, persiste a alteração de meta pedida pela tela de
+ * meta. Toda a regra de negócio (faixa, atrito de tempo, vigência de amanhã) vive em
+ * `alterarMeta` (`@bookworm/core`); esta função só resolve a meta atual e grava o resultado. */
+export async function alterarMetaVigente(
+  eixo: Eixo,
+  pedido: PedidoAlteracaoMeta
+): Promise<ResultadoAlteracaoMeta> {
+  const db = abrirBanco();
+  const hoje = diaLocalDeHoje();
+  const metaAtual = await obterOuCriarMetaVigente(eixo, hoje);
+  const resultado = alterarMeta(metaAtual, pedido, hoje);
+
+  if (resultado.permitida) {
+    const { metaResultante } = resultado;
+    await db.insert(metaDiaria).values({
+      id: criarUlid(),
+      usuarioId: USUARIO_LOCAL,
+      eixo,
+      unidade: metaResultante.unidade,
+      valor: metaResultante.valor,
+      vigenteDesde: metaResultante.vigenteDesde,
+      direcaoAlteracao: metaResultante.direcaoAlteracao,
+      proximaAlteracaoPermitidaEm: metaResultante.proximaAlteracaoPermitidaEm,
+      criadaEm: new Date(),
+    });
+  }
+
+  return resultado;
 }
 
 /** RN-03.32 — recalculável a partir das sessões brutas do dia, nunca incremental. Fuso do
@@ -214,6 +264,219 @@ async function persistirOfensiva(ofensivaCalculada: Ofensiva): Promise<void> {
       target: [tabelaOfensiva.usuarioId, tabelaOfensiva.eixo],
       set: valores,
     });
+}
+
+async function obterLinhaDiaOfensiva(eixo: Eixo, dia: string) {
+  const db = abrirBanco();
+  const [linha] = await db
+    .select()
+    .from(diaOfensiva)
+    .where(
+      and(
+        eq(diaOfensiva.usuarioId, USUARIO_LOCAL),
+        eq(diaOfensiva.eixo, eixo),
+        eq(diaOfensiva.dia, dia)
+      )
+    )
+    .limit(1);
+  return linha ?? null;
+}
+
+/** Só olha para trás até `maximo` dias (RN-04.18 nunca passa de 2) — barato mesmo lendo linha a
+ * linha. Para no primeiro dia cumprido, não protegido, ou sem registro. */
+async function contarProtegidosConsecutivosTerminandoEm(
+  eixo: Eixo,
+  diaFinal: string,
+  maximo: number
+): Promise<number> {
+  let contador = 0;
+  let dia = diaFinal;
+  while (contador < maximo) {
+    const linha = await obterLinhaDiaOfensiva(eixo, dia);
+    if (!linha || linha.cumprido || !linha.protegidoPorCongelamento) break;
+    contador += 1;
+    dia = somarDias(dia, -1);
+  }
+  return contador;
+}
+
+async function consumirTokenCongelamento(eixo: Eixo, diaProtegido: string): Promise<void> {
+  const db = abrirBanco();
+  const [token] = await db
+    .select()
+    .from(tabelaCongelamento)
+    .where(
+      and(
+        eq(tabelaCongelamento.usuarioId, USUARIO_LOCAL),
+        eq(tabelaCongelamento.eixo, eixo),
+        isNull(tabelaCongelamento.consumidoEm)
+      )
+    )
+    .orderBy(asc(tabelaCongelamento.adquiridoEm))
+    .limit(1);
+  if (!token) return;
+  await db
+    .update(tabelaCongelamento)
+    .set({ consumidoEm: new Date(), diaProtegido })
+    .where(eq(tabelaCongelamento.id, token.id));
+}
+
+/** `mvp.md` §5 A-1 — concessão automática mensal, substituindo a compra de RN-04.16 enquanto não
+ * há economia. Devolve o estoque (não consumido) já incluindo a concessão desta chamada, se
+ * houve. */
+async function concederCongelamentoDoMesSeNecessario(eixo: Eixo, hoje: string): Promise<number> {
+  const db = abrirBanco();
+  const tokens = await db
+    .select()
+    .from(tabelaCongelamento)
+    .where(and(eq(tabelaCongelamento.usuarioId, USUARIO_LOCAL), eq(tabelaCongelamento.eixo, eixo)));
+
+  const estoqueAtual = tokens.filter((t) => t.consumidoEm === null).length;
+  const ultimaConcessaoMes = tokens
+    .filter((t) => t.origem === 'concessao')
+    .reduce<string | null>((max, t) => {
+      const mes = diaLocalDe(t.adquiridoEm).slice(0, 7);
+      return !max || mes > max ? mes : max;
+    }, null);
+
+  const resultado = concederCongelamentoMensal(
+    { quantidade: estoqueAtual, ultimaConcessaoMes },
+    hoje.slice(0, 7)
+  );
+
+  for (let i = 0; i < resultado.quantidade - estoqueAtual; i++) {
+    await db.insert(tabelaCongelamento).values({
+      id: criarUlid(),
+      usuarioId: USUARIO_LOCAL,
+      eixo,
+      origem: 'concessao',
+      adquiridoEm: new Date(),
+      consumidoEm: null,
+      diaProtegido: null,
+    });
+  }
+  return resultado.quantidade;
+}
+
+export type ResultadoCongelamentoAutomatico = {
+  /** Dias decididos como protegidos **nesta chamada** — vazio em qualquer rodada que não seja a
+   * primeira a ver aquele dia já passado (idempotência via `ultimoDiaProcessadoCongelamento`). Só
+   * quando não-vazio o chamador deve mostrar o aviso de GAM-08. */
+  diasProtegidosNestaRodada: string[];
+  estoqueRestante: number;
+};
+
+/**
+ * RN-04.17 — job de virada do congelamento. Sem cron de servidor no MVP (Estágio 9), roda a cada
+ * vez que o Jardim é aberto: concede o congelamento mensal e decide, dia a dia em ordem
+ * cronológica, se cada dia não cumprido desde a última rodada foi protegido.
+ *
+ * **Nunca retroativo (mesmo espírito de RN-04.21):** o cursor `ultimoDiaProcessadoCongelamento`
+ * garante que um dia só é decidido uma vez, com o estoque que existia *naquele* momento — um
+ * congelamento concedido depois não pode "salvar" um dia que já quebrou. Na primeira execução
+ * (cursor nulo) o cursor nasce em ontem sem decidir nada: o job só olha para a frente a partir daí,
+ * nunca para o histórico anterior a esta funcionalidade existir.
+ */
+export async function processarCongelamentoAutomatico(
+  eixo: Eixo = 'leitura'
+): Promise<ResultadoCongelamentoAutomatico> {
+  const db = abrirBanco();
+  const hoje = diaLocalDeHoje();
+  const diaAnteriorHoje = somarDias(hoje, -1);
+
+  let estoqueAtual = await concederCongelamentoDoMesSeNecessario(eixo, hoje);
+
+  const [linhaOfensiva] = await db
+    .select()
+    .from(tabelaOfensiva)
+    .where(and(eq(tabelaOfensiva.usuarioId, USUARIO_LOCAL), eq(tabelaOfensiva.eixo, eixo)))
+    .limit(1);
+  if (!linhaOfensiva) {
+    return { diasProtegidosNestaRodada: [], estoqueRestante: estoqueAtual };
+  }
+
+  if (linhaOfensiva.ultimoDiaProcessadoCongelamento === null) {
+    await db
+      .update(tabelaOfensiva)
+      .set({ ultimoDiaProcessadoCongelamento: diaAnteriorHoje })
+      .where(and(eq(tabelaOfensiva.usuarioId, USUARIO_LOCAL), eq(tabelaOfensiva.eixo, eixo)));
+    return { diasProtegidosNestaRodada: [], estoqueRestante: estoqueAtual };
+  }
+
+  if (linhaOfensiva.ultimoDiaProcessadoCongelamento >= diaAnteriorHoje) {
+    return { diasProtegidosNestaRodada: [], estoqueRestante: estoqueAtual };
+  }
+
+  let contadorConsecutivos = await contarProtegidosConsecutivosTerminandoEm(
+    eixo,
+    linhaOfensiva.ultimoDiaProcessadoCongelamento,
+    CONSTANTES_OFENSIVA_PADRAO.FREEZE_MAX_CONSECUTIVOS
+  );
+
+  const diasProtegidos: string[] = [];
+  let dia = proximoDia(linhaOfensiva.ultimoDiaProcessadoCongelamento);
+  while (dia <= diaAnteriorHoje) {
+    const linhaDia = await obterLinhaDiaOfensiva(eixo, dia);
+
+    if (linhaDia?.cumprido) {
+      contadorConsecutivos = 0;
+    } else {
+      const decisao = aplicarCongelamento(contadorConsecutivos, estoqueAtual);
+      if (decisao.protegido) {
+        await consumirTokenCongelamento(eixo, dia);
+        estoqueAtual = decisao.estoqueResultante;
+        contadorConsecutivos += 1;
+        diasProtegidos.push(dia);
+
+        let metaValor: number;
+        let metaUnidade: MetaDiaria['unidade'];
+        if (linhaDia) {
+          metaValor = linhaDia.metaValor;
+          metaUnidade = linhaDia.metaUnidade;
+        } else {
+          const meta = await obterOuCriarMetaVigente(eixo, dia);
+          metaValor = meta.valor;
+          metaUnidade = meta.unidade;
+        }
+
+        await db
+          .insert(diaOfensiva)
+          .values({
+            usuarioId: USUARIO_LOCAL,
+            eixo,
+            dia,
+            metaValor,
+            metaUnidade,
+            realizado: linhaDia?.realizado ?? 0,
+            cumprido: false,
+            cumpridoEm: null,
+            protegidoPorCongelamento: true,
+            celebracaoEstado: linhaDia?.celebracaoEstado ?? 'nao_aplicavel',
+            celebradaEm: linhaDia?.celebradaEm ?? null,
+          })
+          .onConflictDoUpdate({
+            target: [diaOfensiva.usuarioId, diaOfensiva.eixo, diaOfensiva.dia],
+            set: { protegidoPorCongelamento: true },
+          });
+      } else {
+        contadorConsecutivos = 0;
+      }
+    }
+    dia = proximoDia(dia);
+  }
+
+  await db
+    .update(tabelaOfensiva)
+    .set({ ultimoDiaProcessadoCongelamento: diaAnteriorHoje })
+    .where(and(eq(tabelaOfensiva.usuarioId, USUARIO_LOCAL), eq(tabelaOfensiva.eixo, eixo)));
+
+  if (diasProtegidos.length > 0) {
+    const dias = await todosOsDiasParaOfensiva(eixo, hoje);
+    const ofensivaRecalculada = recalcularOfensiva(eixo, dias);
+    await persistirOfensiva(ofensivaRecalculada);
+  }
+
+  return { diasProtegidosNestaRodada: diasProtegidos, estoqueRestante: estoqueAtual };
 }
 
 export type ResultadoAvaliacaoDoDia = { pendente: boolean };

@@ -13,7 +13,8 @@
       "expo-router",
       "expo-font",
       "./plugins/withReadiumAndroidBuildFixes.js",
-      "expo-asset"
+      "expo-asset",
+      "expo-notifications"
     ]
   }
 }

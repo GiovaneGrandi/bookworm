@@ -4,23 +4,105 @@
 > Regras de uso em `CLAUDE.md` §Retomada barata. Só entra aqui o que **não** é re-derivável
 > por grep no repositório. Operação fechada, seção apagada. Não replicar no vault.
 
-**Atualizado em:** 24/08/2026
+**Atualizado em:** 24/08/2026 (sessão da tarde — Estágio 8, itens 6/7 do plano)
 
 ---
 
 ## Operação em curso — Plano do primeiro protótipo (`planos/2026-08-23-primeiro-prototipo-mvp.md`)
 
-**Estágios 0–7-fundação, Estágio 7 passos 2/3/5/6 e Estágio 8-fundação commitados** (`git log`: até
-`1294411`). Usuário pediu, em sequência: voltar ao que faltava do Estágio 7 antes de fechar o 8 →
-"Estante primeiro, sozinha" (passo 3) → "passo 5" (painel de leitura) → "passo 6"
-(destaques/anotações/dicionário) → "passo 7" (resposta a gesto, **implementado nesta rodada, ainda
-não commitado**).
+**Estágio 7 fecha por completo (exceto `RN-02.13a`, adiado por decisão do usuário — indicador
+nativo do react-native-readium sem prop para desligar/trocar nível, exigiria patch Android).
+Estágio 8: fundação + `R-3` já commitados (`913ec66`); esta sessão implementou e smoke-testou dois
+dos cinco itens restantes de `mvp.md` §11 item 8/`planos/...` linha 638-649:
+`bw-dormencia` **já existia** (fundação cobriu, `BwDormencia.tsx` + wiring em `(tabs)/index.tsx` —
+`.claude/pendencias-2026-08-24.md` §2 item 2 estava desatualizado nesse ponto). Ainda não
+commitado — `git status` mostra as mudanças abaixo.**
 
-Falta do Estágio 7 depois deste commit: só `RN-02.13a` (nível da âncora de posição), que ficou de
-fora do passo 5 por decisão do usuário — o indicador nativo do react-native-readium
-(`PositionLabelManager.kt`) não expõe prop para desligar/trocar, exigiria patch na lib Android. Com
-o passo 7 commitado, o Estágio 7 fecha por completo exceto por esse item adiado (não bloqueia
-seguir para o Estágio 8 — decisão já tomada ao adiar RN-02.13a no passo 5).
+### Congelamento automático (RN-04.17, item 4 da lista de pendências)
+`packages/db/src/schema/ofensiva.ts` ganhou `ultimo_dia_processado_congelamento` (cursor, nullable
+— migração `0002_bouncy_the_santerians.sql`, `ddl.ts` atualizado à mão como o padrão do projeto
+exige). `apps/app/src/ofensiva/servico.ts` ganhou `processarCongelamentoAutomatico(eixo)`: concede
+o congelamento mensal (`concederCongelamentoMensal`), anda dia a dia desde o cursor até ontem
+decidindo proteção via `aplicarCongelamento` (ambas já existiam em `@bookworm/core`, só faltava a
+orquestração com I/O). **Decisão de design não escrita em nenhuma spec**: o cursor existe
+especificamente para nunca proteger retroativamente um dia já quebrado com estoque que só chegou
+depois (mesmo espírito de RN-04.21, mas para a concessão automática, não a compra) — sem ele, um
+recálculo completo do histórico a cada abertura correria esse risco. Na primeira execução (cursor
+nulo) o cursor nasce em "ontem" sem decidir nada — não processa retroativamente dias anteriores a
+esta funcionalidade existir. Chamado no `useFocusEffect` do Jardim (`(tabs)/index.tsx`), antes de
+ler a ofensiva; se protegeu algo nesta rodada, mostra um `BwCartao` dispensável com a copy de
+`RN-04.17` ("usamos N congelamento(s) para proteger seus N dias. Restam N").
+**Validado:** typecheck/lint/test limpos, smoke no emulador (fresh install, sem crash, estado
+"nunca_leu" renderiza certo). **Não validado ainda**: o caminho de proteção de fato disparando —
+exige um histórico de ofensiva real com um dia perdido no meio, que não existe neste device limpo.
+Para testar sem simular sessões de leitura reais, a rota mais barata é popular `dia_ofensiva` +
+`ofensiva` + `congelamento` direto no banco puxado via `adb exec-out run-as ... cat
+.../bookworm.db{,-wal,-shm}` (as três, por causa do WAL — só o `.db` sozinho vem com 4096 bytes e
+sem as tabelas) e reabrir o Jardim.
+
+### Tela de meta (RN-04.4–RN-04.9, item 7 da lista de pendências)
+Núcleo (`alterarMeta`, `FAIXAS_META`) **já existia e já tinha teste** em `@bookworm/core` — só
+faltava tela e wiring. Novo `apps/app/app/meta.tsx` (rota `fullScreenModal`, registrada em
+`_layout.tsx`): seletor de unidade (`BwSeletorDeOpcoes`, só páginas/minutos — palavras é exclusivo
+de escrita, sem tela ainda) + `BwControleContinuo` para o valor + `BwBotao` "Salvar". Duas novas
+funções em `servico.ts`: `obterMetaVigente` e `alterarMetaVigente` (esta grava a linha nova em
+`meta_diaria` quando `alterarMeta` permite). Link "Ajustar meta" (`BwBotao variante="texto"`)
+adicionado nos estados `vivo` e `dormente` do Jardim.
+**Validado ao vivo**: deep link `adb shell am start -a android.intent.action.VIEW -d
+"bookworm://meta" com.bookworm.app` abriu a tela, toque real em "Salvar" (botão de nível superior,
+não overlaid em `ReadiumView` — sem a limitação de toque via `adb` documentada abaixo) gravou a
+segunda linha em `meta_diaria` com `vigente_desde` amanhã e `proxima_alteracao_permitida_em` +7
+dias — confirmado lendo o banco puxado do device. **Não validado**: motivo `fora_da_faixa` e
+`intervalo_minimo` (a segunda alteração dentro dos 7 dias) — só o caminho feliz foi exercitado.
+
+### Notificações locais (RN-01.15–17, RN-02.14, RN-04.30/31 — item 5 da lista de pendências)
+`expo-notifications` instalado (`~57.0.14`) + plugin em `app.json` — isso exigiu `npx expo
+prebuild --platform android` (o projeto usa CNG, `android/` é gitignored) e portanto um rebuild
+nativo completo, não incremental. Decisão pura em `@bookworm/core/src/notificacoes` (testada:
+`deveAgendarLembreteDiario`, `deveAgendarOfensivaEmRisco`), orquestração com I/O em
+`apps/app/src/notificacoes/servico.ts`. Escopo **deliberadamente cortado** frente a `04-streaks-
+e-jardim.md` §5.7: só RN-04.30 (lembrete diário) e RN-04.31 (ofensiva em risco) — RN-04.32 (convite
+pós-quebra) e RN-04.33 (ausência prolongada) ficaram de fora porque o plano (`planos/2026-08-23-
+...md` linha 643-646) só pede essas duas para o Estágio 8. Horário fixo (20h lembrete, 22h risco,
+ambos "a validar") — sem tela de preferência, que é Estágio 9 (onboarding/conta). Sem toggle
+individual (RN-01.15 pede "desativáveis" — não implementado, mesma razão).
+Wiring: `suprimirNotificacoesDeEngajamento()` ao abrir uma obra (RN-02.14), `sincronizarNotifi
+cacoesDeEngajamento()` nos dois pontos de encerramento de sessão em `leitor.tsx` e no
+`useFocusEffect` do Jardim.
+**Validado ao vivo, de ponta a ponta, incluindo o SO**: rebuild nativo limpo → app pede permissão
+de notificação ao focar o Jardim → toque real em "Allow" → `adb shell dumpsys alarm` mostra o
+alarme `RTC_WAKEUP` real, no horário exato (20:00 hoje), tag
+`expo.modules.notifications.NOTIFICATION_EVENT` — e **nenhum** alarme de "ofensiva em risco"
+(correto: ofensiva ainda não existe, `ofensivaAtivaDias` = 0 < 3). Esta foi a validação mais forte
+das três desta sessão porque `dumpsys alarm` prova o agendamento real no SO, não só ausência de
+crash. **Não validado**: o disparo de fato (esperar até 20h), a supressão durante sessão ativa
+(RN-02.14) e o cancelamento quando a meta é cumprida no meio do dia.
+
+### Achado de ambiente — instalar um módulo nativo novo exige `expo prebuild`
+Diferente de código JS/TS puro, adicionar uma dependência com módulo nativo (`expo-notifications`)
+não é só `pnpm add` + rebuild: como `android/` é gerado por CNG e já existia fisicamente de builds
+anteriores, o plugin novo em `app.json` só é aplicado rodando `npx expo prebuild --platform
+android` primeiro (que recria `android/` do zero). Depois disso o próximo `pnpm run android` é um
+build nativo completo (~2min, não incremental) na primeira vez. Nesta sessão o primeiro rebuild
+pós-prebuild falhou uma vez com `Unable to delete directory ... obj\x86_64` (lock de arquivo
+transitório do Windows/Gradle em `.so` de build anterior) — resolvido só rodando `pnpm run android`
+de novo, sem nenhuma limpeza manual.
+
+### Ainda falta do Estágio 8
+1. **Arte completa do Jardim** (5 estágios ilustrados, paleta de dormência, vida ambiente,
+   cosméticos) — não implementado, é o item de maior escopo (produção de asset, não só código) e
+   o único item restante da lista original de 5 em `.claude/pendencias-2026-08-24.md` §2.
+
+Depois disso: os testes formais do Estágio 8 (E2E Maestro, `RN-04.10d/e/f`, contra-teste de
+silêncio) e o percurso de ponta a ponta de 10 passos do plano (avançar o relógio do emulador por
+vários dias simulados) — nenhum dos dois foi feito ainda nesta sessão nem na anterior.
+
+### Próxima ação concreta
+Pedir confirmação e commitar as três mudanças desta sessão (congelamento automático, tela de meta,
+notificações locais — `git status` mostra tudo pendente, nada commitado ainda). Depois: decidir com
+o usuário como abordar a arte do Jardim antes de começar — é grande o suficiente (produção de
+asset, `Q-ST.6` em aberto sobre se Skia se sustenta sem ilustrador) para merecer uma conversa de
+escopo própria, não apenas seguir a lista.
 
 ### O que foi construído (passo 7 — resposta a gesto, RN-02.17)
 

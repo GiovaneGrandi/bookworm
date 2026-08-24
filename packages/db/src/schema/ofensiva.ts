@@ -61,6 +61,11 @@ export const ofensiva = sqliteTable(
       .notNull()
       .default('dormente'),
     acervoDiasCumpridos: integer('acervo_dias_cumpridos').notNull().default(0),
+    // Estágio 8 — RN-04.17: cursor do job de virada de congelamento (`ofensiva/servico.ts`).
+    // `null` até a primeira rodada do job; a partir daí, o último dia já decidido (protegido ou
+    // não) — nunca reprocessado, para não proteger retroativamente um dia com estoque que só
+    // chegou depois (mesmo espírito de RN-04.21, aplicado à concessão automática).
+    ultimoDiaProcessadoCongelamento: text('ultimo_dia_processado_congelamento'),
     atualizadaEm: integer('atualizada_em', { mode: 'timestamp_ms' }).notNull(),
   },
   (t) => [primaryKey({ columns: [t.usuarioId, t.eixo] })]
