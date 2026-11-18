@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "BookWorm",
+    "slug": "bookworm",
+    "scheme": "bookworm",
+    "version": "0.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#1e2320",
+    "android": {
+      "package": "com.bookworm.app",
+      "edgeToEdgeEnabled": true
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-system-ui",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#1e2320",
+          "image": "./assets/splash.png",
+          "imageWidth": 200
+        }
+      ]
+    ]
+  }
+}

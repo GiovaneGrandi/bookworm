@@ -1,0 +1,10 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+# Toda dependência precisa ter pelo menos 14 dias de publicação (em minutos).
+minimumReleaseAge: 20160
+
+onlyBuiltDependencies:
+  - "@biomejs/biome"
+  - esbuild

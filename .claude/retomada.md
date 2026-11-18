@@ -4,7 +4,7 @@
 > Regras de uso em `CLAUDE.md` §Retomada barata. Só entra aqui o que **não** é re-derivável
 > por grep no repositório. Operação fechada, seção apagada. Não replicar no vault.
 
-**Atualizado em:** 17/11/2026
+**Atualizado em:** 18/11/2026
 
 ---
 
@@ -22,12 +22,26 @@ Decisões do usuário nesta conversa:
   coordenadas do emulador) — não recriar doc de lições sem ele pedir.
 - O código antigo (até `1b903e5`) **não é base** para o recomeço.
 
-### Próxima ação concreta
-Plano do recomeço aprovado e **salvo, não iniciado**: `planos/2026-11-17-primeiras-telas.md`
-(também no vault). Mesa, bandeja, gaveta e leitor com painel, em 4 etapas (E0–E4) e parada para
-o usuário testar em cada uma. O usuário vai passá-lo a outro agente. Quem executar começa pela E0.
-A Escrivaninha (direção B) está em `specs/direcao-visual.md` §9. As ideias de A e C são candidatas
-não adotadas (§9.6). Plano da ideação arquivado em `.claude/planos/2026-11-17-ideacao-ui.md`.
+### Execução do plano `planos/2026-11-17-primeiras-telas.md`
+- **E0 feita** (18/11): commit `b9aac2d` em `master`; trabalho no branch `recomeco/primeiras-telas`.
+- **E1 feita** (18/11): core 3 testes, app 13 testes (varreduras de design system), `tsc` e
+  Biome limpos; build local instalado no `BookWorm_API34`; as 4 rotas verificadas por screenshot
+  (faixa de feltro e voltar do Android devolvem à mesa; leitor revela "pousar na mesa" ao toque).
+  Correções que o build exigiu: plugin `expo-splash-screen` com imagem (sem ela o tema nativo
+  referencia `splashscreen_logo` e o `processDebugResources` falha).
+- **Node 22 portátil.** A máquina tem Node 20.17 e o Expo SDK 55 exige ≥ 20.19.4. Sem mexer no
+  sistema, baixei o Node 22.23.4 (checksum conferido) em
+  `%LOCALAPPDATA%/Programs/node-v22.23.4-win-x64`. Todo comando do projeto roda com ele na frente
+  do PATH (`export PATH="$LOCALAPPDATA/Programs/node-v22.23.4-win-x64:$PATH"`). Avisar o usuário:
+  ele precisa atualizar o Node para rodar o projeto do terminal dele.
+- **Versões:** Expo `55.0.32` (o SDK 55 da stack, mesmo com o 58 publicado), RN 0.83.10,
+  Unistyles **3.7.0** (a última que aceita RN < 0.85) + Nitro 0.37.1. `minimumReleaseAge: 20160`
+  no `pnpm-workspace.yaml` garante os 14 dias em toda a árvore.
+- O plugin `withReadiumAndroidBuildFixes.js` do `1b903e5` **não** entrou na E1: só faz sentido
+  junto com o `react-native-readium`, na E3 (o protótipo também usava um patch do pacote).
+- `biome migrate --write` foi retido pela trava de segurança — não repetir sem o usuário pedir.
+- Próxima ação: **o usuário testa a E1**. Depois, a E2 (bandeja e gaveta), começando pelo TDD de
+  `montarIndiceEpub` em `packages/core`.
 
 ---
 
