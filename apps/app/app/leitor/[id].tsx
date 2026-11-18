@@ -6,22 +6,18 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleSheet } from 'react-native-unistyles';
 import { BwFeltroRetorno } from '../../src/componentes/BwFeltroRetorno';
 import { usePousarNaMesa } from '../../src/componentes/usePousarNaMesa';
+import { useObra } from '../../src/dados/obras';
 import { ALVO_MINIMO } from '../../src/tema/geometria';
 import { tipo } from '../../src/tema/tipografia';
 
-// Machado de Assis, Dom Casmurro (1899), cap. I — domínio público. Só texto de prova da E1;
-// o Readium entra na E3.
-const PROVA =
-  'Uma noite destas, vindo da cidade para o Engenho Novo, encontrei no trem da Central um rapaz ' +
-  'aqui do bairro, que eu conheço de vista e de chapéu. Cumprimentou-me, sentou-se ao pé de mim, ' +
-  'falou da lua e dos ministros, e acabou recitando-me versos.';
-
 /**
  * O leitor é modo, não destino (RN-DS.18, RN-DV.9): sem chrome durante a leitura. Um toque no
- * meio revela os controles, e só então aparece "pousar na mesa".
+ * meio revela os controles, e só então aparece "pousar na mesa". Na E2 ele só mostra qual obra
+ * abriu; o texto, pelo Readium, entra na E3.
  */
 export default function Leitor() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const obra = useObra(id);
   const pousar = usePousarNaMesa();
   const [controles, setControles] = useState(false);
   const { top } = useSafeAreaInsets();
@@ -36,9 +32,19 @@ export default function Leitor() {
         accessibilityLabel={controles ? 'Esconder os controles' : 'Mostrar os controles'}
       >
         <ScrollView contentContainerStyle={[estilos.miolo, { paddingTop: top + 54 }]}>
-          <Text style={estilos.capitulo}>Do título</Text>
-          <Text style={estilos.corpo}>{PROVA}</Text>
-          <Text style={estilos.nota}>obra: {id}</Text>
+          <Text style={estilos.kicker}>
+            {obra?.autor ?? (obra?.formato === 'pdf' ? 'fotocópia' : '')}
+          </Text>
+          <Text style={estilos.titulo}>{obra?.titulo ?? 'Obra não encontrada'}</Text>
+          <Text style={estilos.corpo}>
+            {obra?.formato === 'pdf'
+              ? 'Este PDF vai abrir como fotocópia, página por página, quando o leitor chegar.'
+              : `O texto deste livro chega na próxima etapa, com o leitor de verdade.${
+                  obra?.totalCaracteres
+                    ? ` Ele tem ${obra.totalCaracteres.toLocaleString('pt-BR')} caracteres de conteúdo principal.`
+                    : ''
+                }`}
+          </Text>
         </ScrollView>
       </Pressable>
 
@@ -62,20 +68,19 @@ const estilos = StyleSheet.create((theme) => ({
   },
   miolo: {
     paddingHorizontal: theme.esp[7],
-    gap: theme.esp[6],
+    gap: theme.esp[4],
   },
-  capitulo: {
+  kicker: {
+    ...tipo.kicker,
+    color: theme.sup.papel.acento,
+  },
+  titulo: {
     ...tipo.tituloCapitulo,
     color: theme.sup.papel.tinta,
   },
   corpo: {
     ...tipo.corpo,
     color: theme.sup.papel.tinta,
-    textAlign: 'justify',
-  },
-  nota: {
-    ...tipo.kickerMicro,
-    color: theme.sup.papel.tintaFraca,
   },
   controles: {
     position: 'absolute',

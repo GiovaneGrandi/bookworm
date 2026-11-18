@@ -1,47 +1,63 @@
 # Acervo inicial de domínio público
 
-> Estágio 7 do plano (`planos/2026-08-23-primeiro-prototipo-mvp.md`), passo 2. Cinco obras
-> embarcadas no app (`apps/app/assets/acervo/`), todas de domínio público nos EUA e no Brasil
-> (autores falecidos há mais de 70 anos), baixadas do Project Gutenberg no formato
-> `epub3.images` (`https://www.gutenberg.org/ebooks/<id>.epub3.images`). Todas verificadas
-> contra `montarIndiceEpub` (`packages/core`, Estágio 2) antes de entrar no repositório —
-> nenhuma quebra o parser.
+> Etapa E2 do plano `planos/2026-11-17-primeiras-telas.md` (decisão `Q7`). Três obras brasileiras
+> embarcadas no app (`apps/app/assets/acervo/`), de domínio público no Brasil e nos EUA (autores
+> falecidos há mais de 70 anos), baixadas do Project Gutenberg em 18/11/2026 no formato EPUB 3
+> com imagens, pelo espelho oficial `gutenberg.pglaf.org/cache/epub/<id>/pg<id>-images-3.epub`
+> (o `www.gutenberg.org` respondia 503 no dia). As três foram conferidas contra
+> `montarIndiceEpub` (`packages/core`) antes de entrar no repositório, e o teste
+> `RN-02.10 · acervo embutido` repete a conferência a cada rodada da suíte.
 
-| Arquivo | Obra | Autor | Gutenberg # | Caracteres (índice) |
-|---|---|---|---|---|
-| `alice.epub` | Alice's Adventures in Wonderland | Lewis Carroll | 11 | 165.483 |
-| `christmas-carol.epub` | A Christmas Carol | Charles Dickens | 46 | 206.537 |
-| `jekyll-hyde.epub` | The Strange Case of Dr Jekyll and Mr Hyde | Robert Louis Stevenson | 43 | 159.867 |
-| `yellow-wallpaper.epub` | The Yellow Wallpaper | Charlotte Perkins Gilman | 1952 | 51.262 |
-| `flatland.epub` | Flatland: A Romance of Many Dimensions | Edwin A. Abbott | 201 | 214.950 |
+| Arquivo | Obra | Autor | Gutenberg # | Tamanho | Caracteres (índice) |
+|---|---|---|---|---|---|
+| `dom-casmurro.epub` | Dom Casmurro | Machado de Assis | 55752 | 222 KB | 375.549 |
+| `o-cortico.epub` | O cortiço | Aluísio Azevedo | 69187 | 370 KB | 469.393 |
+| `iracema.epub` | Iracema | José de Alencar | 67740 | 295 KB | 177.635 |
 
-Todas em inglês — o acervo em português fica para uma rodada futura (depende de curadoria de
-obras de domínio público em PT-BR, um trabalho de sourcing separado deste estágio).
+A substituição do acervo anterior (cinco obras em inglês do protótipo descartado) resolve a
+pendência "acervo em português" que ele deixava aberta.
 
-## Candidatas ao passo 1 do onboarding (`Q-01.3`, `RN-01.5b`) — proposta, não decisão
+## O que o índice conta, e o que fica de fora
 
-`RN-01.5b` pede uma obra "leve, curta, abertura envolvente, neutra em gênero" para o primeiro
-livro que a pessoa lê no onboarding, e a spec manda testar candidatas com usuários antes de
-decidir. Três propostas, a partir do acervo acima:
+`RN-02.10` exclui capa, ficha catalográfica, sumário e créditos. Nestes três arquivos isso se
+traduz assim:
 
-1. **The Yellow Wallpaper** — a mais curta (51 mil caracteres, ~15-20 min de leitura), conto
-   único sem divisão de capítulos. Abertura em primeira pessoa, imediatamente envolvente.
-   Ressalva: tema é intenso (saúde mental) — pode não ler como "leve" dependendo de como o termo
-   for interpretado no teste.
-2. **Alice's Adventures in Wonderland** — clássico universalmente reconhecível, abertura
-   whimsical e de baixo risco emocional, mas é o mais longo do grupo curto (165 mil caracteres).
-3. **Flatland** — abertura curiosa (um narrador bidimensional explicando seu mundo), neutra em
-   gênero por natureza (não é ficção de personagens), tom leve/satírico nos capítulos iniciais.
+- **Capa** (`wrap0000.xhtml`, só a imagem): 0 caracteres.
+- **Sumário** (`toc.xhtml`, documento `nav`): fora da espinha, não conta.
+- **Licença e ficha técnica do Gutenberg** (`<header>` e `<footer>` com a classe
+  `pg-boilerplate`, no primeiro e no último arquivo do texto): excluídas por elemento. O rodapé
+  inteiro dá 0 caracteres. O cabeçalho sai do arquivo que também traz o começo da obra.
+- **Folha de rosto da edição original** ("DOM CASMURRO POR MACHADO DE ASSIS… B. L. GARNIER,
+  LIVREIRO-EDITOR"): **conta**. `RN-02.10` não lista a folha de rosto entre as exclusões, e
+  estes arquivos não a marcam com `epub:type`. São algumas centenas de caracteres, menos de
+  0,2% de cada obra. Se a folha de rosto também tiver de sair, a regra precisa dizer isso.
 
-Nenhuma foi escolhida — a decisão fica para o teste com usuários que `RN-01.5b` pede, quando o
-Estágio 1 (Contas/Onboarding) do plano do produto for construído.
+A regra genérica, para qualquer EPUB, está nos testes de `packages/core/test/indice.test.ts`:
+`linear="no"`, documento `nav`, `<guide>` do EPUB 2 (`cover`, `toc`, `copyright-page`,
+`colophon`), landmarks do nav, `epub:type` (`cover`, `toc`, `copyright-page`, `colophon`,
+`credits`, `imprint`), papéis DPUB-ARIA (`doc-cover`, `doc-toc`, `doc-colophon`, `doc-credits`)
+e a classe `pg-boilerplate` do Gutenberg.
+
+## Observações sobre os arquivos
+
+- **Ortografia de época.** As edições digitalizadas seguem a grafia do século XIX ("Academia
+  Brazileira", "seminario", "auctor"). É o texto da edição-fonte, não erro de conversão.
+- **Título com subtítulo.** O `dc:title` de Iracema é "Iracema / com uma noticia biographica do
+  auctor". A interface usa `tituloCurto` (`packages/core`), que fica com "Iracema".
+- **Ordem na bandeja.** A lista do acervo segue a tabela acima, e a obra já pega aparece como
+  "na gaveta" (a chave do acervo é única no banco).
+
+## Onboarding (`Q-01.3`, `RN-01.5b`)
+
+As três candidatas propostas antes (The Yellow Wallpaper, Alice, Flatland) saíram com o acervo em
+inglês. `RN-01.5b` continua pedindo uma obra "leve, curta, abertura envolvente, neutra em
+gênero", testada com usuários. Nenhuma das três obras atuais foi escolhida para esse papel.
+Iracema é a mais curta, mas tem a prosa poética e a grafia mais distantes da leitora de hoje, e
+isso pesa contra "leve". A questão segue aberta.
 
 ## O que falta
 
-- Acervo em português — não coberto nesta rodada.
-- Metadados de capa/sinopse: hoje o título vem só do nome do arquivo (mesma limitação da
-  importação de usuário, `apps/app/src/importacao/importarObra.ts`); a leitura de metadados reais
-  do OPF (título, autor, capa) do EPUB é trabalho pendente que beneficia importação e acervo
-  igualmente.
-- Fluxo de "adicionar à biblioteca em um toque" (`RN-02.3`) para estas obras — depende de UI de
-  Catálogo ainda não construída nesta rodada de Estágio 7 (fundação).
+- Capa e sinopse: o título e o autor já vêm do OPF, mas a imagem de capa (`cover-image` no
+  manifesto) ainda não é extraída nem mostrada.
+- Fluxo de "adicionar à biblioteca em um toque" (`RN-02.3`) a partir de um Catálogo: hoje o
+  acervo só existe como lista na bandeja.

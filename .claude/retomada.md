@@ -37,8 +37,19 @@ Decisões do usuário nesta conversa:
 - O plugin `withReadiumAndroidBuildFixes.js` do `1b903e5` **não** entrou na E1: só faz sentido
   junto com o `react-native-readium`, na E3 (o protótipo também usava um patch do pacote).
 - `biome migrate --write` foi retido pela trava de segurança — não repetir sem o usuário pedir.
-- Próxima ação: **o usuário testa a E1**. Depois, a E2 (bandeja e gaveta), começando pelo TDD de
-  `montarIndiceEpub` em `packages/core`.
+- **E2 feita** (18/11): core 42 testes (índice EPUB, estados, mesa, ULID, `tituloCurto`), app 17
+  (varreduras + esquema Drizzle × migração SQL). Verificado no emulador, com screenshot: mesa vazia
+  (Q13); importar EPUB (Brás Cubas, #54829) e PDF de 2 páginas por `Download`; arquivo falso
+  recusado; acervo Dom Casmurro e Iracema; "Abrir agora" e "Guardar em Quero ler"; gaveta com os 3
+  grupos, pausar e tirar (com confirmação, apaga o arquivo); mesa com 2 livros; app morto e reaberto
+  com tudo persistido. Índice no Hermes = índice no Node (375.549 caracteres no Dom Casmurro).
+- Decisões da E2 que ainda não viraram spec: migrações SQL à mão com `PRAGMA user_version` (sem
+  drizzle-kit); o texto do envelope de PDF tirou "contar o tempo de leitura" (não existe ainda);
+  BwBotao recebe `rotulo`, não `children` (regra `noReactNativeRawText` do Biome).
+- `www.gutenberg.org` respondeu 503 em 18/11; o espelho `gutenberg.pglaf.org` funcionou.
+- Para testar no emulador: `MSYS_NO_PATHCONV=1` no Git Bash antes de `adb push ... /sdcard/...`.
+- Próxima ação: **o usuário testa a E2**. Depois, a E3 (leitor com `react-native-readium` e o
+  painel), começando por fixar a versão do Readium e trazer o plugin de build do `1b903e5`.
 
 ---
 

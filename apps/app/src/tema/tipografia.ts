@@ -20,6 +20,7 @@ function voz(
 
 export const tipo = {
   corpo: voz('Spectral_400Regular', 16, 27),
+  corpoPequeno: voz('Spectral_400Regular', 12, 20),
   tituloCapitulo: voz('Spectral_300Light_Italic', 27, 32, 0.01),
   dadoTabular: voz('Spectral_600SemiBold', 22, 27, 0, { fontVariant: ['tabular-nums'] }),
   microcopy: voz('Spectral_300Light_Italic', 17, 24),

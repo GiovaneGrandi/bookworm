@@ -1,19 +1,34 @@
+import { objetosNaMesa } from '@bookworm/core';
 import { useRouter } from 'expo-router';
 import { Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleSheet } from 'react-native-unistyles';
 import { BwObjetoMesa } from '../src/componentes/BwObjetoMesa';
+import { marcarAberta, useObras } from '../src/dados/obras';
+import type { Obra } from '../src/dados/schema';
 import { espelhar, giro, raio } from '../src/tema/geometria';
 import { tipo } from '../src/tema/tipografia';
 
 /**
- * A mesa — tela inicial e único hub (RN-DV.1). Provisória na E1: os objetos só têm a forma
- * grosseira e levam às suas folhas. O estado real (gaveta com contagens, livro na página
- * corrente) entra na E2, e a arte em Skia na E4.
+ * A mesa — tela inicial e único hub (RN-DV.1). Cada objeto é porta e mostra o estado da
+ * função (RN-DV.3); só os 2 livros em leitura mais recentes ficam pousados (RN-DV.4).
+ * As formas ainda são provisórias: a arte em Skia entra na E4.
  */
 export default function Mesa() {
   const router = useRouter();
   const { top } = useSafeAreaInsets();
+  const mesa = objetosNaMesa(useObras());
+  const [principal, segundo] = mesa.livros;
+
+  function continuar(o: Obra) {
+    marcarAberta(o.id);
+    router.push(`/leitor/${o.id}`);
+  }
+
+  const rotuloGaveta =
+    mesa.gaveta.total === 0
+      ? 'Gaveta do fichário, vazia'
+      : `Gaveta do fichário: ${mesa.gaveta.lendo} lendo, ${mesa.gaveta.em_pausa} em pausa, ${mesa.gaveta.quero_ler} quero ler`;
 
   return (
     <View style={estilos.mesa}>
@@ -24,35 +39,64 @@ export default function Mesa() {
         <Text style={estilos.saudacao}>{saudacao()}</Text>
       </View>
 
-      <BwObjetoMesa
-        etiqueta="Leitor · prova da E1"
-        rotuloAcessivel="Abrir o leitor de prova"
-        onAbrir={() => router.push('/leitor/prova')}
-        posicao={{ left: 30, top: top + 160 }}
-        rotacao="-2deg"
-        rotacaoEtiqueta={giro.rotulo}
-      >
-        <View style={estilos.livro}>
-          <View style={estilos.pagina} />
-          <View style={estilos.pagina} />
-        </View>
-      </BwObjetoMesa>
+      {principal && (
+        <BwObjetoMesa
+          etiqueta={`Continuar · ${principal.titulo}`}
+          rotuloAcessivel={`Continuar lendo ${principal.titulo}, ${pct(principal)}% lido`}
+          onAbrir={() => continuar(principal)}
+          posicao={{ left: 30, top: top + 150 }}
+          rotacao="-2deg"
+          rotacaoEtiqueta={giro.rotulo}
+        >
+          <View style={estilos.livro}>
+            <View style={estilos.pagina}>
+              <Text style={estilos.kickerPagina}>{principal.autor ?? 'lendo'}</Text>
+              <Text style={estilos.tituloPagina} numberOfLines={3}>
+                {principal.titulo}
+              </Text>
+            </View>
+            <View style={[estilos.pagina, estilos.paginaDireita]}>
+              <Text style={estilos.folio}>{pct(principal)}%</Text>
+            </View>
+          </View>
+        </BwObjetoMesa>
+      )}
+
+      {segundo && (
+        <BwObjetoMesa
+          etiqueta={`lendo · ${pct(segundo)}%`}
+          rotuloAcessivel={`${segundo.titulo}, ${pct(segundo)}% lido. Continuar lendo`}
+          onAbrir={() => continuar(segundo)}
+          posicao={{ right: 26, top: top + 400 }}
+          rotacao="3deg"
+          rotacaoEtiqueta={espelhar(giro.rotulo)}
+        >
+          <View style={estilos.capa}>
+            <Text style={estilos.tituloCapa} numberOfLines={4}>
+              {quebravel(segundo.titulo)}
+            </Text>
+          </View>
+        </BwObjetoMesa>
+      )}
 
       <BwObjetoMesa
-        etiqueta="Importar"
-        rotuloAcessivel="Bandeja de entrada: adicionar EPUB ou PDF"
+        etiqueta={mesa.vazia ? 'Ponha um livro na mesa' : 'Importar'}
+        rotuloAcessivel="Bandeja de entrada: adicionar EPUB, PDF ou um livro do acervo"
         onAbrir={() => router.push('/bandeja')}
-        posicao={{ left: 24, bottom: 120 }}
+        posicao={mesa.vazia ? { left: 44, top: top + 250 } : { left: 24, bottom: 120 }}
+        rotacao={mesa.vazia ? '-1deg' : '0deg'}
         rotacaoEtiqueta={espelhar(giro.plaqueta)}
       >
-        <View style={estilos.bandeja}>
-          <View style={estilos.envelope} />
+        <View style={[estilos.bandeja, mesa.vazia && estilos.bandejaDestaque]}>
+          <View style={[estilos.envelope, mesa.vazia && estilos.envelopeDestaque]}>
+            <Text style={estilos.envelopeTexto}>+ EPUB · PDF</Text>
+          </View>
         </View>
       </BwObjetoMesa>
 
       <BwObjetoMesa
-        etiqueta="Gaveta"
-        rotuloAcessivel="Gaveta do fichário: livros lendo, em pausa e quero ler"
+        etiqueta={mesa.gaveta.total === 0 ? 'Gaveta · vazia' : `Gaveta · ${mesa.gaveta.total}`}
+        rotuloAcessivel={rotuloGaveta}
         onAbrir={() => router.push('/gaveta')}
         posicao={{ right: 30, bottom: 108 }}
         rotacao="1deg"
@@ -67,6 +111,11 @@ export default function Mesa() {
     </View>
   );
 }
+
+const pct = (o: Obra) => Math.round(o.progresso * 100);
+
+/** Nome de arquivo ("capitulo-teste") pode quebrar depois do hífen, não no meio da palavra. */
+const quebravel = (titulo: string) => titulo.replace(/([-_.])/g, '$1\u200B');
 
 function hoje(): string {
   return new Intl.DateTimeFormat('pt-BR', { weekday: 'short', day: 'numeric', month: 'short' })
@@ -129,6 +178,40 @@ const estilos = StyleSheet.create((theme) => ({
     backgroundColor: theme.sup.papel.fundo,
     borderWidth: 1,
     borderColor: theme.sup.papel.borda,
+    padding: theme.esp[4],
+    gap: theme.esp[2],
+  },
+  paginaDireita: {
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
+  },
+  kickerPagina: {
+    ...tipo.kickerMicro,
+    color: theme.sup.papel.tintaFraca,
+  },
+  tituloPagina: {
+    ...tipo.microcopy,
+    color: theme.sup.papel.tinta,
+  },
+  folio: {
+    ...tipo.kickerMicro,
+    fontVariant: ['tabular-nums'],
+    color: theme.sup.papel.tintaFraca,
+  },
+  capa: {
+    width: 112,
+    height: 156,
+    backgroundColor: theme.sup.carvao.fundo,
+    borderWidth: 1,
+    borderColor: theme.sup.carvao.borda,
+    padding: theme.esp[4],
+    justifyContent: 'center',
+    boxShadow: theme.sup.mesa.sombra.erguido,
+  },
+  tituloCapa: {
+    ...tipo.microcopy,
+    color: theme.sup.carvao.tinta,
+    textAlign: 'center',
   },
   bandeja: {
     width: 156,
@@ -138,12 +221,28 @@ const estilos = StyleSheet.create((theme) => ({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  bandejaDestaque: {
+    width: 300,
+    height: 200,
+    boxShadow: theme.sup.mesa.sombra.erguido,
+  },
   envelope: {
     width: 112,
     height: 66,
     backgroundColor: theme.sup.papel.fundo,
     transform: [{ rotate: '5deg' }],
     boxShadow: theme.sup.mesa.sombra.pousado,
+    justifyContent: 'flex-end',
+    padding: theme.esp[2],
+  },
+  envelopeDestaque: {
+    width: 220,
+    height: 130,
+    padding: theme.esp[4],
+  },
+  envelopeTexto: {
+    ...tipo.marginalia,
+    color: theme.sup.papel.tintaFraca,
   },
   gaveta: {
     width: 150,
