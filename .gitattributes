@@ -1,0 +1,2 @@
+# O pnpm aplica os patches byte a byte: fim de linha convertido quebra a aplicação.
+*.patch text eol=lf
