@@ -5,7 +5,9 @@ import {
   agruparGaveta,
   type EstadoObra,
   gerarUlid,
+  mesmoArquivo,
   objetosNaMesa,
+  obraComMesmoArquivo,
   porEmPausa,
   tituloCurto,
 } from '../src/index';
@@ -116,5 +118,31 @@ describe('tituloCurto', () => {
     expect(tituloCurto('Flatland: A Romance of Many Dimensions')).toBe('Flatland');
     expect(tituloCurto('Memórias / póstumas')).toBe('Memórias');
     expect(tituloCurto('  Dom   Casmurro ')).toBe('Dom Casmurro');
+  });
+});
+
+describe('RN-02.1g · a biblioteca não guarda duas cópias do mesmo arquivo', () => {
+  it('mesmo nome e extensão é o mesmo arquivo, sem diferenciar maiúsculas', () => {
+    expect(mesmoArquivo('dom-casmurro.epub', 'dom-casmurro.epub')).toBe(true);
+    expect(mesmoArquivo('Livro.EPUB', 'livro.epub')).toBe(true);
+    expect(mesmoArquivo('  livro.epub ', 'livro.epub')).toBe(true);
+  });
+
+  it('acentos compostos e decompostos (NFC × NFD) contam como iguais', () => {
+    expect(mesmoArquivo('cortiço.epub', 'cortiço.epub')).toBe(true);
+  });
+
+  it('extensão diferente ou nome diferente é outro arquivo', () => {
+    expect(mesmoArquivo('livro.epub', 'livro.pdf')).toBe(false);
+    expect(mesmoArquivo('livro.epub', 'livro (1).epub')).toBe(false);
+  });
+
+  it('acha a obra que já tem o arquivo', () => {
+    const obras = [
+      { id: 'a', nomeArquivo: 'x.pdf' },
+      { id: 'b', nomeArquivo: 'Dom-Casmurro.epub' },
+    ];
+    expect(obraComMesmoArquivo(obras, 'dom-casmurro.EPUB')?.id).toBe('b');
+    expect(obraComMesmoArquivo(obras, 'outro.epub')).toBeUndefined();
   });
 });

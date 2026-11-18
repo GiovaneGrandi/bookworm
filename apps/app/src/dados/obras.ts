@@ -1,4 +1,4 @@
-import { abrirParaLer, type IndiceEpub, porEmPausa } from '@bookworm/core';
+import { abrirParaLer, type IndiceEpub, obraComMesmoArquivo, porEmPausa } from '@bookworm/core';
 import { desc, eq } from 'drizzle-orm';
 import { useLiveQuery } from 'drizzle-orm/expo-sqlite';
 import { File } from 'expo-file-system';
@@ -30,6 +30,11 @@ export function inserirObra(nova: NovaObra, indice: IndiceEpub | null): void {
       }
     }
   });
+}
+
+/** A obra que já tem um arquivo com este nome e extensão, se houver (sem cópias repetidas). */
+export function obraComArquivo(nomeArquivo: string): Obra | undefined {
+  return obraComMesmoArquivo(db.select().from(obra).all(), nomeArquivo);
 }
 
 export function obraDoAcervo(chave: string): Obra | undefined {

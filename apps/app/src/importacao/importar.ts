@@ -10,7 +10,8 @@ import {
 import { Asset } from 'expo-asset';
 import { getDocumentAsync } from 'expo-document-picker';
 import { Directory, File, Paths } from 'expo-file-system';
-import { inserirObra, obraDoAcervo } from '../dados/obras';
+import { inserirObra, obraComArquivo, obraDoAcervo } from '../dados/obras';
+import type { Obra } from '../dados/schema';
 import type { ItemAcervo } from './acervo';
 
 export type MotivoRecusa = 'drm' | 'formato' | 'ilegivel';
@@ -24,7 +25,14 @@ export type Resultado =
       nomeArquivo: string;
       tamanho: number;
     }
-  | { tipo: 'ja_na_gaveta'; obraId: string; titulo: string }
+  | {
+      tipo: 'ja_na_gaveta';
+      obraId: string;
+      titulo: string;
+      formato: Formato;
+      /** O nome do arquivo que tentou entrar. */
+      nomeArquivo: string;
+    }
   | { tipo: 'recusada'; motivo: MotivoRecusa; nomeArquivo: string };
 
 /** Deixa a interface desenhar o estado "carregando" antes do trabalho síncrono do índice. */
@@ -34,6 +42,16 @@ function pastaDeObras(): Directory {
   const pasta = new Directory(Paths.document, 'obras');
   if (!pasta.exists) pasta.create({ intermediates: true });
   return pasta;
+}
+
+function jaNaGaveta(existente: Obra, nomeArquivo: string): Resultado {
+  return {
+    tipo: 'ja_na_gaveta',
+    obraId: existente.id,
+    titulo: existente.titulo,
+    formato: existente.formato,
+    nomeArquivo,
+  };
 }
 
 function semExtensao(nome: string): string {
@@ -47,6 +65,10 @@ async function importarBytes(
   chaveAcervo: string | null
 ): Promise<Resultado> {
   await umQuadro();
+  // Mesmo nome e extensão é a mesma obra: não entra uma segunda cópia.
+  const repetida = obraComArquivo(nomeArquivo);
+  if (repetida) return jaNaGaveta(repetida, nomeArquivo);
+
   const formato = detectarFormato(bytes);
   if (!formato) return { tipo: 'recusada', motivo: 'formato', nomeArquivo };
 
@@ -98,6 +120,11 @@ export async function importarDoAparelho(): Promise<Resultado | null> {
   const arquivo = escolha.canceled ? undefined : escolha.assets[0];
   if (!arquivo) return null;
   const temporario = new File(arquivo.uri);
+  const repetida = obraComArquivo(arquivo.name);
+  if (repetida) {
+    if (temporario.exists) temporario.delete();
+    return jaNaGaveta(repetida, arquivo.name);
+  }
   try {
     const bytes = await temporario.bytes();
     return await importarBytes(bytes, arquivo.name, 'importada', null);
@@ -107,8 +134,8 @@ export async function importarDoAparelho(): Promise<Resultado | null> {
 }
 
 export async function importarDoAcervo(item: ItemAcervo): Promise<Resultado> {
-  const existente = obraDoAcervo(item.chave);
-  if (existente) return { tipo: 'ja_na_gaveta', obraId: existente.id, titulo: existente.titulo };
+  const existente = obraDoAcervo(item.chave) ?? obraComArquivo(item.arquivo);
+  if (existente) return jaNaGaveta(existente, item.arquivo);
   const asset = Asset.fromModule(item.modulo);
   await asset.downloadAsync();
   if (!asset.localUri) throw new Error(`Acervo sem arquivo local: ${item.arquivo}`);

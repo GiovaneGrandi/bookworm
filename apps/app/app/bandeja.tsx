@@ -1,3 +1,4 @@
+import { obraComMesmoArquivo } from '@bookworm/core';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
@@ -28,7 +29,9 @@ export default function Bandeja() {
   const [resultado, setResultado] = useState<Resultado | null>(null);
   const [falha, setFalha] = useState<string | null>(null);
 
-  const noAcervo = new Set(obras.map((o) => o.chaveAcervo).filter(Boolean));
+  const naGaveta = (item: ItemAcervo) =>
+    obras.some((o) => o.chaveAcervo === item.chave) ||
+    Boolean(obraComMesmoArquivo(obras, item.arquivo));
 
   async function receber(chave: string, importar: () => Promise<Resultado | null>) {
     setCarregando(chave);
@@ -79,7 +82,7 @@ export default function Bandeja() {
           <ItemDoAcervo
             key={item.chave}
             item={item}
-            naGaveta={noAcervo.has(item.chave)}
+            naGaveta={naGaveta(item)}
             carregando={carregando === item.chave}
             desabilitado={carregando !== null}
             onPegar={() => receber(item.chave, () => importarDoAcervo(item))}
@@ -116,8 +119,15 @@ function Envelope({
   }
   if (resultado.tipo === 'ja_na_gaveta') {
     return (
-      <BwEnvelope selo="EPUB" nomeArquivo={resultado.titulo} meta="já na gaveta">
-        <Text style={estilos.lapis}>{resultado.titulo} já está na sua gaveta.</Text>
+      <BwEnvelope
+        selo={resultado.formato === 'pdf' ? 'PDF' : 'EPUB'}
+        nomeArquivo={resultado.nomeArquivo}
+        meta="não entrou de novo"
+      >
+        <Text style={estilos.lapis}>
+          {resultado.titulo} já está na sua gaveta. Um arquivo com o mesmo nome não entra duas
+          vezes.
+        </Text>
         <BwBotao
           variante="primario"
           onPress={() => onAbrir(resultado.obraId)}

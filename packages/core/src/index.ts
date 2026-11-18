@@ -1,6 +1,7 @@
 // @bookworm/core — regras de domínio em TypeScript puro, sem I/O (RN-ST.7).
 export const NUCLEO = '@bookworm/core';
 
+export * from './biblioteca/arquivo';
 export * from './biblioteca/estados';
 export * from './biblioteca/titulo';
 export * from './biblioteca/ulid';

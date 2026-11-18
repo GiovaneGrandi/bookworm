@@ -46,6 +46,9 @@ Decisões do usuário nesta conversa:
 - Decisões da E2 que ainda não viraram spec: migrações SQL à mão com `PRAGMA user_version` (sem
   drizzle-kit); o texto do envelope de PDF tirou "contar o tempo de leitura" (não existe ainda);
   BwBotao recebe `rotulo`, não `children` (regra `noReactNativeRawText` do Biome).
+- Pedido do usuário depois da E2: arquivo com mesmo nome e extensão não entra duas vezes. Virou
+  `RN-02.1g` (spec 02 + vault), `obraComMesmoArquivo` no core e verificação no emulador
+  (`Capitulo-Teste.PDF` recusado, nenhum arquivo novo gravado).
 - `www.gutenberg.org` respondeu 503 em 18/11; o espelho `gutenberg.pglaf.org` funcionou.
 - Para testar no emulador: `MSYS_NO_PATHCONV=1` no Git Bash antes de `adb push ... /sdcard/...`.
 - Próxima ação: **o usuário testa a E2**. Depois, a E3 (leitor com `react-native-readium` e o
