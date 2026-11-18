@@ -184,6 +184,8 @@ Regra 1: quase nenhum; irregular onde houver.
 
 ### 4.3 Sombra — e a exceção que a regra 5 precisava
 
+> **Desde 17/11/2026, toda sombra tem fonte** (`RN-DV.7`, [`direcao-visual.md`](direcao-visual.md) §9.3): a luminária fica no canto superior da mesa, e as sombras caem para baixo e para a esquerda. Os tokens abaixo continuam valendo, e só o deslocamento horizontal passa a ser negativo. O rebind por superfície (`RN-DS.6`) não muda.
+
 Regra 5 manda sombra marrom-quente e **proíbe preto neutro**. O levantamento encontrou **10 violações** nas três peças. Elas não são desleixo: quase todas são objetos pousados sobre o `--mesa`, onde `rgba(48,32,16,α)` fica a poucos passos do próprio fundo e a sombra some.
 
 É a mesma forma de problema que "verde vive sobre papel" — **uma regra escrita para papel, aplicada onde não há papel.** A arquitetura de §2 resolve por construção:
@@ -255,8 +257,11 @@ Derivado das telas dos módulos do corte do MVP ([`mvp.md`](mvp.md) §4.1–4.6)
 
 | Componente | Uso | Estados | Anúncio |
 |---|---|---|---|
-| `bw-shell` | Casca do app: mesa + destinos | — | — |
-| `bw-abas-fichario` | Navegação de primeiro nível (§10) | repouso, ativo, pressionado | destino + "selecionado" |
+| `bw-shell` | Casca do app: a mesa e as folhas erguidas dela | — | — |
+| ~~`bw-abas-fichario`~~ | **Aposentado** com a Escrivaninha ([`direcao-visual.md`](direcao-visual.md) §9) | — | — |
+| `bw-mesa` | Tela inicial e hub: a mesa com os objetos-porta (`RN-DV.1`, `RN-DV.3`) | repouso, objeto pressionado, objeto erguendo | lista ordenada de objetos, cada um com a sua etiqueta (`RN-DV.10`, `Q-DV.14`) |
+| `bw-objeto-mesa` | Objeto-porta pousado na mesa, com o estado da função à vista | repouso, pressionado, erguendo | etiqueta + estado ("Jardim, 23 dias") |
+| `bw-feltro-retorno` | Faixa de feltro no alto da folha erguida, que a devolve à mesa (`RN-DV.2`) | repouso, pressionado | "Pousar na mesa" |
 | `bw-cabeca` | Cabeçalho de tela: título + retorno + ação | repouso | cabeçalho |
 | `bw-gaveta` | Painel que entra pela borda | fechado, abrindo, aberto | diálogo |
 
@@ -406,6 +411,8 @@ Fronteira herdada de §9 de `02-juiciness.md`: **nada de háptico em rolagem, em
 ---
 
 ## 10. Navegação global — resolve `Q-DV.3`
+
+> **Revista em 17/11/2026.** A forma escolhida abaixo (abas de fichário) e a lista de destinos de primeiro nível foram **substituídas pela direção de interface _A Escrivaninha_**: a mesa como tela inicial e único hub, sem barra de abas, com retorno pela faixa de feltro. Ver [`direcao-visual.md`](direcao-visual.md) §9, `RN-DV.1` a `RN-DV.10`. **Continuam valendo** as restrições duras desta seção e `RN-DS.18`. O texto abaixo fica como registro da decisão anterior. O veredito sobre a forma C ("a mesa como navegação") é o risco que `Q-DV.13` agora precisa medir.
 
 `Q-DV.3` registrava que **nenhum módulo especifica a navegação do app**. Fica decidida aqui.
 

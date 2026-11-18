@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## O que é este projeto
 
-BookWorm é uma plataforma gamificada de leitura e escrita ("fitness para a mente"). **Estado atual: primeiro protótipo em construção**, seguindo `planos/2026-08-23-primeiro-prototipo-mvp.md` (Estágios 0–2 concluídos). O repositório contém specs funcionais, análises críticas, mockups estáticos em HTML e, a partir do Estágio 2, o monorepo de código de produto.
+BookWorm é uma plataforma gamificada de leitura e escrita ("fitness para a mente"). **Estado atual: só documentação.** Um primeiro protótipo (Estágios 0–8 de `planos/2026-08-23-primeiro-prototipo-mvp.md`) foi construído e **descartado em 17/11/2026**; o projeto recomeça a partir das specs. O código antigo existe só no histórico do git (último commit `1b903e5`) e não é base para o recomeço. O repositório contém specs funcionais, análises críticas e mockups estáticos em HTML.
 
 - `BookWorm.md` — rascunho original (pitch). Documento-fonte histórico, **mantido intocado**.
 - `README.md` — mapa da documentação e estado do projeto.
@@ -20,30 +20,9 @@ BookWorm é uma plataforma gamificada de leitura e escrita ("fitness para a ment
 - `analise-game-design/` e `analise-monetizacao/` — análises críticas das specs, cada uma terminando em uma folha de decisão (`04-decisoes.md` / `04-recomendacao.md`).
 - `mockups/*.html` — protótipos visuais estáticos e autocontidos (sem build step). `design-system.html` é o **catálogo e a referência normativa** — é dele que uma peça nova herda. `leitor-papel.html`, `telas-papel.html` e `widgets-story.html` são evidência histórica, em débito declarado (`AJ-13`); `leitor-noturno.html`, `leitor-instrumento.html`, `telas-noturno.html` e `comparativo.html` são as direções descartadas.
 
-## Código de produto — monorepo
+## Código de produto
 
-Estrutura (pnpm workspaces + Turborepo, `specs/stack.md` §5):
-
-- `apps/app` — Expo (RN 0.86, Expo SDK 57). Scaffold vazio desde o Estágio 2; navegação e design system entram no Estágio 5, o leitor no Estágio 7.
-- `apps/api` — Fastify. Scaffold vazio desde o Estágio 2; rotas de produto e Better Auth entram no Estágio 9.
-- `packages/core` — TypeScript puro, sem RN/Postgres/I/O (`RN-ST.7`). Hoje: o índice de caracteres (`stack.md` §6). A apuração de sessão, ofensiva e Ghost Reader entram nos Estágios 3–4.
-- `packages/db` — schema Drizzle. Vazio até o Estágio 6.
-- `packages/design` — tokens (pigmento → superfície → papel semântico, `design-system.md` §2) como TypeScript, fonte única de verdade; `pnpm design:tokens` gera o `:root` CSS para os mockups.
-- `probe/` — app de prova descartável do Estágio 1 (medição do Anexo A e do Readium em Android real). Não é parte do produto; ver `specs/medicao-app-de-prova.md`.
-
-**`.npmrc` da raiz fixa `node-linker=hoisted`** — obrigatório para builds Android no Windows não estourarem `CMAKE_OBJECT_PATH_MAX` (achado do Estágio 1, detalhe em `.claude/retomada.md`). Não remover nem reverter para o padrão do pnpm.
-
-Comandos (raiz do monorepo):
-
-```bash
-pnpm install                       # node-linker=hoisted já configurado em .npmrc
-pnpm test                          # Vitest, todos os pacotes (via Turborepo)
-pnpm lint                          # Biome, todos os pacotes
-pnpm typecheck                     # tsc --noEmit, todos os pacotes
-pnpm design:tokens                 # regenera packages/design/dist/tokens.css
-```
-
-Todo `RN-` de `packages/core` tem teste nomeado pelo próprio ID (`RN-ST.6`) — ver `packages/core/test/`.
+Não há código no repositório. Quando o recomeço começar, a estrutura e as ferramentas vinculantes são as de `specs/stack.md` (monorepo pnpm + Turborepo, `apps/app` Expo, `apps/api` Fastify, `packages/core` TypeScript puro sem I/O — `RN-ST.7`). `planos/2026-08-23-primeiro-prototipo-mvp.md` é o plano do protótipo descartado: serve de referência, não de roteiro já validado. **O plano vigente do recomeço é `planos/2026-11-17-primeiras-telas.md`** (mesa, bandeja, gaveta e leitor, em etapas E0–E4).
 
 ## Convenções das specs
 
@@ -77,7 +56,8 @@ O essencial, para não precisar abrir o arquivo a cada tarefa:
 - **Métrica é tipografia, nunca gráfico de biblioteca de charts.** Sem donuts, sem barras genéricas, sem sparklines de pacote.
 - **O sistema tipográfico é o Quatro Vozes,** escolhido em comparação com outros dois. Cada função tem sua face: **Spectral** = conteúdo e display · **EB Garamond** = citação e peça editorial · **Courier Prime** = chrome, rótulos e kickers · **Caveat** = manuscrito. A escala é vinculante e vive em `specs/direcao-visual.md` §3.2 — mockup novo herda a tabela, não o arquivo vizinho, e onde os dois divergirem manda a tabela. Entrelinha sempre em pixel inteiro. As faces do painel de leitura (`RN-02.16g`) são decisão da leitora, não vozes da marca.
 - **Pauta obriga grade.** Papel pautado só existe se o conteúdo assentar nas linhas: passo da pauta = entrelinha, em pixels inteiros, com as linhas de base sobre os traços. Objeto pousado na folha (carimbo, ficha, botão) é opaco e **interrompe** a pauta. Na dúvida, remover as linhas e ficar só com o grão 7×7px. Ver `specs/direcao-visual.md` §4.1.
-- **Dormência é bonita.** O estado de ausência recebe o mesmo investimento de arte que o estado ativo.
+- **Dormência é bonita.** O estado de ausência recebe o mesmo investimento de arte que o estado ativo. Desde a Escrivaninha, a dormência é **cianotipia** (azul-da-prússia), a única exceção autorizada ao verde.
+- **A interface é _A Escrivaninha_** (`specs/direcao-visual.md` §9, `RN-DV.*`). A tela inicial é a mesa vista de cima e o único hub. Cada função é um objeto-porta que mostra o próprio estado. Não há barra de abas: volta-se pela faixa de feltro. Ela substitui as abas de fichário de `design-system.md` §10. A referência é `mockups/ideacao/direcao-b-escrivaninha.html` até o catálogo absorvê-la (`AJ-15`).
 - **Componente nunca lê pigmento direto.** Os tokens vivem em três camadas: pigmento → superfície → papel semântico. Um componente declara a superfície em que vive e lê só `--sup-*`, e é isso que faz "o verde vive sobre papel" virar mecânica em vez de disciplina. Ver `specs/design-system.md` §2.
 - **Espaçamento só da escala tônica** (3·6·9·12·18·**27**·36·54·81), ancorada nos mesmos 27px da entrelinha e do passo da pauta.
 - Mockup novo herda o catálogo `mockups/design-system.html`, **não** o arquivo vizinho; não se inventa paleta nem espaçamento.

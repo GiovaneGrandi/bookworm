@@ -1,0 +1,841 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Direção C · Edição impressa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Spectral+SC:wght@400;500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Courier+Prime:wght@400;700&family=Caveat:wght@400;600&family=Public+Sans:wght@400;600&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* pigmento */
+  --tinta:#241f19; --tinta-70:rgba(36,31,25,.74); --tinta-50:rgba(36,31,25,.6); --tinta-16:rgba(36,31,25,.16); --tinta-8:rgba(36,31,25,.08);
+  --papel:#f3ead9; --papel-claro:#f8f2e6; --papel-fundo:#efe3ce;
+  --verde-tinta:#2f5d3a; --verde-16:rgba(47,93,58,.16);
+  --mesa:#1e2320;
+  --ciano-fundo:#1d3a56; --ciano-tinta:#dce8f2;
+  --pig-ambar:#e7c25e; --pig-oliva:#a8b07a; --pig-tinta:#93a9c0; --pig-carmim:#d79aa2;
+  --lapis-cor:#5b564b;
+  /* vozes */
+  --serif:'Spectral',Georgia,serif; --sc:'Spectral SC','Spectral',Georgia,serif;
+  --garamond:'EB Garamond','Spectral',Georgia,serif; --mono:'Courier Prime','Courier New',monospace;
+  --lapis:'Caveat','Segoe Script',cursive;
+  /* vitrine */
+  --vit-fundo:#e6ddca; --vit-tinta:#241f19;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--vit-fundo);color:var(--vit-tinta);font-family:var(--serif);font-size:16px;line-height:27px;overflow-x:hidden}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--verde-tinta);outline-offset:2px}
+
+/* ============ VITRINE ============ */
+.vit{max-width:1560px;margin:0 auto;padding:27px 16px 81px}
+.ficha{background:var(--papel-claro);max-width:1100px;margin:0 auto 36px;padding:36px clamp(18px,4vw,54px);box-shadow:0 1px 0 rgba(255,255,255,.6) inset,0 18px 36px -18px rgba(36,31,25,.35)}
+.ficha .kick{font-family:var(--sc);letter-spacing:.14em;font-size:13px;color:var(--tinta-70)}
+.ficha h1{font-family:var(--serif);font-weight:400;font-style:italic;font-size:clamp(34px,5vw,54px);line-height:1.1;margin:6px 0 18px}
+.ficha .tese{font-family:var(--garamond);font-size:21px;line-height:30px;max-width:46em;margin:0 0 27px}
+.ficha-grade{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:27px 36px}
+.ficha h2{font-family:var(--sc);font-weight:500;font-size:14px;letter-spacing:.14em;margin:0 0 9px;color:var(--verde-tinta);border-bottom:1px solid var(--tinta-16);padding-bottom:6px}
+.ficha ol,.ficha ul{margin:0;padding-left:21px;font-size:15px;line-height:24px}
+.ficha li{margin-bottom:9px}
+.ficha li b{font-weight:600}
+.modos{display:flex;justify-content:center;gap:12px;margin:0 auto 27px;flex-wrap:wrap}
+.modos button{font-family:var(--sc);letter-spacing:.12em;font-size:14px;min-height:44px;padding:0 18px;border-bottom:2px solid transparent}
+.modos button[aria-pressed="true"]{border-color:var(--verde-tinta);color:var(--verde-tinta);font-weight:500}
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:36px 27px;align-items:start}
+.slot{width:100%;min-width:0}
+.stage{position:relative;margin:0 auto;width:calc(406px * var(--s,1));height:calc(860px * var(--s,1))}
+.device{position:absolute;left:0;top:0;width:406px;height:860px;transform:scale(var(--s,1));transform-origin:0 0;background:#151816;border-radius:52px;padding:8px;box-shadow:0 27px 54px -27px rgba(0,0,0,.55)}
+.legenda{max-width:406px;margin:12px auto 0;font-size:14px;line-height:21px;color:var(--tinta-70);padding:0 6px}
+.legenda b{font-family:var(--sc);letter-spacing:.08em;color:var(--tinta);font-weight:500}
+.proto-wrap{max-width:560px;margin:0 auto}
+.proto-wrap .legenda{text-align:center}
+
+/* ============ TELA ============ */
+.tela{position:relative;width:390px;height:844px;overflow:hidden;border-radius:44px;background:var(--papel);color:var(--tinta);font-family:var(--serif);font-size:16px;line-height:27px;
+  background-image:radial-gradient(rgba(36,31,25,.035) 1px,transparent 1.4px);background-size:7px 7px}
+.sb{position:absolute;top:0;left:0;right:0;height:36px;display:flex;justify-content:space-between;align-items:center;padding:6px 36px 0;font-family:var(--sc);font-size:13px;letter-spacing:.06em;color:var(--tinta-70);z-index:5;pointer-events:none;font-variant-numeric:tabular-nums;background:linear-gradient(var(--papel) 60%,rgba(243,234,217,0))}
+.leitor .sb{background:none}
+.scroll{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;padding:36px 27px 108px;scrollbar-width:none}
+.scroll::-webkit-scrollbar{display:none}
+.rh{font-family:var(--sc);font-size:13px;letter-spacing:.16em;text-align:center;color:var(--tinta-70);height:36px;line-height:36px;margin:0 0 18px}
+.kick{font-family:var(--sc);font-size:13px;line-height:18px;letter-spacing:.14em;color:var(--tinta-70)}
+.disp{font-weight:400;font-size:34px;line-height:45px;margin:0 0 18px;letter-spacing:-.005em}
+.disp i{font-style:italic}
+p{margin:0 0 18px}
+.cap::first-letter{float:left;font-size:88px;line-height:72px;margin:6px 9px 0 -3px;color:var(--verde-tinta);font-weight:400}
+.lead{font-size:19px;line-height:27px}
+.it{font-style:italic}
+.fraco{color:var(--tinta-70)}
+.mono{font-family:var(--mono)}
+sup.n{font-size:11px;line-height:0;color:var(--verde-tinta);font-family:var(--serif);font-weight:600;padding-left:1px}
+.filet{border:0;border-top:1px solid var(--tinta-16);margin:27px 0}
+.filet.curto{width:81px;margin:27px 0 12px}
+.orn{text-align:center;color:var(--tinta-50);letter-spacing:.6em;margin:27px 0;font-size:14px}
+.notas{font-size:13px;line-height:18px;color:var(--tinta-70)}
+.notas p{margin:0 0 9px;padding-left:12px;text-indent:-12px}
+.notas sup{color:var(--verde-tinta);font-weight:600;font-size:10px;padding-right:3px}
+
+/* fita marcadora (abre o sumário) */
+.fita{position:absolute;top:0;right:27px;width:48px;height:81px;z-index:6;display:flex;justify-content:center}
+.fita::before{content:"";width:18px;height:63px;background:var(--verde-tinta);clip-path:polygon(0 0,100% 0,100% 100%,50% 82%,0 100%);box-shadow:inset -3px 0 0 rgba(0,0,0,.12)}
+.fita:active::before{height:72px}
+.fita span{position:absolute;clip:rect(0 0 0 0);width:1px;height:1px;overflow:hidden}
+
+/* fólio */
+.folio{position:absolute;left:0;right:0;bottom:0;height:90px;display:flex;justify-content:center;align-items:center;gap:18px;padding-bottom:18px;background:linear-gradient(to bottom,rgba(243,234,217,0),var(--papel) 45%);z-index:4}
+.folio button{min-width:48px;min-height:48px;font-size:22px;color:var(--tinta-70);display:flex;align-items:center;justify-content:center}
+.folio button[disabled]{opacity:.25;cursor:default}
+.folio .fol-n{font-family:var(--sc);font-size:15px;letter-spacing:.2em;color:var(--tinta);min-width:96px}
+.folio .fol-n::before,.folio .fol-n::after{content:"—";color:var(--tinta-50);padding:0 9px;letter-spacing:0}
+
+/* linhas pontilhadas (leaders) */
+.ld{display:flex;align-items:baseline;gap:6px;min-height:44px;padding:9px 0;width:100%;text-align:left}
+.ld .t{flex:0 1 auto}
+.ld .f{flex:1 1 18px;border-bottom:1px dotted var(--tinta-50);transform:translateY(-6px);min-width:18px}
+.ld .v{flex:0 0 auto;font-variant-numeric:tabular-nums oldstyle-nums;text-align:right}
+.ld.tab .v{font-variant-numeric:tabular-nums lining-nums}
+button.ld:active{background:var(--tinta-8)}
+.ld small{display:block;font-size:13px;line-height:18px;color:var(--tinta-70)}
+
+/* link-ação impresso */
+.acao{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:54px;border-top:1px solid var(--tinta);border-bottom:1px solid var(--tinta);padding:9px 0;font-size:19px;font-style:italic;text-align:left;margin:9px 0 27px}
+.acao span:last-child{font-style:normal;font-family:var(--sc);font-size:14px;letter-spacing:.12em;color:var(--verde-tinta)}
+.acao:active{background:var(--tinta-8)}
+.acao.verde{background:var(--verde-tinta);color:var(--papel);border-color:var(--verde-tinta);padding:9px 18px}
+.acao.verde span:last-child{color:var(--papel)}
+
+/* sumário = folha de guarda */
+.guarda{position:absolute;inset:0;z-index:20;background-color:var(--mesa);color:#e9e1cf;padding:54px 36px 36px;overflow-y:auto;animation:abrir .32s cubic-bezier(.2,.7,.2,1)}
+.guarda::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='54' height='54'%3E%3Cg fill='none' stroke='%232f5d3a' stroke-width='1'%3E%3Cpath d='M27 6c-6 6-6 14 0 20 6-6 6-14 0-20zM27 26v22'/%3E%3Cpath d='M0 33c5 4 11 4 14 0-3-5-9-5-14 0zM40 33c5 4 11 4 14 0-3-5-9-5-14 0z'/%3E%3C/g%3E%3C/svg%3E")}
+.guarda > *{position:relative}
+.guarda .kick{color:#c9c0ac}
+.guarda h2{font-family:var(--serif);font-style:italic;font-weight:400;font-size:34px;line-height:45px;margin:6px 0 27px;color:#f3ead9}
+.guarda .ld{color:#f3ead9;font-size:17px}
+.guarda .ld .f{border-color:rgba(243,234,217,.4)}
+.guarda .ld .v{font-family:var(--sc);letter-spacing:.1em;color:#e7c25e}
+.guarda .ld.atual .t::before{content:"";display:inline-block;width:6px;height:18px;background:#e7c25e;margin-right:9px;vertical-align:-3px}
+.guarda .futuro{color:#b5ad9b;font-style:italic;font-size:14px;line-height:21px;margin-top:27px;border-top:1px solid rgba(243,234,217,.2);padding-top:18px}
+.guarda .fechar{margin-top:27px;min-height:48px;font-family:var(--sc);letter-spacing:.14em;font-size:14px;color:#f3ead9;border-bottom:1px solid rgba(243,234,217,.5)}
+.guarda .exlibris{position:absolute;right:36px;bottom:36px;width:81px;opacity:.9}
+@keyframes abrir{from{clip-path:inset(0 0 0 100%)}to{clip-path:inset(0 0 0 0)}}
+
+/* ============ LEITOR ============ */
+.leitor{position:absolute;inset:0;transition:background .2s}
+.leitor.t-claro{background:#fbf8f1;color:#1f1b16}
+.leitor.t-sepia{background:var(--papel);color:var(--tinta)}
+.leitor.t-escuro{background:#26231f;color:#e4dccb}
+.leitor.t-preto{background:#000;color:#cdc5b3}
+.l-rh{position:absolute;top:36px;left:0;right:0;text-align:center;font-family:var(--sc);font-size:12px;letter-spacing:.16em;opacity:.62;height:27px;line-height:27px}
+.l-texto{position:absolute;top:72px;left:0;right:0;bottom:72px;overflow:hidden;hyphens:auto;-webkit-hyphens:auto}
+.l-texto p{margin:0;text-indent:1.4em}
+.l-texto p.cap{text-indent:0}
+.l-texto .capk{font-family:var(--sc);letter-spacing:.2em;font-size:12px;line-height:27px;text-align:center;opacity:.7;text-indent:0;margin-top:27px}
+.l-texto h2{font-weight:400;font-style:italic;font-size:27px;line-height:36px;text-align:center;margin:0 0 27px}
+.l-texto mark{color:inherit;padding:0 1px;mix-blend-mode:multiply}
+.t-escuro mark,.t-preto mark{mix-blend-mode:normal;color:#1f1b16}
+.g-ambar{background:var(--pig-ambar)}
+.g-oliva{background:var(--pig-oliva)}
+.g-tinta{background:var(--pig-tinta)}
+.g-carmim{background:var(--pig-carmim)}
+.w{cursor:pointer;border-radius:0}
+.w.sel{background:rgba(147,169,192,.45);box-shadow:-2px 0 0 #3f6a95,2px 0 0 #3f6a95}
+.nota-a{font-family:var(--lapis);font-size:18px;color:var(--lapis-cor);vertical-align:super;line-height:0;padding-left:1px}
+.t-escuro .nota-a,.t-preto .nota-a{color:#b9b2a2}
+.l-lapis{margin-top:18px;padding-top:9px;border-top:1px solid currentColor;border-top-color:rgba(127,120,105,.4);width:60%;font-family:var(--lapis);font-size:21px;line-height:27px;color:var(--lapis-cor);text-indent:0!important}
+.t-escuro .l-lapis,.t-preto .l-lapis{color:#b9b2a2}
+.l-folio{position:absolute;left:0;right:0;bottom:18px;height:54px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px}
+.l-folio .num{font-family:var(--sc);font-size:14px;letter-spacing:.12em;opacity:.75;font-variant-numeric:oldstyle-nums}
+.l-folio .filete{display:block;width:calc(100% - 54px);height:1px;background:rgba(127,120,105,.3);position:relative}
+.l-folio .filete b{position:absolute;left:0;top:-1px;height:3px;background:currentColor;opacity:.55}
+.luz,.brilho{position:absolute;inset:0;pointer-events:none;z-index:8}
+.luz{mix-blend-mode:multiply}
+.l-top,.l-bot{position:absolute;left:0;right:0;z-index:9;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:var(--papel-claro);color:var(--tinta);box-shadow:0 1px 0 var(--tinta-16)}
+.l-top{top:0;padding-top:36px;height:90px}
+.l-top .meio{font-family:var(--sc);font-size:12px;letter-spacing:.12em;color:var(--tinta-70);text-align:center;line-height:18px}
+.l-top button,.l-bot button{min-height:48px;min-width:48px;padding:0 9px;font-family:var(--sc);letter-spacing:.1em;font-size:14px}
+.l-top .enc{color:var(--verde-tinta);font-weight:500}
+.l-bot{bottom:0;height:81px;justify-content:center;gap:27px;box-shadow:0 -1px 0 var(--tinta-16);padding-bottom:18px}
+.l-bot .aa{font-family:var(--serif);font-size:20px;letter-spacing:0}
+.l-bot .aa i{font-style:normal;font-family:var(--sc);font-size:14px;letter-spacing:.12em;margin-left:6px}
+.dica{position:absolute;left:27px;right:27px;top:96px;z-index:9;font-size:13px;line-height:18px;color:var(--tinta-70);font-style:italic;text-align:center}
+
+/* tira de grifo */
+.slip{position:absolute;left:9px;right:9px;z-index:12;background:var(--papel-claro);color:var(--tinta);box-shadow:0 9px 18px -6px rgba(36,31,25,.4),0 0 0 1px var(--tinta-16);padding:9px 12px;transform:rotate(-.4deg)}
+.slip .lin{display:flex;align-items:center;gap:0;flex-wrap:nowrap}
+.slip .pig{width:44px;height:44px;display:flex;align-items:center;justify-content:center}
+.slip .pig i{width:24px;height:24px;border-radius:50%;display:block;mix-blend-mode:multiply}
+.slip .txt{min-height:44px;padding:0 6px;font-family:var(--sc);font-size:13px;letter-spacing:.06em;white-space:nowrap}
+.slip .sep{width:1px;height:27px;background:var(--tinta-16);margin:0 3px}
+.slip .def{font-family:var(--garamond);font-size:16px;line-height:21px;padding:9px 3px 3px;border-top:1px solid var(--tinta-16);margin-top:6px}
+.slip .def b{font-weight:500}
+
+/* painel = colofão */
+.painel{position:absolute;left:0;right:0;bottom:0;height:504px;z-index:15;background:var(--papel-claro);color:var(--tinta);box-shadow:0 -18px 36px -12px rgba(36,31,25,.45);padding:18px 27px 36px;overflow-y:auto;animation:subir .3s cubic-bezier(.2,.7,.2,1);scrollbar-width:none}
+.painel::-webkit-scrollbar{display:none}
+@keyframes subir{from{transform:translateY(100%)}to{transform:none}}
+.pa-cab{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+.pa-cab button{min-height:44px;min-width:48px;font-family:var(--sc);letter-spacing:.12em;font-size:14px;color:var(--verde-tinta)}
+.colofao{font-family:var(--garamond);font-size:19px;line-height:36px;text-align:center;margin:0 0 9px}
+.var{font-family:var(--garamond);font-style:italic;font-size:19px;color:var(--verde-tinta);border-bottom:1px dashed var(--verde-tinta);min-height:36px;padding:0 2px;line-height:30px}
+.var.on{background:var(--verde-tinta);color:var(--papel-claro);border-bottom-style:solid}
+.variantes{border-top:1px solid var(--tinta-16);border-bottom:1px solid var(--tinta-16);padding:9px 0;margin:0 0 18px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.variantes .op{min-height:44px;padding:0 12px;font-size:16px;border:1px solid transparent}
+.variantes .op[aria-pressed="true"]{border-color:var(--verde-tinta);color:var(--verde-tinta)}
+.variantes .passo{display:flex;align-items:center;gap:18px}
+.variantes .passo button{width:48px;height:48px;font-size:22px;border:1px solid var(--tinta-16)}
+.variantes .passo span{font-size:27px;font-variant-numeric:tabular-nums;min-width:54px;text-align:center}
+.luz-bloco{margin:9px 0 18px;padding:18px 0;border-top:1px solid var(--tinta);border-bottom:1px solid var(--tinta-16)}
+.luz-k{display:flex;align-items:baseline;justify-content:space-between}
+.luz-k .num{font-size:45px;line-height:54px;font-variant-numeric:tabular-nums lining-nums}
+.luz-k .num small{font-family:var(--sc);font-size:16px;letter-spacing:.1em;margin-left:6px}
+.luz-k .rot{font-family:var(--sc);font-size:13px;letter-spacing:.12em;color:var(--tinta-70);text-align:right;line-height:18px}
+input[type=range]{width:100%;height:44px;margin:0;-webkit-appearance:none;appearance:none;background:transparent}
+input[type=range]::-webkit-slider-runnable-track{height:6px;background:var(--trilho,var(--tinta-16))}
+input[type=range]::-moz-range-track{height:6px;background:var(--trilho,var(--tinta-16))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:27px;height:27px;margin-top:-10.5px;background:var(--papel-claro);border:2px solid var(--tinta);border-radius:50%}
+input[type=range]::-moz-range-thumb{width:23px;height:23px;background:var(--papel-claro);border:2px solid var(--tinta);border-radius:50%}
+.r-luz{--trilho:linear-gradient(90deg,#e59a4c,#f2d6a8 40%,#f3efe6 62%,#bcd0ea)}
+.luz-ext{display:flex;justify-content:space-between;font-size:13px;line-height:18px;color:var(--tinta-70);font-style:italic}
+.bri{display:block;margin-top:18px;font-family:var(--sc);font-size:13px;letter-spacing:.12em;color:var(--tinta-70)}
+
+/* ============ HOJE ============ */
+.mesa-cab{display:flex;gap:18px;align-items:flex-start;margin:0 0 9px}
+.vinheta{flex:0 0 81px;height:90px}
+.lendo-tb .ld{font-size:16px}
+
+/* ============ JARDIM ============ */
+.prancha{position:relative;background:var(--papel-claro);box-shadow:0 0 0 1px var(--tinta-16);padding:18px;margin:0 0 12px}
+.prancha svg{display:block;width:100%;height:auto}
+.prancha .pnum{position:absolute;top:9px;right:12px;font-family:var(--sc);font-size:12px;letter-spacing:.14em;color:var(--tinta-70)}
+.prancha.ciano{background:radial-gradient(ellipse at 50% 42%,#2a5279 0%,var(--ciano-fundo) 62%,#16304a 100%);box-shadow:inset 0 0 0 9px rgba(243,234,217,.06),inset 0 0 27px rgba(0,0,0,.35);color:var(--ciano-tinta)}
+.prancha.ciano .pnum{color:var(--ciano-tinta);opacity:.8}
+.etq{position:absolute;right:18px;bottom:18px;background:#f4eedf;color:var(--tinta);font-family:var(--mono);font-size:11px;line-height:15px;padding:6px 9px;transform:rotate(-1.2deg);box-shadow:0 2px 4px rgba(0,0,0,.25);max-width:180px}
+.legenda-fig{font-size:15px;line-height:21px;font-style:italic;text-align:center;color:var(--tinta-70);margin:0 0 18px}
+.estado{display:flex;justify-content:center;gap:0;margin:0 0 18px}
+.estado button{min-height:44px;padding:0 18px;font-family:var(--sc);font-size:14px;letter-spacing:.12em;color:var(--tinta-70);border-bottom:1px solid var(--tinta-16)}
+.estado button[aria-pressed="true"]{color:var(--tinta);border-bottom:2px solid var(--verde-tinta)}
+.estagios{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin:0 0 18px;text-align:center}
+.estagios figure{margin:0;position:relative}
+.estagios svg{width:100%;height:54px}
+.estagios figcaption{font-size:11px;line-height:14px;color:var(--tinta-70)}
+.estagios figcaption b{display:block;font-family:var(--sc);font-weight:500;font-size:11px;letter-spacing:.06em;color:var(--tinta)}
+.estagios .aqui{box-shadow:inset 0 -2px 0 var(--verde-tinta)}
+.estagios .aqui::before{content:"";position:absolute;left:50%;top:-6px;width:9px;height:18px;margin-left:-4.5px;background:var(--verde-tinta);clip-path:polygon(0 0,100% 0,100% 100%,50% 75%,0 100%)}
+
+/* ============ DESEMPENHO ============ */
+.periodo{display:flex;gap:6px;justify-content:center;margin:0 0 18px;flex-wrap:wrap}
+.periodo button{min-height:44px;padding:0 12px;font-family:var(--sc);letter-spacing:.1em;font-size:14px;color:var(--tinta-70)}
+.periodo button[aria-pressed="true"]{color:var(--tinta);box-shadow:inset 0 -2px 0 var(--verde-tinta)}
+.cal{display:grid;grid-template-columns:27px repeat(16,1fr);gap:2px 1px;font-variant-numeric:tabular-nums;margin:9px 0 6px}
+.cal .d{height:16px;display:flex;align-items:center;justify-content:center;font-size:13px;line-height:1;color:var(--tinta-50)}
+.cal .d.ok::before{content:"";width:9px;height:9px;background:var(--verde-tinta);transform:rotate(45deg)}
+.cal .d.no::before{content:"·";}
+.cal .d.hoje::before{outline:1.5px solid var(--tinta);outline-offset:2px}
+.cal .d.fut::before{content:""}
+.cal .dl{font-family:var(--sc);font-size:10px;color:var(--tinta-70);height:16px;line-height:16px}
+.cal .ml{font-family:var(--sc);font-size:10px;letter-spacing:.04em;color:var(--tinta-70);height:16px;line-height:16px;white-space:nowrap;overflow:visible}
+.cal .quebra{position:relative}
+.cal .quebra::after{content:"²";position:absolute;top:-6px;right:-2px;font-size:10px;color:var(--verde-tinta);font-weight:600}
+.tally{font-family:var(--serif);letter-spacing:.08em;color:var(--verde-tinta);margin-right:6px}
+.tally.cinco{text-decoration:line-through;text-decoration-thickness:1.5px}
+
+/* ============ IMPORTAR ============ */
+.escolher{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:108px;width:100%;border:1px dashed var(--tinta-50);margin:0 0 27px;text-align:center}
+.escolher b{font-weight:400;font-style:italic;font-size:21px}
+.escolher span{font-family:var(--sc);font-size:12px;letter-spacing:.12em;color:var(--tinta-70)}
+.prova{position:relative;padding:18px 0 18px 63px;border-top:1px solid var(--tinta-16)}
+.prova .ico{position:absolute;left:0;top:18px;width:45px;height:60px;background:var(--papel-claro);box-shadow:0 0 0 1px var(--tinta-16),2px 3px 0 var(--tinta-8);display:flex;align-items:flex-end;justify-content:center;font-family:var(--mono);font-size:10px;padding-bottom:6px;color:var(--tinta-70)}
+.prova .ico.pdf{background:repeating-linear-gradient(to bottom,transparent 0 5px,var(--tinta-16) 5px 6px) 6px 9px/33px 30px no-repeat,var(--papel-claro)}
+.prova .arq{font-family:var(--mono);font-size:13px;line-height:18px;word-break:break-all}
+.prova .meta{font-size:13px;line-height:18px;color:var(--tinta-70)}
+.prova .ok{font-family:var(--sc);font-size:12px;letter-spacing:.12em;color:var(--verde-tinta);margin-top:6px}
+.prova p{font-size:15px;line-height:21px;margin:6px 0 0}
+.selo-fac{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.06em;border:1px solid var(--tinta-70);padding:0 6px;transform:rotate(-1.5deg);margin-left:6px}
+
+/* ============ BIBLIOTECA ============ */
+.parte{font-family:var(--sc);font-size:13px;letter-spacing:.2em;text-align:center;color:var(--tinta-70);margin:36px 0 3px}
+.parte-tit{text-align:center;font-style:italic;font-size:27px;line-height:36px;margin:0 0 18px;font-weight:400}
+.estado-tit{font-family:var(--sc);font-size:12px;letter-spacing:.14em;color:var(--verde-tinta);margin:18px 0 0;border-bottom:1px solid var(--tinta-16)}
+.ld .orig{font-family:var(--sc);font-size:11px;letter-spacing:.08em;color:var(--tinta-70)}
+.prog{display:block;height:1px;background:var(--tinta-16);margin-top:6px;position:relative;width:100%}
+.prog b{position:absolute;left:0;top:-1px;height:3px;background:var(--tinta-70)}
+.estante{display:grid;grid-template-columns:1fr 1fr;gap:18px 12px;margin:0 0 18px}
+.rosto{position:relative;aspect-ratio:3/4;padding:18px 12px 12px;display:flex;flex-direction:column;align-items:center;text-align:center;box-shadow:0 0 0 1px var(--tinta-16),3px 4px 0 -1px rgba(36,31,25,.1)}
+.rosto .ra{font-family:var(--sc);font-size:10px;letter-spacing:.14em;line-height:14px}
+.rosto .rt{font-style:italic;font-size:17px;line-height:21px;margin:auto 0}
+.rosto .rorn{font-size:10px;letter-spacing:.4em;opacity:.6}
+.rosto .rd{font-family:var(--sc);font-size:10px;letter-spacing:.12em;line-height:14px;margin-top:9px;opacity:.8}
+.rosto.r1{grid-column:1/-1;aspect-ratio:auto;min-height:216px;padding-bottom:18px;background:#efe0b2;flex-direction:row;gap:18px;text-align:left;padding:18px}
+.rosto.r1 .rt{font-size:24px;line-height:30px}
+.rosto{padding-bottom:54px}
+.rosto .exl{position:absolute;right:6px;bottom:6px;width:45px;height:45px;transform:rotate(-8deg);opacity:.88}
+.rosto.r2{background:var(--papel-claro)}
+.rosto.r3{background:#e2e6d6}
+.rosto.r4{background:var(--verde-tinta);color:#f3ead9}
+.rosto.r5{background:#ecd7d3}
+.rosto.r6{background:#dfe4ea}
+.so-cresce{text-align:center;font-style:italic;color:var(--tinta-70);font-size:15px}
+
+/* ============ SESSÃO ============ */
+.celeb{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:54px 36px 81px;cursor:pointer}
+.celeb .gr{font-size:54px;line-height:63px;font-style:italic;font-weight:400;margin:18px 0 9px}
+.celeb .sub{font-size:21px;line-height:27px;margin:0 0 9px}
+.celeb .mais{font-family:var(--garamond);font-style:italic;font-size:19px;color:var(--tinta-70)}
+.carimbo{width:171px;height:171px;margin:27px 0 18px;transform:rotate(-7deg);animation:carimbar .55s cubic-bezier(.3,1.6,.5,1) .35s both}
+@keyframes carimbar{0%{transform:scale(1.6) rotate(-2deg);opacity:0}60%{opacity:.95}100%{transform:scale(1) rotate(-7deg);opacity:.9}}
+.celeb .ver{margin-top:27px;line-height:48px;display:block;font-family:var(--sc);letter-spacing:.14em;font-size:14px;color:var(--verde-tinta);border-bottom:1px solid var(--verde-tinta)}
+.grifos-in i{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:-1px;margin:0 2px;mix-blend-mode:multiply}
+.card-prev{margin:9px auto 18px;width:216px;background:var(--papel-claro);padding:18px;box-shadow:0 0 0 1px var(--tinta-16),0 12px 18px -9px rgba(36,31,25,.35);transform:rotate(1.2deg);text-align:center}
+.card-prev .q{font-family:var(--garamond);font-style:italic;font-size:18px;line-height:24px;margin:6px 0 9px}
+.card-prev .q mark{background:var(--pig-carmim);mix-blend-mode:multiply;color:inherit}
+.card-prev .c{font-family:var(--sc);font-size:10px;letter-spacing:.14em;line-height:14px;color:var(--tinta-70)}
+.duas{display:grid;grid-template-columns:1fr;gap:0}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .carimbo{transform:rotate(-7deg);opacity:.9}
+}
+</style>
+</head>
+<body>
+<main class="vit">
+
+<section class="ficha" aria-labelledby="f-tit">
+  <div class="kick">Ficha de direção · rodada de ideação</div>
+  <h1 id="f-tit">C · Edição impressa</h1>
+  <p class="tese">Cada tela é uma página composta de uma edição de luxo: grade editorial, branco de página, hierarquia só de tipo e espaço. O chrome some; a navegação é a de um livro (sumário, fólio, cabeçalho corrido, virar a página), e a papelaria fica nos objetos pousados: fita, carimbo, ex-libris, etiqueta.</p>
+  <div class="ficha-grade">
+    <div>
+      <h2>O que quebrou da Papel, e por quê</h2>
+      <ol>
+        <li><b>A mesa verde-escura deixou de ser fundo.</b> Numa página impressa a folha ocupa o campo inteiro; a mesa ao redor de cada tela era a moldura de aplicativo que a tese queria evitar. Ela vira <i>folha de guarda</i>: aparece só no sumário, como a guarda de um livro encadernado.</li>
+        <li><b>Courier Prime saiu do chrome.</b> Cabeçalhos, kickers e fólios vão em versalete real (Spectral SC, uma face a mais). Versalete é o chrome do livro; Courier em toda parte é papelaria de escritório. Courier fica só no que é datilografado de fato: etiqueta, carimbo, nome de arquivo.</li>
+        <li><b>Sem pauta.</b> Livro impresso não tem pauta. A grade de 27px continua, invisível, só como linha de base.</li>
+        <li><b>Sem barra de abas.</b> A navegação global é sumário (fita marcadora) + fólio tocável com ‹ › + gesto de virar. O app é pré-textual (fólios romanos i–v); o livro é o texto (fólio arábico = página canônica).</li>
+        <li><b>Métrica é prosa, não só tipografia.</b> O número principal vira frase; o detalhe vai em nota de rodapé numerada. A tabela com pontilhado fica para quem quer escanear.</li>
+        <li><b>Dormência em cianotipia</b> (azul da Prússia), não em verde dessaturado: uma prancha de herbário exposta ao sol, outro material da própria Papel, promovido a estado.</li>
+        <li><b>Fichas e cartões quase somem</b> do inventário; sobram a prancha, a folha de rosto em miniatura e a tira de grifo.</li>
+      </ol>
+    </div>
+    <div>
+      <h2>3 ideias que deveriam sobreviver</h2>
+      <ol>
+        <li><b>Colofão editável.</b> O painel do leitor é uma frase: “Esta página foi composta em <i>Spectral</i>, corpo <i>16</i> sobre <i>27</i>…”. Cada termo é tocável e abre suas variantes no lugar. Os dez controles de <span class="mono">RN-02.16d</span> cabem em três linhas legíveis, e a luz ganha bloco próprio. Resolve <span class="mono">Q-02.8</span> sem tirar controle nenhum.</li>
+        <li><b>Romano para o app, arábico para o livro.</b> O fólio do leitor <i>é</i> a página canônica (68) e o cabeçalho corrido é o capítulo: a âncora de posição de <span class="mono">RN-02.13a</span> deixa de ser widget e vira o que todo livro já tem.</li>
+        <li><b>Nota de rodapé no lugar de tooltip.</b> “Trinta e quatro minutos sem levantar os olhos.”¹ — o relógio de parede, o recorde e o Ghost Reader moram no rodapé. A comparação com o próprio histórico fica literalmente embaixo, nunca no título.</li>
+      </ol>
+      <h2 style="margin-top:27px">O que não funcionou, ou ficou em dúvida</h2>
+      <ul>
+        <li>Pouco chrome cobra em descoberta: a fita e o ‹ › podem passar despercebidos. A folha de rosto termina com um índice “Nesta edição” como rede de segurança, mas precisa de teste.</li>
+        <li>Prosa é lenta de escanear. “Três horas e doze minutos” não se compara de relance; mantive o algarismo na tabela, e a localização de plurais em prosa dá trabalho.</li>
+        <li>No colofão, quem ajusta muito toca duas vezes por controle. E o leitor de tela precisa de rótulo por termo (fiz), o que alonga a frase falada.</li>
+        <li>O mapa de constância continua quase um gráfico (grade de losangos). Não achei forma mais impressa sem perder a leitura das 16 semanas.</li>
+        <li>Os temas escuro e preto do leitor contradizem a “página impressa”. Ficaram funcionais, sem arte própria.</li>
+        <li>O gesto de virar não existe no leitor (lá ele vira a página do livro), então o modelo de navegação muda de regra dentro do livro.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="modos" role="group" aria-label="Modo de exibição">
+  <button type="button" data-modo="proto" aria-pressed="true">Protótipo</button>
+  <button type="button" data-modo="todas" aria-pressed="false">Todas as telas</button>
+</div>
+
+<section id="m-proto" class="proto-wrap" aria-label="Protótipo navegável">
+  <div class="slot"><div class="stage"><div class="device"><div class="tela" data-frame="hoje"></div></div></div></div>
+  <p class="legenda">Navegue como num livro: a <b>fita</b> no alto ou o <b>fólio</b> abrem o sumário; <b>‹ ›</b> ou deslizar viram a página. No leitor, toque no texto para os controles (no app real, somem após 3 s); toque em “Arganaz” para grifar.</p>
+</section>
+
+<section id="m-todas" class="grade" aria-label="Todas as telas" hidden>
+</section>
+
+</main>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- dados ---------- */
+var ORDEM=['hoje','biblioteca','jardim','desempenho','importar'];
+var ROM={hoje:'i',biblioteca:'ii',jardim:'iii',desempenho:'iv',importar:'v'};
+var CAB={hoje:'Folha de rosto',biblioteca:'Biblioteca & Estante',jardim:'Jardim',desempenho:'Desempenho',importar:'Acrescentar ao acervo'};
+var FACES={
+  'Spectral':{css:"'Spectral',Georgia,serif",size:16,lead:27},
+  'EB Garamond':{css:"'EB Garamond',Georgia,serif",size:17,lead:27},
+  'Public Sans':{css:"'Public Sans',Arial,sans-serif",size:15.5,lead:26},
+  'Atkinson Hyperlegible':{css:"'Atkinson Hyperlegible',Arial,sans-serif",size:17,lead:28},
+  'Courier Prime':{css:"'Courier Prime',monospace",size:13.5,lead:24}
+};
+var MARG={'estreitas':18,'médias':27,'largas':36};
+var OPCOES={
+  face:Object.keys(FACES),
+  marg:['estreitas','médias','largas'],
+  align:['justificado','alinhado à esquerda'],
+  tema:['claro','sépia','escuro','preto'],
+  ancora:['nada','só o filete','o fólio e o capítulo'],
+  sens:['com vibração e som','em silêncio']
+};
+var ROT={face:'Família de fonte',size:'Corpo',lead:'Entrelinha',marg:'Margens',align:'Alinhamento',tema:'Tema',ancora:'Âncora de posição',sens:'Retorno sensorial'};
+
+function novoEstado(tela,extra){
+  var s={tela:tela,sumario:false,controles:false,painel:false,opt:null,sel:false,dic:false,grifo:null,
+    dormente:false,periodo:'semana',celebrado:false,
+    p:{face:'Spectral',size:16,lead:27,marg:'médias',align:'justificado',tema:'sépia',temp:4200,bri:100,ancora:'o fólio e o capítulo',sens:'com vibração e som'}};
+  for(var k in extra){s[k]=extra[k];}
+  return s;
+}
+function fmt(n){return String(n).replace('.',',');}
+function milhar(n){return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,'.');}
+
+/* ---------- desenho botânico ---------- */
+function folha(x,y,ang,len,w,cor){
+  var d='M0 0 C'+(len*.3)+' '+(-w)+' '+(len*.72)+' '+(-w)+' '+len+' 0 C'+(len*.72)+' '+w+' '+(len*.3)+' '+w+' 0 0Z';
+  var v='';
+  if(!cor.solido){for(var i=1;i<4;i++){var px=len*i/4.4;v+='<path d="M'+px+' 0 l'+(len*.1)+' '+(-w*.62)+'M'+px+' 0 l'+(len*.1)+' '+(w*.62)+'" stroke="'+cor.traco+'" stroke-width=".6" fill="none" opacity=".7"/>';}}
+  return '<g transform="translate('+x+' '+y+') rotate('+ang+')"><path d="'+d+'" fill="'+cor.folha+'" stroke="'+cor.traco+'" stroke-width="1.1"/><path d="M0 0 L'+(len*.94)+' 0" stroke="'+cor.traco+'" stroke-width=".8" fill="none"/>'+v+'</g>';
+}
+function flor(x,y,r,cor){
+  var s='';for(var i=0;i<5;i++){var a=i*72;s+='<ellipse cx="0" cy="'+(-r)+'" rx="'+(r*.55)+'" ry="'+r+'" transform="rotate('+a+')" fill="'+cor.flor+'" stroke="'+cor.traco+'" stroke-width=".9"/>';}
+  return '<g transform="translate('+x+' '+y+')">'+s+'<circle r="'+(r*.45)+'" fill="'+cor.miolo+'" stroke="'+cor.traco+'" stroke-width=".8"/></g>';
+}
+var COR_TINTA={traco:'#241f19',folha:'rgba(47,93,58,.2)',flor:'rgba(215,154,162,.55)',miolo:'#e7c25e',solido:false};
+var COR_CIANO={traco:'#dce8f2',folha:'rgba(220,232,242,.82)',flor:'rgba(220,232,242,.9)',miolo:'#dce8f2',solido:true};
+
+function mudaGrande(cor,ciano){
+  var g='';
+  // terra e raízes
+  if(!ciano){
+    for(var i=0;i<28;i++){var x=40+i*8;g+='<path d="M'+x+' 292 l-6 9" stroke="#241f19" stroke-width=".6" opacity=".55"/>';}
+    g+='<path d="M30 290 H270" stroke="#241f19" stroke-width="1"/>';
+  }
+  g+='<g fill="none" stroke="'+cor.traco+'" stroke-width="1" opacity="'+(ciano?'.85':'.8')+'"><path d="M150 290 C147 310 140 322 128 336"/><path d="M150 290 C154 312 166 324 178 334"/><path d="M149 300 C142 306 132 308 120 306"/><path d="M152 304 C160 310 170 312 184 310"/><path d="M146 318 C140 326 138 332 140 342"/><path d="M158 318 C162 328 160 336 156 344"/></g>';
+  if(ciano){
+    // folhas caídas expostas ao sol: sombras pálidas da fotogravura
+    var F={traco:'rgba(220,232,242,.0)',folha:'rgba(220,232,242,.16)',solido:true};
+    g+=folha(52,300,-20,34,10,F)+folha(232,288,-160,38,11,F)+folha(70,82,30,30,9,F)+folha(238,120,140,26,8,F)+folha(214,312,-200,22,7,F);
+    for(var j=0;j<26;j++){var sx=(j*73)%290+5,sy=(j*131)%330+8;g+='<circle cx="'+sx+'" cy="'+sy+'" r="'+(j%3?0.7:1.2)+'" fill="#dce8f2" opacity="'+(j%4?.25:.5)+'"/>';}
+  }
+  // caule
+  g+='<path d="M150 290 C146 246 158 206 150 160 C146 138 150 120 152 104" fill="none" stroke="'+cor.traco+'" stroke-width="'+(ciano?2.4:1.8)+'"/>';
+  g+=folha(149,258,-150,64,19,cor)+folha(151,250,-28,58,17,cor);
+  g+=folha(153,214,-158,54,16,cor)+folha(152,206,-22,62,18,cor);
+  g+=folha(150,170,-140,46,14,cor)+folha(150,162,-38,44,13,cor);
+  g+=folha(151,128,-118,28,9,cor)+folha(152,122,-62,26,8,cor);
+  g+='<ellipse cx="152" cy="100" rx="5" ry="9" fill="'+cor.folha+'" stroke="'+cor.traco+'" stroke-width="1"/>';
+  return '<svg viewBox="0 0 300 350" role="img" aria-label="Muda com oito folhas, desenhada à mão">'+g+'</svg>';
+}
+function icone(est,cor){
+  cor=cor||COR_TINTA;var g='<path d="M6 60 H54" stroke="'+cor.traco+'" stroke-width=".8"/>';
+  if(est==='broto'){g+='<path d="M30 60 C30 52 30 48 30 44" stroke="'+cor.traco+'" stroke-width="1.2" fill="none"/>'+folha(30,45,-150,13,6,cor)+folha(30,45,-30,13,6,cor);}
+  if(est==='muda'){g+='<path d="M30 60 C28 46 32 36 30 24" stroke="'+cor.traco+'" stroke-width="1.2" fill="none"/>'+folha(30,50,-150,16,5,cor)+folha(30,46,-30,16,5,cor)+folha(30,36,-145,12,4,cor)+folha(30,33,-35,12,4,cor)+folha(30,26,-100,8,3,cor);}
+  if(est==='florida'){g+='<path d="M30 60 C28 44 32 34 30 20 M30 38 C36 32 40 28 42 22" stroke="'+cor.traco+'" stroke-width="1.2" fill="none"/>'+folha(30,50,-150,15,5,cor)+folha(30,46,-30,14,5,cor)+folha(30,34,-150,11,4,cor)+flor(30,17,4.5,cor)+flor(43,19,3.5,cor);}
+  if(est==='arvore'){g+='<path d="M28 60 C29 50 27 42 30 34 M32 60 C31 50 33 42 30 34" stroke="'+cor.traco+'" stroke-width="1.2" fill="none"/><path d="M30 36 C16 38 10 28 16 20 C14 10 26 4 32 10 C40 4 50 12 46 20 C52 28 44 38 30 36Z" fill="'+cor.folha+'" stroke="'+cor.traco+'" stroke-width="1"/>';}
+  if(est==='bosque'){
+    var t=function(x,y,s){return '<path d="M'+x+' 60 V'+(y+6)+'" stroke="'+cor.traco+'" stroke-width="1"/><path d="M'+x+' '+(y-s)+' C'+(x-s)+' '+(y-s*.2)+' '+(x-s*.8)+' '+(y+s*.6)+' '+x+' '+(y+s*.6)+' C'+(x+s*.8)+' '+(y+s*.6)+' '+(x+s)+' '+(y-s*.2)+' '+x+' '+(y-s)+'Z" fill="'+cor.folha+'" stroke="'+cor.traco+'" stroke-width=".9"/>';};
+    g+=t(16,36,10)+t(44,34,11)+t(30,24,14);
+  }
+  return '<svg viewBox="0 0 60 64" aria-hidden="true">'+g+'</svg>';
+}
+function exlibris(cor){
+  cor=cor||'#2f5d3a';
+  return '<svg viewBox="0 0 100 100" aria-hidden="true"><defs><path id="ec" d="M50 50 m-36 0 a36 36 0 1 1 72 0 a36 36 0 1 1 -72 0"/></defs><circle cx="50" cy="50" r="46" fill="none" stroke="'+cor+'" stroke-width="2.5"/><circle cx="50" cy="50" r="27" fill="none" stroke="'+cor+'" stroke-width="1"/><text font-family="Courier Prime,monospace" font-size="10.5" font-weight="700" fill="'+cor+'" letter-spacing="1.5"><textPath href="#ec">EX LIBRIS · LIA · EX LIBRIS · LIA ·</textPath></text><path d="M50 66 V44 M50 50 C42 46 40 40 42 34 C48 36 50 42 50 50 M50 46 C58 42 60 36 58 30 C52 32 50 38 50 46" fill="none" stroke="'+cor+'" stroke-width="1.6"/></svg>';
+}
+function carimboMeta(){
+  return '<svg class="carimbo" viewBox="0 0 200 200" role="img" aria-label="Carimbo: meta do dia cumprida, 17 de novembro de 2026"><defs><path id="cc" d="M100 100 m-78 0 a78 78 0 1 1 156 0 a78 78 0 1 1 -156 0"/><filter id="gasto"><feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="2" seed="4"/><feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -0.9 1.4"/><feComposite in="SourceGraphic" operator="in"/></filter></defs><g filter="url(#gasto)" fill="none" stroke="#2f5d3a"><circle cx="100" cy="100" r="94" stroke-width="4"/><circle cx="100" cy="100" r="64" stroke-width="1.5"/><text font-family="Courier Prime,monospace" font-size="17" font-weight="700" fill="#2f5d3a" stroke="none" letter-spacing="3"><textPath href="#cc">META CUMPRIDA · META CUMPRIDA ·</textPath></text><text x="100" y="94" text-anchor="middle" font-family="Courier Prime,monospace" font-size="30" font-weight="700" fill="#2f5d3a" stroke="none">17·XI</text><text x="100" y="122" text-anchor="middle" font-family="Courier Prime,monospace" font-size="18" fill="#2f5d3a" stroke="none" letter-spacing="2">2026</text></g></svg>';
+}
+
+/* ---------- moldura comum das páginas do app ---------- */
+function pagina(st,corpo){
+  var i=ORDEM.indexOf(st.tela);
+  return '<div class="sb"><span>21:40</span><span></span></div>'+
+    '<button class="fita" data-act="sumario"><span>Abrir o sumário</span></button>'+
+    '<div class="scroll" data-scroll><header class="rh">'+CAB[st.tela]+'</header>'+corpo+'</div>'+
+    '<nav class="folio" aria-label="Paginação"><button data-act="prev" aria-label="Página anterior"'+(i<=0?' disabled':'')+'>‹</button>'+
+    '<button class="fol-n" data-act="sumario" aria-label="Fólio '+ROM[st.tela]+'. Abrir o sumário">'+ROM[st.tela]+'</button>'+
+    '<button data-act="next" aria-label="Próxima página"'+(i>=ORDEM.length-1?' disabled':'')+'>›</button></nav>'+
+    (st.sumario?sumario(st):'');
+}
+function sumario(st){
+  function e(t,v,alvo,sub){return '<button class="ld'+(st.tela===alvo?' atual':'')+'" data-act="go:'+alvo+'"><span class="t">'+t+(sub?'<small style="color:#b5ad9b">'+sub+'</small>':'')+'</span><span class="f"></span><span class="v">'+v+'</span></button>';}
+  return '<div class="guarda" role="dialog" aria-label="Sumário"><div class="kick">Bookworm · edição de Lia</div><h2>Sumário</h2>'+
+    e('Folha de rosto','i','hoje')+
+    e('Em leitura','68','leitor','Alice, cap. VII, “Um chá maluco”')+
+    e('Biblioteca & Estante','ii','biblioteca')+
+    e('Jardim','iii','jardim')+
+    e('Desempenho','iv','desempenho')+
+    e('Acrescentar ao acervo','v','importar')+
+    '<p class="futuro">Em edição futura (pós-MVP): Sementes, clubes de leitura, pílulas de autores.</p>'+
+    '<button class="fechar" data-act="fecharSumario">Fechar e voltar à página</button>'+
+    '<div class="exlibris">'+exlibris('#e7c25e')+'</div></div>';
+}
+
+/* ---------- 2 · HOJE (folha de rosto) ---------- */
+function telaHoje(st){
+  return pagina(st,
+   '<div class="kick">Terça-feira, 17 de novembro de 2026</div>'+
+   '<h1 class="disp">Boa noite, <i>Lia.</i></h1>'+
+   '<p class="cap lead">Alice ficou à mesa do Chapeleiro, na página 68 de 142, quase na metade do livro. O chá continua servido.</p>'+
+   '<button class="acao verde" data-act="go:leitor"><span>Continuar a leitura</span><span>p. 68 ›</span></button>'+
+   '<div class="mesa-cab"><div class="vinheta">'+icone('muda')+'</div>'+
+   '<p style="margin:0">A meta de hoje está cumprida: trinta e quatro minutos, de vinte. São <b style="font-weight:500">vinte e três dias seguidos</b>,<sup class="n">1</sup> e a muda abriu mais uma folha.</p></div>'+
+   '<p class="fraco it" style="font-size:15px;line-height:21px">Faltam sete dias para que ela floresça.</p>'+
+   '<div class="kick" style="margin-top:27px">Também na cabeceira</div>'+
+   '<div class="lendo-tb">'+
+     '<button class="ld" data-act="go:biblioteca"><span class="t"><i>O médico e o monstro</i><small>R. L. Stevenson</small></span><span class="f"></span><span class="v">12%</span></button>'+
+     '<button class="ld" data-act="go:biblioteca"><span class="t"><i>Planolândia</i><small>E. A. Abbott · em pausa</small></span><span class="f"></span><span class="v">63%</span></button>'+
+   '</div>'+
+   '<div class="orn">❦</div>'+
+   '<div class="kick">Nesta edição</div>'+
+   '<button class="ld" data-act="go:biblioteca"><span class="t">Biblioteca & Estante</span><span class="f"></span><span class="v">ii</span></button>'+
+   '<button class="ld" data-act="go:jardim"><span class="t">Jardim</span><span class="f"></span><span class="v">iii</span></button>'+
+   '<button class="ld" data-act="go:desempenho"><span class="t">Desempenho</span><span class="f"></span><span class="v">iv</span></button>'+
+   '<button class="ld" data-act="go:importar"><span class="t">Acrescentar ao acervo</span><span class="f"></span><span class="v">v</span></button>'+
+   '<hr class="filet curto"><div class="notas"><p><sup>1</sup>O marco seguinte é o dos 30 dias. Seu recorde é de 41. Há 2 congelamentos guardados, de 3.</p></div>');
+}
+
+/* ---------- 1 · LEITOR ---------- */
+function corLuz(k){
+  var a,b,t;
+  var P=[[2700,[255,172,96,.26]],[4200,[255,222,180,.06]],[5200,[255,246,232,.02]],[6500,[196,216,255,.16]]];
+  for(var i=0;i<P.length-1;i++){if(k>=P[i][0]&&k<=P[i+1][0]){a=P[i][1];b=P[i+1][1];t=(k-P[i][0])/(P[i+1][0]-P[i][0]);break;}}
+  var c=a.map(function(v,j){return j<3?Math.round(v+(b[j]-v)*t):(v+(b[j]-v)*t).toFixed(3);});
+  return 'rgba('+c.join(',')+')';
+}
+function telaLeitor(st){
+  var p=st.p,f=FACES[p.face],m=MARG[p.marg];
+  var tema={'claro':'t-claro','sépia':'t-sepia','escuro':'t-escuro','preto':'t-preto'}[p.tema];
+  var estilo='font-family:'+f.css+';font-size:'+p.size+'px;line-height:'+p.lead+'px;padding:0 '+m+'px;text-align:'+(p.align==='justificado'?'justify':'left');
+  var arg='<span class="w'+(st.sel?' sel':'')+'" data-act="sel" role="button" tabindex="0" aria-label="Selecionar a palavra Arganaz">Arganaz</span>';
+  if(st.grifo){arg='<mark class="g-'+st.grifo+'">Arganaz</mark>';}
+  var txt='<div class="l-texto" data-act="ctrl" style="'+estilo+'">'+
+    '<p class="capk">Capítulo VII</p><h2>Um chá maluco</h2>'+
+    '<p class="cap">Havia uma mesa posta debaixo de uma árvore, diante da casa, e a Lebre de Março e o Chapeleiro tomavam chá nela; um '+arg+' estava sentado entre os dois, <mark class="g-ambar">profundamente adormecido</mark>, e os outros dois o usavam como almofada, apoiando os cotovelos nele e conversando por cima da sua cabeça. “Muito desconfortável para o Arganaz”, pensou Alice; “mas, como está dormindo, imagino que não se importe.”</p>'+
+    '<p>A mesa era grande, mas os três estavam espremidos num canto. “Não tem lugar! Não tem lugar!”, gritaram ao ver Alice chegando. “<mark class="g-carmim">Tem lugar de sobra!</mark>”<span class="nota-a" aria-label="nota a lápis a">a</span>, disse Alice, indignada, e sentou-se numa grande poltrona numa das pontas da mesa.</p>'+
+    '<p class="l-lapis"><span aria-hidden="true">a · </span>a Alice sempre ocupa o espaço que dizem não existir</p>'+
+    '</div>';
+  var anc='';
+  if(p.ancora!=='nada'){
+    var num=p.ancora==='o fólio e o capítulo';
+    if(num)anc+='<div class="l-rh">VII · Um chá maluco</div>';
+    anc+='<div class="l-folio" aria-label="Posição na obra: '+(num?'página 68 de 142, ':'')+'48 por cento">'+(num?'<span class="num">68</span>':'')+'<i class="filete"><b style="width:48%"></b></i></div>';
+  }
+  var ctrl='';
+  if(st.controles&&!st.painel){
+    ctrl='<div class="l-top"><button data-act="sumario" aria-label="Abrir o sumário">‹ Sumário</button><div class="meio">Alice no País<br>das Maravilhas</div><button class="enc" data-act="encerrar">Encerrar</button></div>'+
+      '<div class="l-bot"><button class="aa" data-act="painel" aria-label="Abrir o colofão, preferências de leitura">Aa<i>Colofão</i></button></div>';
+  }
+  var slip='';
+  if(st.sel&&!st.painel){
+    slip='<div class="slip" style="top:'+(306+(st.p.size-16)*18)+'px" role="dialog" aria-label="Grifar ou anotar a palavra Arganaz"><div class="lin">'+
+      ['ambar','oliva','tinta','carmim'].map(function(g){var n={ambar:'âmbar',oliva:'oliva',tinta:'tinta',carmim:'carmim'}[g];return '<button class="pig" data-act="grifar:'+g+'" aria-label="Grifar em '+n+'"><i style="background:var(--pig-'+g+')"></i></button>';}).join('')+
+      '<span class="sep"></span><button class="txt" data-act="anotar">Lápis</button><button class="txt" data-act="dic">Dicionário</button></div>'+
+      (st.dic?'<div class="def"><b>ar·ga·naz</b>, <i>s. m.</i> Pequeno roedor noturno que passa o inverno adormecido; em Carroll, o dorminhoco da mesa. <span class="fraco" style="font-size:13px">A consulta conta como interação.</span></div>':'')+
+      '</div>';
+  }
+  var painel=st.painel?colofao(st):'';
+  return '<div class="leitor '+tema+'">'+(st.controles||st.painel?'':'<div class="sb" style="color:inherit;opacity:.5"><span>21:40</span><span></span></div>')+anc+txt+'</div>'+
+    '<div class="luz" data-luz style="background:'+corLuz(p.temp)+'"></div><div class="brilho" data-bri style="background:rgba(0,0,0,'+((100-p.bri)/100*.7).toFixed(3)+')"></div>'+
+    ctrl+slip+painel+(st.sumario?sumario(st):'');
+}
+function colofao(st){
+  var p=st.p;
+  function v(k,txt){return '<button class="var'+(st.opt===k?' on':'')+'" data-act="opt:'+k+'" aria-expanded="'+(st.opt===k)+'" aria-label="'+ROT[k]+': '+txt+'. Alterar">'+txt+'</button>';}
+  var linha1='Esta página foi composta em '+v('face',p.face)+', corpo '+v('size',fmt(p.size))+' sobre '+v('lead',p.lead)+', com margens '+v('marg',p.marg)+' e texto '+v('align',p.align)+', em papel '+v('tema',p.tema)+'.';
+  var linha2='À margem, '+v('ancora',p.ancora)+'. Ao virar e grifar, '+v('sens',p.sens)+'.';
+  var var1=(['face','size','lead','marg','align','tema'].indexOf(st.opt)>=0)?variantes(st):'';
+  var var2=(['ancora','sens'].indexOf(st.opt)>=0)?variantes(st):'';
+  return '<div class="painel" role="dialog" aria-label="Colofão: preferências de leitura">'+
+    '<div class="pa-cab"><span class="kick">Colofão desta edição</span><button data-act="fecharPainel">Fechar</button></div>'+
+    '<p class="colofao">'+linha1+'</p>'+var1+
+    '<div class="luz-bloco"><div class="luz-k"><span class="num"><span data-kv>'+milhar(p.temp)+'</span><small>K</small></span><span class="rot">Temperatura<br>da luz</span></div>'+
+    '<input class="r-luz" type="range" min="2700" max="6500" step="100" value="'+p.temp+'" data-in="temp" aria-label="Temperatura da luz em kelvin">'+
+    '<div class="luz-ext"><span>vela · 2.700 K</span><span>meio-dia · 6.500 K</span></div>'+
+    '<label class="bri">Brilho<input type="range" min="20" max="100" step="1" value="'+p.bri+'" data-in="bri" aria-label="Brilho"></label></div>'+
+    '<p class="colofao">'+linha2+'</p>'+var2+
+    '<p class="fraco" style="font-size:13px;line-height:18px;text-align:center;font-style:italic;margin-top:9px">Cada termo sublinhado é um controle. O texto acima mostra o resultado enquanto você ajusta.</p>'+
+    '</div>';
+}
+function variantes(st){
+  var k=st.opt,p=st.p,h='';
+  if(k==='size'||k==='lead'){
+    var val=k==='size'?fmt(p.size):p.lead;
+    h='<div class="passo"><button data-act="menos:'+k+'" aria-label="Diminuir '+ROT[k]+'">−</button><span>'+val+'</span><button data-act="mais:'+k+'" aria-label="Aumentar '+ROT[k]+'">+</button></div>';
+  } else {
+    h=OPCOES[k].map(function(o){
+      var est=k==='face'?' style="font-family:'+FACES[o].css+'"':'';
+      return '<button class="op" data-act="set:'+k+':'+o+'" aria-pressed="'+(p[k]===o)+'"'+est+'>'+o+'</button>';}).join('');
+  }
+  return '<div class="variantes" role="group" aria-label="'+ROT[k]+'">'+h+'</div>';
+}
+
+/* ---------- 3 · JARDIM ---------- */
+function telaJardim(st){
+  var d=st.dormente;
+  var est=[['broto','Broto','1–6'],['muda','Muda','7–29'],['florida','Florida','30–99'],['arvore','Árvore','100–364'],['bosque','Bosque','365+']];
+  var leg='<div class="estagios" aria-label="Os cinco estágios do jardim">'+est.map(function(e){return '<figure class="'+(e[0]==='muda'?'aqui':'')+'">'+icone(e[0])+'<figcaption><b>'+e[1]+'</b>'+e[2]+'</figcaption></figure>';}).join('')+'</div>';
+  var corpo='<div class="estado" role="group" aria-label="Estado do jardim"><button data-act="desperto" aria-pressed="'+(!d)+'">Desperto</button><button data-act="dormente" aria-pressed="'+d+'">Em dormência</button></div>';
+  if(!d){
+    corpo+='<figure class="prancha" style="margin:0 0 12px"><span class="pnum">Prancha iii</span>'+mudaGrande(COR_TINTA,false)+
+      '<div class="etq">N.º 23 · muda<br>desde 26·X·2026</div></figure>'+
+      '<p class="legenda-fig">Muda, no vigésimo terceiro dia. Sete dias a separam da floração.</p>'+
+      '<p class="cap">Vinte e três dias seguidos de leitura. O recorde é de quarenta e um,<sup class="n">1</sup> e o herbário guarda oitenta e sete dias cumpridos, que nunca saem dele.</p>'+
+      '<div class="tb">'+ld('Ofensiva atual','23 dias')+ld('Próximo marco','30 dias · faltam 7')+ld('Recorde','41 dias')+ld('Herbário (acervo)','87 dias')+ld('Congelamentos guardados','2 de 3')+'</div>';
+  } else {
+    corpo+='<figure class="prancha ciano" style="margin:0 0 12px"><span class="pnum">Prancha iii · cianotipia</span>'+mudaGrande(COR_CIANO,true)+
+      '<div class="etq">Exemplar em repouso<br>ofensiva encerrada: 23 dias</div></figure>'+
+      '<p class="legenda-fig">A muda foi exposta à luz e guardada. Nada do que cresceu se perdeu.</p>'+
+      '<p class="cap">O jardim está em dormência, como todo jardim no inverno. A última ofensiva durou vinte e três dias; ela fica registrada aqui, ao lado do recorde de quarenta e um.<sup class="n">1</sup></p>'+
+      '<button class="acao verde" data-act="go:leitor"><span>Uma página hoje a desperta</span><span>ler ›</span></button>'+
+      '<div class="tb">'+ld('Ofensiva corrente','0')+ld('Ofensiva encerrada','23 dias')+ld('Recorde','41 dias')+ld('Herbário (acervo)','87 dias')+'</div>';
+  }
+  corpo+='<div class="kick" style="margin-top:27px">Os cinco estágios</div>'+leg+
+    '<hr class="filet curto"><div class="notas"><p><sup>1</sup>O recorde de 41 dias terminou em 14 de setembro de 2026. Os dias dele continuam no herbário.</p></div>';
+  return pagina(st,corpo);
+}
+function ld(t,v,cls){return '<div class="ld tab'+(cls?' '+cls:'')+'"><span class="t">'+t+'</span><span class="f"></span><span class="v">'+v+'</span></div>';}
+
+/* ---------- 4 · DESEMPENHO ---------- */
+var CUMPRIDOS=(function(){
+  var set={};function add(a,b){var d=new Date(a+'T12:00:00');var e=new Date(b+'T12:00:00');while(d<=e){set[d.toISOString().slice(0,10)]=1;d.setDate(d.getDate()+1);}}
+  add('2026-08-05','2026-09-14');
+  ['2026-09-21','2026-09-27','2026-09-30'].forEach(function(x){set[x]=1;});
+  add('2026-10-01','2026-10-24');['2026-10-04','2026-10-08','2026-10-11','2026-10-18'].forEach(function(x){delete set[x];});
+  add('2026-10-26','2026-11-17');
+  return set;
+})();
+function calendario(){
+  var ini=new Date('2026-08-03T12:00:00'),hoje='2026-11-17';
+  var MES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  var h='<div class="cal" role="img" aria-label="Calendário de constância das últimas 16 semanas, de 3 de agosto a 17 de novembro: 87 dias com meta cumprida. Ofensiva de 41 dias de 5 de agosto a 14 de setembro; ofensiva atual de 23 dias desde 26 de outubro."><span class="ml"></span>';
+  var ultimoMes=-1;
+  for(var w=0;w<16;w++){var d=new Date(ini);d.setDate(d.getDate()+w*7);var mm=d.getMonth();
+    var fim=new Date(d);fim.setDate(fim.getDate()+6);
+    var rot='';if(w===0){rot=MES[mm];ultimoMes=mm;}else if(fim.getMonth()!==ultimoMes){rot=MES[fim.getMonth()];ultimoMes=fim.getMonth();}
+    h+='<span class="ml">'+rot+'</span>';}
+  var DS=['seg','','qua','','sex','','dom'];
+  for(var r=0;r<7;r++){
+    h+='<span class="dl">'+DS[r]+'</span>';
+    for(var c=0;c<16;c++){var x=new Date(ini);x.setDate(x.getDate()+c*7+r);var k=x.toISOString().slice(0,10);
+      var cl=k>hoje?'fut':(CUMPRIDOS[k]?'ok':'no');if(k===hoje)cl+=' hoje';if(k==='2026-09-14')cl+=' quebra';
+      h+='<span class="d '+cl+'"></span>';}
+  }
+  return h+'</div>';
+}
+function telaDesempenho(st){
+  var s=st.periodo==='semana';
+  var D=s?{frase:'Três horas e doze minutos de leitura ativa, em nove sessões.',sub:'E a meta cumprida em todos os sete dias.',t:'3h12',pg:'74',se:'9',lc:'76',dias:'7 de 7'}:
+          {frase:'Treze horas e quarenta minutos de leitura ativa, em trinta e uma sessões.',sub:'A meta foi cumprida em vinte e seis dias do mês.',t:'13h40',pg:'318',se:'31',lc:'71',dias:'26 de 31'};
+  var corpo='<div class="periodo" role="group" aria-label="Período"><button data-act="periodo:semana" aria-pressed="'+s+'">Semana · 10–16 nov</button><button data-act="periodo:mes" aria-pressed="'+(!s)+'">Mês · outubro</button></div>'+
+    '<h1 class="disp" style="font-size:27px;line-height:36px">'+D.frase+'</h1><p class="fraco it">'+D.sub+'</p>'+
+    ld('Tempo ativo',D.t)+ld('Páginas',D.pg)+ld('Sessões',D.se)+ld('Leitura Consciente média','funda<sup class="n">1</sup>')+ld('Dias com meta cumprida',D.dias)+
+    '<div class="kick" style="margin-top:27px">Constância · dezesseis semanas</div>'+calendario()+
+    '<p class="fraco" style="font-size:13px;line-height:18px">◆ dia com meta cumprida · ponto, dia sem leitura. Um losango contornado marca hoje.</p>'+
+    '<div class="kick" style="margin-top:27px">Estilos de leitura · semana de 10 a 16 nov</div>'+
+    '<p style="margin:9px 0 9px">Cinco sessões de imersão, duas de estudo e duas que misturaram as duas coisas.</p>'+
+    ld('Focado','<span class="tally cinco" aria-hidden="true">||||</span> 5')+ld('Metódico','<span class="tally" aria-hidden="true">||</span> 2')+ld('Equilibrado','<span class="tally" aria-hidden="true">||</span> 2')+
+    '<p class="fraco it" style="font-size:14px;line-height:21px;margin-top:9px">Nenhum estilo vale mais que outro: são duas formas de ler.</p>'+
+    '<hr class="filet curto"><div class="notas">'+
+    '<p><sup>1</sup>Leitura Consciente média de '+D.lc+', na faixa <i>funda</i> (70 a 89). As faixas são dispersa, atenta, funda e plena; descrevem a atenção, não dão nota.</p>'+
+    '<p><sup>2</sup>Em 14 de setembro terminou a ofensiva de 41 dias, o recorde. Nenhum desses dias saiu do herbário.</p></div>';
+  return pagina(st,corpo.replace('Constância · dezesseis semanas','Constância · dezesseis semanas<sup class="n">2</sup>'));
+}
+
+/* ---------- 5 · IMPORTAR ---------- */
+function telaImportar(st){
+  var corpo='<h1 class="disp" style="font-size:27px;line-height:36px">Um livro novo entra no acervo por duas portas.</h1>'+
+    '<div class="kick">I · Do seu arquivo</div>'+
+    '<button class="escolher" data-act="nada"><b>Escolher um EPUB ou PDF…</b><span>do aparelho ou da nuvem</span></button>'+
+    '<div class="prova"><div class="ico">EPUB</div><div class="arq">frankenstein-ed-ilustrada.epub</div><div class="meta">412 KB · <i>Frankenstein</i>, Mary Shelley · capa extraída</div>'+
+      '<div class="ok">✓ Pronto · em Quero ler</div><p>O texto se recompõe à sua medida: fonte, corpo e margens do colofão valem aqui. Você já leu esta obra em julho; a edição nova não altera a Estante.</p></div>'+
+    '<div class="prova"><div class="ico pdf">PDF</div><div class="arq">tese-capitulo-2.pdf</div><div class="meta">2,3 MB · 38 páginas</div>'+
+      '<div class="ok">✓ Importado · em Quero ler<span class="selo-fac">FAC-SÍMILE</span></div>'+
+      '<p>Um PDF é página fixa: não se recompõe. Corpo, entrelinha e margens não se aplicam; você amplia com os dedos. Tempo, posição e meta contam como em qualquer livro.<sup class="n">1</sup></p></div>'+
+    '<div class="kick" style="margin-top:36px">II · Do domínio público</div>'+
+    '<p class="fraco it" style="font-size:15px;line-height:21px;margin:6px 0 0">Edições revistas, gratuitas, prontas para ler.</p>'+
+    '<button class="ld"><span class="t"><i>Dom Casmurro</i><small>Machado de Assis</small></span><span class="f"></span><span class="v orig" style="color:var(--verde-tinta)">acrescentar</span></button>'+
+    '<button class="ld"><span class="t"><i>O cortiço</i><small>Aluísio Azevedo</small></span><span class="f"></span><span class="v orig" style="color:var(--verde-tinta)">acrescentar</span></button>'+
+    '<button class="ld"><span class="t"><i>Persuasão</i><small>Jane Austen</small></span><span class="f"></span><span class="v orig" style="color:var(--verde-tinta)">acrescentar</span></button>'+
+    '<div class="ld"><span class="t"><i>Um conto de Natal</i><small>Charles Dickens</small></span><span class="f"></span><span class="v orig">já em Quero ler</span></div>'+
+    '<button class="ld" style="margin-top:9px"><span class="t it">Procurar no acervo inteiro…</span><span class="f"></span><span class="v">›</span></button>'+
+    '<hr class="filet curto"><div class="notas"><p><sup>1</sup>Grifar, anotar e consultar o dicionário num PDF dependem da extração do texto, que ainda está em aberto. Por ora, num PDF sem camada de texto esses gestos podem não estar disponíveis, e avisamos antes de você começar.</p></div>';
+  return pagina(st,corpo);
+}
+
+/* ---------- 6 · BIBLIOTECA & ESTANTE ---------- */
+function telaBiblioteca(st){
+  function o(t,a,orig,pct){return '<button class="ld" data-act="'+(t==='Alice no País das Maravilhas'?'go:leitor':'nada')+'"><span class="t" style="flex:1 1 auto"><i>'+t+'</i><small>'+a+' · <span class="orig">'+orig+'</span></small>'+(pct!=null?'<span class="prog"><b style="width:'+pct+'%"></b></span>':'')+'</span><span class="v">'+(pct!=null?pct+'%':'')+'</span></button>';}
+  var R=[
+    ['r2','C. P. Gilman','O papel de parede amarelo','out · 2026'],
+    ['r2','Machado de Assis','O alienista','set · 2026'],
+    ['r3','Franz Kafka','A metamorfose','ago · 2026'],
+    ['r4','Mary Shelley','Frankenstein','jul · 2026'],
+    ['r5','Oscar Wilde','O retrato de Dorian Gray','jun · 2026'],
+    ['r6','Jane Austen','Orgulho e preconceito','mai · 2026']
+  ];
+  var est='<div class="estante">'+
+    '<div class="rosto r1" role="img" aria-label="O papel de parede amarelo, de C. P. Gilman, lido em outubro de 2026, em 3 sessões, com 9 destaques"><div style="flex:1;display:flex;flex-direction:column"><span class="ra">C. P. Gilman</span><span class="rt" style="margin:12px 0">O papel de parede amarelo</span><span class="rd">Lido em out · 2026<br>3 sessões · 9 destaques</span></div>'+
+    '<div style="align-self:stretch;width:90px;flex:0 0 90px;background:repeating-linear-gradient(135deg,rgba(36,31,25,.07) 0 6px,transparent 6px 12px),#e7c25e;box-shadow:0 0 0 1px var(--tinta-16)"></div><div class="exl">'+exlibris()+'</div></div>'+
+    R.slice(1).map(function(r){var claro=r[0]==='r4';return '<div class="rosto '+r[0]+'" role="img" aria-label="'+r[2]+', de '+r[1]+', lido em '+r[3]+'"><span class="ra">'+r[1]+'</span><span class="rt">'+r[2]+'</span><span class="rorn">· · ·</span><span class="rd">Lido em '+r[3]+'</span><div class="exl">'+exlibris(claro?'#e7c25e':'#2f5d3a')+'</div></div>';}).join('')+
+    '</div>';
+  var corpo='<div class="kick" style="text-align:center">Índice</div>'+
+    '<button class="ld" data-act="ancora:p1"><span class="t">Parte I · Por ler</span><span class="f"></span><span class="v">6 obras</span></button>'+
+    '<button class="ld" data-act="ancora:p2"><span class="t">Parte II · Lidos, a Estante</span><span class="f"></span><span class="v">6 obras</span></button>'+
+    '<div class="parte" id="p1">Parte I</div><h2 class="parte-tit">Por ler</h2>'+
+    '<div class="estado-tit">Lendo</div>'+o('Alice no País das Maravilhas','Lewis Carroll','domínio público',48)+o('O médico e o monstro','R. L. Stevenson','domínio público',12)+
+    '<div class="estado-tit">Em pausa</div>'+o('Planolândia (Flatland)','E. A. Abbott','domínio público',63)+
+    '<div class="estado-tit">Quero ler</div>'+o('Um conto de Natal','Charles Dickens','domínio público',null)+o('Memórias póstumas de Brás Cubas','Machado de Assis','domínio público',null)+
+    '<button class="ld"><span class="t" style="flex:1 1 auto"><span class="mono" style="font-size:14px">tese-capitulo-2.pdf</span><small>PDF · <span class="orig">importado</span> · 38 páginas</small></span><span class="v"></span></button>'+
+    '<div class="orn">❦</div>'+
+    '<div class="parte" id="p2">Parte II</div><h2 class="parte-tit">Lidos</h2>'+
+    '<p class="so-cresce">Seis obras, da mais recente à primeira.<br>Esta parte só cresce: nada sai dela.</p>'+est+
+    '<p class="fraco" style="font-size:13px;line-height:18px;text-align:center">Uma obra relida volta à Parte I e continua aqui.</p>';
+  return pagina(st,corpo);
+}
+
+/* ---------- 7 · SESSÃO ---------- */
+function telaSessao(st){
+  if(!st.celebrado){
+    return '<div class="sb"><span>21:40</span><span></span></div><div class="celeb" data-act="celebrar" role="button" tabindex="0" aria-label="Meta do dia cumprida. Toque para ver a sessão">'+
+      '<div class="kick">Terça-feira, 17 de novembro</div>'+
+      '<p class="gr">Vinte minutos.</p><p class="sub">A meta de hoje está cumprida.</p>'+carimboMeta()+
+      '<p class="mais">E mais catorze, por gosto.<br>A muda chega ao vigésimo terceiro dia.</p>'+
+      '<span class="ver">Ver a sessão ›</span></div>';
+  }
+  var corpo='<header class="rh">Sessão de 17 de novembro</header>'+
+    '<div class="kick">Leitor Focado · sessão de imersão</div>'+
+    '<h1 class="disp cap" style="font-size:30px;line-height:36px">Trinta e quatro minutos sem levantar os olhos.<sup class="n">1</sup></h1>'+
+    '<p>Você leu onze páginas, da 57 à 68, e <i>Alice</i> passou de 40% a 48%. O bloco mais longo de foco durou vinte e dois minutos.<sup class="n">2</sup> Ficaram três grifos <span class="grifos-in"><i style="background:var(--pig-ambar)"></i><i style="background:var(--pig-oliva)"></i><i style="background:var(--pig-carmim)"></i></span>, uma nota a lápis e uma palavra procurada: <i>arganaz</i>.</p>'+
+    ld('Tempo ativo','34 min')+ld('Páginas','11 · p. 57 → 68')+ld('Progresso da obra','40% → 48%')+ld('Maior bloco de foco','22 min')+ld('Leitura Consciente','funda<sup class="n">3</sup>')+ld('Grifos · notas · dicionário','3 · 1 · 1')+
+    '<div class="card-prev" aria-label="Prévia do card de compartilhamento"><div class="c">Alice no País das Maravilhas · cap. VII</div><p class="q">“<mark>Tem lugar de sobra!</mark>”</p><div class="c">34 min de imersão · Lia</div></div>'+
+    '<button class="acao" data-act="nada"><span>Compartilhar esta página</span><span>card ›</span></button>'+
+    '<button class="acao verde" data-act="go:leitor"><span>Continuar a leitura</span><span>p. 68 ›</span></button>'+
+    '<hr class="filet curto"><div class="notas">'+
+    '<p><sup>1</sup>Tempo ativo. No relógio de parede foram 41 minutos, com 2 pausas; só o tempo de leitura conta.</p>'+
+    '<p><sup>2</sup>Na semana passada, seu maior bloco de foco foi de 18 minutos. Hoje foram 22.</p>'+
+    '<p><sup>3</sup>Leitura Consciente de 82, na faixa <i>funda</i> (70 a 89).</p></div>';
+  return '<div class="sb"><span>21:40</span><span></span></div><button class="fita" data-act="sumario"><span>Abrir o sumário</span></button><div class="scroll" data-scroll>'+corpo+'</div>'+(st.sumario?sumario(st):'');
+}
+
+var TELAS={hoje:telaHoje,leitor:telaLeitor,jardim:telaJardim,desempenho:telaDesempenho,importar:telaImportar,biblioteca:telaBiblioteca,sessao:telaSessao};
+
+/* ---------- moldura interativa ---------- */
+function Moldura(el,st){
+  this.el=el;this.st=st;var self=this;
+  el.addEventListener('click',function(e){
+    var a=e.target.closest('[data-act]');if(!a||!el.contains(a))return;
+    self.acao(a.getAttribute('data-act'),a,e);
+  });
+  el.addEventListener('keydown',function(e){
+    if((e.key==='Enter'||e.key===' ')&&e.target.matches('[role=button][data-act]')){e.preventDefault();self.acao(e.target.getAttribute('data-act'),e.target,e);}
+    if(e.key==='Escape'){if(self.st.painel||self.st.sumario||self.st.sel){self.st.painel=false;self.st.sumario=false;self.st.sel=false;self.render(true);}}
+  });
+  el.addEventListener('input',function(e){
+    var k=e.target.getAttribute('data-in');if(!k)return;
+    self.st.p[k]=+e.target.value;
+    if(k==='temp'){var l=el.querySelector('[data-luz]');if(l)l.style.background=corLuz(self.st.p.temp);var kv=el.querySelector('[data-kv]');if(kv)kv.textContent=milhar(self.st.p.temp);}
+    if(k==='bri'){var b=el.querySelector('[data-bri]');if(b)b.style.background='rgba(0,0,0,'+((100-self.st.p.bri)/100*.7).toFixed(3)+')';}
+  });
+  var x0=null,y0=null;
+  el.addEventListener('pointerdown',function(e){if(e.target.closest('input,.painel'))return;x0=e.clientX;y0=e.clientY;});
+  el.addEventListener('pointerup',function(e){
+    if(x0===null)return;var dx=e.clientX-x0,dy=e.clientY-y0;x0=null;
+    if(ORDEM.indexOf(self.st.tela)<0||self.st.sumario)return;
+    if(Math.abs(dx)>60&&Math.abs(dy)<45){self.acao(dx<0?'next':'prev');}
+  });
+  this.render(true);
+}
+Moldura.prototype.ir=function(t){var s=this.st;s.tela=t;s.sumario=false;s.painel=false;s.controles=false;s.sel=false;s.dic=false;s.opt=null;if(t==='sessao')s.celebrado=false;this.render(true);};
+Moldura.prototype.acao=function(act,alvo,ev){
+  var s=this.st,p=act.split(':'),i=ORDEM.indexOf(s.tela);
+  switch(p[0]){
+    case 'go':return this.ir(p[1]);
+    case 'prev':if(i>0)this.ir(ORDEM[i-1]);return;
+    case 'next':if(i>=0&&i<ORDEM.length-1)this.ir(ORDEM[i+1]);return;
+    case 'sumario':s.sumario=true;s.painel=false;break;
+    case 'fecharSumario':s.sumario=false;break;
+    case 'ctrl':if(s.sel){s.sel=false;s.dic=false;}else{s.controles=!s.controles;}break;
+    case 'painel':s.painel=true;s.controles=false;s.sel=false;break;
+    case 'fecharPainel':s.painel=false;s.opt=null;break;
+    case 'encerrar':return this.ir('sessao');
+    case 'celebrar':s.celebrado=true;break;
+    case 'sel':s.sel=!s.sel;s.dic=false;s.controles=false;break;
+    case 'grifar':s.grifo=p[1];s.sel=false;s.dic=false;break;
+    case 'dic':s.dic=!s.dic;break;
+    case 'anotar':s.sel=false;break;
+    case 'opt':s.opt=(s.opt===p[1])?null:p[1];break;
+    case 'set':
+      if(p[1]==='face'){s.p.face=p[2];s.p.size=FACES[p[2]].size;s.p.lead=FACES[p[2]].lead;}
+      else s.p[p[1]]=p[2];
+      break;
+    case 'mais':case 'menos':
+      var d=p[0]==='mais'?1:-1;
+      if(p[1]==='size')s.p.size=Math.min(26,Math.max(12,s.p.size+d*.5));
+      else s.p.lead=Math.min(40,Math.max(18,s.p.lead+d));
+      break;
+    case 'desperto':s.dormente=false;break;
+    case 'dormente':s.dormente=true;break;
+    case 'periodo':s.periodo=p[1];break;
+    case 'ancora':var t=this.el.querySelector('#'+p[1]);var sc=this.el.querySelector('[data-scroll]');if(t&&sc)sc.scrollTo({top:t.offsetTop-36,behavior:'smooth'});return;
+    default:return;
+  }
+  this.render(false);
+};
+Moldura.prototype.render=function(topo){
+  var sc=this.el.querySelector('[data-scroll]'),y=sc?sc.scrollTop:0;
+  var pn=this.el.querySelector('.painel'),py=pn?pn.scrollTop:0;
+  this.el.innerHTML=TELAS[this.st.tela](this.st);
+  if(!topo){var n=this.el.querySelector('[data-scroll]');if(n)n.scrollTop=y;var np=this.el.querySelector('.painel');if(np)np.scrollTop=py;}
+};
+
+/* ---------- montagem ---------- */
+new Moldura(document.querySelector('#m-proto .tela'),novoEstado('hoje'));
+
+var LISTA=[
+  ['leitor',{painel:true,opt:'face'},'1 · Leitura + colofão','O painel é o <b>colofão</b>: uma frase em que cada termo é um controle. A luz tem bloco próprio. Feche-o e toque no texto para os controles; toque em “Arganaz” para a tira de grifo.'],
+  ['hoje',{},'2 · Folha de rosto','O que se vê ao abrir: data, saudação, a página onde parou e uma ação só. A ofensiva vem em prosa, o detalhe em nota. Termina com o índice “Nesta edição”.'],
+  ['jardim',{},'3 · Jardim desperto','Prancha botânica aquarelada, com etiqueta de herbário e a legenda dos cinco estágios.'],
+  ['jardim',{dormente:true},'3b · Jardim em dormência','A mesma prancha em <b>cianotipia</b>: a ofensiva encerrada fica no passado, ao lado do zero e do recorde; o herbário segue em 87.'],
+  ['desempenho',{},'4 · Desempenho','Seletor de período em versalete, número principal em prosa, tabela com pontilhado, calendário de 16 semanas em losangos e estilos em tracinhos de contagem.'],
+  ['importar',{},'5 · Acrescentar ao acervo','Duas portas: o seu arquivo e o domínio público. O PDF leva selo de <b>fac-símile</b> e nota honesta sobre o que ainda não faz.'],
+  ['biblioteca',{},'6 · Biblioteca & Estante','Um volume em duas partes: Parte I (por ler) é índice; Parte II (lidos) recebe a arte, em folhas de rosto com ex-libris. Nenhuma obra está nas duas.'],
+  ['sessao',{},'7 · Sessão: celebração','Abre pela celebração: o carimbo de meta cumprida. Toque para os números.'],
+  ['sessao',{celebrado:true},'7b · Sessão: os números','“Trinta e quatro minutos sem levantar os olhos.” Os números vêm depois; o relógio de parede e o Ghost Reader ficam no rodapé.']
+];
+var grade=document.getElementById('m-todas'),montada=false;
+function montarTodas(){
+  if(montada)return;montada=true;
+  LISTA.forEach(function(it){
+    var slot=document.createElement('figure');slot.className='slot';slot.style.margin='0';
+    slot.innerHTML='<div class="stage"><div class="device"><div class="tela"></div></div></div><figcaption class="legenda"><b>'+it[2]+'</b><br>'+it[3]+'</figcaption>';
+    grade.appendChild(slot);
+    new Moldura(slot.querySelector('.tela'),novoEstado(it[0],it[1]));
+  });
+  ajustar();
+}
+function ajustar(){
+  document.querySelectorAll('.slot').forEach(function(s){
+    var w=s.clientWidth;if(!w)return;var esc=Math.min(1,w/406);s.querySelector('.stage').style.setProperty('--s',esc.toFixed(4));
+  });
+}
+document.querySelectorAll('[data-modo]').forEach(function(b){
+  b.addEventListener('click',function(){
+    var m=b.getAttribute('data-modo');
+    document.querySelectorAll('[data-modo]').forEach(function(x){x.setAttribute('aria-pressed',String(x===b));});
+    document.getElementById('m-proto').hidden=m!=='proto';
+    document.getElementById('m-todas').hidden=m!=='todas';
+    if(m==='todas')montarTodas();
+    ajustar();
+  });
+});
+window.addEventListener('resize',ajustar);
+ajustar();
+if(Object.keys(CUMPRIDOS).length!==87&&window.console)console.warn('Calendário incoerente: '+Object.keys(CUMPRIDOS).length+' dias');
+})();
+</script>
+</body>
+</html>

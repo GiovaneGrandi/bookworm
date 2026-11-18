@@ -1,0 +1,233 @@
+<title>Três Direções BookWorm</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=EB+Garamond:ital,wght@0,400;1,400&family=Spectral:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Caveat:wght@400;600&display=swap">
+<style>
+/* Vitrine: a mesa verde-escura com um fichário de quatro abas; cada aba pousa uma folha (iframe) sobre a mesa.
+   Peça de compromisso único com o escuro da mesa — não alterna tema. */
+:root{
+  color-scheme: dark;
+  /* pigmento */
+  --mesa:#1e2320; --mesa-alta:#262c28; --papel:#f3ead9; --papel-fundo:#efe3ce;
+  --tinta:#241f19; --grafite:#6f6858; --verde-tinta:#2f5d3a; --ambar:#e6c15c;
+  --pig-ambar:#e7c25e; --pig-oliva:#a8b07a; --pig-tinta:#93a9c0; --pig-carmim:#d79aa2;
+  /* superfície mesa */
+  --sup-mesa-texto:#e9e1cf; --sup-mesa-apagado:#a39b88; --sup-mesa-fio:rgba(233,225,207,.16);
+  /* vozes */
+  --f-conteudo:"Spectral", Georgia, "Times New Roman", serif;
+  --f-editorial:"EB Garamond", Garamond, Georgia, serif;
+  --f-chrome:"Courier Prime", "Courier New", monospace;
+  --f-mao:"Caveat", "Segoe Print", cursive;
+  /* escala tônica */
+  --e3:3px; --e6:6px; --e9:9px; --e12:12px; --e18:18px; --e27:27px; --e36:36px; --e54:54px; --e81:81px;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--mesa); color:var(--sup-mesa-texto);
+  font-family:var(--f-conteudo); font-size:16px; line-height:27px;
+  background-image:
+    radial-gradient(rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size:7px 7px;
+}
+.casca{
+  max-width:1680px; margin:0 auto;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));
+  padding-right:max(16px, env(safe-area-inset-right, 0px));
+  padding-block:var(--e36) var(--e54);
+}
+.kicker{font-family:var(--f-chrome); font-size:10.5px; line-height:16px; letter-spacing:.34em; text-transform:uppercase; font-weight:700; color:var(--sup-mesa-apagado)}
+.kicker.micro{font-size:8.5px; line-height:13px; letter-spacing:.26em}
+header.topo{display:grid; gap:var(--e12); margin-bottom:var(--e36); max-width:72ch}
+header.topo h1{font-weight:300; font-style:italic; font-size:clamp(32px, 5vw, 54px); line-height:1.1; margin:0; letter-spacing:.01em; text-wrap:balance}
+header.topo p{margin:0; color:var(--sup-mesa-apagado); font-size:17px; line-height:27px}
+header.topo .mao{font-family:var(--f-mao); font-size:22px; line-height:24px; color:var(--pig-ambar); transform:rotate(-1.6deg); display:inline-block}
+
+/* fichário */
+nav.abas{display:flex; flex-wrap:wrap; gap:var(--e6); align-items:flex-end; position:relative; z-index:2}
+nav.abas a{
+  display:grid; gap:2px; text-decoration:none; color:var(--tinta);
+  background:var(--papel-fundo); padding:var(--e9) var(--e18) var(--e12);
+  border-radius:9px 9px 0 0; min-height:44px; min-width:0;
+  box-shadow:0 -1px 0 rgba(0,0,0,.25) inset; opacity:.72;
+  transition:opacity .2s, transform .2s;
+}
+nav.abas a:hover{opacity:.9}
+nav.abas a:focus-visible{outline:2px solid var(--ambar); outline-offset:2px}
+nav.abas a[aria-selected="true"]{opacity:1; background:var(--papel); transform:translateY(2px)}
+nav.abas .letra{font-family:var(--f-chrome); font-size:8.5px; line-height:13px; letter-spacing:.26em; font-weight:700; text-transform:uppercase; color:var(--verde-tinta)}
+nav.abas .nome{font-family:var(--f-conteudo); font-size:17px; line-height:24px}
+nav.abas a.comp .letra{color:#8a5a12}
+
+.folha{
+  background:var(--papel); color:var(--tinta); border-radius:0 6px 6px 6px;
+  box-shadow:0 18px 54px rgba(0,0,0,.45), 0 2px 6px rgba(0,0,0,.3);
+  position:relative; z-index:1; overflow:hidden;
+}
+.painel[hidden]{display:none!important}
+.barra-painel{
+  display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:var(--e12);
+  padding:var(--e12) var(--e18); border-bottom:1px solid rgba(36,31,25,.14);
+}
+.barra-painel .tese{font-family:var(--f-editorial); font-style:italic; font-size:17px; line-height:27px; margin:0; min-width:0; flex:1 1 320px}
+.barra-painel a{font-family:var(--f-chrome); font-size:10.5px; letter-spacing:.2em; text-transform:uppercase; font-weight:700; color:var(--verde-tinta); text-decoration:none; padding:var(--e9) 0; min-height:44px; display:inline-flex; align-items:center}
+.barra-painel a:hover{text-decoration:underline}
+iframe{display:block; width:100%; height:max(900px, 88vh); border:0; background:var(--papel)}
+
+/* folha comparativa */
+.comparativo{padding:var(--e36) var(--e27) var(--e54); display:grid; gap:var(--e36)}
+.comparativo h2{font-weight:300; font-style:italic; font-size:27px; line-height:32px; margin:0; letter-spacing:.01em}
+.comparativo .intro{max-width:68ch; margin:0; font-size:16px; line-height:27px}
+.rolagem{overflow-x:auto; border-top:2px solid var(--tinta)}
+table{border-collapse:collapse; width:100%; min-width:880px; color:var(--tinta); font-family:var(--f-conteudo)}
+th,td{text-align:left; vertical-align:top; padding:var(--e12) var(--e12) var(--e18); border-bottom:1px solid rgba(36,31,25,.14); font-size:15px; line-height:24px}
+thead th{font-family:var(--f-chrome); font-size:8.5px; line-height:13px; letter-spacing:.26em; text-transform:uppercase; font-weight:700; color:var(--grafite); padding-top:var(--e12)}
+tbody th{font-family:var(--f-conteudo); font-weight:600; font-size:16px; width:13%}
+td.levar{background:rgba(47,93,58,.07)}
+td.levar::before{content:"Levar → "; font-family:var(--f-chrome); font-size:8.5px; letter-spacing:.2em; text-transform:uppercase; font-weight:700; color:var(--verde-tinta); display:block}
+.recomendacoes{display:grid; gap:var(--e18); grid-template-columns:repeat(auto-fit, minmax(260px, 1fr))}
+.rec{border:1px solid rgba(36,31,25,.2); padding:var(--e18); display:grid; gap:var(--e6); align-content:start}
+.rec .kicker{color:var(--verde-tinta)}
+.rec p{margin:0; font-size:15px; line-height:24px}
+.rodape{margin-top:var(--e27); font-family:var(--f-chrome); font-size:8.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--sup-mesa-apagado)}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important; animation:none!important} }
+@media (max-width:520px){ .comparativo{padding:var(--e27) var(--e12) var(--e36)} iframe{height:max(760px, 85vh)} }
+</style>
+
+<div class="casca">
+  <header class="topo">
+    <span class="kicker">BookWorm · Rodada de ideação de interface · 17 nov 2026</span>
+    <h1>Três direções sobre a Papel</h1>
+    <p>Três designers, as mesmas sete telas e os mesmos dados. Os princípios de produto são fixos; a tese do livro como objeto é a âncora; o resto podia ser quebrado, desde que a quebra viesse justificada na ficha de cada direção.</p>
+    <span class="mao">leitura, início, jardim, métricas, importar, biblioteca, fim de sessão</span>
+  </header>
+
+  <nav class="abas" role="tablist" aria-label="Direções">
+    <a href="#a" role="tab" id="aba-a" aria-controls="p-a"><span class="letra">Direção A</span><span class="nome">Caderno de campo</span></a>
+    <a href="#b" role="tab" id="aba-b" aria-controls="p-b"><span class="letra">Direção B</span><span class="nome">A escrivaninha</span></a>
+    <a href="#c" role="tab" id="aba-c" aria-controls="p-c"><span class="letra">Direção C</span><span class="nome">Edição impressa</span></a>
+    <a href="#comparativo" role="tab" id="aba-comparativo" aria-controls="p-comparativo" class="comp"><span class="letra">Síntese</span><span class="nome">Folha comparativa</span></a>
+  </nav>
+
+  <main class="folha">
+    <section class="painel" id="p-a" role="tabpanel" aria-labelledby="aba-a">
+      <div class="barra-painel"><p class="tese">O app como diário de campo de uma botânica: cada dia é uma página datada, e navegar é folhear.</p><a href="direcao-a-caderno-de-campo.html" target="_blank" rel="noopener">Abrir em página inteira ↗</a></div>
+      <iframe title="Direção A · Caderno de campo" data-src="direcao-a-caderno-de-campo.html" loading="lazy"></iframe>
+    </section>
+    <section class="painel" id="p-b" role="tabpanel" aria-labelledby="aba-b" hidden>
+      <div class="barra-painel"><p class="tese">A mesa vista de cima, com objetos soltos que viram telas quando tocados. Não há barra de abas.</p><a href="direcao-b-escrivaninha.html" target="_blank" rel="noopener">Abrir em página inteira ↗</a></div>
+      <iframe title="Direção B · A escrivaninha" data-src="direcao-b-escrivaninha.html" loading="lazy"></iframe>
+    </section>
+    <section class="painel" id="p-c" role="tabpanel" aria-labelledby="aba-c" hidden>
+      <div class="barra-painel"><p class="tese">Chrome mínimo. Cada tela é uma página impressa bem composta, e a papelaria fica só nos detalhes.</p><a href="direcao-c-edicao-impressa.html" target="_blank" rel="noopener">Abrir em página inteira ↗</a></div>
+      <iframe title="Direção C · Edição impressa" data-src="direcao-c-edicao-impressa.html" loading="lazy"></iframe>
+    </section>
+    <section class="painel" id="p-comparativo" role="tabpanel" aria-labelledby="aba-comparativo" hidden>
+      <div class="comparativo">
+        <!--COMPARATIVO-->
+        <div style="display:grid; gap:var(--e12)">
+          <span class="kicker micro" style="color:var(--grafite)">Síntese do orquestrador · leitura das três fichas e das 7 telas de cada direção</span>
+          <h2>Folha comparativa</h2>
+          <p class="intro">As três direções foram feitas em paralelo, sem que uma visse a outra. Por isso, onde elas convergem é o sinal mais forte desta rodada. Abaixo: o que as três inventaram de forma independente, o que cada uma fez tela a tela e o que eu levaria para a interface definitiva.</p>
+        </div>
+
+        <div style="display:grid; gap:var(--e12)">
+          <span class="kicker" style="color:var(--verde-tinta)">Convergências: as três chegaram sozinhas</span>
+          <div class="recomendacoes">
+            <div class="rec"><span class="kicker micro">3 de 3</span><p><strong>A dormência em cianotipia.</strong> Nenhuma dessaturou a paleta. As três transformaram a ausência numa prancha azul-da-prússia de herbário, com o acervo intacto (87 folhas, 87 tufos). Isso quebra o "só verde" da marca justamente no estado mais sensível, e por isso precisa de decisão explícita.</p></div>
+            <div class="rec"><span class="kicker micro">3 de 3</span><p><strong>O painel do leitor organizado por pergunta, não por lista.</strong> A e B dividem os 10 controles em Luz, Letra e Página. C transforma tudo numa frase-colofão. Nos três, a temperatura da luz ganha o maior controle.</p></div>
+            <div class="rec"><span class="kicker micro">3 de 3</span><p><strong>A celebração é um carimbo.</strong> O fim de sessão abre por um carimbo de "meta cumprida", e só depois vêm os números. Nos três, a Leitura Consciente aparece como faixa nomeada ("funda"), e o 82 fica fora da tela.</p></div>
+            <div class="rec"><span class="kicker micro">3 de 3</span><p><strong>Nenhuma manteve a barra de abas.</strong> A usa abas de corte na borda, B usa os objetos da mesa e C usa a fita e o fólio. Mas todas registraram o mesmo custo: descoberta mais difícil e navegação mais lenta.</p></div>
+          </div>
+        </div>
+
+        <div style="display:grid; gap:var(--e12)">
+          <span class="kicker" style="color:var(--verde-tinta)">Tela a tela</span>
+          <div class="rolagem">
+          <table>
+            <thead><tr><th>Tela</th><th>A · Caderno de campo</th><th>B · A escrivaninha</th><th>C · Edição impressa</th><th>O que eu levaria</th></tr></thead>
+            <tbody>
+              <tr><th>Leitura + painel</th>
+                <td>Três dobras por importância: Luz fica sempre aberta, Letra mostra 5 amostras, Página vem dobrada. O grifo abre a paleta dos 4 pigmentos e o lápis, e o verbete do dicionário liga "arganaz" à dormência.</td>
+                <td>Três abas (Luz, Letra, Página), com no máximo 4 controles por aba, em meia tela, com o texto ao vivo atrás. A temperatura escolhida tinge a luminária da mesa.</td>
+                <td>Colofão editável: "Esta página foi composta em <em>Spectral</em>, corpo <em>16</em> sobre <em>27</em>…", e cada termo é um controle. O fólio é a página canônica 68 e o cabeçalho corrido é o capítulo.</td>
+                <td class="levar">Os três grupos de A/B, com Luz aberta por padrão, e o colofão de C no topo do painel como leitura do estado atual (tocar um termo abre o grupo dele). Também a âncora de posição como fólio (C).</td></tr>
+              <tr><th>Inicial</th>
+                <td>"Folha 87" do caderno: a entrada de hoje datilografada, uma nota a lápis, "Retomar Alice, cap. VII, p. 68" e a muda de 23 dias.</td>
+                <td>A mesa vista de cima: o livro aberto com o marcador "34 min", a muda no vaso, o caderninho, a gaveta, a pilha da estante e a bandeja de entrada.</td>
+                <td>Folha de rosto: "Boa noite, Lia." e o lugar onde ela parou, em prosa ("Alice ficou à mesa do Chapeleiro, na página 68"), com um único botão e o índice "Nesta edição".</td>
+                <td class="levar">A folha datada de A como estrutura (o dia como unidade), a frase de retomada de C como manchete e o marcador de sessão de B como rastro visível do que já foi lido hoje.</td></tr>
+              <tr><th>Jardim</th>
+                <td>Prancha botânica com os 5 estágios sempre visíveis, os futuros tracejados a lápis e 87 folhinhas prensadas.</td>
+                <td>Caixote com a muda, os cinco estágios em fichinhas e as fichas de recorde, acervo e congelamentos (2 de 3).</td>
+                <td>"Prancha III" com etiqueta de herbário e alternância entre Desperto e Em dormência. A ofensiva encerrada fica na nota de rodapé.</td>
+                <td class="levar">A prancha com os estágios futuros tracejados (A): ela mostra o caminho sem cobrar. Na dormência, a cianotipia, com "23 dias" no passado ao lado do zero e do recorde.</td></tr>
+              <tr><th>Métricas</th>
+                <td>"Observações de campo": tabela datilografada, faixa da Leitura Consciente e mapa de 16 semanas em quadriculado.</td>
+                <td>O caderninho com os números grandes, o mapa de quadrados e os estilos contados em riscos de lápis de 5 em 5.</td>
+                <td>A manchete em prosa ("Três horas e doze minutos de leitura ativa, em nove sessões"), a tabela pontilhada embaixo e o mapa em losangos.</td>
+                <td class="levar">Uma frase em prosa como manchete e o resto em tabela para escanear (C reconhece que prosa é lenta de comparar). Os riscos de lápis de B para os estilos.</td></tr>
+              <tr><th>Importar</th>
+                <td>"Trazer um livro para o caderno", com o EPUB e o PDF descritos com franqueza sobre o que cada um faz.</td>
+                <td>Bandeja de entrada: "o EPUB chega como livro; o PDF chega como fotocópia".</td>
+                <td>"Duas portas": o seu arquivo ou o domínio público. O PDF recebe o selo <em>FAC-SÍMILE</em> e uma nota do que ainda não faz.</td>
+                <td class="levar">Nomear o PDF pelo que ele é: fotocópia ou fac-símile (B e C). A limitação vira um material honesto, não um erro.</td></tr>
+              <tr><th>Biblioteca e Estante</th>
+                <td>Uma aba só ("Livros"), separada pelo material: a Estante como herbário de exsicatas, e o "em campo" numa ficha kraft.</td>
+                <td>A Estante é a pilha de lombadas que só cresce e mostra o total. A gaveta embaixo guarda o que está em leitura e em pausa.</td>
+                <td>Um índice com Parte I, "Por ler", e Parte II, "Lidos, a Estante", em folhas de rosto com ex-libris.</td>
+                <td class="levar">A pilha de B como forma permanente da Estante, que escala de 6 a 200 livros, e a exsicata de A como detalhe de cada obra concluída.</td></tr>
+              <tr><th>Sessão finalizada</th>
+                <td>Carimbo "Meta 20 min cumprida" e "a muda ganhou uma folha nova". Depois, os números com o estilo Focado e o Ghost Reader.</td>
+                <td>Carimbo. Depois, a ficha da sessão vira marcador e entra no livro sobre a mesa.</td>
+                <td>"Vinte minutos." com um carimbo circular 17·XI. Depois, "Trinta e quatro minutos sem levantar os olhos." com os detalhes em notas de rodapé e o card de citação.</td>
+                <td class="levar">A sessão deixa um objeto (o marcador de B). O Ghost Reader fica na nota de rodapé (C), literalmente embaixo, nunca no título.</td></tr>
+              <tr><th>Navegação</th>
+                <td>5 abas de corte na borda, uma fita que volta a hoje, folhear e um índice. Custo: as abas comem 44px de largura e folhear é lento.</td>
+                <td>Toca-se nos objetos e o feltro no alto da folha leva de volta. Custo: 390px é pouca mesa, uma 7ª função não cabe e o leitor de tela precisa de ordem própria.</td>
+                <td>Sumário pela fita, fólio tocável ‹ › e deslizar. Custo: com tão pouca interface, os controles passam despercebidos.</td>
+                <td class="levar">Questão em aberto (ver abaixo). A fita "volta a hoje" de A vale em qualquer resposta.</td></tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+
+        <div style="display:grid; gap:var(--e12)">
+          <span class="kicker" style="color:var(--verde-tinta)">Regras novas que valem mais que qualquer tela</span>
+          <div class="recomendacoes">
+            <div class="rec"><span class="kicker micro">de A</span><p><strong>"O medido é datilografado; o vivido é manuscrito."</strong> O número que vem do relógio sai em Courier, e o que a leitora escreveu ou sentiu sai em Caveat. Nenhum número em letra manuscrita. Assim o princípio "todo dado exibido é confiável" vira uma regra tipográfica visível.</p></div>
+            <div class="rec"><span class="kicker micro">de B</span><p><strong>A luz da leitora é a luz do app.</strong> A temperatura escolhida no painel (4.200 K) tinge a luminária fora do leitor. Um ajuste de conforto vira identidade, a custo quase zero.</p></div>
+            <div class="rec"><span class="kicker micro">de C</span><p><strong>Romano para o app, arábico para o livro.</strong> As telas do app usam fólios i–v, e o livro usa a página canônica. A âncora de posição deixa de ser um widget e vira o que todo livro já tem.</p></div>
+          </div>
+        </div>
+
+        <div style="display:grid; gap:var(--e12)">
+          <span class="kicker" style="color:#8a5a12">O que precisa de decisão sua</span>
+          <div class="recomendacoes">
+            <div class="rec"><span class="kicker micro">Decisão 1</span><p><strong>Adotar a cianotipia na dormência?</strong> Ela venceu por 3 a 0, mas quebra o "só verde" da identidade. Minha recomendação: sim, como único estado autorizado fora do verde, registrado em <code>direcao-visual.md</code>.</p></div>
+            <div class="rec"><span class="kicker micro">Decisão 2</span><p><strong>Qual navegação global?</strong> As três abandonaram a barra de abas e as três pagaram em descoberta. Minha recomendação: abas de fichário na borda <em>inferior</em> (a aba de corte de A deitada, sem comer largura), mais a fita "volta a hoje".</p></div>
+            <div class="rec"><span class="kicker micro">Decisão 3</span><p><strong>Biblioteca e Estante numa tela só?</strong> A e C unem as duas e B separa (gaveta e pilha). As três mantêm <code>RN-02.6a</code> (nenhuma obra nas duas). Unir é escolha de interface, não muda regra.</p></div>
+            <div class="rec"><span class="kicker micro">Errata da rodada</span><p>A folha de dados chamava a ofensiva de 41 dias (até 14/09) de "a anterior". Com 26 dias cumpridos em outubro e a atual começando em 26/10, houve ofensivas curtas no meio. Os 41 dias são o <em>recorde</em>. A e B apontaram isso, e as telas dizem "recorde 41".</p></div>
+          </div>
+        </div>
+        <!--/COMPARATIVO-->
+      </div>
+    </section>
+  </main>
+  <p class="rodape">Fontes das direções em mockups/ideacao/ · briefing comum: folha de dados de 17/11/2026</p>
+</div>
+
+<script>
+(function(){
+  var ids=['a','b','c','comparativo'];
+  function mostrar(){
+    var h=(location.hash||'#a').slice(1); if(ids.indexOf(h)<0) h='a';
+    ids.forEach(function(id){
+      var p=document.getElementById('p-'+id), t=document.getElementById('aba-'+id), on=(id===h);
+      p.hidden=!on; t.setAttribute('aria-selected', on?'true':'false'); t.tabIndex=on?0:-1;
+      if(on){ var f=p.querySelector('iframe'); if(f && !f.getAttribute('src')) f.setAttribute('src', f.dataset.src); }
+    });
+  }
+  window.addEventListener('hashchange', mostrar); mostrar();
+})();
+</script>

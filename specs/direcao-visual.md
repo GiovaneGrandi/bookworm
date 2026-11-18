@@ -18,6 +18,8 @@ Três direções foram prototipadas na tela de leitura e comparadas em [`../mock
 | Noturno | Descartada como direção. Quatro telas dela são **herdadas** por Papel — ver §6 |
 | Instrumento | Descartada na primeira rodada |
 
+**Sobre Papel assenta-se a direção de interface _A Escrivaninha_**, escolhida em 17/11/2026 numa terceira rodada: a tela inicial é a mesa vista de cima, e cada função é um objeto pousado nela. Papel decide como as coisas parecem; a Escrivaninha decide como elas se organizam e como se navega. Ver §9.
+
 ### Por que Papel
 
 A tese de Papel é *"o livro como objeto, não como aplicativo"*: o app é um conjunto de objetos de papelaria sobre uma mesa verde-escura — fichas de fichário, herbário, carimbos, etiquetas datilografadas, marginália a lápis.
@@ -69,6 +71,8 @@ Regra que decorre disso: **o verde-tinta vive sobre papel.** O que precisa se de
 - **Os 4 pigmentos de grifo** — `--pig-ambar`, `--pig-oliva`, `--pig-tinta`, `--pig-carmim` — permanecem intactos, **inclusive o carmim rosado**. Eles não são cor de marca: são **ferramenta da leitora**, equivalentes a quatro marca-textos numa mesa. Reduzi-los à identidade da marca tiraria da pessoa a única escolha cromática que ela tem no produto.
 
 Essa distinção é a regra: **verde é a marca; os pigmentos são da leitora.**
+
+**A dormência é a única exceção de estado.** Desde a adoção da Escrivaninha (§9.5), o jardim em dormência sai do verde e vira **cianotipia**, o fotograma azul-da-prússia do herbário. A exceção vale só para esse estado e não autoriza azul em nenhuma outra superfície.
 
 ---
 
@@ -244,6 +248,8 @@ Correção em **AJ-9**.
 | 7 telas do MVP | [`../mockups/telas-papel.html`](../mockups/telas-papel.html) | jardim (ativo e dormência) · resumo de sessão + Ghost Reader · biblioteca · onboarding 1 e 2 · caderno de destaques · meu desempenho · fechamento semanal |
 | Widgets de story | [`../mockups/widgets-story.html`](../mockups/widgets-story.html) | 13 widgets compartilháveis em quatro famílias: adesivos sobre foto, cards cheios 9:16, o dado como forma, citação. Seis materiais de papel e tinta |
 | Sistema tipográfico | [`../mockups/tipografia-quatro-vozes.html`](../mockups/tipografia-quatro-vozes.html) | as 8 situações tipográficas do produto · a escala de §3.2 · o painel de faces da leitora · prova de estresse a 12 e 20pt |
+| **Direção de interface — A Escrivaninha** | [`../mockups/ideacao/direcao-b-escrivaninha.html`](../mockups/ideacao/direcao-b-escrivaninha.html) | as 7 telas na direção adotada: leitura + painel · a mesa (inicial) · jardim vivo e em dormência · meu desempenho · importar · estante e gaveta · sessão finalizada. Ver §9 |
+| Rodada de ideação, direções descartadas | [`../mockups/ideacao/direcao-a-caderno-de-campo.html`](../mockups/ideacao/direcao-a-caderno-de-campo.html) · [`../mockups/ideacao/direcao-c-edicao-impressa.html`](../mockups/ideacao/direcao-c-edicao-impressa.html) · vitrine [`../mockups/ideacao/index.html`](../mockups/ideacao/index.html) | as mesmas 7 telas nas direções A e C, e a folha comparativa — ver §9.1 e §9.6 |
 | Referência descartada | [`../mockups/telas-noturno.html`](../mockups/telas-noturno.html) | fonte das 4 telas a herdar — ver §6 |
 | Referências descartadas | [`../mockups/tipografia-duas-vozes.html`](../mockups/tipografia-duas-vozes.html) · [`../mockups/tipografia-uma-voz.html`](../mockups/tipografia-uma-voz.html) | os dois sistemas tipográficos perdedores — ver §3.1 |
 
@@ -275,6 +281,7 @@ Decidido, ainda não executado. Cada item é uma correção nomeada para a próx
 | **AJ-13** | **Migrar as três peças para o catálogo:** tokens de superfície (`--sup-*`), prefixo único `bw-`, escala tônica de espaçamento e as seis rotações nomeadas. Absorve e amplia `AJ-11`, que tratava só da tipografia. O levantamento mediu o tamanho da dívida: 51 sombras distintas, 49 valores de espaçamento, 54 rotações | `leitor-papel.html`, `telas-papel.html`, `widgets-story.html` | `design-system.md` §12 |
 | **AJ-14** | **Verificar o Anexo A num app RN Android mínimo** e produzir o PNG 7×7 tileável do grão. Seis das treze linhas da tradução são hipótese, e é a pergunta de maior consequência do design system: quanto da assinatura sobrevive no Android | Novo | `Q-DS.5` |
 | **AJ-12** | **Trocar as faces do painel de leitura pelo catálogo de `RN-02.16g`.** O painel do mockup oferece Spectral, Garamond e monoespaço — duas old-style quase equivalentes e uma curiosidade, sem sans e sem face de alta legibilidade. Entram Public Sans e Atkinson Hyperlegible | `leitor-papel.html` | `RN-02.16g` |
+| **AJ-15** | **Levar a Escrivaninha ao catálogo `design-system.html`.** O catálogo ainda descreve a navegação por abas de fichário. Entram a mesa como tela inicial, a faixa de feltro de retorno, a sombra com fonte de luz (`RN-DV.7`), a luminária tingida pela temperatura (`RN-DV.6`), o marcador de sessão, a cianotipia como superfície de estado e a contagem a lápis. Sai `bw-abas-fichario`. Até lá, **para navegação e tela inicial, a referência é [`../mockups/ideacao/direcao-b-escrivaninha.html`](../mockups/ideacao/direcao-b-escrivaninha.html), não o catálogo** |
 
 ### 6.1 Nota sobre AJ-4 — traduzir, não copiar
 
@@ -354,7 +361,7 @@ Prefixo novo, `Q-DV`, conforme a convenção de IDs de [`00-overview.md`](00-ove
 |---|---|
 | `Q-DV.1` | **Como Papel mostra tendência ao longo do tempo sem virar dashboard?** Tipografia comunica um número isolado muito bem e resiste a mostrar séries. A régua de tiques usada em "Meu desempenho" é um compromisso, não uma solução. Isto afeta o módulo `03` inteiro |
 | `Q-DV.2` | **Qual o padrão de seleção de obra que escala?** Vale para o caderno de destaques, a biblioteca e a estante — os três hoje assumem um acervo pequeno |
-| ~~`Q-DV.3`~~ | **Resolvida.** Quatro destinos — Jardim, Biblioteca, Caderno, Desempenho — em **abas de fichário** na borda inferior, opacas, interrompendo a mesa. O leitor é modo, não destino (`RN-DS.18`). Perfil e Configurações não são de primeiro nível. Decisão, alternativas descartadas e razão em [`design-system.md`](design-system.md) §10 |
+| ~~`Q-DV.3`~~ | **Resolvida, e revista em 17/11/2026.** A primeira resposta foi quatro destinos em **abas de fichário** na borda inferior ([`design-system.md`](design-system.md) §10). A forma foi substituída pela **mesa como navegação**, sem barra de abas — §9, `RN-DV.1` e `RN-DV.2`. Continuam valendo as restrições duras de §10 e `RN-DS.18` (o leitor é modo, não destino) |
 | `Q-DV.4` | **A biblioteca escala sem arte de capa?** Noturno registrou o risco: composições tipográficas funcionam com 4 livros e viram papel de parede da marca com centenas. Papel resolveu tratando a capa como objeto físico, o que provavelmente escala melhor — mas não foi testado em volume |
 | ~~`Q-DV.5`~~ | **Resolvida.** O adesivo sobre foto é formato de primeira classe — `RN-08.22a` |
 | ~~`Q-DV.6`~~ | **Resolvida.** A manchete é **escolhida pelo usuário** — `RN-08.6a`. O lugar que estava vago não foi preenchido por decisão de design, e sim devolvido a quem posta |
@@ -362,6 +369,12 @@ Prefixo novo, `Q-DV`, conforme a convenção de IDs de [`00-overview.md`](00-ove
 | `Q-DV.8` | **Como representar o progresso da obra?** A espessura do corte de páginas foi reprovada e o dado segue compartilhável (`RN-08.36`). Espelha `Q-08.8` |
 | `Q-DV.9` | **Qual o repertório de preenchimento dos cards cheios?** §6.4 propõe ornamento tipográfico, a obra como matéria visual e densidade deliberada. Nenhum dos três foi testado — e é o que decide se Papel funciona num feed, não só na mão. A escala de §3.2 é a pré-condição do ornamento tipográfico, e agora existe |
 | `Q-DV.10` | **Como a citação se distingue quando aparece dentro da prosa, e não isolada em card?** EB Garamond só ganha o lugar dela porque nunca disputa espaço com Spectral na mesma superfície. Onde as duas old-style precisam conviver de perto — uma citação em itálico dentro de um parágrafo que já é Garamond itálico, como na carta editorial — a diferença some, e o itálico deixa de sinalizar porque já marca fala e ênfase no corpo. É a peça mais frágil do sistema adotado (§3.4) e não tem solução visual proposta |
+| `Q-DV.11` | **Onde fica o limite das etiquetas?** Sem etiqueta datilografada, a mesa da Escrivaninha vira quebra-cabeça. Com etiqueta em todo objeto (`RN-DV.10`), ela corre o risco de virar um menu disfarçado. A direção registrou o risco e não o resolveu |
+| `Q-DV.12` | **Como a mesa cresce?** Em 390px, seis objetos já enchem a mesa. Uma sétima função (escrita, clubes, feed, todas pós-MVP) não tem onde pousar sem empilhar ou rolar, e mesa que rola deixa de ser mesa. Espelha `Q-DV.2` no nível da navegação |
+| `Q-DV.13` | **A reentrada é barata o bastante?** Toda troca de função passa pela mesa: são dois toques onde a barra de abas pedia um. Foi exatamente o motivo pelo qual [`design-system.md`](design-system.md) §10 adiou a mesa como navegação. Precisa ser medido no MVP (tempo até abrir o livro a partir do ícone do app) antes de se dar por resolvido |
+| `Q-DV.14` | **Qual a ordem de leitura da mesa para leitor de tela?** A navegação espacial vira uma lista de 7 botões. Funciona, mas a ordem precisa ser desenhada à parte da composição visual, e essa ordem não existe ainda |
+| `Q-DV.15` | **Que objeto é o Caderno de destaques?** [`design-system.md`](design-system.md) §10 fazia do Caderno um destino de primeiro nível. A rodada de ideação não o incluiu, e a mesa da Escrivaninha não tem objeto para ele. O caderninho já é o Desempenho |
+| `Q-DV.16` | **Qual o inventário fechado de adereços?** Luminária, elástico e lápis já estão no limite. Mais um adereço e a mesa vira skeuomorfismo de 2010. É preciso fechar a lista de objetos e adereços permitidos, como `mvp.md` §9 fez com o jardim |
 
 ---
 
@@ -379,3 +392,79 @@ Isso expõe uma lacuna real da spec. `RN-04.14` define **dois** números na tela
 **Incorporado.** A convergência virou `RN-04.14a` em [`04-streaks-e-jardim.md`](04-streaks-e-jardim.md) §5.2, com critério de aceitação sob `GAM-09`, campos `contagem_encerrada` e `encerrada_em` na entidade `Ofensiva`, e o estado de Dormência da tela do jardim atualizado. Entrou no corte do MVP ([`mvp.md`](mvp.md) §4.3).
 
 Fica o registro do caminho, porque ele é o argumento a favor de prototipar antes de especificar: **a regra não veio de uma revisão da spec, veio de duas implementações independentes tropeçando no mesmo buraco.** Nenhum dos dois agentes tinha instrução sobre o assunto; os dois se recusaram a escrever um "23" solto numa tela de ofensiva quebrada, porque a tela mentiria.
+
+---
+
+## 9. A direção de interface: **A Escrivaninha**
+
+**Decidida em 17/11/2026.** Papel continua sendo o pilar estético (§1). A Escrivaninha é o **modelo de interface** que se assenta sobre ele: como as telas se organizam, como a leitora navega e que forma cada função assume. Onde esta seção diverge de outra deste documento ou de [`design-system.md`](design-system.md), **manda esta seção**.
+
+### 9.1 A rodada que a escolheu
+
+Três direções foram prototipadas em paralelo sobre as mesmas 7 telas e a mesma folha de dados. Cada designer era livre para quebrar tokens, vozes, escala e navegação, desde que justificasse a quebra. Os princípios de produto ficaram fixos.
+
+| Direção | Arquivo | Estado |
+|---|---|---|
+| **B · A escrivaninha** | [`../mockups/ideacao/direcao-b-escrivaninha.html`](../mockups/ideacao/direcao-b-escrivaninha.html) | **Escolhida.** Referência da direção de interface |
+| A · Caderno de campo | [`../mockups/ideacao/direcao-a-caderno-de-campo.html`](../mockups/ideacao/direcao-a-caderno-de-campo.html) | Descartada como direção. Ideias candidatas em §9.6 |
+| C · Edição impressa | [`../mockups/ideacao/direcao-c-edicao-impressa.html`](../mockups/ideacao/direcao-c-edicao-impressa.html) | Descartada como direção. Ideias candidatas em §9.6 |
+
+A vitrine com as três e a folha comparativa está em [`../mockups/ideacao/index.html`](../mockups/ideacao/index.html).
+
+### 9.2 A tese
+
+**A tela inicial é a mesa verde-escura vista de cima, e cada função do app é um objeto pousado sobre ela.** A leitora não escolhe um item de menu: ela pega um objeto. O estado dos objetos é a interface: o livro aberto marcado na p. 68, a muda no vaso, a pilha de lidos crescendo. A tese de §1 deixa de ser cenário e vira mecanismo. A mesa que era fundo passa a ser o lugar onde as coisas estão.
+
+### 9.3 Regras
+
+- `RN-DV.1` **A mesa é a tela inicial e o único hub.** É a primeira coisa que se vê depois do login e o lugar para onde toda tela volta.
+- `RN-DV.2` **Não há barra de abas nem seta de voltar.** Toda tela é uma folha erguida da mesa. Para voltar, toca-se a **faixa de feltro** que sobra no alto da folha ("pousar na mesa"), e a folha volta ao lugar. O gesto de voltar do sistema faz o mesmo.
+- `RN-DV.3` **Cada objeto é uma porta, e o objeto mostra o estado da função.** Um objeto sem estado visível (só um ícone que abre uma tela) não pertence à mesa.
+- `RN-DV.4` **A mesa guarda só o que está em uso.** No máximo 2 livros em leitura ficam pousados. O resto mora na gaveta do fichário, e os concluídos sobem para a pilha. Uma mesa com 200 livros fica tão limpa quanto uma com 9.
+- `RN-DV.5` **A sessão deixa um rastro físico.** Ao fim da sessão, a ficha do dia entra no livro como marcador e fica visível na mesa ("34 min · meta ✓ · hoje") até a virada do dia.
+- `RN-DV.6` **A luz da leitora é a luz da mesa.** A temperatura de luz escolhida no painel do leitor (`RN-02.16a`) tinge a poça de luz da luminária na mesa. É o mesmo ajuste nos dois lugares.
+- `RN-DV.7` **Toda sombra tem fonte.** A luminária fica no canto superior da mesa, e toda sombra de objeto cai para baixo e para a esquerda. Isso substitui a sombra sem direção de §4 e de `design-system.md` §4.3. O rebind por superfície (`RN-DS.6`) continua valendo.
+- `RN-DV.8` **A composição da mesa é livre da escala tônica.** A posição dos objetos sobre o feltro é composição, não espaçamento. Dentro de cada folha erguida, `RN-DS.4` continua valendo sem exceção.
+- `RN-DV.9` **O leitor continua sendo modo, não destino** (`RN-DS.18`). O livro se ergue da mesa, a leitura não tem chrome, e "Pousar na mesa" e "Encerrar sessão" só aparecem com os controles revelados.
+- `RN-DV.10` **Cada objeto tem etiqueta datilografada.** A mesa sem rótulo vira quebra-cabeça (§9.7). A etiqueta é parte do objeto, como na papelaria real, e é ela que o leitor de tela anuncia.
+
+### 9.4 O mapa objeto → tela
+
+| Objeto na mesa | Tela | O que o objeto mostra em repouso |
+|---|---|---|
+| **O livro aberto** | Leitura | Título, capítulo, página corrente, e o marcador da sessão de hoje quando houver (`RN-DV.5`) |
+| **O vaso / caixote** | Jardim | A muda no estágio atual e a contagem da ofensiva. Na dormência, a cena em cianotipia |
+| **O caderninho** | Meu desempenho | A semana em curso ("semana 7/7") |
+| **A gaveta do fichário** | Biblioteca | Contagem de lendo, em pausa e quero ler |
+| **A pilha de lombadas** | Estante | O livro mais recente no topo e o total ("6 lidos"). A pilha só cresce |
+| **A bandeja de entrada** | Importar EPUB/PDF | Vazia, ou com o arquivo que acabou de chegar |
+| **A luminária** | — | A temperatura de luz da leitora (`RN-DV.6`). Não abre tela |
+
+### 9.5 As telas
+
+**Leitura e painel.** O painel ocupa meia tela, e o texto real continua à vista com cada ajuste aplicado na hora (`RN-02.16e`). Os 10 controles de `RN-02.16d` se dividem em **três instrumentos** pela pergunta que a leitora está fazendo: **Luz** ("está claro demais?": temperatura, brilho, tema), **Letra** ("a letra está boa?": as 5 faces de `RN-02.16g` em amostra, corpo, entrelinha) e **Página** ("como está a folha?": margens, alinhamento, âncora de posição, retorno sensorial). São no máximo 4 controles por vez, e a temperatura é o maior controle da aba Luz. Cada aba tem "↺ esta aba", e há também "↺ tudo ao padrão". É a resposta desta direção a `Q-02.8`.
+
+**Jardim.** O caixote com a muda e um tufo de musgo por dia do acervo (87). Os cinco estágios de `RN-04.23` ficam visíveis em fichinhas, com o atual marcado "você". Fichas de recorde, acervo ("nunca diminui") e congelamentos (2 de 3). A frase-regra fica escrita na tela: *"O tamanho do jardim vem do acervo. A sequência decide só se ele está acordado."*
+
+**Dormência em cianotipia.** A dormência não dessatura a paleta viva: ela troca de processo de impressão e vira o fotograma azul-da-prússia do herbário, com os mesmos 87 tufos. É a **única exceção autorizada à identidade verde** (§2), e vale só para o estado de dormência. As três direções da rodada chegaram a ela independentemente, sem contato entre si, que é o mesmo tipo de evidência de §8. A tela mostra `RN-04.14a` como *"hoje 0 · sua sequência chegou a 23 · recorde 41"*, com o acervo intacto.
+
+**Meu desempenho.** O caderninho, com o período escolhido numa aba de índice (semana / mês), os números em tabela tipográfica e o mapa de constância de 16 semanas. Os estilos de leitura são contados **a lápis, em riscos de cinco**: é desenho, e é uma exceção pequena e declarada a "métrica é tipografia" (`P-11`). Nada de barra nem de donut. O rodapé diz: *"Neste caderno só aparecem os seus dias."*
+
+**Importar.** A bandeja de entrada: "Pôr um livro na mesa". **O EPUB chega como livro; o PDF chega como fotocópia.** O que a fotocópia não faz (refluxo de letra, entrelinha, margem) fica escrito no próprio envelope, sem esconder nem pedir desculpa. O acervo de domínio público é a segunda origem, na mesma folha.
+
+**Biblioteca e Estante.** São objetos distintos na mesa (gaveta e pilha), o que preserva `RN-02.6a` por construção. **Os concluídos recebem a arte:** lombadas empilhadas por mês, com o último que entrou em destaque ("3 sessões · 9 destaques") e a frase *"Daqui nada sai. A pilha só cresce."* A gaveta é uma lista funcional, agrupada em lendo, em pausa e quero ler.
+
+**Sessão finalizada.** Abre pela celebração (`RN-04.10b`): a cena do carimbo da meta. Depois vem a ficha da sessão, com os números em tabela, a Leitura Consciente em faixa nomeada, o estilo e o Ghost Reader no pé. A ação final é **"guardar a ficha no livro"** (`RN-DV.5`), e "Rever a celebração" toca a cena de novo.
+
+### 9.6 Ideias das outras direções — candidatas, não adotadas
+
+A escolha da Escrivaninha não adota nada de A nem de C. As ideias abaixo foram as mais fortes da rodada e ficam registradas para decisão própria:
+
+- **De A:** *"o medido é datilografado, o vivido é manuscrito"*. Todo número que vem do relógio sai em Courier Prime, e o que a leitora escreveu sai em Caveat. Nenhum número em letra manuscrita.
+- **De A:** a fita marcadora que sempre volta ao dia de hoje.
+- **De C:** a âncora de posição como **fólio**, com a página canônica no pé e o capítulo no cabeçalho corrido.
+- **De C:** o painel como **colofão** legível, a frase "Esta página foi composta em Spectral, corpo 16 sobre 27…", em que cada termo abre o seu controle.
+
+### 9.7 O que a Escrivaninha ainda não resolve
+
+São os riscos registrados pela própria direção, mais o que §10 de `design-system.md` já tinha apontado quando adiou "a mesa como navegação". Ver `Q-DV.11` a `Q-DV.16` em §7.

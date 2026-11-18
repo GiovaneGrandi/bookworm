@@ -1,0 +1,1265 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Direção B · A escrivaninha</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible&family=Caveat:wght@400;600&family=Courier+Prime:wght@400;700&family=EB+Garamond:ital@0,400;1,400&family=Public+Sans:wght@400&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --mesa:#1e2320; --mesa-2:#262c28; --mesa-3:#161a17;
+  --papel:#f3ead9; --papel-fundo:#efe3ce; --sepia:#e7d6b4; --kraft:#c6a575; --kraft-2:#a9854f;
+  --tinta:#241f19; --tinta-70:rgba(36,31,25,.74); --tinta-16:rgba(36,31,25,.16);
+  --grafite:#5f5949;
+  --verde-tinta:#2f5d3a; --verde-claro:#4f7f45; --ambar:#e6c15c;
+  --pig-ambar:#e7c25e; --pig-oliva:#a8b07a; --pig-tinta:#93a9c0; --pig-carmim:#d79aa2;
+  --borda:rgba(124,98,58,.38); --borda-forte:rgba(124,98,58,.55);
+  --sombra-papel:rgba(48,32,16,.28);
+  --sombra-mesa:rgba(5,4,2,.6);
+  --cian:#1b4570; --cian-2:#2b6394; --cian-luz:#e6eff2;
+  --barro:#b2603f; --barro-2:#8a4428; --madeira:#7a5434; --madeira-2:#553a23; --latao:#c9a24a;
+  --serif:'Spectral','Iowan Old Style',Georgia,serif;
+  --garamond:'EB Garamond','Spectral',Georgia,serif;
+  --mono:'Courier Prime','Courier New',monospace;
+  --lapis:'Caveat','Segoe Script',cursive;
+  --leit-sans:'Public Sans','Segoe UI',Arial,sans-serif;
+  --leit-acessivel:'Atkinson Hyperlegible',Arial,sans-serif;
+  --luz-cor:rgba(255,196,120,.20);
+  --feltro:
+    radial-gradient(rgba(255,255,255,.025) .6px, transparent .8px) 0 0/5px 5px,
+    radial-gradient(rgba(0,0,0,.18) .7px, transparent .9px) 2px 3px/7px 7px,
+    var(--mesa);
+  --grao:radial-gradient(rgba(96,74,46,.075) .5px, transparent .6px) 0 0/7px 7px;
+}
+/* a página é a própria mesa: o tema escuro é o único; os tokens se repetem por contrato */
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --mesa:#1e2320; } }
+:root[data-theme="dark"]{ --mesa:#1e2320; }
+
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--feltro);color:var(--papel);font-family:var(--serif);overflow-x:hidden;min-height:100vh}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--ambar);outline-offset:2px}
+
+/* ---------- casca da vitrine ---------- */
+.casca{max-width:1560px;margin:0 auto;padding:27px 16px 81px}
+.ficha-direcao{background:var(--grao),var(--papel);color:var(--tinta);max-width:1080px;margin:0 auto 36px;padding:27px 27px 18px;
+  border:1px solid var(--borda);border-radius:4px 7px 5px 8px / 6px 4px 7px 5px;box-shadow:-6px 12px 30px var(--sombra-mesa);transform:rotate(-.3deg)}
+.ficha-direcao .kick{font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.34em;text-transform:uppercase;color:var(--verde-tinta)}
+.ficha-direcao h1{font-family:var(--serif);font-weight:300;font-style:italic;font-size:36px;line-height:40px;margin:6px 0 9px}
+.ficha-direcao .tese{font-family:var(--garamond);font-style:italic;font-size:19px;line-height:30px;margin:0 0 18px;max-width:780px}
+.ficha-grade{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px 27px}
+.ficha-grade h2{font-family:var(--mono);font-size:8.5px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;margin:0 0 6px;color:var(--tinta)}
+.ficha-grade ul{margin:0;padding-left:18px;font-size:14px;line-height:22px}
+.ficha-grade li{margin-bottom:6px}
+.ficha-grade code{font-family:var(--mono);font-size:12px}
+.modo{display:flex;gap:9px;justify-content:center;margin:0 0 27px;flex-wrap:wrap}
+.modo button{font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;min-height:44px;padding:0 18px;
+  background:var(--grao),var(--papel);color:var(--tinta);border:1px solid var(--borda);border-bottom-width:3px;border-radius:3px 6px 4px 5px}
+.modo button[aria-pressed="true"]{background:var(--verde-tinta);color:var(--papel);border-color:#1f3f27}
+.dica{text-align:center;font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:rgba(243,234,217,.78);margin:0 0 18px;line-height:18px}
+.palco-todas{display:flex;flex-wrap:wrap;gap:36px 27px;justify-content:center}
+.moldura{flex:0 1 410px;max-width:410px;width:100%}
+.moldura .escala{position:relative;width:100%;overflow:hidden}
+.moldura figcaption{font-family:var(--mono);font-size:11px;line-height:18px;letter-spacing:.06em;color:rgba(243,234,217,.85);margin-top:9px;padding:0 6px}
+.moldura figcaption b{color:var(--ambar);letter-spacing:.14em;text-transform:uppercase;font-size:10.5px}
+figure{margin:0}
+[hidden]{display:none!important}
+svg text.sv-lapis{font-family:var(--lapis)} svg text.sv-mono{font-family:var(--mono)} svg text.sv-serif{font-family:var(--serif)}
+
+/* ---------- o aparelho ---------- */
+.aparelho{position:absolute;left:0;top:0;width:410px;height:864px;transform-origin:0 0;border-radius:46px;background:#0c0e0d;padding:10px;
+  box-shadow:0 0 0 1px #2c322e, -10px 24px 50px rgba(0,0,0,.55)}
+.vidro{position:relative;width:390px;height:844px;border-radius:37px;overflow:hidden;background:var(--feltro);isolation:isolate}
+.camada{position:absolute;inset:0;z-index:20;transform-origin:0 0}
+.aviso{position:absolute;left:27px;right:27px;bottom:36px;z-index:60;background:var(--grao),var(--papel);color:var(--tinta);font-family:var(--mono);font-size:12px;line-height:18px;
+  padding:12px 18px;border:1px solid var(--borda);border-radius:3px 6px 4px 7px;box-shadow:-4px 10px 24px var(--sombra-mesa);opacity:0;transform:translateY(12px);transition:.25s;pointer-events:none}
+.aviso.on{opacity:1;transform:none}
+
+/* ---------- tipografia utilitária ---------- */
+.k-micro{font-family:var(--mono);font-size:7.5px;line-height:12px;letter-spacing:.2em;text-transform:uppercase}
+.k{font-family:var(--mono);font-size:8.5px;font-weight:700;line-height:13px;letter-spacing:.26em;text-transform:uppercase}
+.k-ab{font-family:var(--mono);font-size:10.5px;font-weight:700;line-height:16px;letter-spacing:.34em;text-transform:uppercase}
+.tit{font-family:var(--serif);font-weight:300;font-style:italic;font-size:27px;line-height:32px;letter-spacing:.01em;margin:0}
+.micro{font-family:var(--serif);font-weight:300;font-style:italic;font-size:17px;line-height:24px;margin:0}
+.dado{font-family:var(--serif);font-weight:600;font-size:22px;line-height:27px;font-variant-numeric:tabular-nums}
+.lapis{font-family:var(--lapis);font-size:16px;line-height:18px;color:var(--grafite)}
+.etq-man{font-family:var(--lapis);font-weight:600;font-size:22px;line-height:24px}
+
+/* ---------- A MESA (tela inicial) ---------- */
+.mesa{position:absolute;inset:0;background:var(--feltro);overflow:hidden}
+.mesa .poca{position:absolute;left:-60px;top:40px;width:520px;height:520px;border-radius:50%;
+  background:radial-gradient(closest-side, var(--luz-cor), transparent 72%);pointer-events:none;z-index:3;mix-blend-mode:screen}
+.mesa .cabeca{position:absolute;left:18px;top:27px;right:120px;z-index:4;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.mesa .cabeca .slip{background:var(--grao),var(--papel-fundo);color:var(--tinta);padding:3px 9px;transform:rotate(-1.2deg);box-shadow:-3px 5px 10px var(--sombra-mesa)}
+.mesa .cabeca .oi{font-family:var(--lapis);font-size:22px;line-height:24px;color:rgba(243,234,217,.9);transform:rotate(-2deg)}
+.obj{position:absolute;display:block;text-align:left}
+.obj .etq{position:absolute;white-space:nowrap;background:var(--grao),var(--papel);color:var(--tinta);padding:3px 9px;box-shadow:-2px 4px 8px var(--sombra-mesa);
+  font-family:var(--mono);font-size:8.5px;font-weight:700;line-height:13px;letter-spacing:.2em;text-transform:uppercase}
+.obj:active .corpo-obj{transform:translateY(2px) scale(.99)}
+.corpo-obj{transition:transform .15s}
+
+/* bandeja */
+.o-bandeja{left:18px;top:94px;width:156px;height:104px;z-index:7;transform:rotate(-3deg)}
+.o-bandeja .etq{left:12px;bottom:-12px;transform:rotate(2deg)}
+/* livro fechado: o médico e o monstro */
+.o-medico{left:190px;top:96px;width:118px;height:150px;z-index:4;transform:rotate(9deg)}
+.o-medico .capa{position:absolute;inset:0;background:linear-gradient(90deg,#3c1f1b 0 9px,#5a2b25 9px);border-radius:2px 4px 4px 2px;box-shadow:-6px 10px 16px var(--sombra-mesa)}
+.o-medico .capa::after{content:"";position:absolute;left:24px;right:12px;top:18px;height:36px;border:1px solid rgba(214,180,120,.55)}
+.o-medico .capa span{position:absolute;left:28px;right:14px;top:22px;font-family:var(--serif);font-style:italic;font-size:10px;line-height:13px;color:#e8cf9f}
+.o-medico .etq{left:-14px;top:-12px;transform:rotate(-11deg)}
+/* luminária vista de cima */
+.luminaria{position:absolute;right:-58px;top:-46px;width:176px;height:176px;border-radius:50%;z-index:9;pointer-events:none;
+  background:radial-gradient(circle at 40% 62%, #fff6d8 0 9%, #e9c66f 10% 16%, #9b7a2e 17% 22%, #c9a24a 23% 56%, #8a6a24 62%, #5e4718 70%);
+  box-shadow:-14px 20px 30px rgba(0,0,0,.55)}
+/* livro aberto */
+.o-livro{left:30px;top:198px;width:330px;height:236px;z-index:6;transform:rotate(-2deg)}
+.o-livro .corpo-obj{position:absolute;inset:0}
+.o-livro .pag{position:absolute;top:0;bottom:0;width:50%;background:var(--grao),var(--papel);padding:18px 18px 18px;overflow:hidden}
+.o-livro .pag.e{left:0;border-radius:3px 0 0 5px;box-shadow:-8px 14px 22px var(--sombra-mesa);background:linear-gradient(90deg,transparent 80%,rgba(48,32,16,.18)),var(--grao),var(--papel)}
+.o-livro .pag.d{right:0;border-radius:0 4px 3px 0;box-shadow:-2px 14px 22px var(--sombra-mesa);background:linear-gradient(270deg,transparent 82%,rgba(48,32,16,.16)),var(--grao),var(--papel)}
+.o-livro .linhas{position:absolute;left:18px;right:18px;top:64px;bottom:27px;background:repeating-linear-gradient(to bottom,transparent 0 6px,rgba(36,31,25,.26) 6px 7px,transparent 7px 9px)}
+.o-livro .pag.d .linhas{top:18px}
+.o-livro .cap{font-family:var(--serif);font-size:9px;line-height:12px;color:var(--tinta);text-align:center}
+.o-livro .cap i{display:block;font-size:12px;line-height:16px;font-weight:300}
+.o-livro .gr{position:absolute;height:5px;mix-blend-mode:multiply;opacity:.8}
+.o-livro .folio{position:absolute;bottom:9px;font-family:var(--serif);font-size:9px;color:var(--tinta-70)}
+.o-livro .fita{position:absolute;left:62%;top:-6px;width:9px;height:266px;background:linear-gradient(90deg,#24492d,#3a6e46 50%,#24492d);clip-path:polygon(0 0,100% 0,100% 100%,50% 94%,0 100%);box-shadow:-3px 4px 6px rgba(0,0,0,.4)}
+.o-livro .marcador{position:absolute;right:26px;top:-46px;width:74px;height:70px;background:var(--grao),var(--kraft);transform:rotate(6deg);padding:6px 6px;
+  box-shadow:-3px 5px 8px var(--sombra-mesa);z-index:-1;color:var(--tinta)}
+.o-livro .marcador b{display:block;font-family:var(--serif);font-size:13px;line-height:15px}
+.o-livro .etq{left:18px;bottom:-14px;transform:rotate(1.2deg);background:var(--verde-tinta);color:var(--papel)}
+.o-livro .marcador.novo{animation:enfia .7s cubic-bezier(.3,1.4,.5,1) both}
+@keyframes enfia{from{transform:translateY(-40px) rotate(-8deg);opacity:0}to{transform:rotate(6deg);opacity:1}}
+/* vaso */
+.o-vaso{left:24px;top:452px;width:156px;height:156px;z-index:5}
+.o-vaso .etq{left:84px;top:118px;transform:rotate(-4deg)}
+.o-vaso .estaca{position:absolute;left:104px;top:16px;font-family:var(--lapis);font-size:18px;line-height:18px;color:var(--tinta);background:#d8bf8c;padding:3px 6px;transform:rotate(12deg);box-shadow:-2px 3px 5px rgba(0,0,0,.4)}
+.so-dorm-mesa{display:none}
+.dormente .so-dorm-mesa{display:inline}
+.dormente .so-vivo-mesa{display:none}
+/* caderninho */
+.o-caderno{left:214px;top:456px;width:140px;height:178px;z-index:5;transform:rotate(5deg)}
+.o-caderno .capa{position:absolute;inset:0;background:var(--grao),linear-gradient(160deg,#c9a878,#ad8a58);border-radius:3px 6px 5px 3px;box-shadow:-7px 12px 18px var(--sombra-mesa)}
+.o-caderno .elastico{position:absolute;right:18px;top:-2px;bottom:-2px;width:7px;background:#1f1a16;box-shadow:-1px 0 2px rgba(0,0,0,.5)}
+.o-caderno .rot{position:absolute;left:14px;top:27px;width:92px;background:var(--grao),var(--papel);padding:6px 6px;color:var(--tinta);border:1px solid var(--borda)}
+.o-caderno .rot .lapis{font-size:18px;color:var(--grafite);display:block;margin-top:3px}
+.o-caderno .lapis-obj{position:absolute;left:-30px;bottom:-18px;width:150px;height:9px;transform:rotate(-58deg);transform-origin:0 50%;
+  background:linear-gradient(90deg,#3a3026 0 6px,#e9cfa3 6px 18px,#d9a93b 18px 136px,#c9c2b4 136px 142px,#d79aa2 142px);clip-path:polygon(0 50%,8% 0,100% 0,100% 100%,8% 100%);box-shadow:-2px 3px 4px rgba(0,0,0,.45)}
+.o-caderno .etq{left:-12px;bottom:6px;transform:rotate(-6deg)}
+/* fichário */
+.o-fichario{left:16px;top:640px;width:206px;height:150px;z-index:5;transform:rotate(-1.5deg)}
+.o-fichario .caixa{position:absolute;inset:0;background:linear-gradient(180deg,#8a6040,#6e4a2e);border-radius:3px;box-shadow:-8px 14px 20px var(--sombra-mesa),inset 0 0 0 9px #5e3f26}
+.o-fichario .fundo{position:absolute;left:9px;right:9px;top:9px;bottom:9px;background:#3b2818;overflow:hidden}
+.o-fichario .ficha-topo{position:absolute;left:6px;right:6px;height:3px;background:#efe3ce;box-shadow:0 2px 2px rgba(0,0,0,.4)}
+.o-fichario .aba{position:absolute;height:15px;padding:1px 6px;background:var(--kraft);color:var(--tinta);font-family:var(--mono);font-size:7.5px;font-weight:700;letter-spacing:.12em;line-height:13px}
+.o-fichario .placa{position:absolute;left:50%;bottom:-3px;transform:translateX(-50%);background:linear-gradient(#e2c06a,#a88334);padding:2px 9px;border-radius:2px;color:#2b220f;font-family:var(--mono);font-size:7.5px;font-weight:700;letter-spacing:.2em}
+.o-fichario .etq{left:9px;top:-14px;transform:rotate(-2deg)}
+/* pilha da estante */
+.o-pilha{left:238px;top:660px;width:136px;height:160px;z-index:5;transform:rotate(3deg)}
+.o-pilha .lv{position:absolute;left:0;top:0;width:118px;height:150px;border-radius:2px 4px 4px 2px;box-shadow:-3px 4px 6px rgba(0,0,0,.45)}
+.o-pilha .lv.topo{background:linear-gradient(90deg,rgba(0,0,0,.18) 0 7px,transparent 7px),repeating-linear-gradient(45deg,#cda94d 0 6px,#c39d43 6px 12px);}
+.o-pilha .lv.topo span{position:absolute;left:16px;right:9px;top:18px;background:#f4ecd6;color:var(--tinta);font-family:var(--serif);font-style:italic;font-size:10px;line-height:13px;padding:6px}
+.o-pilha .carimbo-mini{position:absolute;right:-9px;bottom:6px;width:54px;height:54px;border-radius:9999px;border:2px solid #bcd3b9;color:#e5efe0;display:grid;place-items:center;text-align:center;
+  font-family:var(--mono);font-size:7.5px;font-weight:700;letter-spacing:.14em;line-height:10px;transform:rotate(-9deg);background:rgba(47,93,58,.92)}
+.o-pilha .carimbo-mini b{font-family:var(--serif);font-size:18px;line-height:18px;letter-spacing:0;display:block}
+.o-pilha .etq{left:-18px;bottom:-12px;transform:rotate(-3deg)}
+
+/* ---------- TELA genérica: objeto erguido da mesa ---------- */
+.tela{position:absolute;inset:0;background:var(--feltro)}
+.volta{position:absolute;left:0;right:0;top:0;height:45px;z-index:5;display:flex;justify-content:center;align-items:flex-start;padding-top:9px}
+.volta span{font-family:var(--mono);font-size:8.5px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:rgba(243,234,217,.82)}
+.folha{position:absolute;left:9px;right:9px;top:30px;bottom:0;overflow-y:auto;overflow-x:hidden;background:var(--grao),var(--papel);color:var(--tinta);
+  border-radius:5px 8px 0 0 / 7px 5px 0 0;box-shadow:-8px 0 30px var(--sombra-mesa);padding:27px 18px 54px;scrollbar-width:thin}
+.folha::-webkit-scrollbar{width:4px}
+.folha::-webkit-scrollbar-thumb{background:var(--borda)}
+.cab{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:18px}
+.botao{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:44px;padding:0 18px;font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  background:var(--grao),var(--papel);color:var(--tinta);border:1px solid var(--borda-forte);border-bottom-width:3px;border-radius:3px 6px 4px 5px;box-shadow:-2px 4px 8px var(--sombra-papel)}
+.botao:active{transform:translateY(2px);border-bottom-width:1px;margin-bottom:2px}
+.botao.prim{background:var(--verde-tinta);color:var(--papel);border-color:#1d3c24}
+.botao.peq{min-height:44px;padding:0 12px;font-size:8.5px}
+.regua{height:1px;background:var(--borda);margin:18px 0}
+.sel{border-color:rgba(47,93,58,.7)!important;background:rgba(230,193,92,.16)!important}
+
+/* ---------- 1 · LEITOR ---------- */
+.leitor{position:absolute;inset:0;overflow:hidden;--fundo:#f3ead9;--letra:#241f19;background:var(--fundo);color:var(--letra);transition:background .3s,color .3s}
+.leitor.t-sepia{--fundo:#e8d5b0;--letra:#35281a}
+.leitor.t-escuro{--fundo:#25292a;--letra:#d8d0bf}
+.leitor.t-preto{--fundo:#000;--letra:#bdb5a4}
+.leitor .papel-grao{position:absolute;inset:0;background:var(--grao);pointer-events:none}
+.leitor.t-escuro .papel-grao,.leitor.t-preto .papel-grao{display:none}
+.pagina{position:absolute;inset:0;padding:54px var(--margem,27px) 54px;cursor:default}
+.texto{font-family:var(--serif);font-size:16px;line-height:27px;text-align:justify;hyphens:auto;-webkit-hyphens:auto;position:relative}
+.texto p{margin:0;text-indent:1.4em}
+.texto p.primeiro{text-indent:0}
+.texto .capitular{float:left;font-size:64px;line-height:54px;font-weight:500;margin:3px 9px 0 0}
+.texto .vers{font-variant:small-caps;letter-spacing:.055em}
+.cap-cab{text-align:center;margin:27px 0 27px}
+.cap-cab .k{color:inherit;opacity:.85}
+.cap-cab h2{font-family:var(--serif);font-weight:300;font-style:italic;font-size:27px;line-height:32px;margin:3px 0 0}
+.g{mix-blend-mode:multiply;-webkit-box-decoration-break:clone;box-decoration-break:clone;padding:0 1px;border-radius:2px 3px 2px 4px}
+.g-ambar{background:var(--pig-ambar)} .g-oliva{background:var(--pig-oliva)} .g-tinta{background:var(--pig-tinta)} .g-carmim{background:var(--pig-carmim)}
+.leitor.t-escuro .g,.leitor.t-preto .g{mix-blend-mode:normal;color:#1a1612}
+.marg{display:block;text-align:right;font-family:var(--lapis);font-size:16px;line-height:18px;color:var(--grafite);transform:rotate(-3.5deg);margin:9px 6px 0 54px;text-indent:0}
+.leitor.t-escuro .marg,.leitor.t-preto .marg{color:#b0a891}
+.alvo-sel{cursor:pointer;border-bottom:1px dotted currentColor}
+.luz-filtro,.brilho-filtro{position:absolute;inset:0;pointer-events:none;z-index:8}
+.luz-filtro{mix-blend-mode:multiply}
+.brilho-filtro{background:#000;opacity:0}
+.ancora{position:absolute;left:var(--margem,27px);right:var(--margem,27px);bottom:18px;z-index:6;display:flex;align-items:center;gap:9px;opacity:.75}
+.ancora .fio{flex:1;height:1px;background:currentColor;opacity:.35;position:relative}
+.ancora .fio i{position:absolute;left:0;top:-1px;height:3px;width:48%;background:currentColor;opacity:.9}
+.ancora .num{font-family:var(--mono);font-size:8.5px;letter-spacing:.2em;white-space:nowrap}
+.leitor[data-ancora="nenhuma"] .ancora{display:none}
+.leitor[data-ancora="posicao"] .ancora .num{display:none}
+/* chrome do leitor (só aparece ao toque) */
+.chrome-top,.chrome-bot{position:absolute;left:0;right:0;z-index:12;display:flex;justify-content:space-between;align-items:center;padding:9px 12px;
+  background:var(--grao),var(--papel);color:var(--tinta);border-color:var(--borda);transition:transform .25s,opacity .25s}
+.chrome-top{top:0;border-bottom:1px solid var(--borda);padding-top:36px;box-shadow:0 6px 18px var(--sombra-papel)}
+.chrome-bot{bottom:0;border-top:1px solid var(--borda);padding-bottom:27px;box-shadow:0 -6px 18px var(--sombra-papel)}
+.leitor:not(.com-chrome) .chrome-top{transform:translateY(-100%);opacity:0;pointer-events:none}
+.leitor:not(.com-chrome) .chrome-bot{transform:translateY(100%);opacity:0;pointer-events:none}
+.chrome-top .titulo-obra{font-family:var(--serif);font-style:italic;font-size:14px;line-height:18px;text-align:right}
+/* barra de grifo */
+.barra-grifo{position:absolute;z-index:11;left:9px;right:9px;background:var(--grao),var(--papel);color:var(--tinta);border:1px solid var(--borda-forte);border-radius:4px 7px 5px 8px/6px 4px 7px 5px;
+  box-shadow:-4px 10px 22px var(--sombra-papel);padding:6px 9px;font-family:var(--serif)}
+.barra-grifo .linha{display:flex;align-items:center;gap:3px;justify-content:space-between}
+.pen{width:44px;height:44px;display:grid;place-items:center;border-radius:9999px}
+.pen i{display:block;width:22px;height:22px;border-radius:5px 9px 6px 10px;transform:rotate(-12deg);box-shadow:inset 0 -3px 0 rgba(0,0,0,.12)}
+.pen-txt{min-height:44px;padding:0 6px;white-space:nowrap;font-family:var(--mono);font-size:7.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border-left:1px solid var(--borda)}
+.verbete{border-top:1px solid var(--borda);margin-top:6px;padding:9px 3px 3px}
+.verbete b{font-family:var(--serif);font-weight:600;font-size:26px;line-height:32px}
+.verbete p{margin:3px 0 0;font-size:14px;line-height:20px;text-indent:0;text-align:left;hyphens:manual;font-family:var(--serif)}
+/* painel */
+.painel{position:absolute;left:0;right:0;bottom:0;z-index:14;background:var(--grao),var(--papel);color:var(--tinta);border-top:1px solid var(--borda-forte);
+  border-radius:9px 12px 0 0/12px 9px 0 0;box-shadow:0 -12px 30px rgba(20,14,8,.35);padding:12px 18px 27px;transform:translateY(105%);transition:transform .32s cubic-bezier(.2,.8,.2,1)}
+.leitor.com-painel .painel{transform:none}
+.painel .alca{width:54px;height:4px;border-radius:9999px;background:var(--borda-forte);margin:0 auto 9px}
+.abas-painel{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+.abas-painel button{min-height:54px;border:1px solid var(--borda);border-radius:3px 6px 4px 5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  font-family:var(--mono);font-size:8.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;background:var(--papel-fundo)}
+.abas-painel button svg{width:22px;height:22px}
+.abas-painel button[aria-selected="true"]{border-color:rgba(47,93,58,.7);background:rgba(230,193,92,.16);color:var(--verde-tinta)}
+.aba-corpo{min-height:290px}
+.ctl{margin-bottom:12px}
+.ctl .rot{display:flex;justify-content:space-between;align-items:baseline}
+.temp-num{font-family:var(--serif);font-weight:600;font-size:36px;line-height:36px;font-variant-numeric:tabular-nums}
+.temp-num small{font-size:18px;font-weight:400}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:44px;background:transparent;margin:0}
+input[type=range]::-webkit-slider-runnable-track{height:12px;border-radius:2px 5px 3px 6px;border:1px solid var(--borda)}
+input[type=range]::-moz-range-track{height:12px;border-radius:2px 5px 3px 6px;border:1px solid var(--borda)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:30px;margin-top:-10px;background:var(--papel);border:1px solid var(--tinta);border-bottom-width:3px;border-radius:3px 5px 3px 4px}
+input[type=range]::-moz-range-thumb{width:22px;height:30px;background:var(--papel);border:1px solid var(--tinta);border-radius:3px}
+.r-temp::-webkit-slider-runnable-track{background:linear-gradient(90deg,#f2a24a,#f6c98a 40%,#f6efe2 62%,#cfe0f4)}
+.r-temp::-moz-range-track{background:linear-gradient(90deg,#f2a24a,#f6c98a 40%,#f6efe2 62%,#cfe0f4)}
+.r-brilho::-webkit-slider-runnable-track{background:linear-gradient(90deg,#3a352d,#f3ead9)}
+.r-brilho::-moz-range-track{background:linear-gradient(90deg,#3a352d,#f3ead9)}
+.extremos{display:flex;justify-content:space-between;color:var(--tinta-70)}
+.temas{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.temas button{min-height:54px;border:1px solid var(--borda);border-radius:3px 6px 4px 5px;font-family:var(--mono);font-size:7.5px;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px}
+.faces{display:grid;gap:3px}
+.faces button{min-height:44px;display:flex;justify-content:space-between;align-items:center;padding:0 12px;border:1px solid var(--borda);border-radius:3px 6px 4px 5px;background:var(--papel-fundo)}
+.faces button span:first-child{font-size:18px}
+.faces button span:last-child{font-family:var(--mono);font-size:7.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--tinta-70)}
+.passo{display:flex;align-items:center;gap:6px}
+.passo button{width:44px;height:44px;border:1px solid var(--borda);border-bottom-width:3px;border-radius:3px 6px 4px 5px;font-family:var(--serif);font-size:18px;background:var(--papel-fundo)}
+.passo output{min-width:54px;text-align:center}
+.linha-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.opcoes{display:flex;gap:6px}
+.opcoes button{flex:1;min-height:44px;border:1px solid var(--borda);border-radius:3px 6px 4px 5px;font-family:var(--mono);font-size:7.5px;letter-spacing:.12em;text-transform:uppercase;background:var(--papel-fundo);padding:0 3px}
+.ancoras button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:54px}
+.ancoras svg{width:48px;height:18px}
+.chave{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:44px}
+.chave .sw{width:54px;height:30px;border-radius:9999px;border:1px solid var(--borda-forte);background:var(--papel-fundo);position:relative;flex:none}
+.chave .sw::after{content:"";position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:9999px;background:var(--grafite);transition:transform .2s}
+.chave .sw[aria-checked="true"]{background:var(--verde-tinta)}
+.chave .sw[aria-checked="true"]::after{transform:translateX(24px);background:var(--papel)}
+.restaurar{display:flex;gap:9px;justify-content:flex-end;border-top:1px solid var(--borda);padding-top:9px;margin-top:6px}
+.restaurar button{min-height:44px;font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--tinta-70);padding:0 6px}
+
+/* ---------- 3 · JARDIM ---------- */
+.arte{display:block;width:100%;height:auto}
+.num-linha{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;align-items:baseline}
+.grande{font-family:var(--serif);font-weight:600;font-size:54px;line-height:54px;font-variant-numeric:tabular-nums}
+.estagios{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:9px}
+.estagio{border:1px solid var(--borda);background:var(--papel-fundo);padding:6px 3px;text-align:center;border-radius:3px 6px 4px 5px}
+.estagio svg{width:36px;height:36px;display:block;margin:0 auto}
+.estagio .k-micro{display:block;color:var(--tinta)}
+.estagio .lapis{font-size:14px;line-height:16px}
+.potes{display:flex;gap:9px;align-items:flex-end}
+.so-dorm{display:none}
+.dormente .so-dorm{display:block}
+.dormente .so-vivo{display:none}
+.tres-num{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;text-align:center;margin:18px 0}
+.tres-num > div{border:1px solid var(--borda);padding:9px 3px;background:var(--papel-fundo)}
+.tres-num .dado{display:block;font-size:27px;line-height:32px}
+.cianotipo{background:var(--cian);padding:9px;box-shadow:-6px 12px 24px var(--sombra-papel);transform:rotate(-.6deg)}
+
+/* ---------- 4 · DESEMPENHO (caderninho) ---------- */
+.caderno .folha{background:var(--grao),var(--papel);padding-top:45px}
+.espiral{position:absolute;left:9px;right:9px;top:24px;height:18px;z-index:6;pointer-events:none;
+  background:radial-gradient(circle at 50% 60%, #1e2320 0 4px, transparent 4.5px) 0 0/18px 18px repeat-x}
+.espiral::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 6px,#9d968a 6px 8px,#d9d3c6 8px 10px,transparent 10px 18px);clip-path:inset(0 0 9px 0)}
+.periodo{display:flex;gap:6px;margin:0 0 18px}
+.periodo button{flex:1;min-height:54px;border:1px solid var(--borda);border-bottom:0;border-radius:6px 9px 0 0;background:var(--papel-fundo);text-align:left;padding:6px 12px}
+.periodo button .micro{font-size:15px;line-height:20px;display:block}
+.periodo button[aria-pressed="true"]{background:rgba(230,193,92,.16);border-color:rgba(47,93,58,.7);color:var(--verde-tinta)}
+.indice{width:100%;border-collapse:collapse}
+.indice td{padding:6px 0;border-bottom:1px dotted var(--borda-forte);vertical-align:baseline}
+.indice td:last-child{text-align:right}
+.indice .nome{font-family:var(--serif);font-size:16px;line-height:24px}
+.indice .nome small{display:block;font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;color:var(--tinta-70);text-transform:uppercase;line-height:13px}
+.mapa{display:block;width:100%;height:auto;margin-top:9px}
+.estilos .lin{display:grid;grid-template-columns:110px 1fr 27px;align-items:center;gap:9px;min-height:36px}
+
+/* ---------- 5 · IMPORTAR ---------- */
+.soltar{border:2px dashed var(--borda-forte);border-radius:4px 7px 5px 8px/6px 4px 7px 5px;padding:18px;text-align:center;background:var(--papel-fundo)}
+.envelope{position:relative;background:var(--grao),#f6efe0;border:1px solid var(--borda);padding:18px 18px 18px 18px;margin:18px 0;box-shadow:-4px 8px 16px var(--sombra-papel)}
+.envelope::before{content:"";position:absolute;left:0;right:0;top:0;height:36px;background:linear-gradient(to bottom right,transparent 49.5%,var(--borda) 50%,transparent 51%) left/50% 100% no-repeat,linear-gradient(to bottom left,transparent 49.5%,var(--borda) 50%,transparent 51%) right/50% 100% no-repeat;pointer-events:none}
+.envelope.pdf{background:var(--grao),#e9e6df;transform:rotate(.6deg)}
+.envelope.epub{transform:rotate(-.5deg)}
+.envelope .selo{position:absolute;right:12px;top:12px;width:54px;height:62px;border:2px dotted var(--borda-forte);display:grid;place-items:center;font-family:var(--mono);font-weight:700;font-size:10.5px;letter-spacing:.1em;background:var(--papel)}
+.envelope.pdf .selo{background:#dcd8cf}
+.arquivo{font-family:var(--mono);font-size:12px;line-height:18px;word-break:break-all;margin:27px 66px 6px 0;font-weight:700}
+.envelope p{font-size:14px;line-height:20px;margin:6px 0}
+.honesto{border-left:3px solid var(--grafite);padding-left:12px}
+.acervo-lista button{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:54px;border-bottom:1px dotted var(--borda-forte);text-align:left;gap:12px}
+.acervo-lista .t{font-family:var(--serif);font-size:16px;line-height:22px}
+.acervo-lista .t small{display:block;font-size:13px;color:var(--tinta-70);font-style:italic}
+
+/* ---------- 6 · BIBLIOTECA + ESTANTE ---------- */
+.estante-madeira{background:linear-gradient(180deg,#5a3d25,#4a311d);padding:18px 12px 0;margin:0 -18px;position:relative;box-shadow:inset 0 9px 18px rgba(0,0,0,.35)}
+.estante-madeira::after{content:"";display:block;height:12px;margin:0 -12px;background:linear-gradient(#8a6040,#5e3f26);box-shadow:0 6px 10px rgba(0,0,0,.4)}
+.lombadas{display:flex;flex-direction:column;align-items:center;gap:0}
+.lombada{position:relative;display:flex;align-items:center;justify-content:space-between;padding:0 12px;color:#f3ead9;box-shadow:-2px 3px 4px rgba(0,0,0,.35);border-radius:2px}
+.lombada .tl{font-family:var(--serif);font-style:italic;font-size:14px;line-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lombada .ms{font-family:var(--mono);font-size:7.5px;letter-spacing:.16em;text-transform:uppercase;opacity:.9;white-space:nowrap;margin-left:9px}
+.herbario{position:relative;background:var(--grao),var(--papel);border:1px solid var(--borda);padding:18px;margin:-6px 9px 0;transform:rotate(-.8deg);box-shadow:-4px 10px 18px var(--sombra-papel);z-index:2}
+.carimbo{position:absolute;width:72px;height:72px;border-radius:9999px;border:2px solid var(--verde-tinta);color:var(--verde-tinta);display:grid;place-items:center;text-align:center;
+  font-family:var(--mono);font-size:8.5px;font-weight:700;letter-spacing:.2em;line-height:12px;transform:rotate(-9deg);opacity:.88}
+.gaveta{margin-top:27px}
+.divisoria{display:inline-block;background:var(--kraft);color:var(--tinta);padding:3px 12px;border-radius:6px 9px 0 0;margin-top:12px}
+.cartao{display:block;width:100%;text-align:left;background:var(--grao),#fbf6ea;border:1px solid var(--borda);padding:9px 12px;margin-top:-1px;min-height:54px;position:relative}
+.cartao .t{font-family:var(--serif);font-size:16px;line-height:22px}
+.cartao .a{font-size:13px;line-height:18px;font-style:italic;color:var(--tinta-70)}
+.cartao .prog{display:flex;align-items:center;gap:9px;margin-top:6px}
+.cartao .prog .r{flex:1;height:1px;background:var(--borda-forte);position:relative}
+.cartao .prog .r i{position:absolute;left:0;top:-1px;height:3px;background:var(--verde-tinta)}
+.cartao .prog span{font-family:var(--mono);font-size:8.5px;letter-spacing:.14em}
+.cartao.pdf .t::after{content:"PDF";font-family:var(--mono);font-size:7.5px;font-weight:700;letter-spacing:.2em;margin-left:9px;padding:1px 6px;border:1px solid var(--tinta-70);vertical-align:2px}
+
+/* ---------- 7 · RESUMO ---------- */
+.celebra{text-align:center;padding-top:18px}
+.carimbo-grande{position:relative;width:162px;height:162px;margin:0 auto 18px;border-radius:9999px;border:3px double var(--verde-tinta);color:var(--verde-tinta);display:grid;place-items:center;transform:rotate(-9deg);
+  font-family:var(--mono);font-weight:700;font-size:10.5px;letter-spacing:.3em;line-height:16px;text-transform:uppercase}
+.carimbo-grande b{display:block;font-family:var(--serif);font-size:36px;line-height:40px;letter-spacing:0}
+.anima .carimbo-grande{animation:carimba .55s cubic-bezier(.3,1.6,.5,1) .25s both}
+@keyframes carimba{0%{transform:rotate(-24deg) scale(1.9);opacity:0}100%{transform:rotate(-9deg) scale(1);opacity:1}}
+.anima .folha-nova{animation:brota 1.2s ease-out .9s both;transform-origin:0 0}
+@keyframes brota{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.cel-num{font-family:var(--serif);font-weight:600;font-size:96px;line-height:96px;font-variant-numeric:tabular-nums;margin:9px 0 0}
+.ficha-sessao{background:var(--grao),#fbf6ea;border:1px solid var(--borda);padding:18px;position:relative;box-shadow:-4px 10px 18px var(--sombra-papel)}
+.cab .carimbo{position:relative;flex:none;width:66px;height:66px;font-size:7.5px;margin:-9px 3px 0 0}
+.par{display:grid;grid-template-columns:1fr auto;align-items:baseline;border-bottom:1px dotted var(--borda-forte);padding:6px 0;gap:9px}
+.par .nome{font-size:15px;line-height:22px}
+.par .nome small{display:block;font-size:13px;line-height:18px;color:var(--tinta-70);font-style:italic}
+.faixa-lc{margin:12px 0 6px}
+.faixa-lc svg{display:block;width:100%;height:auto}
+.ghost{font-family:var(--serif);font-weight:300;font-style:italic;font-size:17px;line-height:24px;border-left:3px solid var(--verde-tinta);padding-left:12px;margin:18px 0}
+.acoes{display:grid;gap:9px;margin-top:18px}
+.pigs{display:inline-flex;gap:3px;vertical-align:middle}
+.pigs i{width:12px;height:12px;border-radius:3px 5px 3px 4px;display:inline-block;mix-blend-mode:multiply}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-delay:0s!important;transition-duration:.001ms!important}
+}
+@media (max-width:520px){
+  .ficha-direcao{padding:18px;transform:none}
+  .ficha-direcao h1{font-size:27px;line-height:32px}
+}
+</style>
+</head>
+<body>
+
+<!-- defs globais: um SVG sempre presente, para gradientes referenciados por todas as telas clonadas -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="gFolha" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6c9a55"/><stop offset="1" stop-color="#2f5d3a"/></linearGradient>
+    <linearGradient id="gFolhaNova" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a9c96f"/><stop offset="1" stop-color="#5f8f45"/></linearGradient>
+    <radialGradient id="gVaso" cx=".5" cy=".5" r=".5"><stop offset=".72" stop-color="#3a2618"/><stop offset=".78" stop-color="#8a4428"/><stop offset=".9" stop-color="#c06c48"/><stop offset="1" stop-color="#8a4428"/></radialGradient>
+    <radialGradient id="gTerra" cx=".45" cy=".45" r=".6"><stop offset="0" stop-color="#4a3322"/><stop offset="1" stop-color="#2c1d12"/></radialGradient>
+    <linearGradient id="gMadeira" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8f6744"/><stop offset="1" stop-color="#6a4729"/></linearGradient>
+    <linearGradient id="gCian" x1="0" y1="0" x2=".3" y2="1"><stop offset="0" stop-color="#245b8c"/><stop offset="1" stop-color="#163a60"/></linearGradient>
+    <filter id="fPincel" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".04" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="9"/></filter>
+    <path id="pFolha" d="M0 0 C 9 -13, 28 -16, 44 -5 C 31 5, 13 7, 0 0 Z"/>
+  </defs>
+</svg>
+
+<div class="casca">
+  <section class="ficha-direcao" aria-labelledby="t-ficha">
+    <div class="kick">Ficha de direção · rodada de ideação</div>
+    <h1 id="t-ficha">B · A escrivaninha</h1>
+    <p class="tese">A tela inicial é a mesa vista de cima, e cada função é um objeto que você ergue dela. O estado dos objetos (o livro marcado na p. 68, a muda no vaso, a pilha de lidos) é a interface. Não há barra de abas: o feltro que sobra na borda é o caminho de volta.</p>
+    <div class="ficha-grade">
+      <div>
+        <h2>O que quebrei da Papel, e por quê</h2>
+        <ul>
+          <li><b>Navegação global.</b> Sem barra de abas e sem seta de voltar. A mesa é o único hub, e toda tela é uma folha pousada no feltro: tocar a faixa de feltro no alto devolve a folha ao lugar. A metáfora vira mecanismo, não decoração.</li>
+          <li><b>Sombra com fonte de luz.</b> A Papel tem sombras de objeto pousado sem direção. Aqui há uma luminária no canto, e toda sombra cai para baixo e à esquerda. Sobre o feltro escuro, a sombra marrom (<code>rgba(48,32,16)</code>) some, então na mesa uso um quase-preto quente.</li>
+          <li><b>A luz do leitor é a luz da mesa.</b> A temperatura que a leitora escolhe no painel (4.200 K) tinge a poça de luz da luminária na tela inicial. O mesmo ajuste nos dois lugares.</li>
+          <li><b>Posição de objeto na mesa fora da escala tônica.</b> A composição da mesa é livre, e só o espaçamento <i>dentro</i> das folhas segue 3·6·9·…·81.</li>
+          <li><b>Dormência em cianotipia.</b> Em vez de dessaturar a paleta viva, a dormência vira outro processo de impressão: o fotograma azul-da-prússia do herbário. A superfície <code>cianotipo</code> já existia e aqui vira protagonista.</li>
+          <li><b>Contagem a lápis (riscos de 5) nos estilos de leitura.</b> É desenho, não tipografia pura: uma exceção pequena a "métrica é tipografia". Nada de barra nem de donut.</li>
+        </ul>
+      </div>
+      <div>
+        <h2>3 ideias que deveriam sobreviver</h2>
+        <ul>
+          <li><b>O resumo da sessão vira marcador.</b> A ficha de hoje entra no livro e fica aparecendo na mesa ("hoje · 34 min"). A sessão deixa um rastro físico em vez de sumir num histórico.</li>
+          <li><b>O painel do leitor em três instrumentos: Luz, Letra, Página.</b> Os 10 controles se dividem pela pergunta que a leitora está fazendo ("está claro demais?", "a letra está boa?", "como está a folha?"), nunca mais de 4 de cada vez. A temperatura é o maior controle da aba Luz. O painel ocupa meia tela, então o texto real continua visível e o ajuste aparece ao vivo (<code>RN-02.16e</code>).</li>
+          <li><b>A mesa guarda só o que está em uso.</b> Na mesa ficam até 2 livros em leitura. O resto mora na gaveta do fichário, e os concluídos sobem para a pilha, que só cresce e mostra o total. Uma mesa com 200 livros fica tão limpa quanto uma com 9, e a pilha mais alta é o elogio.</li>
+        </ul>
+      </div>
+      <div>
+        <h2>O que não funcionou, ou ficou em dúvida</h2>
+        <ul>
+          <li><b>Descoberta.</b> Sem as etiquetas datilografadas, a mesa vira um quebra-cabeça. As etiquetas resolvem, mas puxam a mesa de volta para um menu disfarçado.</li>
+          <li><b>390 px é pouca mesa.</b> Seis objetos já enchem a mesa. Uma sétima função (escrita, clubes, pós-MVP) não teria onde pousar sem empilhar ou rolar a mesa, e mesa que rola deixa de ser mesa.</li>
+          <li><b>Leitor de tela.</b> A navegação espacial vira uma lista de 7 botões. Funciona, mas a ordem de leitura precisa ser desenhada à parte da composição.</li>
+          <li><b>Inconsistência na folha de dados.</b> Uma ofensiva atual de 23 dias, com a anterior de 41 dias terminando em 14/09, não fecha com 26 dias cumpridos em outubro. No mapa, outubro tem 26 dias, com sequências curtas entre 1º e 24/10. Por isso a tela só diz "recorde 41, até 14/09" e nunca chama os 41 de "a anterior".</li>
+          <li><b>Risco de brinquedo.</b> Lâmpada, elástico e lápis já estão no limite. Mais um adereço e vira skeuomorfismo de 2010.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <div class="modo" role="group" aria-label="Modo de exibição">
+    <button type="button" data-modo="proto" aria-pressed="true">Protótipo</button>
+    <button type="button" data-modo="todas" aria-pressed="false">Todas as telas</button>
+  </div>
+
+  <section id="palco-proto" aria-label="Protótipo navegável">
+    <p class="dica">Toque nos objetos da mesa. Para voltar, toque no feltro no alto da folha.<br>No livro, um toque no meio da página mostra os controles. Toque em "Arganaz" para grifar.</p>
+    <div class="palco-todas">
+      <figure class="moldura" data-inicio="mesa"><div class="escala"></div></figure>
+    </div>
+  </section>
+
+  <section id="palco-todas" class="palco-todas" aria-label="Todas as telas" hidden>
+    <figure class="moldura" data-inicio="leitor"><div class="escala"></div><figcaption><b>1 · Leitura + painel</b><br>O painel aberto na aba Luz, sobre meia tela. O texto real continua à vista e cada ajuste aparece nele na hora. Grifos e marginália já estão no trecho.</figcaption></figure>
+    <figure class="moldura" data-inicio="mesa"><div class="escala"></div><figcaption><b>2 · A mesa (tela inicial)</b><br>Cada objeto é uma porta. O livro marcado na p. 68 com a ficha de hoje, o vaso com a muda, o caderninho, a gaveta, a pilha de lidos e a bandeja.</figcaption></figure>
+    <figure class="moldura" data-inicio="jardim"><div class="escala"></div><figcaption><b>3 · Jardim</b><br>O caixote com a muda e 87 tufos de musgo, um por dia do acervo. O botão "Ver dormência" troca a cena por uma cianotipia.</figcaption></figure>
+    <figure class="moldura" data-inicio="desempenho"><div class="escala"></div><figcaption><b>4 · Meu desempenho</b><br>O caderninho, com o período escolhido na aba do índice. O mapa de 16 semanas e a contagem de estilos feita a lápis.</figcaption></figure>
+    <figure class="moldura" data-inicio="importar"><div class="escala"></div><figcaption><b>5 · Adicionar EPUB/PDF</b><br>A bandeja de entrada. O EPUB chega como livro e o PDF chega como fotocópia, com o que ele não faz escrito no próprio envelope.</figcaption></figure>
+    <figure class="moldura" data-inicio="biblioteca"><div class="escala"></div><figcaption><b>6 · Estante e gaveta</b><br>Os concluídos são a pilha e recebem a arte. A gaveta do fichário guarda o resto: lendo, em pausa e quero ler.</figcaption></figure>
+    <figure class="moldura" data-inicio="resumo-numeros"><div class="escala"></div><figcaption><b>7 · Sessão finalizada</b><br>No protótipo, a tela abre pelo carimbo da meta. Aqui ela aparece depois da celebração, e o carimbo fica na ficha. "Rever a celebração" toca a cena de novo.</figcaption></figure>
+  </section>
+</div>
+
+<!-- ================= TEMPLATES ================= -->
+
+<template id="tpl-aparelho">
+<div class="aparelho">
+ <div class="vidro">
+  <div class="mesa">
+    <div class="poca" aria-hidden="true"></div>
+    <div class="cabeca"><span class="slip k">ter · 17 nov · 21h40</span><span class="oi">boa noite, Lia</span></div>
+
+    <button type="button" class="obj o-bandeja" data-go="importar" aria-label="Bandeja de entrada: adicionar EPUB ou PDF">
+      <svg class="corpo-obj" viewBox="0 0 156 104" width="156" height="104" aria-hidden="true">
+        <rect x="3" y="3" width="150" height="98" rx="4" fill="none" stroke="#8d877a" stroke-width="3"/>
+        <g stroke="#6d685d" stroke-width="1.4">
+          <line x1="3" y1="27" x2="153" y2="27"/><line x1="3" y1="52" x2="153" y2="52"/><line x1="3" y1="77" x2="153" y2="77"/>
+          <line x1="40" y1="3" x2="40" y2="101"/><line x1="78" y1="3" x2="78" y2="101"/><line x1="116" y1="3" x2="116" y2="101"/>
+        </g>
+        <g transform="rotate(5 80 52)">
+          <rect x="22" y="20" width="112" height="66" fill="#f6efe0" stroke="rgba(124,98,58,.5)"/>
+          <path d="M22 20 L78 58 L134 20" fill="none" stroke="rgba(124,98,58,.55)"/>
+          <rect x="110" y="26" width="18" height="21" fill="#2f5d3a"/>
+          <text x="30" y="80" class="sv-lapis" font-size="15" fill="#5f5949">+ EPUB · PDF</text>
+        </g>
+      </svg>
+      <span class="etq">Importar</span>
+    </button>
+
+    <button type="button" class="obj o-medico" data-go="biblioteca" aria-label="O médico e o monstro, 12% lido. Abrir na biblioteca">
+      <div class="capa corpo-obj"><span>O médico e o monstro</span></div>
+      <span class="etq">lendo · 12%</span>
+    </button>
+
+    <div class="luminaria" aria-hidden="true"></div>
+
+    <button type="button" class="obj o-livro" data-go="leitor" aria-label="Continuar lendo Alice no País das Maravilhas, capítulo sete, página 68 de 142">
+      <div class="corpo-obj">
+        <div class="marcador"><b>34 min</b><span class="k-micro">meta ✓ · hoje</span></div>
+        <div class="pag e">
+          <div class="cap"><span class="k-micro">Capítulo VII</span><i>Um chá maluco</i></div>
+          <div class="linhas"></div>
+          <span class="gr" style="left:40px;top:91px;width:70px;background:var(--pig-ambar)"></span>
+          <span class="folio" style="left:18px">67</span>
+        </div>
+        <div class="pag d">
+          <div class="linhas"></div>
+          <span class="gr" style="left:30px;top:62px;width:84px;background:var(--pig-carmim)"></span>
+          <span class="gr" style="left:22px;top:125px;width:44px;background:var(--pig-oliva)"></span>
+          <span class="folio" style="right:18px">68</span>
+        </div>
+        <div class="fita"></div>
+      </div>
+      <span class="etq">Continuar · Alice · p. 68</span>
+    </button>
+
+    <button type="button" class="obj o-vaso" data-go="jardim" aria-label="Jardim: muda, 23 dias seguidos, acervo de 87 dias">
+      <svg class="corpo-obj vaso-svg" viewBox="0 0 156 156" width="156" height="156" aria-hidden="true">
+        <ellipse cx="72" cy="86" rx="70" ry="68" fill="rgba(0,0,0,.45)"/>
+        <circle cx="80" cy="78" r="70" fill="url(#gVaso)"/>
+        <circle cx="80" cy="78" r="52" fill="url(#gTerra)"/>
+        <g class="musgo-topo"></g>
+        <g class="so-vivo-mesa">
+          <use href="#pFolha" fill="url(#gFolha)" transform="translate(80 78) rotate(-20) scale(1.05)"/>
+          <use href="#pFolha" fill="url(#gFolha)" transform="translate(80 78) rotate(160) scale(1.05)"/>
+          <use href="#pFolha" fill="url(#gFolha)" transform="translate(80 78) rotate(70) scale(.85)"/>
+          <use href="#pFolha" fill="url(#gFolha)" transform="translate(80 78) rotate(250) scale(.85)"/>
+          <use href="#pFolha" fill="url(#gFolhaNova)" transform="translate(80 78) rotate(115) scale(.5)"/>
+          <circle cx="80" cy="78" r="4" fill="#3c6b3c"/>
+        </g>
+        <g class="so-dorm-mesa">
+          <path d="M80 78 c-6 -10 -2 -20 0 -22 c2 2 6 12 0 22z" fill="#9db4c4"/>
+          <g fill="#cfe0ea" opacity=".8"><circle cx="58" cy="62" r="1.6"/><circle cx="102" cy="70" r="1.4"/><circle cx="92" cy="100" r="1.8"/><circle cx="64" cy="96" r="1.3"/><circle cx="74" cy="48" r="1.2"/><circle cx="110" cy="90" r="1.2"/></g>
+        </g>
+      </svg>
+      <span class="estaca"><span class="so-vivo-mesa">23 dias</span><span class="so-dorm-mesa">dormindo</span></span>
+      <span class="etq">Jardim</span>
+    </button>
+
+    <button type="button" class="obj o-caderno" data-go="desempenho" aria-label="Meu desempenho: nesta semana, meta cumprida em 7 de 7 dias">
+      <div class="capa corpo-obj"><div class="elastico"></div><div class="rot"><span class="k-micro">meu desempenho</span><span class="lapis">semana 7/7</span></div></div>
+      <div class="lapis-obj"></div>
+      <span class="etq">Desempenho</span>
+    </button>
+
+    <button type="button" class="obj o-fichario" data-go="biblioteca" data-rolar="gaveta" aria-label="Biblioteca: 2 lendo, 1 em pausa, 3 quero ler">
+      <div class="caixa corpo-obj">
+        <div class="fundo">
+          <span class="ficha-topo" style="top:14px"></span><span class="ficha-topo" style="top:24px"></span>
+          <span class="aba" style="left:14px;top:30px">LENDO 2</span>
+          <span class="ficha-topo" style="top:50px"></span><span class="ficha-topo" style="top:58px"></span><span class="ficha-topo" style="top:66px"></span>
+          <span class="aba" style="left:70px;top:72px">PAUSA 1</span>
+          <span class="ficha-topo" style="top:92px"></span><span class="ficha-topo" style="top:100px"></span>
+          <span class="aba" style="left:118px;top:104px">QUERO 3</span>
+        </div>
+        <span class="placa">BIBLIOTECA</span>
+      </div>
+      <span class="etq">Gaveta</span>
+    </button>
+
+    <button type="button" class="obj o-pilha" data-go="biblioteca" aria-label="Estante: 6 livros concluídos">
+      <div class="corpo-obj">
+        <span class="lv" style="background:#3f5a68;transform:translate(14px,10px) rotate(7deg)"></span>
+        <span class="lv" style="background:#6b3b3b;transform:translate(10px,8px) rotate(-5deg)"></span>
+        <span class="lv" style="background:#2f4a36;transform:translate(6px,6px) rotate(4deg)"></span>
+        <span class="lv" style="background:#7a6a52;transform:translate(4px,4px) rotate(-3deg)"></span>
+        <span class="lv" style="background:#4b4060;transform:translate(2px,2px) rotate(2deg)"></span>
+        <span class="lv topo"><span>O papel de parede amarelo</span></span>
+        <span class="carimbo-mini"><span><b>6</b>lidos</span></span>
+      </div>
+      <span class="etq">Estante</span>
+    </button>
+  </div>
+  <div class="camada" hidden></div>
+  <div class="aviso" role="status" aria-live="polite"></div>
+ </div>
+</div>
+</template>
+
+<!-- 1 · LEITOR -->
+<template id="tpl-leitor">
+<div class="leitor t-claro" data-ancora="posicao_numero">
+  <div class="papel-grao"></div>
+  <div class="pagina" data-act="controles">
+    <div class="texto">
+      <div class="cap-cab"><div class="k">Capítulo VII</div><h2>Um chá maluco</h2></div>
+      <p class="primeiro"><span class="capitular">H</span><span class="vers">avia uma mesa posta</span> debaixo de uma árvore, diante da casa, e a Lebre de Março e o Chapeleiro tomavam chá nela; um <span class="alvo-sel" data-act="selecao" role="button" tabindex="0" aria-label="Selecionar a palavra Arganaz para grifar, anotar ou consultar">Arganaz</span> estava sentado entre os dois, <span class="g g-ambar">profundamente adormecido</span>, e os outros dois o usavam como almofada, apoiando os cotovelos nele e conversando por cima da sua cabeça. "Muito desconfortável para o Arganaz", pensou Alice; "mas, como está dormindo, imagino que não se importe."</p>
+      <p>A mesa era grande, mas os três estavam espremidos num canto. "Não tem lugar! Não tem lugar!", gritaram ao ver Alice chegando. "<span class="g g-carmim">Tem lugar de sobra!</span>", disse Alice, indignada, e sentou-se numa grande poltrona numa das pontas da mesa.</p>
+      <span class="marg">a Alice sempre ocupa o espaço<br>que dizem não existir</span>
+      <div class="barra-grifo" hidden>
+        <div class="linha">
+          <button type="button" class="pen" data-act="pig" data-pig="ambar" aria-label="Grifar em âmbar"><i style="background:var(--pig-ambar)"></i></button>
+          <button type="button" class="pen" data-act="pig" data-pig="oliva" aria-label="Grifar em oliva"><i style="background:var(--pig-oliva)"></i></button>
+          <button type="button" class="pen" data-act="pig" data-pig="tinta" aria-label="Grifar em tinta"><i style="background:var(--pig-tinta)"></i></button>
+          <button type="button" class="pen" data-act="pig" data-pig="carmim" aria-label="Grifar em carmim"><i style="background:var(--pig-carmim)"></i></button>
+          <button type="button" class="pen-txt" data-act="nota">Lápis</button>
+          <button type="button" class="pen-txt" data-act="dic">Dicionário</button>
+        </div>
+        <div class="verbete" hidden><b>arganaz</b> <span class="k-micro">s.m.</span><p>Pequeno roedor de cauda peluda que hiberna boa parte do ano; por extensão, quem dorme muito.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="ancora" aria-label="Capítulo sete, página 68 de 142"><span class="fio"><i></i></span><span class="num">VII · p. 68</span></div>
+  <div class="luz-filtro"></div>
+  <div class="brilho-filtro"></div>
+
+  <div class="chrome-top">
+    <button type="button" class="botao peq" data-go="mesa">◂ Pousar na mesa</button>
+    <div class="titulo-obra">Alice no País das Maravilhas<br><span class="k-micro">Lewis Carroll</span></div>
+  </div>
+  <div class="chrome-bot">
+    <button type="button" class="botao peq" data-act="painel" aria-expanded="false">Aa · Painel</button>
+    <button type="button" class="botao peq prim" data-go="resumo">Encerrar sessão</button>
+  </div>
+
+  <div class="painel" role="dialog" aria-label="Painel de leitura">
+    <div class="alca"></div>
+    <div class="abas-painel" role="tablist">
+      <button type="button" role="tab" data-act="aba" data-aba="luz" aria-selected="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V17h7v-3.1A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M9.5 20h5" stroke="currentColor" stroke-width="1.5"/></svg>Luz</button>
+      <button type="button" role="tab" data-act="aba" data-aba="letra" aria-selected="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><text x="2" y="19" class="sv-serif" font-size="17" fill="currentColor">Aa</text></svg>Letra</button>
+      <button type="button" role="tab" data-act="aba" data-aba="pagina" aria-selected="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 8h8M8 11h8M8 14h5" stroke="currentColor" stroke-width="1.2"/></svg>Página</button>
+    </div>
+
+    <div class="aba-corpo" data-corpo="luz">
+      <div class="ctl">
+        <div class="rot"><span class="k">Temperatura da luz</span><span class="temp-num"><span class="v-temp">4.200</span> <small>K</small></span></div>
+        <input type="range" class="r-temp" min="2700" max="6500" step="100" value="4200" aria-label="Temperatura da luz em kelvin">
+        <div class="extremos"><span class="k-micro">2.700 K · vela</span><span class="k-micro">6.500 K · céu nublado</span></div>
+      </div>
+      <div class="ctl">
+        <div class="rot"><span class="k">Brilho</span><span class="dado"><span class="v-brilho">100</span>%</span></div>
+        <input type="range" class="r-brilho" min="20" max="100" step="5" value="100" aria-label="Brilho do leitor, independente do aparelho">
+        <div class="extremos"><span class="k-micro">abaixo do mínimo do aparelho</span><span class="k-micro">o do aparelho</span></div>
+      </div>
+      <div class="ctl">
+        <div class="rot"><span class="k">Tema</span></div>
+        <div class="temas">
+          <button type="button" data-act="tema" data-tema="claro" style="background:#f3ead9;color:#241f19" class="sel">claro</button>
+          <button type="button" data-act="tema" data-tema="sepia" style="background:#e8d5b0;color:#35281a">sépia</button>
+          <button type="button" data-act="tema" data-tema="escuro" style="background:#25292a;color:#d8d0bf">escuro</button>
+          <button type="button" data-act="tema" data-tema="preto" style="background:#000;color:#bdb5a4">preto</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="aba-corpo" data-corpo="letra" hidden>
+      <div class="faces">
+        <button type="button" data-act="face" data-face="spectral" class="sel"><span style="font-family:var(--serif)">Havia uma mesa</span><span>Spectral</span></button>
+        <button type="button" data-act="face" data-face="garamond"><span style="font-family:var(--garamond)">Havia uma mesa</span><span>EB Garamond</span></button>
+        <button type="button" data-act="face" data-face="sans"><span style="font-family:var(--leit-sans)">Havia uma mesa</span><span>Public Sans</span></button>
+        <button type="button" data-act="face" data-face="atkinson"><span style="font-family:var(--leit-acessivel)">Havia uma mesa</span><span>Atkinson Hyperlegible</span></button>
+        <button type="button" data-act="face" data-face="courier"><span style="font-family:var(--mono);font-size:15px">Havia uma mesa</span><span>Courier Prime</span></button>
+      </div>
+      <div class="linha-2" style="margin-top:12px">
+        <div class="ctl"><div class="k" style="margin-bottom:3px">Corpo</div>
+          <div class="passo"><button type="button" data-act="corpo" data-d="-1" aria-label="Diminuir corpo">−</button><output class="dado v-corpo">16</output><button type="button" data-act="corpo" data-d="1" aria-label="Aumentar corpo">+</button></div></div>
+        <div class="ctl"><div class="k" style="margin-bottom:3px">Entrelinha</div>
+          <div class="passo"><button type="button" data-act="entre" data-d="-1" aria-label="Diminuir entrelinha">−</button><output class="dado v-entre">27</output><button type="button" data-act="entre" data-d="1" aria-label="Aumentar entrelinha">+</button></div></div>
+      </div>
+    </div>
+
+    <div class="aba-corpo" data-corpo="pagina" hidden>
+      <div class="ctl"><div class="k" style="margin-bottom:6px">Margens</div>
+        <div class="opcoes"><button type="button" data-act="margem" data-v="18">estreita</button><button type="button" data-act="margem" data-v="27" class="sel">média</button><button type="button" data-act="margem" data-v="36">larga</button></div></div>
+      <div class="ctl"><div class="k" style="margin-bottom:6px">Alinhamento</div>
+        <div class="opcoes"><button type="button" data-act="alinha" data-v="justify" class="sel">justificado</button><button type="button" data-act="alinha" data-v="left">à esquerda</button></div></div>
+      <div class="ctl"><div class="k" style="margin-bottom:6px">Onde estou na obra</div>
+        <div class="opcoes ancoras">
+          <button type="button" data-act="ancora" data-v="nenhuma"><svg viewBox="0 0 48 18" aria-hidden="true"><rect x="1" y="1" width="46" height="16" fill="none" stroke="currentColor" opacity=".4"/></svg>nada</button>
+          <button type="button" data-act="ancora" data-v="posicao"><svg viewBox="0 0 48 18" aria-hidden="true"><rect x="1" y="1" width="46" height="16" fill="none" stroke="currentColor" opacity=".4"/><line x1="6" y1="13" x2="42" y2="13" stroke="currentColor" opacity=".4"/><line x1="6" y1="13" x2="23" y2="13" stroke="currentColor" stroke-width="2"/></svg>só o fio</button>
+          <button type="button" data-act="ancora" data-v="posicao_numero" class="sel"><svg viewBox="0 0 48 18" aria-hidden="true"><rect x="1" y="1" width="46" height="16" fill="none" stroke="currentColor" opacity=".4"/><line x1="6" y1="13" x2="28" y2="13" stroke="currentColor" opacity=".4"/><line x1="6" y1="13" x2="16" y2="13" stroke="currentColor" stroke-width="2"/><text x="31" y="15" class="sv-mono" font-size="6" fill="currentColor">p.68</text></svg>fio e página</button>
+        </div></div>
+      <div class="chave"><span><span class="k">Retorno sensorial</span><br><span style="font-size:13px;line-height:18px">vibração e som ao virar a página e ao grifar</span></span>
+        <button type="button" class="sw" role="switch" aria-checked="true" data-act="sensorial" aria-label="Retorno sensorial"></button></div>
+    </div>
+
+    <div class="restaurar"><button type="button" data-act="restaurar" data-alcance="aba">↺ esta aba</button><button type="button" data-act="restaurar" data-alcance="tudo">↺ tudo ao padrão</button></div>
+  </div>
+</div>
+</template>
+
+<!-- 3 · JARDIM -->
+<template id="tpl-jardim">
+<div class="tela">
+  <button type="button" class="volta" data-go="mesa" aria-label="Voltar à mesa"><span>▴ pousar na mesa</span></button>
+  <div class="folha">
+    <div class="cab">
+      <div><div class="k" style="color:var(--verde-tinta)">Canteiro de leitura</div><h2 class="tit"><span class="so-vivo">Jardim</span><span class="so-dorm">Jardim, dormindo</span></h2></div>
+      <button type="button" class="botao peq" data-act="dorm" aria-pressed="false"><span class="so-vivo">Ver dormência</span><span class="so-dorm">Ver vivo</span></button>
+    </div>
+
+    <!-- VIVO -->
+    <div class="so-vivo">
+      <svg class="arte" viewBox="0 0 342 300" role="img" aria-label="Uma muda com seis folhas num caixote de madeira, cercada por 87 tufos de musgo, um por dia do acervo">
+        <rect x="0" y="0" width="342" height="300" fill="#efe3ce"/>
+        <rect x="0" y="0" width="342" height="300" fill="none" stroke="rgba(124,98,58,.3)"/>
+        <ellipse cx="160" cy="292" rx="150" ry="9" fill="rgba(48,32,16,.22)"/>
+        <rect x="40" y="208" width="262" height="80" fill="url(#gMadeira)"/>
+        <rect x="300" y="208" width="10" height="80" fill="#553a23"/>
+        <line x1="40" y1="234" x2="302" y2="234" stroke="#553a23" stroke-width="2"/>
+        <line x1="40" y1="260" x2="302" y2="260" stroke="#553a23" stroke-width="2"/>
+        <g fill="#3b2818"><circle cx="52" cy="221" r="2"/><circle cx="290" cy="221" r="2"/><circle cx="52" cy="274" r="2"/><circle cx="290" cy="274" r="2"/></g>
+        <rect x="44" y="198" width="258" height="12" fill="#3b2a1c"/>
+        <g class="musgo" stroke="#5f8a46" stroke-width="1.6" fill="none" stroke-linecap="round"></g>
+        <path d="M171 204 C 167 172, 177 142, 169 88" stroke="#3c6b3c" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <use href="#pFolha" fill="url(#gFolha)" transform="translate(171 182) rotate(-18) scale(1.5)"/>
+        <use href="#pFolha" fill="url(#gFolha)" transform="translate(170 176) scale(-1.5 1.5) rotate(-22)"/>
+        <use href="#pFolha" fill="url(#gFolha)" transform="translate(173 146) rotate(-28) scale(1.25)"/>
+        <use href="#pFolha" fill="url(#gFolha)" transform="translate(172 140) scale(-1.2 1.2) rotate(-30)"/>
+        <use href="#pFolha" fill="url(#gFolha)" transform="translate(170 112) rotate(-38) scale(.9)"/>
+        <use href="#pFolha" fill="url(#gFolhaNova)" transform="translate(169 106) scale(-.75 .75) rotate(-42)"/>
+        <path d="M169 90 c -5 -8 -2 -16 1 -18 c 3 3 5 10 -1 18z" fill="#8db25f"/>
+        <g transform="translate(220 66) rotate(-1.6)">
+          <rect x="0" y="0" width="104" height="44" fill="#f8f1e2" stroke="rgba(124,98,58,.45)"/>
+          <rect x="34" y="-6" width="34" height="12" fill="rgba(230,193,92,.55)" transform="rotate(-4 51 0)"/>
+          <text x="10" y="29" class="sv-lapis" font-weight="600" font-size="22" fill="#241f19">Muda · 23 dias</text>
+        </g>
+        <path d="M222 100 q -24 10 -40 26" stroke="#5f5949" stroke-width="1" fill="none" stroke-dasharray="2 3"/>
+        <text x="18" y="30" class="sv-mono" font-weight="700" font-size="8.5" letter-spacing="2.2" fill="#241f19">ACERVO · 87 TUFOS</text>
+        <text x="18" y="44" class="sv-lapis" font-size="16" fill="#5f5949">um por dia cumprido, para sempre</text>
+      </svg>
+      <div class="num-linha" style="margin-top:18px">
+        <span class="grande">23</span><span><span class="k">dias seguidos</span><br><span class="micro">Faltam 7 para a muda florir.</span></span>
+      </div>
+      <div class="tres-num">
+        <div><span class="k-micro">recorde</span><span class="dado">41</span><span class="k-micro">até 14/09</span></div>
+        <div><span class="k-micro">acervo</span><span class="dado">87</span><span class="k-micro">nunca diminui</span></div>
+        <div><span class="k-micro">congelamentos</span><span class="dado">2<small style="font-size:16px;font-weight:400"> de 3</small></span><span class="k-micro">guardados</span></div>
+      </div>
+      <div class="k">Os cinco estágios</div>
+      <div class="estagios">
+        <div class="estagio"><svg viewBox="0 0 36 36" aria-hidden="true"><path d="M6 31h24" stroke="#553a23" stroke-width="2"/><path d="M18 31v-6" stroke="#3c6b3c" stroke-width="1.6"/><use href="#pFolha" fill="url(#gFolha)" transform="translate(18 26) rotate(-30) scale(.25)"/><use href="#pFolha" fill="url(#gFolha)" transform="translate(18 26) scale(-.25 .25) rotate(-30)"/></svg><span class="k-micro">broto</span><span class="lapis">1–6</span></div>
+        <div class="estagio sel"><svg viewBox="0 0 36 36" aria-hidden="true"><path d="M6 31h24" stroke="#553a23" stroke-width="2"/><path d="M18 31 C 17 24, 19 18, 18 10" stroke="#3c6b3c" stroke-width="1.6" fill="none"/><use href="#pFolha" fill="url(#gFolha)" transform="translate(18 25) rotate(-20) scale(.3)"/><use href="#pFolha" fill="url(#gFolha)" transform="translate(18 24) scale(-.3 .3) rotate(-20)"/><use href="#pFolha" fill="url(#gFolha)" transform="translate(18 16) rotate(-35) scale(.22)"/><use href="#pFolha" fill="url(#gFolha)" transform="translate(18 15) scale(-.22 .22) rotate(-35)"/></svg><span class="k-micro">muda</span><span class="lapis">7–29 · você</span></div>
+        <div class="estagio"><svg viewBox="0 0 36 36" aria-hidden="true"><path d="M6 31h24" stroke="#553a23" stroke-width="2"/><path d="M18 31 C 17 24, 19 16, 18 9" stroke="#3c6b3c" stroke-width="1.6" fill="none"/><use href="#pFolha" fill="url(#gFolha)" transform="translate(18 25) rotate(-20) scale(.3)"/><use href="#pFolha" fill="url(#gFolha)" transform="translate(18 23) scale(-.3 .3) rotate(-20)"/><g fill="#d9a441"><circle cx="18" cy="8" r="3"/><circle cx="12" cy="14" r="2.2"/><circle cx="24" cy="13" r="2.2"/></g></svg><span class="k-micro">florida</span><span class="lapis">30–99</span></div>
+        <div class="estagio"><svg viewBox="0 0 36 36" aria-hidden="true"><path d="M6 31h24" stroke="#553a23" stroke-width="2"/><path d="M18 31v-12" stroke="#6a4729" stroke-width="3"/><circle cx="18" cy="13" r="9" fill="#4f7f45"/><circle cx="13" cy="16" r="5" fill="#2f5d3a"/></svg><span class="k-micro">árvore</span><span class="lapis">100–364</span></div>
+        <div class="estagio"><svg viewBox="0 0 36 36" aria-hidden="true"><path d="M3 31h30" stroke="#553a23" stroke-width="2"/><g fill="#2f5d3a"><path d="M9 31v-6" stroke="#6a4729" stroke-width="2"/><circle cx="9" cy="20" r="6"/><path d="M27 31v-6" stroke="#6a4729" stroke-width="2"/><circle cx="27" cy="20" r="6"/></g><path d="M18 31v-9" stroke="#6a4729" stroke-width="2.4"/><circle cx="18" cy="14" r="8" fill="#4f7f45"/></svg><span class="k-micro">bosque</span><span class="lapis">365+</span></div>
+      </div>
+      <p class="micro" style="margin-top:18px">O tamanho do jardim vem do acervo. A sequência decide só se ele está acordado.</p>
+    </div>
+
+    <!-- DORMENTE -->
+    <div class="so-dorm">
+      <div class="cianotipo">
+        <svg class="arte" viewBox="0 0 324 300" role="img" aria-label="Cianotipia: a muda em repouso, folhas recolhidas, cercada pelos mesmos 87 tufos de musgo">
+          <rect x="4" y="4" width="316" height="292" fill="url(#gCian)" filter="url(#fPincel)"/>
+          <g fill="#e6eff2" opacity=".9">
+            <circle cx="40" cy="40" r="1.2"/><circle cx="90" cy="70" r="1"/><circle cx="280" cy="50" r="1.4"/><circle cx="250" cy="110" r="1"/><circle cx="60" cy="140" r="1.1"/><circle cx="300" cy="170" r=".9"/><circle cx="120" cy="30" r=".9"/><circle cx="210" cy="36" r="1.1"/>
+          </g>
+          <path d="M262 46 a 22 22 0 1 0 22 30 a 17 17 0 1 1 -22 -30z" fill="#e6eff2" opacity=".85"/>
+          <g fill="none" stroke="#e6eff2" stroke-width=".8" opacity=".5"><path d="M30 150 q 40 -20 80 0 t 80 0 t 80 0 t 60 -6"/><path d="M30 168 q 50 -14 100 0 t 100 0 t 90 -4"/></g>
+          <g transform="translate(88 58)" stroke="#e6eff2" stroke-width="1" opacity=".75"><path d="M0 -9V9M-9 0H9M-6 -6L6 6M-6 6L6 -6"/></g>
+          <g transform="translate(48 96) scale(.7)" stroke="#e6eff2" stroke-width="1" opacity=".6"><path d="M0 -9V9M-9 0H9M-6 -6L6 6M-6 6L6 -6"/></g>
+          <rect x="30" y="204" width="264" height="3" fill="#e6eff2" opacity=".55"/>
+          <g class="musgo musgo-cian" stroke="#e6eff2" stroke-width="1.4" fill="none" stroke-linecap="round" opacity=".85" transform="translate(-10 0)"></g>
+          <g fill="#e6eff2" opacity=".92">
+            <path d="M161 204 C 158 178, 165 152, 160 118" stroke="#e6eff2" stroke-width="3" fill="none"/>
+            <use href="#pFolha" transform="translate(161 186) rotate(-62) scale(1.4)"/>
+            <use href="#pFolha" transform="translate(160 182) scale(-1.4 1.4) rotate(-64)"/>
+            <use href="#pFolha" transform="translate(162 156) rotate(-70) scale(1.1)"/>
+            <use href="#pFolha" transform="translate(161 152) scale(-1.05 1.05) rotate(-70)"/>
+            <path d="M160 120 c -8 -10 -4 -22 0 -26 c 4 4 8 16 0 26z"/>
+          </g>
+          <text x="22" y="276" class="sv-lapis" font-size="20" fill="#e6eff2">em repouso · nada se perdeu</text>
+          <text x="22" y="30" class="sv-mono" font-weight="700" font-size="8.5" letter-spacing="2.2" fill="#e6eff2">FOTOGRAMA DE DORMÊNCIA</text>
+        </svg>
+      </div>
+      <p class="micro" style="margin-top:18px">O jardim está dormindo, não morto. Os 87 dias continuam aqui, um tufo por dia.</p>
+      <div class="tres-num">
+        <div><span class="k-micro">hoje</span><span class="dado">0</span><span class="k-micro">dias</span></div>
+        <div><span class="k-micro">sua sequência</span><span class="dado">23</span><span class="k-micro">chegou a 23 dias</span></div>
+        <div><span class="k-micro">recorde</span><span class="dado">41</span><span class="k-micro">dias</span></div>
+      </div>
+      <div class="par"><span class="nome">Acervo do jardim<small>o tamanho do jardim não encolhe</small></span><span class="dado">87</span></div>
+      <p class="micro" style="margin:18px 0">Um dia de leitura acorda o jardim inteiro, com todas as cores, mesmo que a sequência recomece do 1.</p>
+      <button type="button" class="botao prim" data-go="leitor" style="width:100%">Abrir Alice na p. 68</button>
+    </div>
+  </div>
+</div>
+</template>
+
+<!-- 4 · DESEMPENHO -->
+<template id="tpl-desempenho">
+<div class="tela caderno">
+  <button type="button" class="volta" data-go="mesa" aria-label="Voltar à mesa"><span>▴ fechar o caderninho</span></button>
+  <div class="espiral" aria-hidden="true"></div>
+  <div class="folha">
+    <h2 class="tit" style="margin-bottom:12px">Meu desempenho</h2>
+    <div class="periodo" role="group" aria-label="Período">
+      <button type="button" data-act="periodo" data-p="sem" aria-pressed="true"><span class="k">Semana</span><span class="micro">10 a 16 de nov.</span></button>
+      <button type="button" data-act="periodo" data-p="mes" aria-pressed="false"><span class="k">Mês</span><span class="micro">outubro</span></button>
+    </div>
+    <table class="indice">
+      <tr><td class="nome">Tempo ativo<small>só quando você está lendo</small></td><td class="dado" data-sem="3h12" data-mes="13h40">3h12</td></tr>
+      <tr><td class="nome">Páginas<small>canônicas</small></td><td class="dado" data-sem="74" data-mes="318">74</td></tr>
+      <tr><td class="nome">Sessões</td><td class="dado" data-sem="9" data-mes="31">9</td></tr>
+      <tr><td class="nome">Leitura Consciente<small>média · faixa atenta</small></td><td class="dado" data-sem="76" data-mes="71">76</td></tr>
+      <tr><td class="nome">Dias com a meta<small>20 min por dia</small></td><td class="dado" data-sem="7 de 7" data-mes="26 de 31">7 de 7</td></tr>
+    </table>
+
+    <div class="regua"></div>
+    <div class="k">Constância · 16 semanas</div>
+    <svg class="mapa" viewBox="0 0 340 192" role="img" aria-label="Mapa de constância de 3 de agosto a 17 de novembro: 84 dias cumpridos nesta janela; sequência de 41 dias até 14 de setembro, pausa até o fim de setembro, retomada em outubro e 23 dias seguidos até hoje."></svg>
+    <p class="lapis" style="margin:6px 0 0">84 dias aqui + 3 antes de agosto = os 87 do acervo</p>
+
+    <div class="regua"></div>
+    <div class="k">Estilos de leitura · nesta semana</div>
+    <div class="estilos" style="margin-top:6px">
+      <div class="lin"><span class="nome" style="font-size:15px">Focado</span><svg class="risco" data-n="5" height="22" aria-hidden="true"></svg><span class="dado" style="font-size:18px">5</span></div>
+      <div class="lin"><span class="nome" style="font-size:15px">Metódico</span><svg class="risco" data-n="2" height="22" aria-hidden="true"></svg><span class="dado" style="font-size:18px">2</span></div>
+      <div class="lin"><span class="nome" style="font-size:15px">Equilibrado</span><svg class="risco" data-n="2" height="22" aria-hidden="true"></svg><span class="dado" style="font-size:18px">2</span></div>
+    </div>
+    <p class="micro" style="margin-top:18px">Neste caderno só aparecem os seus dias.</p>
+  </div>
+</div>
+</template>
+
+<!-- 5 · IMPORTAR -->
+<template id="tpl-importar">
+<div class="tela">
+  <button type="button" class="volta" data-go="mesa" aria-label="Voltar à mesa"><span>▴ pousar na mesa</span></button>
+  <div class="folha" style="background:var(--grao),var(--papel-fundo)">
+    <div class="k" style="color:var(--verde-tinta)">Bandeja de entrada</div>
+    <h2 class="tit" style="margin-bottom:18px">Pôr um livro na mesa</h2>
+    <div class="soltar">
+      <p class="micro" style="margin-bottom:12px">Um arquivo seu, EPUB ou PDF, sem DRM.</p>
+      <button type="button" class="botao prim" data-act="aviso" data-msg="Aqui abriria o seletor de arquivos do aparelho. A bandeja já traz dois exemplos.">Escolher arquivo</button>
+    </div>
+
+    <div class="envelope epub">
+      <span class="selo">EPUB</span>
+      <div class="arquivo">frankenstein-ed-ilustrada.epub</div>
+      <span class="k-micro">412 KB · chegou agora</span>
+      <p><b>Chega como livro.</b> O texto se reorganiza na sua letra, aceita grifo, lápis e dicionário, e conta páginas canônicas.</p>
+      <p class="lapis" style="font-size:18px">Frankenstein já está na sua estante (jul/2026). Esta edição entra como outro livro.</p>
+      <button type="button" class="botao" data-act="aviso" data-msg="Frankenstein, edição ilustrada, foi para a gaveta: Quero ler.">Guardar em Quero ler</button>
+    </div>
+
+    <div class="envelope pdf">
+      <span class="selo">PDF</span>
+      <div class="arquivo">tese-capitulo-2.pdf</div>
+      <span class="k-micro">2,3 MB · 38 páginas · já na gaveta</span>
+      <p><b>Chega como fotocópia.</b> Cada página é uma imagem fixa.</p>
+      <div class="honesto">
+        <p>Dá para ler, marcar onde parou e contar o tempo de leitura.</p>
+        <p>Não dá para trocar a letra, a entrelinha nem a margem, porque o PDF não se reorganiza.</p>
+        <p>Grifo, lápis e dicionário dependem de extrair o texto do arquivo, e essa parte ainda não está decidida.</p>
+      </div>
+    </div>
+
+    <div class="regua"></div>
+    <div class="k">Ou do acervo de domínio público</div>
+    <div class="acervo-lista" style="margin-top:6px">
+      <button type="button" data-act="aviso" data-msg="Dom Casmurro foi para a gaveta: Quero ler."><span class="t">Dom Casmurro<small>Machado de Assis</small></span><span class="k-micro">pegar</span></button>
+      <button type="button" data-act="aviso" data-msg="Um conto de Natal já está na sua gaveta."><span class="t">Um conto de Natal<small>Charles Dickens</small></span><span class="k-micro">na gaveta</span></button>
+      <button type="button" data-act="aviso" data-msg="Drácula foi para a gaveta: Quero ler."><span class="t">Drácula<small>Bram Stoker</small></span><span class="k-micro">pegar</span></button>
+      <button type="button" data-act="aviso" data-msg="O cortiço foi para a gaveta: Quero ler."><span class="t">O cortiço<small>Aluísio Azevedo</small></span><span class="k-micro">pegar</span></button>
+    </div>
+  </div>
+</div>
+</template>
+
+<!-- 6 · BIBLIOTECA + ESTANTE -->
+<template id="tpl-biblioteca">
+<div class="tela">
+  <button type="button" class="volta" data-go="mesa" aria-label="Voltar à mesa"><span>▴ pousar na mesa</span></button>
+  <div class="folha">
+    <div class="k" style="color:var(--verde-tinta)">Estante · concluídos</div>
+    <h2 class="tit" style="margin-bottom:6px">Seis livros lidos.</h2>
+    <p class="micro" style="margin-bottom:18px">Daqui nada sai. A pilha só cresce.</p>
+
+    <div class="estante-madeira">
+      <div class="k-micro" style="color:#e9d9b8;margin-bottom:6px">2026</div>
+      <div class="lombadas">
+        <div class="lombada" style="width:96%;height:45px;background:repeating-linear-gradient(45deg,#c39d43 0 6px,#b89039 6px 12px);color:#241f19;transform:rotate(-.6deg)"><span class="tl" style="font-size:16px">O papel de parede amarelo</span><span class="ms">out</span></div>
+        <div class="lombada" style="width:84%;height:30px;background:#4b4060;transform:translate(9px,0) rotate(.5deg)"><span class="tl">O alienista</span><span class="ms">set</span></div>
+        <div class="lombada" style="width:78%;height:27px;background:#7a6a52;transform:translate(-6px,0) rotate(-.4deg)"><span class="tl">A metamorfose</span><span class="ms">ago</span></div>
+        <div class="lombada" style="width:90%;height:36px;background:#2f4a36;transform:translate(4px,0) rotate(.3deg)"><span class="tl">Frankenstein</span><span class="ms">jul</span></div>
+        <div class="lombada" style="width:86%;height:32px;background:#6b3b3b;transform:translate(-9px,0) rotate(-.5deg)"><span class="tl">O retrato de Dorian Gray</span><span class="ms">jun</span></div>
+        <div class="lombada" style="width:94%;height:38px;background:#3f5a68;transform:rotate(.2deg)"><span class="tl">Orgulho e preconceito</span><span class="ms">mai</span></div>
+      </div>
+    </div>
+
+    <div class="herbario">
+      <span class="carimbo" style="right:-6px;top:-24px">LIDO<br>OUT<br>2026</span>
+      <svg viewBox="0 0 80 90" width="64" height="72" style="float:left;margin:0 12px 6px 0" aria-hidden="true">
+        <path d="M40 88 C 38 60, 44 34, 40 6" stroke="#6b5a3a" stroke-width="1.4" fill="none"/>
+        <g fill="#a8984e" opacity=".85"><use href="#pFolha" transform="translate(40 62) rotate(-30) scale(.7)"/><use href="#pFolha" transform="translate(40 56) scale(-.7 .7) rotate(-30)"/><use href="#pFolha" transform="translate(41 36) rotate(-40) scale(.55)"/><use href="#pFolha" transform="translate(40 30) scale(-.5 .5) rotate(-40)"/></g>
+        <rect x="26" y="40" width="28" height="7" fill="rgba(230,193,92,.55)" transform="rotate(-8 40 44)"/>
+      </svg>
+      <div class="k-micro">o último que entrou</div>
+      <div style="font-family:var(--serif);font-size:18px;line-height:24px;font-style:italic">O papel de parede amarelo</div>
+      <div style="font-size:14px;line-height:20px">C. P. Gilman</div>
+      <div class="etq-man" style="transform:rotate(-1.6deg);margin-top:6px">3 sessões · 9 destaques</div>
+      <div style="clear:both"></div>
+    </div>
+
+    <div class="gaveta">
+      <div class="k">A gaveta · o que ainda não terminou</div>
+      <div class="divisoria k">Lendo · 2</div>
+      <button type="button" class="cartao" data-go="leitor"><div class="t">Alice no País das Maravilhas</div><div class="a">Lewis Carroll · acervo</div><div class="prog"><span class="r"><i style="width:48%"></i></span><span>p. 68 de 142 · 48%</span></div></button>
+      <button type="button" class="cartao" data-act="aviso" data-msg="No protótipo só Alice tem texto. O médico e o monstro abriria em 12%."><div class="t">O médico e o monstro</div><div class="a">R. L. Stevenson</div><div class="prog"><span class="r"><i style="width:12%"></i></span><span>12%</span></div></button>
+      <div class="divisoria k" style="background:#d9c9a6">Em pausa · 1</div>
+      <button type="button" class="cartao" data-act="aviso" data-msg="Planolândia continua onde você deixou: 63%."><div class="t">Planolândia (Flatland)</div><div class="a">E. A. Abbott · sem pressa</div><div class="prog"><span class="r"><i style="width:63%;background:var(--grafite)"></i></span><span>63%</span></div></button>
+      <div class="divisoria k" style="background:#e4d8bf">Quero ler · 3</div>
+      <button type="button" class="cartao" data-act="aviso" data-msg="Um conto de Natal iria para a mesa."><div class="t">Um conto de Natal</div><div class="a">Charles Dickens</div></button>
+      <button type="button" class="cartao" data-act="aviso" data-msg="Memórias póstumas de Brás Cubas iria para a mesa."><div class="t">Memórias póstumas de Brás Cubas</div><div class="a">Machado de Assis</div></button>
+      <button type="button" class="cartao pdf" data-act="aviso" data-msg="O PDF abriria como fotocópia: página fixa, sem painel de letra."><div class="t">tese-capitulo-2.pdf</div><div class="a">importado · 38 páginas · fotocópia</div></button>
+    </div>
+  </div>
+</div>
+</template>
+
+<!-- 7 · RESUMO -->
+<template id="tpl-resumo">
+<div class="tela">
+  <button type="button" class="volta" data-go="mesa" aria-label="Voltar à mesa; a ficha da sessão vira marcador no livro"><span>▴ guardar a ficha no livro</span></button>
+  <div class="folha">
+    <div class="fase-celebra celebra">
+      <div class="k" style="color:var(--verde-tinta);margin-bottom:18px">terça · 17 de novembro</div>
+      <div class="carimbo-grande" role="img" aria-label="Carimbo: meta do dia cumprida, 20 minutos"><span>Meta do dia<b>20 min</b>cumprida</span></div>
+      <svg viewBox="0 0 120 120" width="120" height="120" aria-hidden="true" style="display:block;margin:0 auto">
+        <rect x="30" y="98" width="60" height="16" fill="url(#gMadeira)"/>
+        <path d="M60 98 C 58 80, 63 62, 59 30" stroke="#3c6b3c" stroke-width="2.4" fill="none"/>
+        <use href="#pFolha" fill="url(#gFolha)" transform="translate(60 86) rotate(-18) scale(.75)"/>
+        <use href="#pFolha" fill="url(#gFolha)" transform="translate(60 83) scale(-.75 .75) rotate(-22)"/>
+        <use href="#pFolha" fill="url(#gFolha)" transform="translate(61 64) rotate(-30) scale(.6)"/>
+        <use href="#pFolha" fill="url(#gFolha)" transform="translate(60 60) scale(-.6 .6) rotate(-30)"/>
+        <g class="folha-nova"><use href="#pFolha" fill="url(#gFolhaNova)" transform="translate(59 42) rotate(-40) scale(.5)"/></g>
+      </svg>
+      <div class="cel-num">23</div>
+      <div class="k">dias seguidos</div>
+      <p class="micro" style="margin:18px 0 6px">34 minutos de leitura hoje. Seu jardim agradece.</p>
+      <p class="lapis" style="font-size:18px;margin:0 0 27px">a muda ganhou uma folha · faltam 7 dias para florir</p>
+      <button type="button" class="botao prim" data-act="numeros" style="width:100%">Ver a ficha da sessão</button>
+    </div>
+
+    <div class="fase-numeros" hidden>
+      <div class="cab"><div><div class="k" style="color:var(--verde-tinta)">Ficha da sessão · ter 17 nov</div><h2 class="tit">Alice, cap. VII</h2></div><span class="carimbo" role="img" aria-label="Meta do dia cumprida">META<br>20 MIN<br>✓</span></div>
+      <div class="ficha-sessao">
+        <div class="par"><span class="nome">Tempo ativo<small>relógio de parede: 41 min · 2 pausas</small></span><span class="dado">34 min</span></div>
+        <div class="par"><span class="nome">Páginas<small>p. 57 → 68</small></span><span class="dado">11</span></div>
+        <div class="par" style="border:0"><span class="nome">Progresso da obra<small>de 40% para 48%</small></span><span class="dado">48%</span></div>
+        <svg viewBox="0 0 300 18" width="100%" height="18" aria-hidden="true" style="display:block;margin-bottom:6px">
+          <line x1="0" y1="9" x2="300" y2="9" stroke="rgba(124,98,58,.55)"/>
+          <line x1="0" y1="9" x2="120" y2="9" stroke="#241f19" stroke-width="2"/>
+          <line x1="120" y1="9" x2="144" y2="9" stroke="#2f5d3a" stroke-width="5"/>
+          <line x1="120" y1="3" x2="120" y2="15" stroke="#5f5949"/><line x1="144" y1="2" x2="144" y2="16" stroke="#2f5d3a" stroke-width="1.5"/>
+        </svg>
+        <div class="regua" style="margin:12px 0"></div>
+        <div class="k">Leitura Consciente</div>
+        <div style="display:flex;align-items:baseline;gap:12px;margin-top:3px"><span style="font-family:var(--serif);font-weight:300;font-style:italic;font-size:36px;line-height:40px">funda</span><span class="k-micro">82 de 100</span></div>
+        <div class="faixa-lc">
+          <svg viewBox="0 0 300 36" aria-hidden="true">
+            <line x1="0" y1="14" x2="300" y2="14" stroke="rgba(124,98,58,.55)"/>
+            <g stroke="#5f5949"><line x1="0" y1="9" x2="0" y2="19"/><line x1="150" y1="9" x2="150" y2="19"/><line x1="240" y1="9" x2="240" y2="19"/><line x1="300" y1="9" x2="300" y2="19"/></g>
+            <rect x="240" y="10" width="60" height="8" fill="rgba(230,193,92,.4)"/>
+            <path d="M246 2 l0 22" stroke="#2f5d3a" stroke-width="2.4"/>
+            <text x="75" y="33" text-anchor="middle" class="sv-mono" font-size="8" letter-spacing="1.4" fill="#5f5949">RASA</text>
+            <text x="195" y="33" text-anchor="middle" class="sv-mono" font-size="8" letter-spacing="1.4" fill="#5f5949">ATENTA</text>
+            <text x="270" y="33" text-anchor="middle" class="sv-mono" font-weight="700" font-size="8" letter-spacing="1.4" fill="#2f5d3a">FUNDA</text>
+          </svg>
+        </div>
+        <div class="par"><span class="nome">Leitor Focado<small>Sessão de imersão: 34 minutos sem levantar os olhos</small></span><span></span></div>
+        <div class="par"><span class="nome">Maior bloco de foco</span><span class="dado">22 min</span></div>
+        <div class="par"><span class="nome">Destaques<small>1 âmbar · 1 oliva · 1 carmim</small></span><span class="dado"><span class="pigs"><i style="background:var(--pig-ambar)"></i><i style="background:var(--pig-oliva)"></i><i style="background:var(--pig-carmim)"></i></span> 3</span></div>
+        <div class="par"><span class="nome">Anotação a lápis</span><span class="dado">1</span></div>
+        <div class="par" style="border:0"><span class="nome">Dicionário<small>"arganaz"</small></span><span class="dado">1</span></div>
+      </div>
+      <p class="ghost">Na semana passada, seu maior bloco de foco foi de 18 minutos. Hoje foram 22.</p>
+      <div class="acoes">
+        <button type="button" class="botao" data-act="aviso" data-msg="O card da sessão está pronto para compartilhar.">Compartilhar o card</button>
+        <button type="button" class="botao prim" data-go="leitor">Continuar lendo · p. 68</button>
+        <button type="button" class="botao peq" data-act="rever" style="border:0;box-shadow:none;background:none;text-decoration:underline">Rever a celebração</button>
+      </div>
+    </div>
+  </div>
+</div>
+</template>
+
+<script>
+(function(){
+  'use strict';
+  var REDUZ = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var estados = new WeakMap();
+
+  function tpl(nome){ return document.getElementById('tpl-'+nome).content.firstElementChild.cloneNode(true); }
+  function q(el,s){ return el.querySelector(s); }
+  function qa(el,s){ return Array.prototype.slice.call(el.querySelectorAll(s)); }
+
+  /* ---------- gerador determinístico ---------- */
+  function rnd(seed){ var s = seed; return function(){ s = (s*16807) % 2147483647; return (s-1)/2147483646; }; }
+
+  function musgo(g, x0, x1, yBase){
+    var r = rnd(87), d = '';
+    for (var i=0;i<87;i++){
+      var x = x0 + (x1-x0)*(i/86) + (r()-.5)*5, h = 5 + r()*9, inc = (r()-.5)*7;
+      d += 'M'+x.toFixed(1)+' '+yBase+' q '+(inc/2).toFixed(1)+' '+(-h/2).toFixed(1)+' '+inc.toFixed(1)+' '+(-h).toFixed(1)+' ';
+    }
+    var p = document.createElementNS('http://www.w3.org/2000/svg','path'); p.setAttribute('d', d); g.appendChild(p);
+  }
+  function musgoTopo(g){
+    var r = rnd(33);
+    for (var i=0;i<30;i++){
+      var a = r()*Math.PI*2, rr = 28 + r()*20;
+      var c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      c.setAttribute('cx', (80+Math.cos(a)*rr).toFixed(1)); c.setAttribute('cy', (78+Math.sin(a)*rr).toFixed(1));
+      c.setAttribute('r', (1.4+r()*1.6).toFixed(1)); c.setAttribute('fill', r()>.5 ? '#5f8a46' : '#466f3a'); g.appendChild(c);
+    }
+  }
+
+  /* ---------- mapa de constância ---------- */
+  var DIA = 86400000, INICIO = Date.UTC(2026,7,3), HOJE = Date.UTC(2026,10,17);
+  function cumprido(t){
+    var d = new Date(t), m = d.getUTCMonth(), dd = d.getUTCDate();
+    if (m===7 && dd>=5) return true;
+    if (m===8 && dd<=14) return true;
+    if (m===9 && dd<=24 && [7,8,15,21].indexOf(dd)<0) return true;
+    if (m===9 && dd>=26) return true;
+    if (m===10 && dd<=17) return true;
+    return false;
+  }
+  function svgEl(n, at){ var e = document.createElementNS('http://www.w3.org/2000/svg', n); for (var k in at) e.setAttribute(k, at[k]); return e; }
+  function mapa(svg){
+    var cel = 15, gap = 4, x0 = 28, y0 = 22, total = 0;
+    var dias = ['seg','','qua','','sex','','dom'];
+    dias.forEach(function(t,i){ if(t){ var tx = svgEl('text',{x:0,y:y0+i*(cel+gap)+11,'class':'sv-mono','font-size':8,fill:'#5f5949'}); tx.textContent=t; svg.appendChild(tx);} });
+    var meses = {0:'ago',4:'set',8:'out',12:'nov'};
+    for (var c in meses){ var tm = svgEl('text',{x:x0+c*(cel+gap),y:12,'class':'sv-mono','font-size':9,'letter-spacing':1,fill:'#241f19'}); tm.textContent = meses[c]; svg.appendChild(tm); }
+    for (var i=0;i<112;i++){
+      var t = INICIO + i*DIA, col = Math.floor(i/7), lin = i%7;
+      var x = x0 + col*(cel+gap), y = y0 + lin*(cel+gap);
+      if (t > HOJE){ svg.appendChild(svgEl('rect',{x:x+.5,y:y+.5,width:cel-1,height:cel-1,fill:'none',stroke:'rgba(124,98,58,.25)','stroke-dasharray':'2 2'})); continue; }
+      if (cumprido(t)){ total++; svg.appendChild(svgEl('rect',{x:x,y:y,width:cel,height:cel,fill:'#2f5d3a',rx:1.5,transform:'rotate('+((i%3)-1)*1.5+' '+(x+7.5)+' '+(y+7.5)+')'})); }
+      else svg.appendChild(svgEl('rect',{x:x+.5,y:y+.5,width:cel-1,height:cel-1,fill:'#f8f1e2',stroke:'rgba(124,98,58,.45)'}));
+      if (t === HOJE) svg.appendChild(svgEl('circle',{cx:x+7.5,cy:y+7.5,r:9.5,fill:'none',stroke:'#241f19','stroke-width':1.3}));
+      if (t === Date.UTC(2026,8,14)){
+        var xb = x+cel+2, yf = y0+7*(cel+gap)+4;
+        svg.appendChild(svgEl('path',{d:'M'+xb+' '+(y0-4)+' L'+(xb+.6)+' '+yf+' q 2 14 16 20',stroke:'#5f5949',fill:'none','stroke-width':1.1,'stroke-dasharray':'3 2'}));
+        var n = svgEl('text',{x:xb+20,y:yf+24,'class':'sv-lapis','font-size':16,fill:'#5f5949'}); n.textContent = '14/09 · fim dos 41, o recorde'; svg.appendChild(n);
+      }
+    }
+    svg.setAttribute('data-total', total);
+    var hj = svgEl('text',{x:x0+15*(cel+gap)-14,y:y0+7*(cel+gap)+12,'class':'sv-lapis','font-size':16,fill:'#241f19'}); hj.textContent='hoje ↑'; svg.appendChild(hj);
+  }
+  function riscos(svg){
+    var n = +svg.getAttribute('data-n'), w = 0, gx = 0;
+    for (var k=0;k<n;k++){
+      var dentro = k%5;
+      if (dentro===4){ svg.appendChild(svgEl('line',{x1:gx-3,y1:17,x2:gx+22,y2:5,stroke:'#5f5949','stroke-width':1.6,'stroke-linecap':'round'})); gx += 30; }
+      else { var x = gx + dentro*6; svg.appendChild(svgEl('line',{x1:x,y1:3+(k%2),x2:x+1,y2:19,stroke:'#5f5949','stroke-width':1.6,'stroke-linecap':'round'})); }
+      w = gx + 30;
+    }
+    svg.setAttribute('width', Math.max(w,30)); svg.setAttribute('viewBox','-4 0 '+Math.max(w,30)+' 22');
+  }
+
+  /* ---------- leitor ---------- */
+  var FACES = {
+    spectral:{f:"var(--serif)",c:16,l:27}, garamond:{f:"var(--garamond)",c:17,l:27}, sans:{f:"var(--leit-sans)",c:15.5,l:26},
+    atkinson:{f:"var(--leit-acessivel)",c:17,l:28}, courier:{f:"var(--mono)",c:13.5,l:24}
+  };
+  function leitorPadrao(){ return {face:'spectral',corpo:16,entre:27,margem:27,alinha:'justify',tema:'claro',temp:4200,brilho:100,ancora:'posicao_numero',sensorial:true}; }
+  function corLuz(K){
+    var t = (6500-K)/3800;
+    if (K <= 5000){ var a = (.02 + t*.16).toFixed(3); return 'rgba(255,'+Math.round(214-t*50)+','+Math.round(170-t*70)+','+a+')'; }
+    return 'rgba(200,220,255,'+((K-5000)/1500*.14).toFixed(3)+')';
+  }
+  function corPoca(K){ var t = (6500-K)/3800; return 'rgba(255,'+Math.round(230-t*60)+','+Math.round(210-t*120)+','+(.16+t*.18).toFixed(3)+')'; }
+  function aplicarLeitor(ap){
+    var st = estados.get(ap), r = st.leitor, L = q(ap,'.leitor');
+    ap.style.setProperty('--luz-cor', corPoca(r.temp));
+    if (!L) return;
+    var tx = q(L,'.texto');
+    tx.style.fontFamily = FACES[r.face].f; tx.style.fontSize = r.corpo+'px'; tx.style.lineHeight = r.entre+'px'; tx.style.textAlign = r.alinha;
+    L.style.setProperty('--margem', r.margem+'px');
+    L.className = L.className.replace(/\bt-\w+/g,'').trim() + ' t-'+r.tema;
+    L.setAttribute('data-ancora', r.ancora);
+    q(L,'.luz-filtro').style.background = corLuz(r.temp);
+    q(L,'.brilho-filtro').style.opacity = ((100-r.brilho)/100*.75).toFixed(2);
+    q(L,'.v-temp').textContent = r.temp.toLocaleString('pt-BR'); q(L,'.r-temp').value = r.temp;
+    q(L,'.v-brilho').textContent = r.brilho; q(L,'.r-brilho').value = r.brilho;
+    q(L,'.v-corpo').textContent = String(r.corpo).replace('.',','); q(L,'.v-entre').textContent = r.entre;
+    marcar(L,'[data-act="tema"]','tema',r.tema); marcar(L,'[data-act="face"]','face',r.face);
+    marcar(L,'[data-act="margem"]','v',String(r.margem)); marcar(L,'[data-act="alinha"]','v',r.alinha); marcar(L,'[data-act="ancora"]','v',r.ancora);
+    q(L,'[data-act="sensorial"]').setAttribute('aria-checked', r.sensorial ? 'true':'false');
+  }
+  function marcar(L, sel, attr, val){ qa(L, sel).forEach(function(b){ var on = b.getAttribute('data-'+attr)===val; b.classList.toggle('sel', on); b.setAttribute('aria-pressed', on?'true':'false'); }); }
+  function abaPainel(L, nome){
+    qa(L,'[data-act="aba"]').forEach(function(b){ b.setAttribute('aria-selected', b.getAttribute('data-aba')===nome ? 'true':'false'); });
+    qa(L,'.aba-corpo').forEach(function(c){ c.hidden = c.getAttribute('data-corpo')!==nome; });
+    estados.get(L.closest('.aparelho')).aba = nome;
+  }
+
+  /* ---------- telas ---------- */
+  function montar(ap, nome, no){
+    var st = estados.get(ap);
+    if (nome==='leitor'){ aplicarLeitor(ap); abaPainel(no, st.aba||'luz'); }
+    if (nome==='jardim'){ qa(no,'.musgo').forEach(function(g){ musgo(g, 52, 292, 204); }); sincDorm(ap); }
+    if (nome==='desempenho'){ mapa(q(no,'.mapa')); qa(no,'.risco').forEach(riscos); }
+    if (nome==='resumo'){ if (!REDUZ) no.classList.add('anima'); }
+  }
+  function sincDorm(ap){
+    var st = estados.get(ap);
+    ap.classList.toggle('dormente', st.dorm);
+    qa(ap,'[data-act="dorm"]').forEach(function(b){ b.setAttribute('aria-pressed', st.dorm?'true':'false'); });
+  }
+  function objetoDe(ap, nome){
+    if (nome==='resumo' || nome==='leitor') return q(ap,'.o-livro');
+    return q(ap,'.mesa [data-go="'+nome+'"]');
+  }
+  function retDe(ap, el){
+    var vidro = q(ap,'.vidro'), rv = vidro.getBoundingClientRect(), s = rv.width/390, r = el.getBoundingClientRect();
+    return {x:(r.left-rv.left)/s, y:(r.top-rv.top)/s, w:r.width/s, h:r.height/s};
+  }
+  function abrir(ap, nome, origem, imediato){
+    var st = estados.get(ap), camada = q(ap,'.camada'), base = nome==='resumo-numeros' ? 'resumo' : nome;
+    var no = tpl(base);
+    var trocando = !!st.tela;
+    camada.innerHTML = ''; camada.appendChild(no); camada.hidden = false;
+    st.tela = base;
+    montar(ap, base, no);
+    if (nome==='resumo-numeros'){ q(no,'.fase-celebra').hidden = true; q(no,'.fase-numeros').hidden = false; }
+    if (origem && origem.getAttribute && origem.getAttribute('data-rolar')==='gaveta'){ var gv = q(no,'.gaveta'), fl = q(no,'.folha'); if (gv && fl) fl.scrollTop = gv.offsetTop - 27; }
+    if (imediato || REDUZ || !camada.animate) return;
+    if (trocando || !origem){ camada.animate([{opacity:0,transform:'translateY(18px)'},{opacity:1,transform:'none'}],{duration:260,easing:'ease-out'}); return; }
+    var r = retDe(ap, origem);
+    camada.animate([
+      {transform:'translate('+r.x+'px,'+r.y+'px) scale('+(r.w/390)+','+(r.h/844)+')', opacity:.4, borderRadius:'12px'},
+      {transform:'none', opacity:1, borderRadius:'0px'}
+    ],{duration:440, easing:'cubic-bezier(.2,.75,.2,1)'});
+  }
+  function pousar(ap){
+    var st = estados.get(ap), camada = q(ap,'.camada'), de = st.tela;
+    if (!de) return;
+    var fim = function(){ camada.hidden = true; camada.innerHTML=''; st.tela = null;
+      if (de==='resumo'){ var m = q(ap,'.o-livro .marcador'); m.classList.remove('novo'); void m.offsetWidth; m.classList.add('novo'); aviso(ap,'A ficha de hoje virou marcador na p. 68.'); }
+      var o = objetoDe(ap, de); if (o) o.focus({preventScroll:true}); };
+    var obj = objetoDe(ap, de);
+    if (REDUZ || !camada.animate || !obj){ fim(); return; }
+    var r = retDe(ap, obj);
+    var an = camada.animate([
+      {transform:'none', opacity:1},
+      {transform:'translate('+r.x+'px,'+r.y+'px) scale('+(r.w/390)+','+(r.h/844)+')', opacity:.2}
+    ],{duration:380, easing:'cubic-bezier(.4,0,.6,1)'});
+    an.onfinish = fim;
+  }
+  function aviso(ap, msg){
+    var a = q(ap,'.aviso'); a.textContent = msg; a.classList.add('on');
+    clearTimeout(a._t); a._t = setTimeout(function(){ a.classList.remove('on'); }, 2600);
+  }
+
+  /* ---------- eventos (delegação, por aparelho) ---------- */
+  document.addEventListener('click', function(ev){
+    var modo = ev.target.closest('[data-modo]');
+    if (modo){ trocarModo(modo.getAttribute('data-modo')); return; }
+    var ap = ev.target.closest('.aparelho'); if (!ap) return;
+    var st = estados.get(ap);
+    var go = ev.target.closest('[data-go]'), act = ev.target.closest('[data-act]');
+    // o elemento mais próximo do toque decide
+    if (go && act && act.contains(go)) act = null;
+    if (go && act && go.contains(act)) go = null;
+    if (go){
+      var dest = go.getAttribute('data-go');
+      if (dest==='mesa'){ pousar(ap); return; }
+      abrir(ap, dest, go.closest('.mesa') ? go : null);
+      return;
+    }
+    if (!act) return;
+    var a = act.getAttribute('data-act'), L = q(ap,'.leitor'), r = st.leitor;
+    switch(a){
+      case 'controles':
+        if (L.classList.contains('com-painel')){ L.classList.remove('com-painel'); q(L,'[data-act="painel"]').setAttribute('aria-expanded','false'); break; }
+        var bg = q(L,'.barra-grifo'); if (!bg.hidden){ bg.hidden = true; break; }
+        L.classList.toggle('com-chrome'); break;
+      case 'painel':
+        var ab = L.classList.toggle('com-painel'); act.setAttribute('aria-expanded', ab?'true':'false'); break;
+      case 'aba': abaPainel(L, act.getAttribute('data-aba')); break;
+      case 'tema': r.tema = act.getAttribute('data-tema'); aplicarLeitor(ap); break;
+      case 'face': var f = act.getAttribute('data-face'); r.face = f; r.corpo = FACES[f].c; r.entre = FACES[f].l; aplicarLeitor(ap); break;
+      case 'corpo': r.corpo = Math.max(12, Math.min(20, Math.round(r.corpo) + (+act.getAttribute('data-d')))); aplicarLeitor(ap); break;
+      case 'entre': r.entre = Math.max(18, Math.min(36, r.entre + (+act.getAttribute('data-d')))); aplicarLeitor(ap); break;
+      case 'margem': r.margem = +act.getAttribute('data-v'); aplicarLeitor(ap); break;
+      case 'alinha': r.alinha = act.getAttribute('data-v'); aplicarLeitor(ap); break;
+      case 'ancora': r.ancora = act.getAttribute('data-v'); aplicarLeitor(ap); break;
+      case 'sensorial': r.sensorial = !r.sensorial; aplicarLeitor(ap); break;
+      case 'restaurar':
+        var p = leitorPadrao();
+        if (act.getAttribute('data-alcance')==='tudo'){ st.leitor = p; }
+        else {
+          var grupo = {luz:['temp','brilho','tema'], letra:['face','corpo','entre'], pagina:['margem','alinha','ancora','sensorial']}[st.aba||'luz'];
+          grupo.forEach(function(k){ r[k] = p[k]; });
+        }
+        aplicarLeitor(ap); aviso(ap, act.getAttribute('data-alcance')==='tudo' ? 'Tudo voltou ao padrão.' : 'Esta aba voltou ao padrão.'); break;
+      case 'selecao':
+        var barra = q(L,'.barra-grifo'), tx = q(L,'.texto');
+        barra.style.top = (act.offsetTop + act.offsetHeight + 9) + 'px';
+        barra.hidden = !barra.hidden; q(barra,'.verbete').hidden = true; break;
+      case 'pig':
+        var alvo = q(L,'.alvo-sel'); alvo.className = 'alvo-sel g g-'+act.getAttribute('data-pig'); alvo.style.borderBottom = '0';
+        q(L,'.barra-grifo').hidden = true; aviso(ap, 'Grifado em '+act.getAttribute('aria-label').replace('Grifar em ','')+'.'); break;
+      case 'dic': q(L,'.verbete').hidden = !q(L,'.verbete').hidden; break;
+      case 'nota': q(L,'.barra-grifo').hidden = true; aviso(ap, 'A nota a lápis abriria na margem, junto do trecho.'); break;
+      case 'dorm': st.dorm = !st.dorm; sincDorm(ap); break;
+      case 'periodo':
+        var per = act.getAttribute('data-p'), tela = act.closest('.tela');
+        qa(tela,'[data-act="periodo"]').forEach(function(b){ b.setAttribute('aria-pressed', b===act?'true':'false'); });
+        qa(tela,'[data-sem]').forEach(function(td){ td.textContent = td.getAttribute('data-'+per); }); break;
+      case 'numeros':
+        var t7 = act.closest('.tela'); q(t7,'.fase-celebra').hidden = true; q(t7,'.fase-numeros').hidden = false; q(t7,'.folha').scrollTop = 0;
+        q(t7,'.fase-numeros .tit').setAttribute('tabindex','-1'); q(t7,'.fase-numeros .tit').focus({preventScroll:true}); break;
+      case 'rever':
+        var t8 = act.closest('.tela'); q(t8,'.fase-numeros').hidden = true; var fc = q(t8,'.fase-celebra'); fc.hidden = false;
+        if (!REDUZ){ t8.classList.remove('anima'); void t8.offsetWidth; t8.classList.add('anima'); } q(t8,'.folha').scrollTop = 0; break;
+      case 'aviso': aviso(ap, act.getAttribute('data-msg')); break;
+    }
+  });
+  document.addEventListener('keydown', function(ev){
+    if ((ev.key==='Enter' || ev.key===' ') && ev.target.matches('.alvo-sel')){ ev.preventDefault(); ev.target.click(); }
+    if (ev.key==='Escape'){ var ap = ev.target.closest && ev.target.closest('.aparelho'); if (ap && estados.get(ap).tela) pousar(ap); }
+  });
+  document.addEventListener('input', function(ev){
+    var ap = ev.target.closest('.aparelho'); if (!ap) return;
+    var r = estados.get(ap).leitor;
+    if (ev.target.classList.contains('r-temp')) r.temp = +ev.target.value;
+    else if (ev.target.classList.contains('r-brilho')) r.brilho = +ev.target.value;
+    else return;
+    aplicarLeitor(ap);
+  });
+
+  /* ---------- aparelhos e escala ---------- */
+  function criar(fig){
+    var ap = tpl('aparelho'), escala = q(fig,'.escala');
+    escala.appendChild(ap);
+    estados.set(ap, {tela:null, dorm:false, leitor:leitorPadrao(), aba:'luz'});
+    musgoTopo(q(ap,'.musgo-topo'));
+    aplicarLeitor(ap);
+    var ini = fig.getAttribute('data-inicio');
+    if (ini && ini!=='mesa'){
+      abrir(ap, ini, null, true);
+      if (ini==='leitor'){ var L = q(ap,'.leitor'); L.classList.add('com-chrome','com-painel'); q(L,'[data-act="painel"]').setAttribute('aria-expanded','true'); }
+    }
+    ajustar(fig);
+  }
+  function ajustar(fig){
+    var escala = q(fig,'.escala'), ap = q(fig,'.aparelho'); if (!ap) return;
+    var w = escala.clientWidth; if (!w) return;
+    var s = Math.min(1, w/410);
+    ap.style.transform = 'scale('+s+')';
+    escala.style.height = Math.ceil(864*s)+'px';
+  }
+  var figs = qa(document,'figure.moldura');
+  figs.forEach(criar);
+  if (window.ResizeObserver){ var ro = new ResizeObserver(function(es){ es.forEach(function(e){ ajustar(e.target.closest('figure')); }); }); figs.forEach(function(f){ ro.observe(q(f,'.escala')); }); }
+  window.addEventListener('resize', function(){ figs.forEach(ajustar); });
+
+  function trocarModo(m){
+    document.getElementById('palco-proto').hidden = m!=='proto';
+    document.getElementById('palco-todas').hidden = m!=='todas';
+    qa(document,'[data-modo]').forEach(function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-modo')===m ? 'true':'false'); });
+    figs.forEach(ajustar);
+  }
+})();
+</script>
+</body>
+</html>

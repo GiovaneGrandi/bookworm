@@ -15,7 +15,7 @@ Plataforma gamificada de leitura e escrita — "fitness para a mente": métricas
 | [`specs/direcao-visual.md`](specs/direcao-visual.md) | **Identidade visual vinculante.** O pilar de design (estética "Papel"), tokens canônicos, assinatura mecânica, backlog de ajustes e questões em aberto. |
 | [`specs/design-system.md`](specs/design-system.md) | **Design system vinculante.** Camada operacional da direção visual: três camadas de token, escala de espaçamento, doze primitivas da assinatura, inventário de componentes do MVP, contrato de estados, acessibilidade, movimento, navegação global e a tradução para React Native. |
 | [`specs/`](specs/) | Especificações funcionais por módulo, mais modelo de dados e glossário. |
-| [`mockups/`](mockups/) | Protótipos visuais estáticos. `design-system.html` é o catálogo e a referência normativa; as demais peças são evidência histórica ou direções descartadas. |
+| [`mockups/`](mockups/) | Protótipos visuais estáticos. `design-system.html` é o catálogo e a referência normativa; `ideacao/direcao-b-escrivaninha.html` é a referência da direção de interface adotada; as demais peças são evidência histórica ou direções descartadas. |
 | [`analise-game-design/00-diagnostico.md`](analise-game-design/00-diagnostico.md) | Análise crítica das specs sob a ótica de design de jogo: o que segura um usuário, onde a experiência quebra e o que propor. Termina em uma folha de decisão. |
 | [`analise-monetizacao/00-diagnostico.md`](analise-monetizacao/00-diagnostico.md) | Análise crítica do modelo de receita, com unit economics: a moeda virtual, as oportunidades por lado, precificação e o que corrigir. Termina em uma folha de decisão. |
 
@@ -23,7 +23,11 @@ Plataforma gamificada de leitura e escrita — "fitness para a mente": métricas
 
 Fase de especificação. Não há código ainda.
 
+Um primeiro protótipo (Estágios 0–8 de [`planos/2026-08-23-primeiro-prototipo-mvp.md`](planos/2026-08-23-primeiro-prototipo-mvp.md)) chegou a ser construído e foi **descartado em 17/11/2026** para recomeçar a partir destas specs. O código dele fica só no histórico do git (último commit: `1b903e5`).
+
 A **direção visual está decidida**: a estética "Papel" é o pilar de design do produto, com identidade em verde. Ver [`specs/direcao-visual.md`](specs/direcao-visual.md).
+
+A **direção de interface está decidida**: *A Escrivaninha*. A tela inicial é a mesa vista de cima, e cada função é um objeto pousado nela (o livro aberto, o vaso do jardim, a gaveta, a pilha de lidos, a bandeja de entrada), sem barra de abas. Foi escolhida em 17/11/2026 entre três direções prototipadas em paralelo. Ver [`specs/direcao-visual.md`](specs/direcao-visual.md) §9 e [`mockups/ideacao/`](mockups/ideacao/).
 
 O **design system está escrito** e traduz essa direção em tokens, componentes e estados que uma tela nova consome sem reabrir decisão. Ver [`specs/design-system.md`](specs/design-system.md) e o catálogo em [`mockups/design-system.html`](mockups/design-system.html).
 
