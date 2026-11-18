@@ -51,8 +51,25 @@ Decisões do usuário nesta conversa:
   (`Capitulo-Teste.PDF` recusado, nenhum arquivo novo gravado).
 - `www.gutenberg.org` respondeu 503 em 18/11; o espelho `gutenberg.pglaf.org` funcionou.
 - Para testar no emulador: `MSYS_NO_PATHCONV=1` no Git Bash antes de `adb push ... /sdcard/...`.
-- Próxima ação: **o usuário testa a E2**. Depois, a E3 (leitor com `react-native-readium` e o
-  painel), começando por fixar a versão do Readium e trazer o plugin de build do `1b903e5`.
+- **E3 feita** (18/11): core 66 testes (preferências de leitura, temperatura, página canônica),
+  app 22. Verificado no emulador, com screenshot por controle: Readium 5.3.0 abre EPUB e PDF,
+  as 5 faces renderizam na WebView, os 10 controles aplicam ao vivo, a posição fica no trecho
+  em ajustes seguidos (RN-02.16e), o app retoma na mesma página depois de morto, e o háptico
+  dispara (registro do serviço de vibração). A medição completa está em `specs/stack.md` §6.1
+  (responde Q-ST.1, Q-ST.2 e Q-ST.5, e abre Q-ST.9).
+- Decisões da E3 que ainda não viraram spec: o corpo e a entrelinha guardam **ajuste** sobre o
+  valor inicial da face (leitura de RN-02.16g: trocar de face mantém a mancha aparente); as camadas
+  de luz e brilho ficam **abaixo** do painel (o painel continua legível); o toque no centro só
+  revela os controles, e com eles à vista quem recolhe é uma camada transparente sobre o texto.
+- Armadilhas do Windows nesta etapa: (1) parar o Metro e o daemon do Gradle (`./gradlew --stop`)
+  antes de `pnpm install`, senão a reaplicação do patch falha com ENOENT; (2) `pnpm patch-commit`
+  não funciona (caminho longo nos arquivos gerados pelo nitrogen) — o patch é gerado com
+  `git diff --no-index` contra o pacote original (`npm pack react-native-readium@5.3.0`);
+  (3) se `:app:packageDebug` falhar sem causa, apagar `app/build/intermediates/incremental/packageDebug`
+  e rodar `./gradlew :app:assembleDebug`; (4) `console.log` não chega ao terminal do Metro no RN 0.83.
+- `rm -rf` de `node_modules/*_tmp_*` foi retido pela trava de segurança — não repetir sem pedir.
+- Próxima ação: **o usuário testa a E3**. Depois, a E4 (arte da mesa em Skia, luminária tingida
+  pela temperatura — RN-DV.6 —, transição objeto → folha, TalkBack).
 
 ---
 

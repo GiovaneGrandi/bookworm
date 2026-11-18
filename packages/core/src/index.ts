@@ -8,3 +8,5 @@ export * from './biblioteca/ulid';
 export * from './indice/epub';
 export * from './indice/formato';
 export * from './indice/posicao';
+export * from './leitura/pagina';
+export * from './leitura/preferencias';

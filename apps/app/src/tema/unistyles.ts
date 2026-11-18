@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native-unistyles';
 import { esp } from './espacamento';
+import { temasDeLeitura, trilhoDeTemperatura } from './leitura';
 import { luz } from './luz';
 import { pigmento } from './pigmentos';
 import { semantico } from './semantico';
@@ -18,6 +19,8 @@ const papel = {
   },
   esp,
   luz,
+  leitura: temasDeLeitura,
+  leituraTrilho: trilhoDeTemperatura,
 } as const;
 
 type Temas = { papel: typeof papel };

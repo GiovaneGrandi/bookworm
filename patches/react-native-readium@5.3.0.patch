@@ -1,0 +1,112 @@
+diff --git a/android/src/main/java/com/reactnativereadium/reader/BaseReaderFragment.kt b/android/src/main/java/com/reactnativereadium/reader/BaseReaderFragment.kt
+index 2f3fece..b93965e 100644
+--- a/android/src/main/java/com/reactnativereadium/reader/BaseReaderFragment.kt
++++ b/android/src/main/java/com/reactnativereadium/reader/BaseReaderFragment.kt
+@@ -84,7 +84,7 @@ abstract class BaseReaderFragment : Fragment() {
+     }
+ 
+     navigator.currentLocator
+-      .onEach { channel.send(ReaderViewModel.Event.LocatorUpdate(it)) }
++      .onEach { channel.send(ReaderViewModel.Event.LocatorUpdate(comTextoVisivel(it))) }
+       .launchIn(viewScope)
+ 
+     // Apply any pending decorations now that navigator is ready
+@@ -94,6 +94,20 @@ abstract class BaseReaderFragment : Fragment() {
+     startSelectionMonitoring()
+   }
+ 
++  // BookWorm: o `progression` do Readium é fração do layout, não do texto; num recurso com
++  // páginas de imagem (capa, folha de rosto) a mesma fração cai noutro trecho quando o corpo
++  // muda. Com o texto do primeiro elemento visível no locator, o `goTo` reposiciona pelo trecho
++  // (TextQuoteAnchor do Readium) e um ajuste do painel não move a leitora (RN-02.16e).
++  @OptIn(org.readium.r2.shared.ExperimentalReadiumApi::class)
++  private suspend fun comTextoVisivel(
++    locator: org.readium.r2.shared.publication.Locator
++  ): org.readium.r2.shared.publication.Locator {
++    val visual = navigator as? org.readium.r2.navigator.VisualNavigator ?: return locator
++    val primeiro = runCatching { visual.firstVisibleElementLocator() }.getOrNull() ?: return locator
++    if (primeiro.href != locator.href || primeiro.text.highlight.isNullOrBlank()) return locator
++    return locator.copy(text = primeiro.text)
++  }
++
+   override fun onHiddenChanged(hidden: Boolean) {
+     super.onHiddenChanged(hidden)
+     setMenuVisibility(!hidden)
+diff --git a/android/src/main/java/com/reactnativereadium/reader/EpubReaderFragment.kt b/android/src/main/java/com/reactnativereadium/reader/EpubReaderFragment.kt
+index 3a0ea4c..2576353 100644
+--- a/android/src/main/java/com/reactnativereadium/reader/EpubReaderFragment.kt
++++ b/android/src/main/java/com/reactnativereadium/reader/EpubReaderFragment.kt
+@@ -24,6 +24,9 @@ import org.readium.r2.navigator.epub.EpubNavigatorFragment
+ import org.readium.r2.navigator.Navigator
+ import org.readium.r2.navigator.epub.EpubPreferences
+ import org.readium.r2.navigator.epub.EpubNavigatorFactory
++import org.readium.r2.navigator.epub.css.FontStyle
++import org.readium.r2.navigator.epub.css.FontWeight
++import org.readium.r2.navigator.preferences.FontFamily
+ import org.readium.r2.navigator.input.InputListener
+ import org.readium.r2.navigator.util.DirectionalNavigationAdapter
+ import org.readium.r2.shared.publication.Locator
+@@ -227,6 +230,33 @@ class EpubReaderFragment : VisualReaderFragment() {
+                 // (40dp portrait, 20dp landscape, Readium's own dimension);
+                 // what it no longer does is guess at the window.
+                 shouldApplyInsetsPadding = false
++
++                // BookWorm: as 5 faces do painel de leitura (RN-02.16g), servidas de
++                // assets/fonts (copiadas pelo config plugin withBookwormReadium). Sem esta
++                // declaração a WebView não conhece "Spectral" e cai na serifa do sistema.
++                servedAssets = servedAssets + listOf("fonts/.*")
++                listOf(
++                  "Spectral" to "Spectral",
++                  "EB Garamond" to "EBGaramond",
++                  "Public Sans" to "PublicSans",
++                  "Atkinson Hyperlegible" to "AtkinsonHyperlegible",
++                  "Courier Prime" to "CourierPrime",
++                ).forEach { (familia, arquivo) ->
++                  addFontFamilyDeclaration(FontFamily(familia)) {
++                    listOf(
++                      Triple("400Regular", FontStyle.NORMAL, FontWeight.NORMAL),
++                      Triple("400Regular_Italic", FontStyle.ITALIC, FontWeight.NORMAL),
++                      Triple("700Bold", FontStyle.NORMAL, FontWeight.BOLD),
++                      Triple("700Bold_Italic", FontStyle.ITALIC, FontWeight.BOLD),
++                    ).forEach { (peso, estilo, espessura) ->
++                      addFontFace {
++                        addSource("fonts/${arquivo}_${peso}.ttf", false)
++                        setFontStyle(estilo)
++                        setFontWeight(espessura)
++                      }
++                    }
++                  }
++                }
+               }
+             )
+ 
+diff --git a/android/src/main/java/com/reactnativereadium/reader/VisualReaderFragment.kt b/android/src/main/java/com/reactnativereadium/reader/VisualReaderFragment.kt
+index 5c97294..a6f0c5e 100644
+--- a/android/src/main/java/com/reactnativereadium/reader/VisualReaderFragment.kt
++++ b/android/src/main/java/com/reactnativereadium/reader/VisualReaderFragment.kt
+@@ -42,21 +42,10 @@ abstract class VisualReaderFragment : BaseReaderFragment() {
+     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+         super.onViewCreated(view, savedInstanceState)
+ 
+-        positionLabelManager = PositionLabelManager(
+-            label = binding.positionLabel,
+-            publication = model.publication,
+-            lifecycleScope = viewLifecycleOwner.lifecycleScope
+-        )
+-
+-        // Update position label when navigator location changes
+-        navigator.currentLocator
+-            .onEach { locator ->
+-                positionLabelManager?.update(
+-                    position = locator.locations.position,
+-                    totalProgression = locator.locations.totalProgression
+-                )
+-            }
+-            .launchIn(viewLifecycleOwner.lifecycleScope)
++        // BookWorm: a posição na obra é da âncora do app (RN-02.13a), em três níveis e fora da
++        // mancha do texto. O rótulo "1 / 169" do pacote duplicaria a âncora e apareceria até no
++        // nível "nenhuma", o que RN-02.13b proíbe.
++        binding.positionLabel.visibility = View.GONE
+ 
+     }
+ 

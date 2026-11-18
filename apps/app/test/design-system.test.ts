@@ -2,6 +2,7 @@ import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { ESCALA_TONICA } from '../src/tema/espacamento';
+import { temasDeLeitura } from '../src/tema/leitura';
 import { superficies } from '../src/tema/superficies';
 
 const RAIZ = join(import.meta.dirname, '..');
@@ -85,6 +86,13 @@ describe('RN-DS.11 · texto nunca abaixo de 4,5:1', () => {
     it(`${nome}: tinta e tinta fraca sobre o próprio fundo`, () => {
       expect(contraste(sup.tinta, sup.fundo)).toBeGreaterThanOrEqual(4.5);
       expect(contraste(sup.tintaFraca, sup.fundo)).toBeGreaterThanOrEqual(4.5);
+    });
+  }
+
+  for (const [nome, t] of Object.entries(temasDeLeitura)) {
+    it(`tema de leitura ${nome} (RN-02.17): tinta e tinta fraca sobre o fundo`, () => {
+      expect(contraste(t.tinta, t.fundo)).toBeGreaterThanOrEqual(4.5);
+      expect(contraste(t.tintaFraca, t.fundo)).toBeGreaterThanOrEqual(4.5);
     });
   }
 

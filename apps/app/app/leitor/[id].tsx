@@ -1,93 +1,328 @@
-import { useLocalSearchParams } from 'expo-router';
+import {
+  corDaTemperatura,
+  type PreferenciasLeitura,
+  paginaCanonica,
+  paraReadium,
+  posicaoEmCaracteres,
+  totalDePaginas,
+} from '@bookworm/core';
+import * as Haptics from 'expo-haptics';
+import { useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { BackHandler, Pressable, Text, useWindowDimensions, View } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import {
+  type File as ArquivoReadium,
+  type Locator,
+  ReadiumView,
+  type ReadiumViewRef,
+} from 'react-native-readium';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { StyleSheet } from 'react-native-unistyles';
+import { StyleSheet, useUnistyles } from 'react-native-unistyles';
+import { BwAncora } from '../../src/componentes/BwAncora';
 import { BwFeltroRetorno } from '../../src/componentes/BwFeltroRetorno';
+import { BwPainelLeitura } from '../../src/componentes/BwPainelLeitura';
 import { usePousarNaMesa } from '../../src/componentes/usePousarNaMesa';
+import {
+  carregarIndice,
+  lerLocator,
+  salvarPosicao,
+  salvarPreferencias,
+  usePreferencias,
+} from '../../src/dados/leitura';
 import { useObra } from '../../src/dados/obras';
+import type { Obra } from '../../src/dados/schema';
 import { ALVO_MINIMO } from '../../src/tema/geometria';
+import { corDaCamadaDeBrilho, corDaCamadaDeLuz } from '../../src/tema/leitura';
 import { tipo } from '../../src/tema/tipografia';
 
+/** RN-02.13: sem interação por 3 segundos, os controles se recolhem. */
+const RECOLHER_EM_MS = 3000;
 /**
- * O leitor é modo, não destino (RN-DS.18, RN-DV.9): sem chrome durante a leitura. Um toque no
- * meio revela os controles, e só então aparece "pousar na mesa". Na E2 ele só mostra qual obra
- * abriu; o texto, pelo Readium, entra na E3.
+ * Depois de um ajuste do painel, o Readium repagina sem emitir posição e se reposiciona pela
+ * página corrente, com desvio. Este é o tempo de esperar a repaginação antes de voltar à posição
+ * da leitora; um evento de posição dentro da janela é efeito do retorno, não virada de página.
  */
+const REPAGINACAO_MS = 500;
+const JANELA_DO_RETORNO_MS = 1500;
+/** Quanto da largura, no meio, é "área central" para revelar os controles (RN-02.13). */
+const FAIXA_CENTRAL = [0.3, 0.7] as const;
+
 export default function Leitor() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const obra = useObra(id);
+  // A obra chega de uma live query; o leitor só monta quando ela existe, com o arquivo e a
+  // posição salvos naquele instante (a posição muda a cada página e não pode reabrir o livro).
+  return obra ? <LeitorDaObra obra={obra} /> : <View style={{ flex: 1 }} />;
+}
+
+function LeitorDaObra({ obra }: { obra: Obra }) {
+  const { theme } = useUnistyles();
+  const { top, bottom } = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
   const pousar = usePousarNaMesa();
+
+  const salvas = usePreferencias();
+  const [p, setP] = useState<PreferenciasLeitura>(salvas);
   const [controles, setControles] = useState(false);
-  const { top } = useSafeAreaInsets();
+  const [painel, setPainel] = useState(false);
+  const [locator, setLocator] = useState<Locator | undefined>(() => lerLocator(obra.locator));
+  const [progresso, setProgresso] = useState(obra.progresso);
+  const [paginasPdf, setPaginasPdf] = useState(0);
+  const primeiraPosicao = useRef(true);
+  const readium = useRef<ReadiumViewRef>(null);
+  // A posição da leitora (RN-02.9): só muda quando ela vira a página. Um ajuste do painel
+  // repagina o texto, e o Readium se reposiciona a partir da página corrente, já deslocada; em
+  // vários ajustes seguidos o erro acumula. Guardar a posição de antes e voltar a ela depois de
+  // cada repaginação é o que faz valer RN-02.16e: nenhum ajuste altera a posição.
+  const posicaoDaLeitora = useRef<Locator | undefined>(lerLocator(obra.locator));
+  const repaginandoAte = useRef(0);
+  const recolher = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const gravar = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const epub = obra.formato === 'epub';
+  const indice = useMemo(() => (epub ? carregarIndice(obra.id) : null), [epub, obra.id]);
+  const [arquivo] = useState<ArquivoReadium>(() => ({
+    url: obra.caminho,
+    initialLocation: lerLocator(obra.locator),
+  }));
+
+  // Preferências: aplicadas na hora (RN-02.16e) e gravadas um instante depois.
+  function mudarPreferencias(novas: PreferenciasLeitura) {
+    setP(novas);
+    if (gravar.current) clearTimeout(gravar.current);
+    gravar.current = setTimeout(() => salvarPreferencias(novas), 250);
+  }
+  useEffect(
+    () => () => {
+      if (gravar.current) clearTimeout(gravar.current);
+    },
+    []
+  );
+
+  // Controles revelados se recolhem sozinhos, menos com o painel aberto.
+  const agendarRecolher = useCallback(() => {
+    if (recolher.current) clearTimeout(recolher.current);
+    recolher.current = setTimeout(() => setControles(false), RECOLHER_EM_MS);
+  }, []);
+  useEffect(() => {
+    if (controles && !painel) agendarRecolher();
+    else if (recolher.current) clearTimeout(recolher.current);
+    return () => {
+      if (recolher.current) clearTimeout(recolher.current);
+    };
+  }, [controles, painel, agendarRecolher]);
+
+  // Com o painel aberto, o voltar do sistema fecha o painel antes de pousar o livro.
+  useFocusEffect(
+    useCallback(() => {
+      if (!painel) return undefined;
+      const assinatura = BackHandler.addEventListener('hardwareBackPress', () => {
+        setPainel(false);
+        return true;
+      });
+      return () => assinatura.remove();
+    }, [painel])
+  );
+
+  // O toque no centro só é ouvido com os controles recolhidos: ele roda junto do toque nativo
+  // (que vira a página nas bordas) e, se ficasse ativo com os controles à vista, cancelaria os
+  // botões por cima da página. Com eles à vista, quem recolhe é a camada `fecharControles`.
+  const toque = Gesture.Tap()
+    .enabled(!controles && !painel)
+    .maxDuration(300)
+    .runOnJS(true)
+    .onEnd((e, ok) => {
+      if (!ok) return;
+      const x = e.x / width;
+      if (x < FAIXA_CENTRAL[0] || x > FAIXA_CENTRAL[1]) return; // as bordas viram a página
+      setControles(true);
+    });
+
+  function fecharControles() {
+    setPainel(false);
+    setControles(false);
+  }
+
+  function aoMudarPosicao(novo: Locator) {
+    if (Date.now() < repaginandoAte.current) return; // efeito do retorno à posição da leitora
+    const virou =
+      !primeiraPosicao.current &&
+      (novo.href !== locator?.href || novo.locations?.position !== locator?.locations?.position);
+    primeiraPosicao.current = false;
+    posicaoDaLeitora.current = novo;
+    setLocator(novo);
+    setProgresso(salvarPosicao(obra.id, novo, indice));
+    if (virou && p.retornoSensorial) Haptics.selectionAsync(); // RN-02.17a, RN-02.17f
+  }
+
+  // RN-02.16e: depois de cada ajuste, a leitora volta exatamente para onde estava.
+  const primeiroAjuste = useRef(true);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `p` é o gatilho (roda a cada ajuste do painel), não um valor lido.
+  useEffect(() => {
+    if (primeiroAjuste.current) {
+      primeiroAjuste.current = false;
+      return undefined;
+    }
+    const espera = setTimeout(() => {
+      const fixa = posicaoDaLeitora.current;
+      if (!fixa) return;
+      repaginandoAte.current = Date.now() + JANELA_DO_RETORNO_MS;
+      readium.current?.goTo(fixa);
+    }, REPAGINACAO_MS);
+    return () => clearTimeout(espera);
+  }, [p]);
+
+  const tema = theme.leitura[p.tema];
+  const preferenciasReadium = useMemo(
+    () =>
+      epub
+        ? {
+            ...paraReadium(p),
+            theme: tema.escuro ? ('dark' as const) : ('light' as const),
+            backgroundColor: tema.fundo,
+            textColor: tema.tinta,
+          }
+        : { backgroundColor: tema.fundo },
+    [epub, p, tema]
+  );
+
+  const rotuloDaAncora = (() => {
+    if (epub && indice && locator) {
+      const pos =
+        posicaoEmCaracteres(indice, locator.href, locator.locations?.progression ?? 0) ?? 0;
+      const pagina = `p. ${paginaCanonica(pos)} de ${totalDePaginas(indice.total)}`;
+      return locator.title ? `${pagina} · ${locator.title}` : pagina;
+    }
+    const n = locator?.locations?.position;
+    return n ? `p. ${n}${paginasPdf ? ` de ${paginasPdf}` : ''}` : '';
+  })();
 
   return (
-    <View style={estilos.folha}>
-      <StatusBar style={controles ? 'light' : 'dark'} />
-      <Pressable
-        style={estilos.toque}
-        onPress={() => setControles((v) => !v)}
-        accessibilityRole="button"
-        accessibilityLabel={controles ? 'Esconder os controles' : 'Mostrar os controles'}
-      >
-        <ScrollView contentContainerStyle={[estilos.miolo, { paddingTop: top + 54 }]}>
-          <Text style={estilos.kicker}>
-            {obra?.autor ?? (obra?.formato === 'pdf' ? 'fotocópia' : '')}
-          </Text>
-          <Text style={estilos.titulo}>{obra?.titulo ?? 'Obra não encontrada'}</Text>
-          <Text style={estilos.corpo}>
-            {obra?.formato === 'pdf'
-              ? 'Este PDF vai abrir como fotocópia, página por página, quando o leitor chegar.'
-              : `O texto deste livro chega na próxima etapa, com o leitor de verdade.${
-                  obra?.totalCaracteres
-                    ? ` Ele tem ${obra.totalCaracteres.toLocaleString('pt-BR')} caracteres de conteúdo principal.`
-                    : ''
-                }`}
-          </Text>
-        </ScrollView>
-      </Pressable>
+    <View style={[estilos.leitor, { backgroundColor: tema.fundo, paddingTop: top }]}>
+      <StatusBar hidden={!controles} style={tema.escuro || controles ? 'light' : 'dark'} />
+
+      <GestureDetector gesture={Gesture.Simultaneous(toque, Gesture.Native())}>
+        <View style={estilos.pagina} collapsable={false}>
+          <ReadiumView
+            ref={readium}
+            file={arquivo}
+            preferences={preferenciasReadium}
+            onLocationChange={aoMudarPosicao}
+            onPublicationReady={(e) => setPaginasPdf(e.positions.length)}
+            style={estilos.readium}
+          />
+        </View>
+      </GestureDetector>
+
+      <View style={{ paddingBottom: bottom }}>
+        <BwAncora nivel={p.ancora} tema={p.tema} fracao={progresso} rotulo={rotuloDaAncora} />
+      </View>
+
+      {/* A luz da leitora (RN-02.16a) e o brilho in-app (RN-02.16b): camadas sobre a página. */}
+      <View
+        pointerEvents="none"
+        style={[
+          estilos.camada,
+          {
+            backgroundColor: corDaCamadaDeLuz(corDaTemperatura(p.temperatura, 0.7)),
+            mixBlendMode: 'multiply',
+          },
+        ]}
+      />
+      <View
+        pointerEvents="none"
+        style={[estilos.camada, { backgroundColor: corDaCamadaDeBrilho(p.brilho) }]}
+      />
+
+      {(controles || painel) && (
+        <Pressable
+          style={estilos.camada}
+          onPress={fecharControles}
+          accessibilityRole="button"
+          accessibilityLabel="Voltar ao texto"
+        />
+      )}
 
       {controles && (
-        <View style={[estilos.controles, { paddingTop: top }]}>
-          <BwFeltroRetorno onPousar={pousar} />
-        </View>
+        <>
+          <View style={[estilos.topo, { paddingTop: top }]}>
+            <BwFeltroRetorno onPousar={pousar} />
+            <Text style={estilos.tituloObra} numberOfLines={1}>
+              {obra.titulo}
+            </Text>
+          </View>
+          {!painel && (
+            <View style={[estilos.base, { paddingBottom: bottom }]}>
+              <Pressable
+                onPress={() => setPainel(true)}
+                accessibilityRole="button"
+                accessibilityLabel="Abrir o painel de leitura: luz, letra e página"
+                style={({ pressed }) => [estilos.abrirPainel, pressed && estilos.pressionado]}
+              >
+                <Text style={estilos.abrirPainelTexto}>Aa · luz, letra e página</Text>
+              </Pressable>
+            </View>
+          )}
+        </>
       )}
+
+      {painel && <BwPainelLeitura preferencias={p} onMudar={mudarPreferencias} />}
     </View>
   );
 }
 
 const estilos = StyleSheet.create((theme) => ({
-  folha: {
+  leitor: {
     flex: 1,
-    backgroundColor: theme.sup.papel.fundo,
   },
-  toque: {
+  pagina: {
     flex: 1,
-    minHeight: ALVO_MINIMO,
   },
-  miolo: {
-    paddingHorizontal: theme.esp[7],
-    gap: theme.esp[4],
+  readium: {
+    flex: 1,
   },
-  kicker: {
-    ...tipo.kicker,
-    color: theme.sup.papel.acento,
+  camada: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
   },
-  titulo: {
-    ...tipo.tituloCapitulo,
-    color: theme.sup.papel.tinta,
-  },
-  corpo: {
-    ...tipo.corpo,
-    color: theme.sup.papel.tinta,
-  },
-  controles: {
+  topo: {
     position: 'absolute',
     left: 0,
     right: 0,
     top: 0,
     backgroundColor: theme.sup.mesa.fundo,
-    boxShadow: theme.sup.papel.sombra.erguido,
+    paddingBottom: theme.esp[3],
+    boxShadow: theme.sup.mesa.sombra.erguido,
+  },
+  tituloObra: {
+    ...tipo.microcopy,
+    textAlign: 'center',
+    color: theme.sup.mesa.tinta,
+    paddingHorizontal: theme.esp[7],
+  },
+  base: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: theme.sup.mesa.fundo,
+    boxShadow: theme.sup.mesa.sombra.erguido,
+  },
+  abrirPainel: {
+    minHeight: ALVO_MINIMO + 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pressionado: {
+    backgroundColor: theme.semantico.mesa.selecionadoFundo,
+  },
+  abrirPainelTexto: {
+    ...tipo.kickerAbertura,
+    color: theme.sup.mesa.tinta,
   },
 }));

@@ -43,5 +43,15 @@ export const indiceCaracteres = sqliteTable(
   (t) => [primaryKey({ columns: [t.obraId, t.ordem] })]
 );
 
+/**
+ * As preferências de leitura (RN-02.16): um registro só, por conta. Guardadas como JSON e lidas
+ * por `normalizarPreferencias`, para que um valor inválido nunca quebre o leitor.
+ */
+export const preferenciasLeitura = sqliteTable('preferencias_leitura', {
+  id: integer('id').primaryKey(),
+  dados: text('dados').notNull(),
+  atualizadoEm: integer('atualizado_em').notNull(),
+});
+
 export type Obra = typeof obra.$inferSelect;
 export type NovaObra = typeof obra.$inferInsert;

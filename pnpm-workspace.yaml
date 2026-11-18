@@ -8,3 +8,7 @@ minimumReleaseAge: 20160
 onlyBuiltDependencies:
   - "@biomejs/biome"
   - esbuild
+
+# Declara as 5 faces do painel de leitura no navegador EPUB do Readium (RN-02.16g, Q-ST.2).
+patchedDependencies:
+  react-native-readium@5.3.0: patches/react-native-readium@5.3.0.patch

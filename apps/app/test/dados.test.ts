@@ -1,7 +1,7 @@
 import { getTableConfig } from 'drizzle-orm/sqlite-core';
 import { describe, expect, it } from 'vitest';
 import { MIGRACOES } from '../src/dados/migracoes';
-import { indiceCaracteres, obra } from '../src/dados/schema';
+import { indiceCaracteres, obra, preferenciasLeitura } from '../src/dados/schema';
 
 /** Colunas de cada CREATE TABLE das migrações, na ordem declarada. */
 function colunasDasMigracoes(): Map<string, string[]> {
@@ -22,7 +22,7 @@ function colunasDasMigracoes(): Map<string, string[]> {
 describe('o esquema Drizzle e as migrações SQL descrevem o mesmo banco', () => {
   const migradas = colunasDasMigracoes();
 
-  for (const tabela of [obra, indiceCaracteres]) {
+  for (const tabela of [obra, indiceCaracteres, preferenciasLeitura]) {
     const { name, columns } = getTableConfig(tabela);
     it(`${name}: mesmas colunas`, () => {
       expect(migradas.get(name)?.sort()).toEqual(columns.map((c) => c.name).sort());

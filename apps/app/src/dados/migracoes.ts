@@ -33,6 +33,13 @@ export const MIGRACOES: readonly string[] = [
     PRIMARY KEY (obra_id, ordem)
   );
   `,
+  `
+  CREATE TABLE preferencias_leitura (
+    id INTEGER PRIMARY KEY NOT NULL CHECK (id = 1),
+    dados TEXT NOT NULL,
+    atualizado_em INTEGER NOT NULL
+  );
+  `,
 ];
 
 export function migrar(banco: SQLiteDatabase): void {

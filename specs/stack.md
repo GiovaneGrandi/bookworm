@@ -194,6 +194,60 @@ importação única evita. Vale igualmente para EPUB e PDF.
 
 ---
 
+### 6.1 Medição da etapa E3 (18/11/2026)
+
+Medido no emulador Android (API 34) com `react-native-readium` **5.3.0**, Expo SDK 55 (RN 0.83,
+New Architecture), lendo *Dom Casmurro* (EPUB do acervo) e um PDF de duas páginas. Plano:
+`planos/2026-11-17-primeiras-telas.md`, etapa E3.
+
+**`Q-ST.1` — a versão.** O projeto fixa `react-native-readium@5.3.0` (estável, publicada em
+14/10/2026, sobre o Readium Kotlin 3.3.0). Compila com a New Architecture nas ABIs x86_64 e
+arm64-v8a, sem o patch de `abiFilters` que o protótipo descartado precisava na 5.0. O build
+ainda exige três ajustes (flags do Kotlin, desugaring 2.1.5 e o `network_security_config` de
+debug), aplicados pelo config plugin `apps/app/plugins/withBookwormReadium.js`, e um patch de
+pnpm em três arquivos do pacote (`patches/react-native-readium@5.3.0.patch`), descritos abaixo.
+O fallback WebView + `foliate-js` não foi necessário.
+
+**`Q-ST.2` — os dez controles de `RN-02.16d`.** Seis são preferências nativas do Readium, uma
+delas com patch. Dois são camadas do React Native sobre a página, e dois vivem fora do Readium.
+Nenhum precisou de CSS injetado.
+
+| Controle | Como chega à página | Medição e observação |
+|---|---|---|
+| Família (5 faces, `RN-02.16g`) | Nativa (`fontFamily`) + **patch**: o navegador EPUB só conhece uma face declarada em `addFontFamilyDeclaration`, com os arquivos servidos de `assets/fonts` (copiados pelo config plugin) | Sem o patch, "Spectral" cai na serifa do sistema. Com ele, as cinco renderizam na WebView, em regular, itálico, negrito e negrito itálico |
+| Corpo | Nativa (`fontSize` = corpo ÷ 16) | Aceita fração menor que 1 (Courier Prime abre em 13,5 px) |
+| Entrelinha | Nativa (`lineHeight` = entrelinha ÷ corpo) | Só vale com `publisherStyles: false` |
+| Margens | Nativa (`pageMargins`: 0,75 · 1,25 · 2) | Texto de 42–1034 px, 68–990 px e 107–965 px numa tela de 1080 px |
+| Alinhamento | Nativa (`textAlign` + `hyphens`) | Justificado com hifenização atravessa ("re-strictions", "pe-quena"): responde `Q-ST.5` |
+| Tema (`RN-02.17`) | Nativa (`theme` + `backgroundColor`/`textColor` com os tokens de leitura) | O preto puro (OLED) é só cor: `theme: dark` com fundo `#000000` |
+| Temperatura (`RN-02.16a`) | **Camada do RN** sobre a página, em `mixBlendMode: multiply`, com a cor de corpo negro normalizada em 4.200 K (`corDaTemperatura`, `packages/core`) | O multiply atravessa sobre a WebView: a página esquenta ou esfria sem velar o texto. Contínua de 2.700 a 6.500 K, em passos de 50 K |
+| Brilho (`RN-02.16b`) | **Camada do RN**, preta com opacidade | Só escurece, nunca passa do brilho do sistema |
+| Âncora (`RN-02.13a`) | Componente do app na faixa marginal + **patch** que esconde o rótulo "1 / 169" do pacote | O rótulo do pacote apareceria até no nível `nenhuma`, o que `RN-02.13b` proíbe |
+| Retorno sensorial (`RN-02.17f`) | `expo-haptics` no JS, a cada virada de página | O serviço de vibração do Android registra pulsos de cerca de 50 ms |
+
+**A posição durante os ajustes (`RN-02.16e`).** O `progression` do Readium é fração do *layout*
+do recurso, não do texto. Num recurso que começa com páginas de imagem (a capa digitalizada da
+edição original), a mesma fração cai em outro trecho quando o corpo muda. Medido: um ajuste de
+corpo levava a leitora do cap. III ao cap. II. Além disso, o Readium não emite posição ao
+repaginar. A solução tem duas partes: o patch preenche `text` do locator com o primeiro elemento
+visível (`firstVisibleElementLocator`), e o leitor guarda a posição da leitora e, meio segundo
+depois de cada ajuste, volta a ela com `goTo`, que no Readium relocaliza pelo trecho
+(`TextQuoteAnchor`). Medido depois da correção: em quatro ajustes seguidos o trecho da leitora
+continua na página visível, e o que muda é só onde a página quebra.
+
+**Outros achados.**
+
+- **O toque no centro** (`RN-02.13`) não chega ao JS pelo Readium. O leitor usa um `Tap` do
+  Gesture Handler simultâneo a `Gesture.Native()`, para não roubar o toque da WebView, e
+  habilitado só com os controles recolhidos. Ativo com os controles à vista, ele cancelava os
+  botões por cima da página.
+- **O capítulo na âncora** depende do `title` do locator, que não vem nos EPUBs do Gutenberg:
+  todos os capítulos moram num recurso só.
+- **O PDF** abre pelo PDFium em rolagem vertical, como fotocópia, e a âncora conta as páginas do
+  próprio PDF, porque ele não tem índice de caracteres (decisão Q5 do plano).
+- **No Windows**, o `pnpm install` falha ao reaplicar o patch se o Metro ou o daemon do Gradle
+  estiverem segurando arquivos do pacote. É preciso parar os dois antes.
+
 ## 7. Sincronização e offline
 
 Sem PowerSync (serviço e custo a mais para uma equipe que não opera nada continuamente,
@@ -284,14 +338,15 @@ Nenhuma pode ser declarada resolvida sem medição — `RN-DS.20` vale aqui tamb
 
 | ID | Pergunta |
 |---|---|
-| `Q-ST.1` | `react-native-readium` está em release candidate. Qual versão o projeto fixa, e qual é o plano se a evolução parar? O fallback é WebView + `foliate-js`, com o custo de locator próprio |
-| `Q-ST.2` | Dos dez controles obrigatórios de `RN-02.16d`, quais o Readium entrega por preferência nativa e quais exigem CSS injetado ou overlay? A temperatura contínua 2.700–6.500K (`RN-02.16a`) é o caso mais duvidoso |
+| `Q-ST.1` | `react-native-readium` está em release candidate. Qual versão o projeto fixa, e qual é o plano se a evolução parar? O fallback é WebView + `foliate-js`, com o custo de locator próprio. **Respondida em §6.1 (E3, 18/11/2026):** 5.3.0, estável, sem fallback |
+| `Q-ST.2` | Dos dez controles obrigatórios de `RN-02.16d`, quais o Readium entrega por preferência nativa e quais exigem CSS injetado ou overlay? A temperatura contínua 2.700–6.500K (`RN-02.16a`) é o caso mais duvidoso. **Respondida em §6.1 (E3, 18/11/2026):** seis nativos (um com patch), dois overlays, dois fora do Readium, nenhum CSS injetado |
 | `Q-ST.3` | O provedor de Postgres escolhido tem região no Brasil? Se não tiver, o app fica em `gru` e o banco fora — medir antes de fixar |
 | `Q-ST.4` | Better Auth em Expo: o plugin mobile cobre e-mail/senha + Google com refresh em background? |
-| `Q-ST.5` | Justificado e hifenização não atravessam para RN puro (Anexo A). Dentro do Readium, que roda WebView, atravessam? Reabre uma linha dada como perdida em `design-system.md` |
+| `Q-ST.5` | Justificado e hifenização não atravessam para RN puro (Anexo A). Dentro do Readium, que roda WebView, atravessam? Reabre uma linha dada como perdida em `design-system.md`. **Respondida em §6.1 (E3, 18/11/2026):** atravessam, inclusive com margens largas |
 | `Q-ST.6` | O jardim em Skia é código, não arquivo de ilustrador. `R-2` diz que a arte **é** o produto: com uma dupla, isso se sustenta ou o projeto precisa de Rive e de um ilustrador? |
 | `Q-ST.7` | `Q-02.4` segue sem resposta: o levantamento não achou dicionário PT-BR de licença livre verificada (Aurélio e Michaelis são proprietários). Candidatos a avaliar: Wikcionário PT (CC BY-SA), Dicionário Aberto |
 | `Q-ST.8` | `react-native-readium` expõe texto extraído de página PDF diretamente, ou a extração precisa rodar fora do Readium (`pdfjs-dist` sobre o arquivo bruto, no momento da importação)? Não medido — decide se o índice de caracteres de PDF é uma variação pequena do pipeline de EPUB ou um segundo pipeline inteiro |
+| `Q-ST.9` | O progresso por índice (`RN-02.10`) usa o `progression` do Readium, que é fração do layout (§6.1). Num recurso com páginas de imagem, a posição em caracteres sai aproximada, com desvio de algumas páginas canônicas. Localizar o `text.highlight` do locator no texto do recurso daria a posição exata. Vale o custo, ou a aproximação basta para meta e ofensiva? |
 
 ---
 
