@@ -11,6 +11,8 @@ type Props = {
   /** Onde ela está pousada: decide a sombra (RN-DS.6). */
   sobre?: NomeSuperficie;
   rotacao?: Giro | string;
+  /** Na cor de ação da superfície, com a tinta do papel (mockup B: "Continuar · Alice · p. 68"). */
+  destaque?: boolean;
 };
 
 /**
@@ -22,11 +24,16 @@ export function BwEtiqueta({
   superficie = 'papel',
   sobre = 'mesa',
   rotacao = giro.plaqueta,
+  destaque = false,
 }: Props) {
   return (
     <Text
       importantForAccessibility="no"
-      style={[estilos.etiqueta(superficie, sobre), { transform: [{ rotate: rotacao }] }]}
+      style={[
+        estilos.etiqueta(superficie, sobre),
+        destaque && estilos.destaque(superficie),
+        { transform: [{ rotate: rotacao }] },
+      ]}
     >
       {children}
     </Text>
@@ -42,5 +49,9 @@ const estilos = StyleSheet.create((theme) => ({
     paddingVertical: theme.esp[1],
     paddingHorizontal: theme.esp[3],
     boxShadow: theme.sup[sobre].sombra.pousado,
+  }),
+  destaque: (superficie: NomeSuperficie) => ({
+    color: theme.semantico[superficie].acaoPrimariaTinta,
+    backgroundColor: theme.semantico[superficie].acaoPrimaria,
   }),
 }));

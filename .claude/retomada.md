@@ -68,8 +68,26 @@ Decisões do usuário nesta conversa:
   (3) se `:app:packageDebug` falhar sem causa, apagar `app/build/intermediates/incremental/packageDebug`
   e rodar `./gradlew :app:assembleDebug`; (4) `console.log` não chega ao terminal do Metro no RN 0.83.
 - `rm -rf` de `node_modules/*_tmp_*` foi retido pela trava de segurança — não repetir sem pedir.
-- Próxima ação: **o usuário testa a E3**. Depois, a E4 (arte da mesa em Skia, luminária tingida
-  pela temperatura — RN-DV.6 —, transição objeto → folha, TalkBack).
+- E3 testável: `testar-no-emulador.bat` na raiz (liga AVD, Metro em janela própria, abre o app;
+  `build` recompila). O DB do emulador foi zerado na reinstalação do teste do patch.
+- **E4 feita** (19/11): Skia 2.4.18 (a do SDK 55; postinstall liberado em `onlyBuiltDependencies`,
+  baixa binários das releases com checksum; `SKIP_SKIA_DOWNLOAD=1` no CI). App 39 testes.
+  Verificado no emulador: lado a lado com o mockup B (Chrome headless no scratchpad), mesa vazia
+  (Q13), erguer/pousar quadro a quadro (a folha espera `chegou()` da tela nova — sem isso a mesa
+  piscava), poça 2.700 × 6.500 K por mapa de diferença, movimento reduzido = troca imediata, ordem
+  do dump de acessibilidade = cabeça, bandeja, 2º livro, livro, gaveta; pausar + matar + reabrir.
+- Decisões da E4 que ainda não viraram spec: `tipoMiniatura` (letra dos objetos em miniatura, fora
+  da escala §3.2, como RN-DV.8); `tema/arte.ts` (madeira, couro, latão, arame do mockup B como
+  tokens de material de objeto, fora das 8 superfícies); rotações dos objetos são as do mockup
+  (composição), as das etiquetas são `giro.*`; bandeja vazia em destaque = escala 1,35 no lugar.
+- Emulador: **nunca `-no-snapshot-save`** — religa da foto antiga e perde app e dados. O `.bat`
+  usa `-no-snapshot` (boot a frio, dados persistem).
+- Próxima ação: **o usuário testa a E4**. Depois, o plano do repositório compartilhado (abaixo).
+
+### Depois da E4: repositório compartilhado (`planos/2026-11-18-repositorio-compartilhado.md`)
+Aprovado em 18/11 via grilling. Amigo: `guitobia`. Público em `GiovaneGrandi/bookworm`. A E4 entra
+**direto na main** (ff-merge do branch), sem PR; o primeiro PR fica para depois. Ordem: merge →
+arrumação → reescrever email → publicar → regras por último → convite.
 
 ---
 

@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native-unistyles';
+import { arte } from './arte';
 import { esp } from './espacamento';
 import { temasDeLeitura, trilhoDeTemperatura } from './leitura';
 import { luz } from './luz';
@@ -19,6 +20,7 @@ const papel = {
   },
   esp,
   luz,
+  arte,
   leitura: temasDeLeitura,
   leituraTrilho: trilhoDeTemperatura,
 } as const;

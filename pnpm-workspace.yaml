@@ -8,6 +8,9 @@ minimumReleaseAge: 20160
 onlyBuiltDependencies:
   - "@biomejs/biome"
   - esbuild
+  # Baixa os binários do Skia das releases do próprio repositório, conferindo o checksum.
+  # No CI (só lint, tipos e testes), SKIP_SKIA_DOWNLOAD=1 pula o download.
+  - "@shopify/react-native-skia"
 
 # Declara as 5 faces do painel de leitura no navegador EPUB do Readium (RN-02.16g, Q-ST.2).
 patchedDependencies:

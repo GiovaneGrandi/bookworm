@@ -32,3 +32,16 @@ export const tipo = {
   etiquetaManuscrita: voz('Caveat_600SemiBold', 22, 24, 0.01),
   manuscritoDestaque: voz('Caveat_600SemiBold', 34, 36, 0.01),
 } satisfies Record<string, Estilo>;
+
+/**
+ * A letra dentro dos objetos em miniatura da mesa (mockup B: a página aberta, a capa, as abas
+ * do fichário). É desenho do objeto, não texto de leitura: fica fora da escala de §3.2, como a
+ * composição sobre o feltro fica fora da escala tônica (RN-DV.8).
+ */
+export const tipoMiniatura = {
+  tituloPagina: voz('Spectral_300Light_Italic', 12, 16),
+  folio: voz('Spectral_400Regular', 9, 12, 0, { fontVariant: ['tabular-nums'] }),
+  tituloCapa: voz('Spectral_400Regular_Italic', 10, 13),
+  aba: voz('CourierPrime_700Bold', 7.5, 15, 0.12, { textTransform: 'uppercase' }),
+  placa: voz('CourierPrime_700Bold', 7.5, 12, 0.2, { textTransform: 'uppercase' }),
+} satisfies Record<string, Estilo>;

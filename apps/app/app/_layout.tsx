@@ -5,9 +5,21 @@ import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useUnistyles } from 'react-native-unistyles';
+import { BwTransicaoDaMesa } from '../src/componentes/BwTransicaoDaMesa';
 import { arquivosDeFonte } from '../src/tema/fontes';
 
 SplashScreen.preventAutoHideAsync();
+
+/**
+ * Quem já se ergueu da mesa pela folha que cresce do objeto (BwTransicaoDaMesa) entra sem a
+ * animação do sistema; quem vem de outra folha (o livro aberto da gaveta) entra com ela.
+ */
+const entrada =
+  (padrao: 'slide_from_bottom' | 'fade') =>
+  ({ route }: { route: { params?: object } }) =>
+    ({
+      animation: (route.params as { erguido?: string } | undefined)?.erguido ? 'none' : padrao,
+    }) as const;
 
 /**
  * Raiz: Stack sem abas (RN-DV.2). A mesa é a primeira tela e o único hub (RN-DV.1); bandeja e
@@ -27,18 +39,20 @@ export default function Raiz() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <StatusBar style="light" />
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: { backgroundColor: theme.sup.mesa.fundo },
-            animation: 'slide_from_bottom',
-          }}
-        >
-          <Stack.Screen name="index" options={{ animation: 'fade' }} />
-          <Stack.Screen name="bandeja" />
-          <Stack.Screen name="gaveta" />
-          <Stack.Screen name="leitor/[id]" options={{ animation: 'fade' }} />
-        </Stack>
+        <BwTransicaoDaMesa>
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              contentStyle: { backgroundColor: theme.sup.mesa.fundo },
+              animation: 'slide_from_bottom',
+            }}
+          >
+            <Stack.Screen name="index" options={{ animation: 'fade' }} />
+            <Stack.Screen name="bandeja" options={entrada('slide_from_bottom')} />
+            <Stack.Screen name="gaveta" options={entrada('slide_from_bottom')} />
+            <Stack.Screen name="leitor/[id]" options={entrada('fade')} />
+          </Stack>
+        </BwTransicaoDaMesa>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

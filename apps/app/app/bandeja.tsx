@@ -2,7 +2,7 @@ import { obraComMesmoArquivo } from '@bookworm/core';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { StyleSheet } from 'react-native-unistyles';
+import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { BwBotao } from '../src/componentes/BwBotao';
 import { BwEnvelope } from '../src/componentes/BwEnvelope';
 import { BwFolha } from '../src/componentes/BwFolha';
@@ -23,7 +23,8 @@ const RECUSA = {
 /** A bandeja de entrada: pôr um livro na mesa, do aparelho ou do acervo (RN-02.1a, Q5, Q7). */
 export default function Bandeja() {
   const router = useRouter();
-  const pousar = usePousarNaMesa();
+  const { theme } = useUnistyles();
+  const pousar = usePousarNaMesa(theme.sup.papel.fundo);
   const obras = useObras();
   const [carregando, setCarregando] = useState<string | null>(null);
   const [resultado, setResultado] = useState<Resultado | null>(null);

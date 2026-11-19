@@ -23,6 +23,7 @@ import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { BwAncora } from '../../src/componentes/BwAncora';
 import { BwFeltroRetorno } from '../../src/componentes/BwFeltroRetorno';
 import { BwPainelLeitura } from '../../src/componentes/BwPainelLeitura';
+import { useTransicaoDaMesa } from '../../src/componentes/BwTransicaoDaMesa';
 import { usePousarNaMesa } from '../../src/componentes/usePousarNaMesa';
 import {
   carregarIndice,
@@ -61,10 +62,10 @@ function LeitorDaObra({ obra }: { obra: Obra }) {
   const { theme } = useUnistyles();
   const { top, bottom } = useSafeAreaInsets();
   const { width } = useWindowDimensions();
-  const pousar = usePousarNaMesa();
-
   const salvas = usePreferencias();
   const [p, setP] = useState<PreferenciasLeitura>(salvas);
+  const pousar = usePousarNaMesa(theme.leitura[p.tema].fundo, 'tela');
+  const { chegou } = useTransicaoDaMesa();
   const [controles, setControles] = useState(false);
   const [painel, setPainel] = useState(false);
   const [locator, setLocator] = useState<Locator | undefined>(() => lerLocator(obra.locator));
@@ -200,7 +201,10 @@ function LeitorDaObra({ obra }: { obra: Obra }) {
   })();
 
   return (
-    <View style={[estilos.leitor, { backgroundColor: tema.fundo, paddingTop: top }]}>
+    <View
+      onLayout={chegou}
+      style={[estilos.leitor, { backgroundColor: tema.fundo, paddingTop: top }]}
+    >
       <StatusBar hidden={!controles} style={tema.escuro || controles ? 'light' : 'dark'} />
 
       <GestureDetector gesture={Gesture.Simultaneous(toque, Gesture.Native())}>

@@ -1,10 +1,11 @@
 import type { ReactNode } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { StyleSheet } from 'react-native-unistyles';
+import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import type { NomeSuperficie } from '../tema/superficies';
 import { tipo } from '../tema/tipografia';
 import { BwFeltroRetorno } from './BwFeltroRetorno';
+import { useTransicaoDaMesa } from './BwTransicaoDaMesa';
 import { usePousarNaMesa } from './usePousarNaMesa';
 
 type Props = {
@@ -20,11 +21,13 @@ type Props = {
  * folha de papel ocupa o resto da tela.
  */
 export function BwFolha({ kicker, titulo, children, superficie = 'papel', rotuloRetorno }: Props) {
-  const pousar = usePousarNaMesa();
+  const { theme } = useUnistyles();
+  const pousar = usePousarNaMesa(theme.sup[superficie].fundo);
+  const { chegou } = useTransicaoDaMesa();
   const { top, bottom } = useSafeAreaInsets();
 
   return (
-    <View style={[estilos.feltro, { paddingTop: top }]}>
+    <View onLayout={chegou} style={[estilos.feltro, { paddingTop: top }]}>
       <BwFeltroRetorno onPousar={pousar} rotulo={rotuloRetorno} />
       <View style={estilos.folha(superficie)}>
         <ScrollView contentContainerStyle={[estilos.miolo, { paddingBottom: bottom }]}>

@@ -17,6 +17,7 @@
     "@expo-google-fonts/eb-garamond": "0.4.3",
     "@expo-google-fonts/public-sans": "0.4.2",
     "@expo-google-fonts/spectral": "0.4.1",
+    "@shopify/react-native-skia": "2.4.18",
     "drizzle-orm": "0.45.4",
     "expo": "55.0.32",
     "expo-asset": "55.0.20",
