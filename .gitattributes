@@ -1,3 +1,6 @@
+# Todo texto em LF, em qualquer sistema: é o que o Biome exige (e o CI roda em Linux).
+* text=auto eol=lf
 # O pnpm aplica os patches byte a byte: fim de linha convertido quebra a aplicação.
 *.patch text eol=lf
 *.bat text eol=crlf
+*.sh text eol=lf

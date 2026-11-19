@@ -1,0 +1,24 @@
+# Atualizações de versão com a mesma espera de 14 dias do `minimumReleaseAge` do pnpm.
+# Os alertas de segurança chegam sem espera, pelas atualizações de segurança do repositório.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 14
+    groups:
+      actions:
+        patterns: ['*']
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 14
+    open-pull-requests-limit: 5
+    groups:
+      dependencias:
+        update-types: [minor, patch]

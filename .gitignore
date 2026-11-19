@@ -9,3 +9,9 @@ dist/
 .turbo/
 coverage/
 *.tsbuildinfo
+
+# Arquivos locais de cada pessoa (CLAUDE.md, "Arquivos locais de cada pessoa")
+CLAUDE.local.md
+.claude/retomada.md
+.claude/settings.local.json
+.claude/*.lock

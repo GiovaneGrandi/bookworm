@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## O que é este projeto
 
-BookWorm é uma plataforma gamificada de leitura e escrita ("fitness para a mente"). **Estado atual: só documentação.** Um primeiro protótipo (Estágios 0–8 de `planos/2026-08-23-primeiro-prototipo-mvp.md`) foi construído e **descartado em 17/11/2026**; o projeto recomeça a partir das specs. O código antigo existe só no histórico do git (último commit `1b903e5`) e não é base para o recomeço. O repositório contém specs funcionais, análises críticas e mockups estáticos em HTML.
+BookWorm é uma plataforma gamificada de leitura e escrita ("fitness para a mente"). **Estado atual: o recomeço está no código** — as primeiras telas (mesa, bandeja, gaveta e leitor) rodam no emulador Android. Um primeiro protótipo (Estágios 0–8 de `planos/2026-08-23-primeiro-prototipo-mvp.md`) foi construído e **descartado em 17/11/2026**; o projeto recomeça a partir das specs. O código antigo existe só no histórico do git (último commit `1b903e5`) e não é base para o recomeço. O repositório contém specs funcionais, análises críticas e mockups estáticos em HTML.
 
 - `BookWorm.md` — rascunho original (pitch). Documento-fonte histórico, **mantido intocado**.
 - `README.md` — mapa da documentação e estado do projeto.
@@ -22,7 +22,7 @@ BookWorm é uma plataforma gamificada de leitura e escrita ("fitness para a ment
 
 ## Código de produto
 
-Não há código no repositório. Quando o recomeço começar, a estrutura e as ferramentas vinculantes são as de `specs/stack.md` (monorepo pnpm + Turborepo, `apps/app` Expo, `apps/api` Fastify, `packages/core` TypeScript puro sem I/O — `RN-ST.7`). `planos/2026-08-23-primeiro-prototipo-mvp.md` é o plano do protótipo descartado: serve de referência, não de roteiro já validado. **O plano vigente do recomeço é `planos/2026-11-17-primeiras-telas.md`** (mesa, bandeja, gaveta e leitor, em etapas E0–E4).
+A estrutura e as ferramentas vinculantes são as de `specs/stack.md` (monorepo pnpm + Turborepo, `apps/app` Expo, `apps/api` Fastify, `packages/core` TypeScript puro sem I/O — `RN-ST.7`). `planos/2026-08-23-primeiro-prototipo-mvp.md` é o plano do protótipo descartado: serve de referência, não de roteiro já validado. `planos/2026-11-17-primeiras-telas.md` (mesa, bandeja, gaveta e leitor, etapas E0–E4) está concluído. Como rodar o app no Windows e no macOS está no `README.md`.
 
 ## Convenções das specs
 
@@ -64,11 +64,13 @@ O essencial, para não precisar abrir o arquivo a cada tarefa:
 
 ## Regras de trabalho
 
+**Fluxo de trabalho a dois.** O repositório é compartilhado e a `main` é protegida: nunca fazer commit nem push direto na `main`. Toda mudança nasce numa branch, sobe como PR e só entra com a aprovação da outra pessoa e o CI verde (lint, typecheck e testes), por squash. O Claude pode criar a branch, os commits e o PR quando pedido, mas não aprova nem faz o merge.
+
+**Arquivos locais de cada pessoa.** Ficam fora do git: `CLAUDE.local.md` (regras pessoais, como a cópia para um vault do Obsidian), `.claude/retomada.md` e `.claude/settings.local.json`. O Claude Code lê o `CLAUDE.local.md` sozinho, se ele existir.
+
 **Validação de mudanças práticas.** Sempre que fizermos trabalho de mão na massa (código, scripts, configuração) e o usuário não indicar como validar o resultado, é responsabilidade de quem implementa revisar o que foi feito e decidir a melhor forma de garantir que está funcionando antes de reportar como concluído — não presumir que "rodou sem erro" é suficiente.
 
 **TDD por padrão.** Quando o projeto passar a ter código de produto, o desenvolvimento segue TDD: escrever o teste que expressa o comportamento esperado antes da implementação, ver falhar, então implementar até passar. Isso vale como prática padrão deste repositório, não apenas quando pedido explicitamente.
-
-**Sincronização com o Obsidian.** Este repositório é a fonte de verdade do código; o vault do Obsidian em `C:\Users\Giovane\Documents\BookWorm` é a cópia de leitura do usuário. Sempre que um arquivo `.md` deste projeto (spec, resumo, validação, análise etc.) for criado ou alterado, replicar o conteúdo atualizado para o arquivo correspondente no vault (mesma estrutura de pastas: `specs/`, `analise-game-design/`, `analise-monetizacao/`, raiz). Isso deve acontecer como parte da tarefa, não como passo adicional que precisa ser pedido de novo a cada vez.
 
 ## Retomada barata
 
@@ -86,7 +88,7 @@ Sessão longa termina em reset de contexto ou de tokens, e este repositório tem
 
 `Read` do arquivo inteiro é último recurso, e só para *editar* algo cujo entorno exato importa.
 
-**3. `.claude/retomada.md` guarda o estado da operação em curso.** Escrito antes de qualquer etapa longa e atualizado a cada marco. Contém **exclusivamente o que não é re-derivável do repositório**: a próxima ação concreta, URLs de artefatos publicados, decisões tomadas na conversa que ainda não viraram spec, e quais verificações já passaram — para a sessão nova não repetir. Não contém nada que um grep encontre (estrutura de arquivo, tokens, IDs, o que a spec já diz). Passou de ~150 linhas, virou documentação e perdeu a função. Fechada a operação, a seção é apagada: o arquivo descreve o presente, não o histórico. É arquivo operacional, **não replicar no vault** — a regra de sincronização vale para spec, análise, resumo e validação.
+**3. `.claude/retomada.md` guarda o estado da operação em curso.** Escrito antes de qualquer etapa longa e atualizado a cada marco. Contém **exclusivamente o que não é re-derivável do repositório**: a próxima ação concreta, URLs de artefatos publicados, decisões tomadas na conversa que ainda não viraram spec, e quais verificações já passaram — para a sessão nova não repetir. Não contém nada que um grep encontre (estrutura de arquivo, tokens, IDs, o que a spec já diz). Passou de ~150 linhas, virou documentação e perdeu a função. Fechada a operação, a seção é apagada: o arquivo descreve o presente, não o histórico. É arquivo operacional e **local de cada pessoa** (fora do git): cada um mantém o seu.
 
 **4. Publicar antes de parar, e anotar a URL no ato.** Republicar um artefato de uma sessão que não viu a versão viva é recusado, e a correção obriga a ler o fonte publicado inteiro — ~20.000 tokens por mockup deste repositório. Deixar a publicação para a sessão seguinte compra esse custo sem necessidade; redescobrir a URL depois custa `action: "list"` mais uma leitura.
 
