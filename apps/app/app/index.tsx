@@ -11,12 +11,12 @@ import { useGiroDaMesa, useTransicaoDaMesa } from '../src/componentes/BwTransica
 import { BANDEJA, BwBandejaDeArame } from '../src/componentes/mesa/BwBandejaDeArame';
 import { BwCapaFechada, CAPA } from '../src/componentes/mesa/BwCapaFechada';
 import { BwFeltro } from '../src/componentes/mesa/BwFeltro';
-import { BwFichario, FICHARIO } from '../src/componentes/mesa/BwFichario';
 import { BwLivroAberto, LIVRO } from '../src/componentes/mesa/BwLivroAberto';
 import { BwLugarReservado } from '../src/componentes/mesa/BwLugarReservado';
 import { BwLuminaria } from '../src/componentes/mesa/BwLuminaria';
 import { BwFeixe, BwPenumbra } from '../src/componentes/mesa/BwLuzDaMesa';
 import { BwMesaEmLista, type ItemDaLista } from '../src/componentes/mesa/BwMesaEmLista';
+import { BwTresLombadas, LOMBADAS } from '../src/componentes/mesa/BwTresLombadas';
 import { carregarIndice, usePreferencias } from '../src/dados/leitura';
 import { marcarAberta, pausar, useObras } from '../src/dados/obras';
 import type { Obra } from '../src/dados/schema';
@@ -25,7 +25,7 @@ import {
   encaixarComposicao,
   mesaEmLista,
   textosDaBandeja,
-  textosDaGaveta,
+  textosDaBiblioteca,
   textosDoLivro,
   textosDoSegundoLivro,
 } from '../src/mesa';
@@ -34,9 +34,9 @@ import { tipo } from '../src/tema/tipografia';
 
 /** Na mesa vazia, a bandeja cresce, vai para o lugar do livro, sob a luz, e é o convite (Q13). */
 const BANDEJA_EM_DESTAQUE = 1.35;
-/** A v2 encolhe a bandeja e o fichário para os dois caberem embaixo, ao alcance do polegar. */
+/** A v2 encolhe a bandeja e a biblioteca para as duas caberem embaixo, ao alcance do polegar. */
 const ESCALA_DA_BANDEJA = 0.94;
-const ESCALA_DO_FICHARIO = 0.9;
+const ESCALA_DA_BIBLIOTECA = 0.93;
 
 type Abertura = { menu: Omit<MenuRapido, 'x' | 'y'> };
 
@@ -100,7 +100,7 @@ export default function Mesa() {
   const alternarLuz = useCallback(() => setAcesa((a) => !a), []);
 
   const bandeja = textosDaBandeja(mesa.vazia);
-  const gaveta = textosDaGaveta(mesa.gaveta);
+  const biblioteca = textosDaBiblioteca(mesa.gaveta);
   const livro = principal ? textosDoLivro(principal, totalDoPrincipal) : null;
   const fechado = segundo ? textosDoSegundoLivro(segundo) : null;
   const pct = (o: Obra) => `${Math.round(o.progresso * 100)}% lido`;
@@ -129,7 +129,7 @@ export default function Mesa() {
       : null,
     segundo: segundo ? menuDoLivro(segundo, `${pct(segundo)} · na mesa`, 'Abrir no leitor') : null,
     gaveta: {
-      titulo: 'Gaveta e estante',
+      titulo: 'Biblioteca',
       sub: `${mesa.gaveta.lendo} lendo · ${mesa.gaveta.em_pausa} em pausa · ${mesa.gaveta.quero_ler} quero ler`,
       itens: [
         { rotulo: 'Abrir a estante', primario: true, aoTocar: () => abrirEstante() },
@@ -189,7 +189,7 @@ export default function Mesa() {
       { titulo: 'Jardim', sub: 'em breve' },
       { titulo: 'Meu desempenho', sub: 'em breve' },
       {
-        titulo: 'Gaveta e estante',
+        titulo: 'Biblioteca',
         sub: mesa.gaveta.total === 0 ? 'vazia' : menus.gaveta.sub,
         aoTocar: () => router.push('/gaveta'),
       },
@@ -316,21 +316,21 @@ export default function Mesa() {
 
           <BwObjetoMesa
             chave="/gaveta"
-            etiqueta={gaveta.etiqueta}
-            rotuloAcessivel={gaveta.rotulo}
+            etiqueta={biblioteca.etiqueta}
+            rotuloAcessivel={biblioteca.rotulo}
             onAbrir={() => abrirEstante()}
             onSegurar={segurar(menus.gaveta)}
             {...acoesDe(menus.gaveta)}
-            posicao={{ left: 16, top: 642 }}
-            largura={FICHARIO.largura}
-            altura={FICHARIO.altura}
-            escala={ESCALA_DO_FICHARIO}
+            posicao={{ left: 16, top: 636 }}
+            largura={LOMBADAS.largura}
+            altura={LOMBADAS.altura}
+            escala={ESCALA_DA_BIBLIOTECA}
             camada={5}
             rotacao="-1.5deg"
-            etiquetaEm={{ left: 9, top: -14 }}
+            etiquetaEm={{ left: 4, top: 124 }}
             rotacaoEtiqueta={giro.etiqueta}
           >
-            <BwFichario abas={gaveta.abas} />
+            <BwTresLombadas />
           </BwObjetoMesa>
 
           <BwObjetoMesa

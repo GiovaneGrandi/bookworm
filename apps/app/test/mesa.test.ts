@@ -3,7 +3,7 @@ import {
   encaixarComposicao,
   mesaEmLista,
   textosDaBandeja,
-  textosDaGaveta,
+  textosDaBiblioteca,
   textosDoLivro,
   textosDoSegundoLivro,
 } from '../src/mesa';
@@ -78,8 +78,8 @@ describe('RN-DV.10 · o leitor de tela anuncia a etiqueta, seguida do estado', (
   const casos = [
     textosDoLivro(domCasmurro, 375_549),
     textosDoSegundoLivro({ titulo: 'O cortiço', progresso: 0.12 }),
-    textosDaGaveta({ lendo: 2, em_pausa: 1, quero_ler: 3, total: 6 }),
-    textosDaGaveta({ lendo: 0, em_pausa: 0, quero_ler: 0, total: 0 }),
+    textosDaBiblioteca({ lendo: 2, em_pausa: 1, quero_ler: 3, total: 6 }),
+    textosDaBiblioteca({ lendo: 0, em_pausa: 0, quero_ler: 0, total: 0 }),
     textosDaBandeja(true),
     textosDaBandeja(false),
   ];
@@ -91,26 +91,22 @@ describe('RN-DV.10 · o leitor de tela anuncia a etiqueta, seguida do estado', (
     });
   }
 
-  it('gaveta: as três contagens (RN-DV.4)', () => {
-    const t = textosDaGaveta({ lendo: 2, em_pausa: 1, quero_ler: 3, total: 6 });
-    expect(t.etiqueta).toBe('Gaveta');
-    expect(t.rotulo).toBe('Gaveta do fichário: 2 lendo, 1 em pausa, 3 quero ler');
-    expect(t.abas).toEqual([
-      { rotulo: 'LENDO', n: 2 },
-      { rotulo: 'PAUSA', n: 1 },
-      { rotulo: 'QUERO', n: 3 },
-    ]);
+  it('biblioteca: o total na etiqueta, as três contagens para o leitor de tela (RN-DV.4)', () => {
+    const t = textosDaBiblioteca({ lendo: 2, em_pausa: 1, quero_ler: 3, total: 6 });
+    expect(t.etiqueta).toBe('Biblioteca · 6 livros');
+    expect(t.rotulo).toBe('Biblioteca: 2 lendo, 1 em pausa, 3 quero ler');
   });
 
-  it('gaveta vazia (Q13): sem abas', () => {
-    const t = textosDaGaveta({ lendo: 0, em_pausa: 0, quero_ler: 0, total: 0 });
-    expect(t.etiqueta).toBe('Gaveta · vazia');
-    expect(t.abas).toEqual([]);
+  it('biblioteca com um livro: singular', () => {
+    expect(textosDaBiblioteca({ lendo: 1, em_pausa: 0, quero_ler: 0, total: 1 }).etiqueta).toBe(
+      'Biblioteca · 1 livro'
+    );
   });
 
-  it('a aba de um grupo vazio não aparece', () => {
-    const t = textosDaGaveta({ lendo: 1, em_pausa: 0, quero_ler: 2, total: 3 });
-    expect(t.abas.map((a) => a.rotulo)).toEqual(['LENDO', 'QUERO']);
+  it('biblioteca vazia (Q13)', () => {
+    const t = textosDaBiblioteca({ lendo: 0, em_pausa: 0, quero_ler: 0, total: 0 });
+    expect(t.etiqueta).toBe('Biblioteca · vazia');
+    expect(t.rotulo).toBe('Biblioteca, vazia');
   });
 });
 

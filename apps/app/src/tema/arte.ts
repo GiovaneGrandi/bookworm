@@ -35,14 +35,21 @@ export const arte = {
     selo: pigmento.verdeTinta,
     lapis: '#5f5949',
   },
-  fichario: {
-    claro: '#8a6040',
-    escuro: '#6e4a2e',
-    moldura: '#5e3f26',
-    fundo: '#3b2818',
-    ficha: '#efe3ce',
-    aba: '#c6a575',
-    placa: { claro: '#e2c06a', escuro: '#a88334', tinta: '#2b220f' },
+
+  /** A biblioteca na mesa: três lombadas em pé, cada uma com uma faixa (rodada de ícones, 22/11). */
+  lombadas: {
+    livros: [
+      { capa: pigmento.verdeTinta, faixa: '#c9a650' },
+      { capa: '#5a2b25', faixa: '#c9a650' },
+      { capa: '#e8dcc4', faixa: pigmento.verdeTinta },
+    ],
+    /** O volume de cada lombada: luz à esquerda, sombra à direita. */
+    volume: [comAlfa('#ffffff', 0.16), comAlfa('#ffffff', 0), comAlfa('#000000', 0.28)] as [
+      string,
+      string,
+      string,
+    ],
+    sombra: [comAlfa('#000000', 0.55), comAlfa('#000000', 0)] as [string, string],
   },
   /** A estante expositora da v2: madeira clara, ripas e as capas de frente. */
   estante: {
