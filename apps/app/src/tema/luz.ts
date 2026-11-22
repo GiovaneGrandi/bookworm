@@ -23,31 +23,50 @@ export function corDaPoca(kelvin: number): Rgba {
 
 export const rgbaCss = ({ r, g, b, a }: Rgba) => `rgba(${r},${g},${b},${a})`;
 
-/** O latão da luminária vista de cima (mockup B, `.luminaria`). */
+/** O latão da luminária vista de cima (mockup B v2, `.luminaria`), acesa e apagada. */
 const LATAO = {
-  brilho: '#fff6d8',
-  claro: '#e9c66f',
-  escuro: '#9b7a2e',
+  brilho: '#fffbe8',
+  claro: '#f5d87e',
+  escuro: '#a68232',
   meio: '#c9a24a',
   fundo: '#8a6a24',
   sombra: '#5e4718',
 };
+const LATAO_APAGADO = { centro: '#7a6638', meio: '#6d5524', borda: '#4a3816' };
 
 export const luz = {
-  /** Gradiente da cúpula: [cor, posição de 0 a 1] a partir do centro da lâmpada. */
+  /** Gradiente da cúpula acesa: [cor, posição de 0 a 1] a partir do centro da lâmpada. */
   cupula: [
     [LATAO.brilho, 0],
-    [LATAO.brilho, 0.09],
-    [LATAO.claro, 0.1],
-    [LATAO.claro, 0.16],
-    [LATAO.escuro, 0.17],
-    [LATAO.escuro, 0.22],
-    [LATAO.meio, 0.23],
+    [LATAO.brilho, 0.1],
+    [LATAO.claro, 0.11],
+    [LATAO.claro, 0.18],
+    [LATAO.escuro, 0.19],
+    [LATAO.escuro, 0.23],
+    [LATAO.meio, 0.24],
     [LATAO.meio, 0.56],
     [LATAO.fundo, 0.62],
     [LATAO.sombra, 0.7],
   ] as [string, number][],
-  sombraDaCupula: comAlfa('#000000', 0.55),
+  /** A cúpula apagada: o latão sem o brilho da lâmpada. */
+  cupulaApagada: [
+    [LATAO_APAGADO.centro, 0],
+    [LATAO_APAGADO.centro, 0.18],
+    [LATAO_APAGADO.meio, 0.24],
+    [LATAO_APAGADO.meio, 0.56],
+    [LATAO_APAGADO.borda, 0.7],
+  ] as [string, number][],
+  sombraDaCupula: comAlfa('#000000', 0.62),
+  sombraDaCupulaApagada: comAlfa('#000000', 0.55),
+  /** Com a luz acesa, o resto da mesa fica em penumbra: [cor, posição] do centro para fora. */
+  penumbra: [
+    [comAlfa('#080a09', 0), 0],
+    [comAlfa('#080a09', 0.14), 0.48],
+    [comAlfa('#080a09', 0.42), 0.8],
+    [comAlfa('#080a09', 0.56), 1],
+  ] as [string, number][],
+  /** Com a luz apagada, a mesa fica uniformemente mais clara (a luz do cômodo). */
+  mesaApagada: [comAlfa('#f3ead9', 0.11), comAlfa('#f3ead9', 0.04)] as [string, string],
   /** O grão do feltro (mockup B, `--feltro`): pontos claros a cada 5 px e escuros a cada 7 px. */
   feltroClaro: comAlfa('#ffffff', 0.025),
   feltroEscuro: comAlfa('#000000', 0.18),

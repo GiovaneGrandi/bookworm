@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { textosDaBandeja, textosDaGaveta, textosDoLivro, textosDoSegundoLivro } from '../src/mesa';
+import {
+  encaixarComposicao,
+  mesaEmLista,
+  textosDaBandeja,
+  textosDaGaveta,
+  textosDoLivro,
+  textosDoSegundoLivro,
+} from '../src/mesa';
 import { corDaPoca } from '../src/tema/luz';
 
 describe('RN-DV.6 · a temperatura da leitora tinge a poça de luz da mesa', () => {
@@ -104,5 +111,38 @@ describe('RN-DV.10 · o leitor de tela anuncia a etiqueta, seguida do estado', (
   it('a aba de um grupo vazio não aparece', () => {
     const t = textosDaGaveta({ lendo: 1, em_pausa: 0, quero_ler: 2, total: 3 });
     expect(t.abas.map((a) => a.rotulo)).toEqual(['LENDO', 'QUERO']);
+  });
+});
+
+describe('v2 · a composição da mesa cabe entre as áreas seguras', () => {
+  it('390 × 844 com barras do Android: encolhe pela altura e centraliza na largura', () => {
+    const c = encaixarComposicao({ largura: 390, altura: 844 }, { topo: 32, baixo: 24 });
+    expect(c.escala).toBeCloseTo(788 / 836, 4);
+    expect(c.x).toBeCloseTo((390 - 390 * c.escala) / 2, 4);
+    expect(c.y).toBe(32);
+  });
+
+  it('tela mais larga do que alta: encolhe pela largura e centraliza na altura', () => {
+    const c = encaixarComposicao({ largura: 360, altura: 1000 }, { topo: 24, baixo: 48 });
+    expect(c.escala).toBeCloseTo(360 / 390, 4);
+    expect(c.x).toBeCloseTo(0, 4);
+    expect(c.y).toBeCloseTo(24 + (928 - 836 * c.escala) / 2, 4);
+  });
+});
+
+describe('v2 · o segundo livro convida a abrir direto no leitor', () => {
+  it('a etiqueta ganha a seta', () => {
+    expect(textosDoSegundoLivro({ titulo: 'O médico e o monstro', progresso: 0.12 }).etiqueta).toBe(
+      'lendo · 12% ▸'
+    );
+  });
+});
+
+describe('v2 · texto grande: a mesa vira lista', () => {
+  it('a partir de 150% de fonte', () => {
+    expect(mesaEmLista(1)).toBe(false);
+    expect(mesaEmLista(1.3)).toBe(false);
+    expect(mesaEmLista(1.5)).toBe(true);
+    expect(mesaEmLista(2)).toBe(true);
   });
 });

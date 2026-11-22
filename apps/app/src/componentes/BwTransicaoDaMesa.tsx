@@ -3,6 +3,7 @@ import { useWindowDimensions, type View } from 'react-native';
 import Animated, {
   Easing,
   runOnJS,
+  type SharedValue,
   useAnimatedStyle,
   useReducedMotion,
   useSharedValue,
@@ -28,6 +29,13 @@ type Transicao = {
   chegou: () => void;
   erguer: (chave: string, cor: string, alvo: Alvo, navegar: () => void) => void;
   pousar: (chave: string, cor: string, alvo: Alvo, voltar: () => void) => void;
+  /**
+   * A virada de câmera da v2, só para a estante: a mesa gira para a direita e sai, e então a
+   * estante entra girando pela esquerda (ela mesma anima a própria entrada).
+   */
+  virar: (navegar: () => void) => void;
+  /** 0 com a mesa de frente, 1 com ela virada para fora. */
+  giro: SharedValue<number>;
 };
 
 const Contexto = createContext<Transicao | null>(null);
@@ -35,6 +43,9 @@ const Contexto = createContext<Transicao | null>(null);
 const ERGUER = { duration: 440, easing: Easing.bezier(0.2, 0.75, 0.2, 1) };
 const POUSAR = { duration: 380, easing: Easing.bezier(0.4, 0, 0.6, 1) };
 const SUMIR = { duration: 180 };
+// `camMesaSai` e `camMesaVolta` do mockup v2, encurtadas porque aqui não se sobrepõem à estante.
+const VIRAR = { duration: 520, easing: Easing.bezier(0.25, 0.8, 0.25, 1) };
+const DESVIRAR = { duration: 650, easing: Easing.bezier(0.2, 0.85, 0.25, 1) };
 /** Se a tela nova não avisar que chegou, a folha some mesmo assim, para nunca ficar presa. */
 const ESPERA_MAXIMA_MS = 900;
 
@@ -51,6 +62,7 @@ export function BwTransicaoDaMesa({ children }: { children: ReactNode }) {
   const h = useSharedValue(0);
   const opacidade = useSharedValue(0);
   const cor = useSharedValue('transparent');
+  const giro = useSharedValue(0);
 
   const estilo = useAnimatedStyle(() => ({
     left: x.value,
@@ -109,6 +121,15 @@ export function BwTransicaoDaMesa({ children }: { children: ReactNode }) {
     };
 
     return {
+      giro,
+
+      virar(navegar) {
+        if (reduzir) return navegar();
+        giro.value = withTiming(1, VIRAR, (terminou) => {
+          if (terminou) runOnJS(navegar)();
+        });
+      },
+
       chegou() {
         if (!esperando.current) return;
         clearTimeout(esperando.current);
@@ -153,7 +174,7 @@ export function BwTransicaoDaMesa({ children }: { children: ReactNode }) {
         }, 0);
       },
     };
-  }, [reduzir, medir, colocar, alvoDe, sumir, x, y, w, h, opacidade, cor]);
+  }, [reduzir, medir, colocar, alvoDe, sumir, x, y, w, h, opacidade, cor, giro]);
 
   return (
     <Contexto.Provider value={transicao}>
@@ -165,6 +186,33 @@ export function BwTransicaoDaMesa({ children }: { children: ReactNode }) {
       />
     </Contexto.Provider>
   );
+}
+
+/**
+ * A mesa vista pela câmera: de frente, ou virada para fora enquanto a estante está aberta. Ao
+ * voltar o foco para a mesa, por qualquer caminho, ela desvira.
+ */
+export function useGiroDaMesa() {
+  const { giro } = useTransicaoDaMesa();
+  const reduzir = useReducedMotion();
+  const estilo = useAnimatedStyle(() => {
+    const g = giro.value;
+    return {
+      opacity: 1 - 0.94 * g,
+      transformOrigin: '85% 50%',
+      transform: [
+        { perspective: 720 },
+        { translateX: 280 * g },
+        { rotateY: `${-54 * g}deg` },
+        { scale: 1 - 0.14 * g },
+      ],
+    };
+  });
+  const desvirar = useCallback(() => {
+    if (giro.value === 0) return;
+    giro.value = reduzir ? 0 : withTiming(0, DESVIRAR);
+  }, [giro, reduzir]);
+  return { estilo, desvirar };
 }
 
 export function useTransicaoDaMesa(): Transicao {

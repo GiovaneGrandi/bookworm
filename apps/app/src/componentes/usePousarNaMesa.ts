@@ -9,18 +9,26 @@ import { type Alvo, useTransicaoDaMesa } from './BwTransicaoDaMesa';
  * até o objeto que abre esta tela, que a mesa registra pela mesma rota.
  *
  * @param cor o papel desta tela, para a folha que encolhe ter a cor dela.
+ * @param sair uma saída própria no lugar da folha que encolhe (v2: a estante sai girando); ela
+ *   chama `fim` quando terminar, e só então a mesa volta.
  */
-export function usePousarNaMesa(cor: string, alvo: Alvo = 'folha'): () => void {
+export function usePousarNaMesa(
+  cor: string,
+  alvo: Alvo = 'folha',
+  sair?: (fim: () => void) => void
+): () => void {
   const router = useRouter();
   const caminho = usePathname();
   const { pousar: pousarComArte } = useTransicaoDaMesa();
 
   const pousar = useCallback(() => {
-    pousarComArte(caminho, cor, alvo, () => {
+    const voltar = () => {
       if (router.canDismiss()) router.dismissAll();
       else router.replace('/');
-    });
-  }, [router, caminho, cor, alvo, pousarComArte]);
+    };
+    if (sair) sair(voltar);
+    else pousarComArte(caminho, cor, alvo, voltar);
+  }, [router, caminho, cor, alvo, sair, pousarComArte]);
 
   useFocusEffect(
     useCallback(() => {

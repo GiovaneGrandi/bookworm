@@ -1,10 +1,11 @@
 import type { ReactNode } from 'react';
 import { ScrollView, Text, View } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import type { NomeSuperficie } from '../tema/superficies';
 import { tipo } from '../tema/tipografia';
-import { BwFeltroRetorno } from './BwFeltroRetorno';
+import { BwFeltroRetorno, usePuxao } from './BwFeltroRetorno';
 import { useTransicaoDaMesa } from './BwTransicaoDaMesa';
 import { usePousarNaMesa } from './usePousarNaMesa';
 
@@ -25,11 +26,12 @@ export function BwFolha({ kicker, titulo, children, superficie = 'papel', rotulo
   const pousar = usePousarNaMesa(theme.sup[superficie].fundo);
   const { chegou } = useTransicaoDaMesa();
   const { top, bottom } = useSafeAreaInsets();
+  const { puxao, estilo } = usePuxao();
 
   return (
     <View onLayout={chegou} style={[estilos.feltro, { paddingTop: top }]}>
-      <BwFeltroRetorno onPousar={pousar} rotulo={rotuloRetorno} />
-      <View style={estilos.folha(superficie)}>
+      <BwFeltroRetorno onPousar={pousar} rotulo={rotuloRetorno} puxao={puxao} />
+      <Animated.View style={[estilos.folha(superficie), estilo]}>
         <ScrollView contentContainerStyle={[estilos.miolo, { paddingBottom: bottom }]}>
           <Text style={estilos.kicker(superficie)}>{kicker}</Text>
           <Text accessibilityRole="header" style={estilos.titulo(superficie)}>
@@ -37,7 +39,7 @@ export function BwFolha({ kicker, titulo, children, superficie = 'papel', rotulo
           </Text>
           {children}
         </ScrollView>
-      </View>
+      </Animated.View>
     </View>
   );
 }
