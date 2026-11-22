@@ -30,11 +30,15 @@ type Transicao = {
   erguer: (chave: string, cor: string, alvo: Alvo, navegar: () => void) => void;
   pousar: (chave: string, cor: string, alvo: Alvo, voltar: () => void) => void;
   /**
-   * A virada de câmera da v2, só para a estante: a mesa gira para a direita e sai, e então a
-   * estante entra girando pela esquerda (ela mesma anima a própria entrada).
+   * A virada de câmera da v2, só para a estante. Mesa e estante são duas paredes que se
+   * encontram num canto: a câmera gira para a esquerda e as duas andam juntas, num movimento
+   * só, até a estante ficar de frente. A estante abre por cima da mesa, transparente, para a
+   * mesa continuar à vista durante o giro.
    */
   virar: (navegar: () => void) => void;
-  /** 0 com a mesa de frente, 1 com ela virada para fora. */
+  /** A câmera volta para a mesa; `fim` roda quando ela estiver de frente. */
+  desvirar: (fim: () => void) => void;
+  /** 0 com a câmera na mesa, 1 com ela na estante. */
   giro: SharedValue<number>;
 };
 
@@ -43,9 +47,11 @@ const Contexto = createContext<Transicao | null>(null);
 const ERGUER = { duration: 440, easing: Easing.bezier(0.2, 0.75, 0.2, 1) };
 const POUSAR = { duration: 380, easing: Easing.bezier(0.4, 0, 0.6, 1) };
 const SUMIR = { duration: 180 };
-// `camMesaSai` e `camMesaVolta` do mockup v2, encurtadas porque aqui não se sobrepõem à estante.
-const VIRAR = { duration: 520, easing: Easing.bezier(0.25, 0.8, 0.25, 1) };
-const DESVIRAR = { duration: 650, easing: Easing.bezier(0.2, 0.85, 0.25, 1) };
+// O giro da câmera: começa e termina devagar, como uma cabeça que vira.
+const GIRAR = { duration: 820, easing: Easing.bezier(0.45, 0, 0.2, 1) };
+/** Quanto cada parede gira em torno do canto, em graus, enquanto sai de quadro. */
+const ANGULO_DO_CANTO = 35;
+const PERSPECTIVA = 900;
 /** Se a tela nova não avisar que chegou, a folha some mesmo assim, para nunca ficar presa. */
 const ESPERA_MAXIMA_MS = 900;
 
@@ -124,9 +130,25 @@ export function BwTransicaoDaMesa({ children }: { children: ReactNode }) {
       giro,
 
       virar(navegar) {
-        if (reduzir) return navegar();
-        giro.value = withTiming(1, VIRAR, (terminou) => {
-          if (terminou) runOnJS(navegar)();
+        if (reduzir) {
+          giro.value = 1;
+          return navegar();
+        }
+        giro.value = 0;
+        navegar();
+        // Um quadro para a estante montar fora de quadro, à esquerda; então a câmera gira.
+        requestAnimationFrame(() => {
+          giro.value = withTiming(1, GIRAR);
+        });
+      },
+
+      desvirar(fim) {
+        if (reduzir) {
+          giro.value = 0;
+          return fim();
+        }
+        giro.value = withTiming(0, GIRAR, (terminou) => {
+          if (terminou) runOnJS(fim)();
         });
       },
 
@@ -189,29 +211,48 @@ export function BwTransicaoDaMesa({ children }: { children: ReactNode }) {
 }
 
 /**
- * A mesa vista pela câmera: de frente, ou virada para fora enquanto a estante está aberta. Ao
- * voltar o foco para a mesa, por qualquer caminho, ela desvira.
+ * As duas paredes vistas pela câmera (o "canto" da virada). A mesa é a parede da frente, presa
+ * ao canto pela borda esquerda; a estante é a parede da esquerda, presa pela borda direita. O
+ * canto anda da borda esquerda da tela (câmera na mesa) até a direita (câmera na estante), e
+ * cada parede gira em torno dele, com o canto mais fundo que as bordas, como dentro de um cômodo.
  */
-export function useGiroDaMesa() {
+export function useParedeDaCamera(parede: 'mesa' | 'estante') {
   const { giro } = useTransicaoDaMesa();
-  const reduzir = useReducedMotion();
-  const estilo = useAnimatedStyle(() => {
+  const { width } = useWindowDimensions();
+  return useAnimatedStyle(() => {
     const g = giro.value;
+    if (parede === 'mesa') {
+      return {
+        transformOrigin: 'left center',
+        transform: [
+          { perspective: PERSPECTIVA },
+          { translateX: width * g },
+          { rotateY: `${-ANGULO_DO_CANTO * g}deg` },
+        ],
+      };
+    }
+    const r = 1 - g;
     return {
-      opacity: 1 - 0.94 * g,
-      transformOrigin: '85% 50%',
+      transformOrigin: 'right center',
       transform: [
-        { perspective: 720 },
-        { translateX: 280 * g },
-        { rotateY: `${-54 * g}deg` },
-        { scale: 1 - 0.14 * g },
+        { perspective: PERSPECTIVA },
+        { translateX: -width * r },
+        { rotateY: `${ANGULO_DO_CANTO * r}deg` },
       ],
     };
   });
+}
+
+/**
+ * A mesa vista pela câmera. Se a mesa ganhar o foco com a câmera ainda na estante (voltando do
+ * leitor aberto pela estante, por exemplo), a câmera gira de volta.
+ */
+export function useGiroDaMesa() {
+  const { giro, desvirar: girarDeVolta } = useTransicaoDaMesa();
+  const estilo = useParedeDaCamera('mesa');
   const desvirar = useCallback(() => {
-    if (giro.value === 0) return;
-    giro.value = reduzir ? 0 : withTiming(0, DESVIRAR);
-  }, [giro, reduzir]);
+    if (giro.value !== 0) girarDeVolta(() => {});
+  }, [giro, girarDeVolta]);
   return { estilo, desvirar };
 }
 

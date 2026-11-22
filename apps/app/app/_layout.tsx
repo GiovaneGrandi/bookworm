@@ -49,7 +49,20 @@ export default function Raiz() {
           >
             <Stack.Screen name="index" options={{ animation: 'fade' }} />
             <Stack.Screen name="bandeja" options={entrada('slide_from_bottom')} />
-            <Stack.Screen name="gaveta" options={entrada('slide_from_bottom')} />
+            <Stack.Screen
+              name="gaveta"
+              options={({ route }) =>
+                (route.params as { erguido?: string } | undefined)?.erguido === 'virada'
+                  ? {
+                      // A virada de câmera: a estante abre por cima da mesa, que segue à vista
+                      // enquanto a câmera gira (BwTransicaoDaMesa).
+                      presentation: 'transparentModal',
+                      animation: 'none',
+                      contentStyle: { backgroundColor: 'transparent' },
+                    }
+                  : entrada('slide_from_bottom')({ route })
+              }
+            />
             <Stack.Screen name="leitor/[id]" options={entrada('fade')} />
           </Stack>
         </BwTransicaoDaMesa>

@@ -1,7 +1,7 @@
 import { acoesDaGaveta, type OrdemDaEstante, obrasNaEstante } from '@bookworm/core';
 import { Canvas, Circle, Line, vec } from '@shopify/react-native-skia';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { type ReactNode, useEffect, useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import {
   type GestureResponderEvent,
   Pressable,
@@ -10,22 +10,13 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import Animated, {
-  Easing,
-  interpolate,
-  Keyframe,
-  runOnJS,
-  useAnimatedStyle,
-  useReducedMotion,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { BwBotao } from '../src/componentes/BwBotao';
 import { BwFeltroRetorno, usePuxao } from '../src/componentes/BwFeltroRetorno';
 import { BwMenuRapido, type ItemDoMenu, type MenuRapido } from '../src/componentes/BwMenuRapido';
-import { useTransicaoDaMesa } from '../src/componentes/BwTransicaoDaMesa';
+import { useParedeDaCamera, useTransicaoDaMesa } from '../src/componentes/BwTransicaoDaMesa';
 import { usePousarNaMesa } from '../src/componentes/usePousarNaMesa';
 import { marcarAberta, pausar, tirarDaGaveta, useObras } from '../src/dados/obras';
 import type { Obra } from '../src/dados/schema';
@@ -42,25 +33,6 @@ const POR_PRATELEIRA = 3;
 /** Os lugares vazios da última prateleira, para as capas não esticarem. */
 const VAOS = ['vao-1', 'vao-2'] as const;
 
-// `camEstanteEntra` e `camEstanteSai` do mockup v2: a estante entra girando pela esquerda.
-const ENTRAR = { duration: 700, easing: Easing.bezier(0.2, 0.85, 0.25, 1) };
-const SAIR = { duration: 450, easing: Easing.bezier(0.4, 0, 0.6, 1) };
-
-/** `livroPrateleira`: cada capa assenta na prateleira, uma coluna depois da outra. */
-const assentar = (coluna: number) =>
-  new Keyframe({
-    0: {
-      opacity: 0,
-      transform: [{ perspective: 600 }, { rotateX: '22deg' }, { translateY: -18 }, { scale: 0.94 }],
-    },
-    100: {
-      opacity: 1,
-      transform: [{ perspective: 600 }, { rotateX: '0deg' }, { translateY: 0 }, { scale: 1 }],
-    },
-  })
-    .duration(550)
-    .delay(160 + 60 * coluna);
-
 type Segurada = { obra: Obra; x: number; y: number; confirmando: boolean };
 
 /**
@@ -75,44 +47,16 @@ export default function Gaveta() {
   const { top, bottom } = useSafeAreaInsets();
   const { erguido, buscar } = useLocalSearchParams<{ erguido?: string; buscar?: string }>();
   const virada = erguido === 'virada';
-  const reduzir = useReducedMotion();
-  const { chegou } = useTransicaoDaMesa();
+  const { chegou, desvirar } = useTransicaoDaMesa();
   const obras = useObras();
   const [ordem, setOrdem] = useState<OrdemDaEstante>('az');
   const [termo, setTermo] = useState('');
   const [segurada, setSegurada] = useState<Segurada | null>(null);
-  const [chegando, setChegando] = useState(virada && !reduzir);
   const { puxao, estilo: estiloPuxado } = usePuxao();
+  const estiloDaParede = useParedeDaCamera('estante');
 
-  const entrada = useSharedValue(virada && !reduzir ? 0 : 1);
-  const saida = useSharedValue(0);
-  useEffect(() => {
-    entrada.value = withTiming(1, ENTRAR);
-    const t = setTimeout(() => setChegando(false), 1200);
-    return () => clearTimeout(t);
-  }, [entrada]);
-
-  const estiloDaVirada = useAnimatedStyle(() => {
-    const e = 1 - entrada.value;
-    const s = saida.value;
-    return {
-      opacity: interpolate(entrada.value, [0, 0.2], [0, 1], 'clamp') * (1 - s),
-      transformOrigin: '15% 50%',
-      transform: [
-        { perspective: 720 },
-        { translateX: -280 * e - 260 * s },
-        { rotateY: `${54 * e + 52 * s}deg` },
-        { scale: 1 - 0.16 * e - 0.16 * s },
-      ],
-    };
-  });
-
-  const pousar = usePousarNaMesa(theme.sup.papel.fundo, 'folha', (fim) => {
-    if (reduzir) return fim();
-    saida.value = withTiming(1, SAIR, (terminou) => {
-      if (terminou) runOnJS(fim)();
-    });
-  });
+  // Aberta pela mesa, a estante é a parede da esquerda e volta com a câmera girando de volta.
+  const pousar = usePousarNaMesa(theme.sup.papel.fundo, 'folha', virada ? desvirar : undefined);
 
   const naEstante = obrasNaEstante(obras, ordem, termo);
   const vazia = obras.every((o) => o.estado === 'abandonado');
@@ -155,7 +99,10 @@ export default function Gaveta() {
   };
 
   return (
-    <Animated.View onLayout={chegou} style={[estilos.feltro, { paddingTop: top }, estiloDaVirada]}>
+    <Animated.View
+      onLayout={chegou}
+      style={[estilos.feltro, { paddingTop: top }, virada && estiloDaParede]}
+    >
       <BwFeltroRetorno onPousar={pousar} puxao={puxao} />
       <Animated.View style={[estilos.folha, estiloPuxado]}>
         <View style={estilos.cabeca}>
@@ -194,7 +141,7 @@ export default function Gaveta() {
           </View>
         </View>
 
-        <Animated.View entering={chegando ? estanteSobe : undefined} style={estilos.expositora}>
+        <View style={estilos.expositora}>
           <ScrollView
             accessibilityLabel="Prateleiras da estante"
             contentContainerStyle={estilos.trilho}
@@ -213,17 +160,11 @@ export default function Gaveta() {
                 <Text style={estilos.nenhum}>Nenhum livro encontrado.</Text>
               </Prateleira>
             ) : (
-              prateleiras.map((livros, p) => (
+              prateleiras.map((livros) => (
                 <Prateleira key={livros.map((o) => o.id).join()}>
                   <View style={estilos.grade}>
-                    {livros.map((o, coluna) => (
-                      <Capa
-                        key={o.id}
-                        obra={o}
-                        entrada={chegando && p < 4 ? assentar(coluna) : undefined}
-                        onAbrir={() => abrir(o)}
-                        onSegurar={segurar(o)}
-                      />
+                    {livros.map((o) => (
+                      <Capa key={o.id} obra={o} onAbrir={() => abrir(o)} onSegurar={segurar(o)} />
                     ))}
                     {VAOS.slice(0, POR_PRATELEIRA - livros.length).map((v) => (
                       <View key={v} style={estilos.vao} />
@@ -236,26 +177,12 @@ export default function Gaveta() {
           <View style={[estilos.rodape, { paddingBottom: bottom + 9 }]}>
             <Text style={estilos.contagem}>{rodapeDaEstante(naEstante.length)}</Text>
           </View>
-        </Animated.View>
+        </View>
       </Animated.View>
       <BwMenuRapido menu={menu} onFechar={() => setSegurada(null)} />
     </Animated.View>
   );
 }
-
-/** `estanteSobe`: a estante sobe e se endireita depois que a câmera vira. */
-const estanteSobe = new Keyframe({
-  0: {
-    opacity: 0,
-    transform: [{ perspective: 700 }, { rotateX: '10deg' }, { translateY: 32 }, { scale: 0.96 }],
-  },
-  100: {
-    opacity: 1,
-    transform: [{ perspective: 700 }, { rotateX: '0deg' }, { translateY: 0 }, { scale: 1 }],
-  },
-})
-  .duration(700)
-  .delay(180);
 
 function Prateleira({ children }: { children: ReactNode }) {
   return (
@@ -268,19 +195,17 @@ function Prateleira({ children }: { children: ReactNode }) {
 
 function Capa({
   obra,
-  entrada,
   onAbrir,
   onSegurar,
 }: {
   obra: Obra;
-  entrada?: ReturnType<typeof assentar>;
   onAbrir: () => void;
   onSegurar: (e: GestureResponderEvent) => void;
 }) {
   const cor = corDaCapa(obra.id);
   const autor = obra.autor ?? (obra.formato === 'pdf' ? 'PDF' : '');
   return (
-    <Animated.View entering={entrada} style={estilos.lugarDaCapa}>
+    <View style={estilos.lugarDaCapa}>
       <Pressable
         onPress={onAbrir}
         onLongPress={onSegurar}
@@ -304,7 +229,7 @@ function Capa({
           <Text style={[estilos.marcaCapa, { color: cor.tinta }]}>{marcaDaCapa(obra)}</Text>
         </View>
       </Pressable>
-    </Animated.View>
+    </View>
   );
 }
 
