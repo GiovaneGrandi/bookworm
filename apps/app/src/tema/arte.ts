@@ -36,6 +36,14 @@ export const arte = {
     lapis: '#5f5949',
   },
 
+  /** A barra de navegação (régua de feltro): uma faixa do feltro, com a tela atual em latão. */
+  barra: {
+    fundo: '#272d29',
+    filete: 'rgba(0,0,0,0.5)',
+    ativo: '#e2c06a',
+    latao: ['#e2c06a', '#a88334'] as [string, string],
+    sombra: '0 -6px 12px rgba(0,0,0,0.35)',
+  },
   /** A biblioteca na mesa: três lombadas em pé, cada uma com uma faixa (rodada de ícones, 22/11). */
   lombadas: {
     livros: [

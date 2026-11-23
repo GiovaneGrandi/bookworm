@@ -371,7 +371,7 @@ Prefixo novo, `Q-DV`, conforme a convenção de IDs de [`00-overview.md`](00-ove
 | `Q-DV.10` | **Como a citação se distingue quando aparece dentro da prosa, e não isolada em card?** EB Garamond só ganha o lugar dela porque nunca disputa espaço com Spectral na mesma superfície. Onde as duas old-style precisam conviver de perto — uma citação em itálico dentro de um parágrafo que já é Garamond itálico, como na carta editorial — a diferença some, e o itálico deixa de sinalizar porque já marca fala e ênfase no corpo. É a peça mais frágil do sistema adotado (§3.4) e não tem solução visual proposta |
 | `Q-DV.11` | **Onde fica o limite das etiquetas?** Sem etiqueta datilografada, a mesa da Escrivaninha vira quebra-cabeça. Com etiqueta em todo objeto (`RN-DV.10`), ela corre o risco de virar um menu disfarçado. A direção registrou o risco e não o resolveu |
 | `Q-DV.12` | **Como a mesa cresce?** Em 390px, seis objetos já enchem a mesa. Uma sétima função (escrita, clubes, feed, todas pós-MVP) não tem onde pousar sem empilhar ou rolar, e mesa que rola deixa de ser mesa. Espelha `Q-DV.2` no nível da navegação |
-| `Q-DV.13` | **A reentrada é barata o bastante?** Toda troca de função passa pela mesa: são dois toques onde a barra de abas pedia um. Foi exatamente o motivo pelo qual [`design-system.md`](design-system.md) §10 adiou a mesa como navegação. Precisa ser medido no MVP (tempo até abrir o livro a partir do ícone do app) antes de se dar por resolvido |
+| ~~`Q-DV.13`~~ | **Resolvida em 22/11/2026 pela barra de navegação (`RN-DV.11`).** A pergunta era: **a reentrada é barata o bastante?** Toda troca de função passa pela mesa: são dois toques onde a barra de abas pedia um. Foi exatamente o motivo pelo qual [`design-system.md`](design-system.md) §10 adiou a mesa como navegação. Precisa ser medido no MVP (tempo até abrir o livro a partir do ícone do app) antes de se dar por resolvido |
 | `Q-DV.14` | **Qual a ordem de leitura da mesa para leitor de tela?** A navegação espacial vira uma lista de 7 botões. Funciona, mas a ordem precisa ser desenhada à parte da composição visual, e essa ordem não existe ainda |
 | `Q-DV.15` | **Que objeto é o Caderno de destaques?** [`design-system.md`](design-system.md) §10 fazia do Caderno um destino de primeiro nível. A rodada de ideação não o incluiu, e a mesa da Escrivaninha não tem objeto para ele. O caderninho já é o Desempenho |
 | `Q-DV.16` | **Qual o inventário fechado de adereços?** Luminária, elástico e lápis já estão no limite. Mais um adereço e a mesa vira skeuomorfismo de 2010. É preciso fechar a lista de objetos e adereços permitidos, como `mvp.md` §9 fez com o jardim |
@@ -417,8 +417,8 @@ A vitrine com as três e a folha comparativa está em [`../mockups/ideacao/index
 
 ### 9.3 Regras
 
-- `RN-DV.1` **A mesa é a tela inicial e o único hub.** É a primeira coisa que se vê depois do login e o lugar para onde toda tela volta.
-- `RN-DV.2` **Não há barra de abas nem seta de voltar.** Toda tela é uma folha erguida da mesa. Para voltar, toca-se a **faixa de feltro** que sobra no alto da folha ("pousar na mesa"), e a folha volta ao lugar. O gesto de voltar do sistema faz o mesmo.
+- `RN-DV.1` **A mesa é a tela inicial e o hub.** É a primeira coisa que se vê depois do login e o lugar para onde a faixa de feltro sempre volta. Desde 22/11/2026 deixou de ser o *único* caminho entre telas: a barra de navegação (`RN-DV.11`) liga as outras telas entre si.
+- `RN-DV.2` **Não há seta de voltar.** Toda tela é uma folha erguida da mesa. Para voltar, toca-se a **faixa de feltro** que sobra no alto da folha ("pousar na mesa"), e a folha volta ao lugar. O gesto de voltar do sistema faz o mesmo.
 - `RN-DV.3` **Cada objeto é uma porta, e o objeto mostra o estado da função.** Um objeto sem estado visível (só um ícone que abre uma tela) não pertence à mesa.
 - `RN-DV.4` **A mesa guarda só o que está em uso.** No máximo 2 livros em leitura ficam pousados. O resto mora na gaveta do fichário, e os concluídos sobem para a pilha. Uma mesa com 200 livros fica tão limpa quanto uma com 9.
 - `RN-DV.5` **A sessão deixa um rastro físico.** Ao fim da sessão, a ficha do dia entra no livro como marcador e fica visível na mesa ("34 min · meta ✓ · hoje") até a virada do dia.
@@ -427,6 +427,12 @@ A vitrine com as três e a folha comparativa está em [`../mockups/ideacao/index
 - `RN-DV.8` **A composição da mesa é livre da escala tônica.** A posição dos objetos sobre o feltro é composição, não espaçamento. Dentro de cada folha erguida, `RN-DS.4` continua valendo sem exceção.
 - `RN-DV.9` **O leitor continua sendo modo, não destino** (`RN-DS.18`). O livro se ergue da mesa, a leitura não tem chrome, e "Pousar na mesa" e "Encerrar sessão" só aparecem com os controles revelados.
 - `RN-DV.10` **Cada objeto tem etiqueta datilografada.** A mesa sem rótulo vira quebra-cabeça (§9.7). A etiqueta é parte do objeto, como na papelaria real, e é ela que o leitor de tela anuncia.
+- `RN-DV.11` **Fora da mesa, qualquer tela fica a um toque (decisão de 22/11/2026).** Uma barra de navegação fixa no rodapé, a **régua de feltro** (faixa do feltro da mesa, ícone de traço e nome datilografado; a tela atual em latão, com um filete por cima), leva a Mesa · Ler · Biblioteca · Importar · Jardim. Regras:
+  - **Não aparece na mesa.** A mesa já é o índice; a barra só existe depois que a leitora entra em outra tela.
+  - **No leitor, fica oculta por padrão** e só aparece junto do menu, quando a leitora toca no meio da página (`RN-02.13`, `RN-DV.9`).
+  - **Trocar de tela pela barra substitui a tela atual**, sem empilhar: o voltar do sistema e a faixa de feltro levam sempre à mesa (`RN-DV.2`).
+  - "Ler" continua o livro em leitura mais recente; sem livro em leitura, fica indisponível. Destino que ainda não existe (Jardim) aparece indisponível, "em breve". Desempenho e Ajustes, quando existirem, ficam na mesa, para a barra não passar de cinco itens.
+  - Resolve `Q-DV.13`: a troca de função deixa de passar pela mesa. Protótipo: rodada "Navbar do BookWorm", estilo A.
 
 ### 9.4 O mapa objeto → tela
 

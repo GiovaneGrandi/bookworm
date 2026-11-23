@@ -13,6 +13,7 @@ import {
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
+import { BwBarraDeNavegacao } from '../src/componentes/BwBarraDeNavegacao';
 import { BwBotao } from '../src/componentes/BwBotao';
 import { BwFeltroRetorno, usePuxao } from '../src/componentes/BwFeltroRetorno';
 import { BwMenuRapido, type ItemDoMenu, type MenuRapido } from '../src/componentes/BwMenuRapido';
@@ -44,7 +45,7 @@ type Segurada = { obra: Obra; x: number; y: number; confirmando: boolean };
 export default function Gaveta() {
   const router = useRouter();
   const { theme } = useUnistyles();
-  const { top, bottom } = useSafeAreaInsets();
+  const { top } = useSafeAreaInsets();
   const { erguido, buscar } = useLocalSearchParams<{ erguido?: string; buscar?: string }>();
   const virada = erguido === 'virada';
   const { chegou, desvirar } = useTransicaoDaMesa();
@@ -174,10 +175,11 @@ export default function Gaveta() {
               ))
             )}
           </ScrollView>
-          <View style={[estilos.rodape, { paddingBottom: bottom + 9 }]}>
+          <View style={estilos.rodape}>
             <Text style={estilos.contagem}>{rodapeDaEstante(naEstante.length)}</Text>
           </View>
         </View>
+        <BwBarraDeNavegacao atual="biblioteca" onMesa={pousar} />
       </Animated.View>
       <BwMenuRapido menu={menu} onFechar={() => setSegurada(null)} />
     </Animated.View>

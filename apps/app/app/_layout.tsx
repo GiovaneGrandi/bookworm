@@ -18,7 +18,11 @@ const entrada =
   (padrao: 'slide_from_bottom' | 'fade') =>
   ({ route }: { route: { params?: object } }) =>
     ({
-      animation: (route.params as { erguido?: string } | undefined)?.erguido ? 'none' : padrao,
+      animation: (route.params as { erguido?: string } | undefined)?.erguido
+        ? 'none'
+        : (route.params as { via?: string } | undefined)?.via === 'barra'
+          ? 'fade'
+          : padrao,
     }) as const;
 
 /**

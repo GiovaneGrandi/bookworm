@@ -60,7 +60,7 @@ export default function Bandeja() {
   }
 
   return (
-    <BwFolha kicker="Bandeja de entrada" titulo="Pôr um livro na mesa">
+    <BwFolha kicker="Bandeja de entrada" titulo="Pôr um livro na mesa" navegacao="importar">
       <View style={estilos.soltar}>
         <Text style={estilos.micro}>Um arquivo seu, EPUB ou PDF, sem DRM.</Text>
         <BwBotao

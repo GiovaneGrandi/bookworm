@@ -21,6 +21,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { BwAncora } from '../../src/componentes/BwAncora';
+import { BwBarraDeNavegacao } from '../../src/componentes/BwBarraDeNavegacao';
 import { BwFeltroRetorno } from '../../src/componentes/BwFeltroRetorno';
 import { BwPainelLeitura } from '../../src/componentes/BwPainelLeitura';
 import { useTransicaoDaMesa } from '../../src/componentes/BwTransicaoDaMesa';
@@ -258,7 +259,7 @@ function LeitorDaObra({ obra }: { obra: Obra }) {
             </Text>
           </View>
           {!painel && (
-            <View style={[estilos.base, { paddingBottom: bottom }]}>
+            <View style={estilos.base}>
               <Pressable
                 onPress={() => setPainel(true)}
                 accessibilityRole="button"
@@ -267,6 +268,8 @@ function LeitorDaObra({ obra }: { obra: Obra }) {
               >
                 <Text style={estilos.abrirPainelTexto}>Aa · luz, letra e página</Text>
               </Pressable>
+              {/* RN-DV.11: no leitor, a barra só aparece junto do menu. */}
+              <BwBarraDeNavegacao atual="ler" onMesa={pousar} />
             </View>
           )}
         </>
