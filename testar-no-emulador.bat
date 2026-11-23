@@ -18,7 +18,11 @@ rem 1. Emulador
 adb get-state >nul 2>&1
 if errorlevel 1 (
   echo [1/4] Ligando o emulador %AVD%...
-  start "Emulador BookWorm" /min emulator -avd %AVD% -no-boot-anim -no-snapshot
+  rem A GPU do PC (modo host, gfxstream) derruba o emulador de vez em quando ao trocar de tela
+  rem (visto com NVIDIA no Windows, 22/11/2026). Por software é estável. Para testar com a
+  rem GPU: set BOOKWORM_GPU=host antes de rodar o script.
+  if not defined BOOKWORM_GPU set "BOOKWORM_GPU=swiftshader_indirect"
+  start "Emulador BookWorm" /min emulator -avd %AVD% -no-boot-anim -no-snapshot -gpu !BOOKWORM_GPU!
 ) else (
   echo [1/4] Emulador já ligado.
 )

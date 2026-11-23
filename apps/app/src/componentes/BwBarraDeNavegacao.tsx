@@ -8,6 +8,7 @@ import { marcarAberta, useObras } from '../dados/obras';
 import { type Destino, itensDaBarra } from '../navegacao';
 import { ALVO_MINIMO } from '../tema/geometria';
 import { tipo } from '../tema/tipografia';
+import { useTransicaoDaMesa } from './BwTransicaoDaMesa';
 
 // Os ícones de traço da régua, desenhados numa grade de 24 (protótipo da barra, estilo A).
 const ICONES: Record<Destino, string> = {
@@ -37,10 +38,15 @@ export function BwBarraDeNavegacao({ atual, onMesa }: Props) {
   const { bottom } = useSafeAreaInsets();
   const [livro] = objetosNaMesa(useObras()).livros;
   const itens = itensDaBarra(atual, livro ?? null);
+  const { giro } = useTransicaoDaMesa();
 
   function ir(destino: Destino) {
     if (destino === atual) return;
     if (destino === 'mesa') return onMesa();
+    // Aberta pela virada de câmera, a estante fica sobre a mesa girada em 3D. A mesa está
+    // escondida, então volta de frente na hora, antes da troca: a transição nunca desenha uma
+    // mesa girada por baixo da tela nova. A faixa de feltro continua desvirando com animação.
+    giro.value = 0;
     if (destino === 'ler' && livro) {
       marcarAberta(livro.id);
       router.replace({ pathname: '/leitor/[id]', params: { id: livro.id, via: 'barra' } });
