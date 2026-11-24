@@ -1,7 +1,7 @@
 import { objetosNaMesa } from '@bookworm/core';
-import { Canvas, Group, Path } from '@shopify/react-native-skia';
+import { PaintStyle, Skia, StrokeCap, StrokeJoin } from '@shopify/react-native-skia';
 import { useRouter } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
+import { Image, PixelRatio, Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { marcarAberta, useObras } from '../dados/obras';
@@ -19,6 +19,39 @@ const ICONES: Record<Destino, string> = {
     'M7 14h10l-1.5 6h-7z M12 14V8.5 M12 10.5c-3 0-4.5-1.8-4.5-4.3 3 0 4.5 1.8 4.5 4.3z M12 9c0-2.8 1.7-4.3 4.4-4.3 0 2.8-1.7 4.3-4.4 4.3z',
 };
 const LADO = 22;
+
+/**
+ * Os ícones viram imagem (PNG) desenhada pela Skia na CPU, uma vez por ícone e cor, e não um
+ * componente Canvas. Cada Canvas é uma superfície GL; no leitor, a barra fica por cima da WebView do
+ * Readium e sai de cena quando o painel de leitura abre. Destruir aquela superfície no meio de
+ * um quadro derrubava o emulador inteiro (24/11/2026: 3 quedas com Canvas, 0 em 25 aberturas
+ * do painel sem ele). Imagem não tem superfície para destruir.
+ */
+const cacheDeIcones = new Map<string, string>();
+function iconeEmImagem(destino: Destino, cor: string): string | null {
+  const chave = `${destino}|${cor}`;
+  const pronto = cacheDeIcones.get(chave);
+  if (pronto) return pronto;
+  const escala = PixelRatio.get();
+  const px = Math.round(LADO * escala);
+  const superficie = Skia.Surface.Make(px, px); // CPU, nunca GPU
+  const caminho = Skia.Path.MakeFromSVGString(ICONES[destino]);
+  if (!superficie || !caminho) return null;
+  const tinta = Skia.Paint();
+  tinta.setAntiAlias(true);
+  tinta.setStyle(PaintStyle.Stroke);
+  tinta.setStrokeWidth(1.6);
+  tinta.setStrokeCap(StrokeCap.Round);
+  tinta.setStrokeJoin(StrokeJoin.Round);
+  tinta.setColor(Skia.Color(cor));
+  const tela = superficie.getCanvas();
+  tela.scale(px / 24, px / 24);
+  tela.drawPath(caminho, tinta);
+  superficie.flush();
+  const uri = `data:image/png;base64,${superficie.makeImageSnapshot().encodeToBase64()}`;
+  cacheDeIcones.set(chave, uri);
+  return uri;
+}
 
 type Props = {
   /** A tela em que a barra está. */
@@ -73,24 +106,18 @@ export function BwBarraDeNavegacao({ atual, onMesa }: Props) {
             style={({ pressed }) => [estilos.item, pressed && estilos.pressionado]}
           >
             {item.atual && <View style={estilos.filete} />}
-            <Canvas style={estilos.icone}>
-              <Group transform={[{ scale: LADO / 24 }]}>
-                <Path
-                  path={ICONES[item.destino]}
-                  style="stroke"
-                  strokeWidth={1.6}
-                  strokeCap="round"
-                  strokeJoin="round"
-                  color={cor}
-                />
-              </Group>
-            </Canvas>
+            <IconeDaBarra destino={item.destino} cor={cor} />
             <Text style={[estilos.rotulo, { color: cor }]}>{item.rotulo}</Text>
           </Pressable>
         );
       })}
     </View>
   );
+}
+
+function IconeDaBarra({ destino, cor }: { destino: Destino; cor: string }) {
+  const uri = iconeEmImagem(destino, cor);
+  return uri ? <Image source={{ uri }} style={estilos.icone} /> : <View style={estilos.icone} />;
 }
 
 const estilos = StyleSheet.create((theme) => ({
