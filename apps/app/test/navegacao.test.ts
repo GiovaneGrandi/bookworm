@@ -21,19 +21,24 @@ describe('Barra de navegação · onde aparece', () => {
 describe('Barra de navegação · os itens', () => {
   const livro = { titulo: 'O cortiço' };
 
-  it('cinco destinos, na ordem da régua', () => {
+  it('quatro destinos, na ordem da régua', () => {
     expect(itensDaBarra('biblioteca', livro).map((i) => i.rotulo)).toEqual([
       'Mesa',
       'Ler',
       'Biblioteca',
-      'Importar',
       'Jardim',
     ]);
   });
 
   it('marca a tela atual', () => {
+    const itens = itensDaBarra('biblioteca', livro);
+    expect(itens.filter((i) => i.atual).map((i) => i.destino)).toEqual(['biblioteca']);
+  });
+
+  it('na bandeja (importar) a barra aparece, mas sem item marcado: importar não é destino', () => {
     const itens = itensDaBarra('importar', livro);
-    expect(itens.filter((i) => i.atual).map((i) => i.destino)).toEqual(['importar']);
+    expect(itens.map((i) => i.destino)).not.toContain('importar');
+    expect(itens.some((i) => i.atual)).toBe(false);
   });
 
   it('"Ler" continua o livro em leitura e diz qual é', () => {

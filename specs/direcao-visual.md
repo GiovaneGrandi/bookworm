@@ -427,11 +427,12 @@ A vitrine com as três e a folha comparativa está em [`../mockups/ideacao/index
 - `RN-DV.8` **A composição da mesa é livre da escala tônica.** A posição dos objetos sobre o feltro é composição, não espaçamento. Dentro de cada folha erguida, `RN-DS.4` continua valendo sem exceção.
 - `RN-DV.9` **O leitor continua sendo modo, não destino** (`RN-DS.18`). O livro se ergue da mesa, a leitura não tem chrome, e "Pousar na mesa" e "Encerrar sessão" só aparecem com os controles revelados.
 - `RN-DV.10` **Cada objeto tem etiqueta datilografada.** A mesa sem rótulo vira quebra-cabeça (§9.7). A etiqueta é parte do objeto, como na papelaria real, e é ela que o leitor de tela anuncia.
-- `RN-DV.11` **Fora da mesa, qualquer tela fica a um toque (decisão de 22/11/2026).** Uma barra de navegação fixa no rodapé, a **régua de feltro** (faixa do feltro da mesa, ícone de traço e nome datilografado; a tela atual em latão, com um filete por cima), leva a Mesa · Ler · Biblioteca · Importar · Jardim. Regras:
+- `RN-DV.11` **Fora da mesa, qualquer tela fica a um toque (decisão de 22/11/2026).** Uma barra de navegação fixa no rodapé, a **régua de feltro** (faixa do feltro da mesa, ícone de traço e nome datilografado; a tela atual em latão, com um filete por cima), leva a Mesa · Ler · Biblioteca · Jardim. Regras:
   - **Não aparece na mesa.** A mesa já é o índice; a barra só existe depois que a leitora entra em outra tela.
   - **No leitor, fica oculta por padrão** e só aparece junto do menu, quando a leitora toca no meio da página (`RN-02.13`, `RN-DV.9`).
   - **Trocar de tela pela barra substitui a tela atual**, sem empilhar: o voltar do sistema e a faixa de feltro levam sempre à mesa (`RN-DV.2`).
   - "Ler" continua o livro em leitura mais recente; sem livro em leitura, fica indisponível. Destino que ainda não existe (Jardim) aparece indisponível, "em breve". Desempenho e Ajustes, quando existirem, ficam na mesa, para a barra não passar de cinco itens.
+  - **Importar não é item da barra (decisão de 24/11/2026).** A bandeja de entrada se abre pela mesa; lá dentro a barra aparece, sem nenhum item marcado.
   - Resolve `Q-DV.13`: a troca de função deixa de passar pela mesa. Protótipo: rodada "Navbar do BookWorm", estilo A.
 
 ### 9.4 O mapa objeto → tela

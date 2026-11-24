@@ -3,7 +3,7 @@ import { ScrollView, Text, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
-import type { Destino } from '../navegacao';
+import type { Tela } from '../navegacao';
 import type { NomeSuperficie } from '../tema/superficies';
 import { tipo } from '../tema/tipografia';
 import { BwBarraDeNavegacao } from './BwBarraDeNavegacao';
@@ -18,7 +18,7 @@ type Props = {
   superficie?: NomeSuperficie;
   rotuloRetorno?: string;
   /** A tela na barra de navegação (RN-DV.11); sem ela, a folha não mostra a barra. */
-  navegacao?: Exclude<Destino, 'mesa'>;
+  navegacao?: Exclude<Tela, 'mesa'>;
 };
 
 /**

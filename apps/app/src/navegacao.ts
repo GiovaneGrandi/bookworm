@@ -2,7 +2,11 @@
 // outra fica a um toque. Ela não existe na mesa, que já é o índice, e no leitor só aparece junto
 // do menu, quando a leitora toca no meio da página (RN-DV.11).
 
-export type Destino = 'mesa' | 'ler' | 'biblioteca' | 'importar' | 'jardim';
+/** Os destinos da régua. */
+export type Destino = 'mesa' | 'ler' | 'biblioteca' | 'jardim';
+
+/** As telas em que a barra pode estar: os destinos e a bandeja, que tem a barra mas não é item dela. */
+export type Tela = Destino | 'importar';
 
 export type ItemDaBarra = {
   destino: Destino;
@@ -13,14 +17,14 @@ export type ItemDaBarra = {
 };
 
 /** Se a barra aparece nesta tela. No leitor depende do menu estar aberto. */
-export function barraVisivel(tela: Destino, menuAberto: boolean): boolean {
+export function barraVisivel(tela: Tela, menuAberto: boolean): boolean {
   if (tela === 'mesa') return false;
   if (tela === 'ler') return menuAberto;
   return true;
 }
 
 export function itensDaBarra(
-  atual: Destino,
+  atual: Tela,
   livroEmLeitura: { titulo: string } | null
 ): ItemDaBarra[] {
   const titulo = livroEmLeitura?.titulo.replace(/\s+/g, ' ').trim();
@@ -38,7 +42,6 @@ export function itensDaBarra(
       rotuloAcessivel: 'Biblioteca',
       disponivel: true,
     },
-    { destino: 'importar', rotulo: 'Importar', rotuloAcessivel: 'Importar', disponivel: true },
     { destino: 'jardim', rotulo: 'Jardim', rotuloAcessivel: 'Jardim: em breve', disponivel: false },
   ];
   return itens.map((i) => ({ ...i, atual: i.destino === atual }));
