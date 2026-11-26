@@ -1,13 +1,11 @@
 import type { ReactNode } from 'react';
 import { ScrollView, Text, View } from 'react-native';
-import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import type { Tela } from '../navegacao';
 import type { NomeSuperficie } from '../tema/superficies';
 import { tipo } from '../tema/tipografia';
 import { BwBarraDeNavegacao } from './BwBarraDeNavegacao';
-import { BwFeltroRetorno, usePuxao } from './BwFeltroRetorno';
 import { useTransicaoDaMesa } from './BwTransicaoDaMesa';
 import { usePousarNaMesa } from './usePousarNaMesa';
 
@@ -16,33 +14,23 @@ type Props = {
   titulo: string;
   children?: ReactNode;
   superficie?: NomeSuperficie;
-  rotuloRetorno?: string;
   /** A tela na barra de navegação (RN-DV.11); sem ela, a folha não mostra a barra. */
   navegacao?: Exclude<Tela, 'mesa'>;
 };
 
 /**
- * Uma folha erguida da mesa (RN-DV.2): o feltro aparece no alto, como faixa de retorno, e a
- * folha de papel ocupa o resto da tela.
+ * Uma folha erguida da mesa (RN-DV.2): a folha de papel ocupa a tela, e volta-se à mesa pela
+ * barra de navegação (RN-DV.11) ou pelo voltar do sistema.
  */
-export function BwFolha({
-  kicker,
-  titulo,
-  children,
-  superficie = 'papel',
-  rotuloRetorno,
-  navegacao,
-}: Props) {
+export function BwFolha({ kicker, titulo, children, superficie = 'papel', navegacao }: Props) {
   const { theme } = useUnistyles();
   const pousar = usePousarNaMesa(theme.sup[superficie].fundo);
   const { chegou } = useTransicaoDaMesa();
   const { top, bottom } = useSafeAreaInsets();
-  const { puxao, estilo } = usePuxao();
 
   return (
-    <View onLayout={chegou} style={[estilos.feltro, { paddingTop: top }]}>
-      <BwFeltroRetorno onPousar={pousar} rotulo={rotuloRetorno} puxao={puxao} />
-      <Animated.View style={[estilos.folha(superficie), estilo]}>
+    <View onLayout={chegou} style={estilos.feltro}>
+      <View style={[estilos.folha(superficie), { paddingTop: top }]}>
         <ScrollView
           contentContainerStyle={[estilos.miolo, { paddingBottom: navegacao ? 27 : bottom }]}
         >
@@ -53,7 +41,7 @@ export function BwFolha({
           {children}
         </ScrollView>
         {navegacao && <BwBarraDeNavegacao atual={navegacao} onMesa={pousar} />}
-      </Animated.View>
+      </View>
     </View>
   );
 }

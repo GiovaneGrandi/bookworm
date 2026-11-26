@@ -56,7 +56,7 @@ function iconeEmImagem(destino: Destino, cor: string): string | null {
 type Props = {
   /** A tela em que a barra está. */
   atual: Exclude<Tela, 'mesa'>;
-  /** Como esta tela volta à mesa (a mesma saída da faixa de feltro). */
+  /** Como esta tela volta à mesa (a mesma saída do voltar do sistema). */
   onMesa: () => void;
 };
 
@@ -77,7 +77,7 @@ export function BwBarraDeNavegacao({ atual, onMesa }: Props) {
     if (destino === 'mesa') return onMesa();
     // Aberta pela virada de câmera, a estante fica sobre a mesa girada em 3D. A mesa está
     // escondida, então volta de frente na hora, antes da troca: a transição nunca desenha uma
-    // mesa girada por baixo da tela nova. A faixa de feltro continua desvirando com animação.
+    // mesa girada por baixo da tela nova. O item Mesa continua desvirando com animação.
     giro.value = 0;
     if (destino === 'ler' && livro) {
       marcarAberta(livro.id);

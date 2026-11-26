@@ -9,9 +9,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
-import { ALVO_MINIMO } from '../tema/geometria';
 
 /**
  * Erguer e pousar (RN-DV.2, mockup B): ao tocar um objeto da mesa, uma folha cresce do lugar
@@ -19,16 +17,14 @@ import { ALVO_MINIMO } from '../tema/geometria';
  * reduzido (RN-DS.14) a troca é imediata, como no mockup.
  */
 
-/** A folha ocupa a tela abaixo da faixa de feltro; o leitor, a tela inteira. */
-export type Alvo = 'folha' | 'tela';
 type Retangulo = { x: number; y: number; w: number; h: number };
 
 type Transicao = {
   registrar: (chave: string, objeto: View | null) => void;
   /** A tela erguida avisa que já foi desenhada por baixo da folha: só então a folha some. */
   chegou: () => void;
-  erguer: (chave: string, cor: string, alvo: Alvo, navegar: () => void) => void;
-  pousar: (chave: string, cor: string, alvo: Alvo, voltar: () => void) => void;
+  erguer: (chave: string, cor: string, navegar: () => void) => void;
+  pousar: (chave: string, cor: string, voltar: () => void) => void;
   /**
    * A virada de câmera da v2, só para a estante. Mesa e estante são duas paredes que se
    * encontram num canto: a câmera gira para a esquerda e as duas andam juntas, num movimento
@@ -60,7 +56,6 @@ export function BwTransicaoDaMesa({ children }: { children: ReactNode }) {
   const objetos = useRef(new Map<string, View>());
   const reduzir = useReducedMotion();
   const { width, height } = useWindowDimensions();
-  const { top } = useSafeAreaInsets();
 
   const x = useSharedValue(0);
   const y = useSharedValue(0);
@@ -79,13 +74,8 @@ export function BwTransicaoDaMesa({ children }: { children: ReactNode }) {
     backgroundColor: cor.value,
   }));
 
-  const alvoDe = useCallback(
-    (alvo: Alvo): Retangulo =>
-      alvo === 'tela'
-        ? { x: 0, y: 0, w: width, h: height }
-        : { x: 0, y: top + ALVO_MINIMO, w: width, h: height - top - ALVO_MINIMO },
-    [width, height, top]
-  );
+  // Toda folha erguida ocupa a tela inteira, como o leitor.
+  const tela = useMemo<Retangulo>(() => ({ x: 0, y: 0, w: width, h: height }), [width, height]);
 
   const medir = useCallback(
     (chave: string) =>
@@ -165,24 +155,24 @@ export function BwTransicaoDaMesa({ children }: { children: ReactNode }) {
         else objetos.current.delete(chave);
       },
 
-      erguer(chave, c, alvo, navegar) {
+      erguer(chave, c, navegar) {
         if (reduzir) return navegar();
         medir(chave).then((origem) => {
           if (!origem) return navegar();
           cor.value = c;
           colocar(origem);
           opacidade.value = 0.4;
-          animar(alvoDe(alvo), 1, ERGUER, () => {
+          animar(tela, 1, ERGUER, () => {
             navegar();
             esperando.current = setTimeout(sumir, ESPERA_MAXIMA_MS);
           });
         });
       },
 
-      pousar(chave, c, alvo, voltar) {
+      pousar(chave, c, voltar) {
         if (reduzir) return voltar();
         cor.value = c;
-        colocar(alvoDe(alvo));
+        colocar(tela);
         opacidade.value = 1;
         voltar();
         // A mesa volta a ser desenhada por baixo da folha; só então o objeto tem lugar na tela.
@@ -196,7 +186,7 @@ export function BwTransicaoDaMesa({ children }: { children: ReactNode }) {
         }, 0);
       },
     };
-  }, [reduzir, medir, colocar, alvoDe, sumir, x, y, w, h, opacidade, cor, giro]);
+  }, [reduzir, medir, colocar, tela, sumir, x, y, w, h, opacidade, cor, giro]);
 
   return (
     <Contexto.Provider value={transicao}>

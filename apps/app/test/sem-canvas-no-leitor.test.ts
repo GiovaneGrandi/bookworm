@@ -12,7 +12,6 @@ const NO_LEITOR = [
   'src/componentes/BwDeslizante.tsx',
   'src/componentes/BwEscolha.tsx',
   'src/componentes/BwAncora.tsx',
-  'src/componentes/BwFeltroRetorno.tsx',
 ];
 
 describe('Leitor · nenhuma superfície GL por cima da página', () => {

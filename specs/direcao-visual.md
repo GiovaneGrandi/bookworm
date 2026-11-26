@@ -417,8 +417,8 @@ A vitrine com as três e a folha comparativa está em [`../mockups/ideacao/index
 
 ### 9.3 Regras
 
-- `RN-DV.1` **A mesa é a tela inicial e o hub.** É a primeira coisa que se vê depois do login e o lugar para onde a faixa de feltro sempre volta. Desde 22/11/2026 deixou de ser o *único* caminho entre telas: a barra de navegação (`RN-DV.11`) liga as outras telas entre si.
-- `RN-DV.2` **Não há seta de voltar.** Toda tela é uma folha erguida da mesa. Para voltar, toca-se a **faixa de feltro** que sobra no alto da folha ("pousar na mesa"), e a folha volta ao lugar. O gesto de voltar do sistema faz o mesmo.
+- `RN-DV.1` **A mesa é a tela inicial e o hub.** É a primeira coisa que se vê depois do login e o lugar para onde o item Mesa da barra e o voltar do sistema sempre levam. Desde 22/11/2026 deixou de ser o *único* caminho entre telas: a barra de navegação (`RN-DV.11`) liga as outras telas entre si.
+- `RN-DV.2` **Não há seta de voltar.** Toda tela é uma folha erguida da mesa, que ocupa a tela inteira. Para voltar, toca-se **Mesa** na barra de navegação (`RN-DV.11`) ou usa-se o gesto de voltar do sistema, e a folha volta ao lugar. A faixa de feltro no alto da folha ("pousar na mesa") saiu em 25/11/2026: com a barra, ela era uma segunda saída para o mesmo lugar.
 - `RN-DV.3` **Cada objeto é uma porta, e o objeto mostra o estado da função.** Um objeto sem estado visível (só um ícone que abre uma tela) não pertence à mesa.
 - `RN-DV.4` **A mesa guarda só o que está em uso.** No máximo 2 livros em leitura ficam pousados. O resto mora na gaveta do fichário, e os concluídos sobem para a pilha. Uma mesa com 200 livros fica tão limpa quanto uma com 9.
 - `RN-DV.5` **A sessão deixa um rastro físico.** Ao fim da sessão, a ficha do dia entra no livro como marcador e fica visível na mesa ("34 min · meta ✓ · hoje") até a virada do dia.
@@ -430,7 +430,7 @@ A vitrine com as três e a folha comparativa está em [`../mockups/ideacao/index
 - `RN-DV.11` **Fora da mesa, qualquer tela fica a um toque (decisão de 22/11/2026).** Uma barra de navegação fixa no rodapé, a **régua de feltro** (faixa do feltro da mesa, ícone de traço e nome datilografado; a tela atual em latão, com um filete por cima), leva a Mesa · Ler · Biblioteca · Jardim. Regras:
   - **Não aparece na mesa.** A mesa já é o índice; a barra só existe depois que a leitora entra em outra tela.
   - **No leitor, fica oculta por padrão** e só aparece junto do menu, quando a leitora toca no meio da página (`RN-02.13`, `RN-DV.9`).
-  - **Trocar de tela pela barra substitui a tela atual**, sem empilhar: o voltar do sistema e a faixa de feltro levam sempre à mesa (`RN-DV.2`).
+  - **Trocar de tela pela barra substitui a tela atual**, sem empilhar: o voltar do sistema e o item Mesa levam sempre à mesa (`RN-DV.2`).
   - "Ler" continua o livro em leitura mais recente; sem livro em leitura, fica indisponível. Destino que ainda não existe (Jardim) aparece indisponível, "em breve". Desempenho e Ajustes, quando existirem, ficam na mesa, para a barra não passar de cinco itens.
   - **Importar não é item da barra (decisão de 24/11/2026).** A bandeja de entrada se abre pela mesa; lá dentro a barra aparece, sem nenhum item marcado.
   - Resolve `Q-DV.13`: a troca de função deixa de passar pela mesa. Protótipo: rodada "Navbar do BookWorm", estilo A.

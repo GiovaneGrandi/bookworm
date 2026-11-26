@@ -15,7 +15,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { BwBarraDeNavegacao } from '../src/componentes/BwBarraDeNavegacao';
 import { BwBotao } from '../src/componentes/BwBotao';
-import { BwFeltroRetorno, usePuxao } from '../src/componentes/BwFeltroRetorno';
 import { BwMenuRapido, type ItemDoMenu, type MenuRapido } from '../src/componentes/BwMenuRapido';
 import { useParedeDaCamera, useTransicaoDaMesa } from '../src/componentes/BwTransicaoDaMesa';
 import { usePousarNaMesa } from '../src/componentes/usePousarNaMesa';
@@ -53,11 +52,10 @@ export default function Gaveta() {
   const [ordem, setOrdem] = useState<OrdemDaEstante>('az');
   const [termo, setTermo] = useState('');
   const [segurada, setSegurada] = useState<Segurada | null>(null);
-  const { puxao, estilo: estiloPuxado } = usePuxao();
   const estiloDaParede = useParedeDaCamera('estante');
 
   // Aberta pela mesa, a estante é a parede da esquerda e volta com a câmera girando de volta.
-  const pousar = usePousarNaMesa(theme.sup.papel.fundo, 'folha', virada ? desvirar : undefined);
+  const pousar = usePousarNaMesa(theme.sup.papel.fundo, virada ? desvirar : undefined);
 
   const naEstante = obrasNaEstante(obras, ordem, termo);
   const vazia = obras.every((o) => o.estado === 'abandonado');
@@ -100,12 +98,8 @@ export default function Gaveta() {
   };
 
   return (
-    <Animated.View
-      onLayout={chegou}
-      style={[estilos.feltro, { paddingTop: top }, virada && estiloDaParede]}
-    >
-      <BwFeltroRetorno onPousar={pousar} puxao={puxao} />
-      <Animated.View style={[estilos.folha, estiloPuxado]}>
+    <Animated.View onLayout={chegou} style={[estilos.feltro, virada && estiloDaParede]}>
+      <View style={[estilos.folha, { paddingTop: top + theme.esp[3] }]}>
         <View style={estilos.cabeca}>
           <View style={estilos.busca}>
             <Lupa />
@@ -180,7 +174,7 @@ export default function Gaveta() {
           </View>
         </View>
         <BwBarraDeNavegacao atual="biblioteca" onMesa={pousar} />
-      </Animated.View>
+      </View>
       <BwMenuRapido menu={menu} onFechar={() => setSegurada(null)} />
     </Animated.View>
   );
@@ -256,7 +250,6 @@ const estilos = StyleSheet.create((theme) => ({
     overflow: 'hidden',
     backgroundColor: theme.sup.papel.fundo,
     boxShadow: theme.sup.mesa.sombra.flutuante,
-    paddingTop: theme.esp[3],
   },
   cabeca: {
     flexDirection: 'row',

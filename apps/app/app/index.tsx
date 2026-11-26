@@ -73,14 +73,14 @@ export default function Mesa() {
   );
 
   function continuar(o: Obra) {
-    erguer(`/leitor/${o.id}`, corDaLeitura, 'tela', () => {
+    erguer(`/leitor/${o.id}`, corDaLeitura, () => {
       marcarAberta(o.id);
       router.push({ pathname: '/leitor/[id]', params: { id: o.id, erguido: '1' } });
     });
   }
 
   function abrirBandeja(escolher = false) {
-    erguer('/bandeja', papel, 'folha', () =>
+    erguer('/bandeja', papel, () =>
       router.push({
         pathname: '/bandeja',
         params: escolher ? { erguido: '1', escolher: '1' } : { erguido: '1' },
