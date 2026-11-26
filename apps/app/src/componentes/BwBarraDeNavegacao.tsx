@@ -1,7 +1,6 @@
 import { objetosNaMesa } from '@bookworm/core';
-import { PaintStyle, Skia, StrokeCap, StrokeJoin } from '@shopify/react-native-skia';
 import { useRouter } from 'expo-router';
-import { Image, PixelRatio, Pressable, Text, View } from 'react-native';
+import { Image, Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { marcarAberta, useObras } from '../dados/obras';
@@ -9,6 +8,7 @@ import { type Destino, itensDaBarra, type Tela } from '../navegacao';
 import { ALVO_MINIMO } from '../tema/geometria';
 import { tipo } from '../tema/tipografia';
 import { useTransicaoDaMesa } from './BwTransicaoDaMesa';
+import { iconeEmImagem } from './iconeEmImagem';
 
 // Os ícones de traço da régua, desenhados numa grade de 24 (protótipo da barra, estilo A).
 const ICONES: Record<Destino, string> = {
@@ -20,38 +20,7 @@ const ICONES: Record<Destino, string> = {
 };
 const LADO = 22;
 
-/**
- * Os ícones viram imagem (PNG) desenhada pela Skia na CPU, uma vez por ícone e cor, e não um
- * componente Canvas. Cada Canvas é uma superfície GL; no leitor, a barra fica por cima da WebView do
- * Readium e sai de cena quando o painel de leitura abre. Destruir aquela superfície no meio de
- * um quadro derrubava o emulador inteiro (24/11/2026: 3 quedas com Canvas, 0 em 25 aberturas
- * do painel sem ele). Imagem não tem superfície para destruir.
- */
-const cacheDeIcones = new Map<string, string>();
-function iconeEmImagem(destino: Destino, cor: string): string | null {
-  const chave = `${destino}|${cor}`;
-  const pronto = cacheDeIcones.get(chave);
-  if (pronto) return pronto;
-  const escala = PixelRatio.get();
-  const px = Math.round(LADO * escala);
-  const superficie = Skia.Surface.Make(px, px); // CPU, nunca GPU
-  const caminho = Skia.Path.MakeFromSVGString(ICONES[destino]);
-  if (!superficie || !caminho) return null;
-  const tinta = Skia.Paint();
-  tinta.setAntiAlias(true);
-  tinta.setStyle(PaintStyle.Stroke);
-  tinta.setStrokeWidth(1.6);
-  tinta.setStrokeCap(StrokeCap.Round);
-  tinta.setStrokeJoin(StrokeJoin.Round);
-  tinta.setColor(Skia.Color(cor));
-  const tela = superficie.getCanvas();
-  tela.scale(px / 24, px / 24);
-  tela.drawPath(caminho, tinta);
-  superficie.flush();
-  const uri = `data:image/png;base64,${superficie.makeImageSnapshot().encodeToBase64()}`;
-  cacheDeIcones.set(chave, uri);
-  return uri;
-}
+/** Os ícones viram imagem desenhada uma vez na CPU, nunca um Canvas: ver `iconeEmImagem`. */
 
 type Props = {
   /** A tela em que a barra está. */
@@ -116,7 +85,7 @@ export function BwBarraDeNavegacao({ atual, onMesa }: Props) {
 }
 
 function IconeDaBarra({ destino, cor }: { destino: Destino; cor: string }) {
-  const uri = iconeEmImagem(destino, cor);
+  const uri = iconeEmImagem(ICONES[destino], cor, LADO);
   return uri ? <Image source={{ uri }} style={estilos.icone} /> : <View style={estilos.icone} />;
 }
 

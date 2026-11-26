@@ -11,24 +11,21 @@ import {
   restaurarTudo,
   TEMPERATURA_LUZ,
 } from '@bookworm/core';
-import { useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScrollView, Text, useWindowDimensions, View } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { BwBotao } from './BwBotao';
 import { BwDeslizante } from './BwDeslizante';
 import { BwEscolha } from './BwEscolha';
 
 type Props = {
+  /** O grupo que o ícone do cabeçalho abriu. */
+  aba: Aba;
   preferencias: PreferenciasLeitura;
   onMudar: (p: PreferenciasLeitura) => void;
 };
 
-const ABAS: { valor: Aba; rotulo: string }[] = [
-  { valor: 'luz', rotulo: 'Luz' },
-  { valor: 'letra', rotulo: 'Letra' },
-  { valor: 'pagina', rotulo: 'Página' },
-];
+/** A persiana ocupa no máximo esta fração da altura: o texto continua à vista embaixo. */
+const ALTURA_MAXIMA = 0.62;
 
 /** A face de cada amostra no próprio painel: a fonte carregada no app com o mesmo desenho. */
 const AMOSTRA: Record<Face, string> = {
@@ -43,24 +40,20 @@ const kelvin = (k: number) => `${k.toLocaleString('pt-BR')} K`;
 const px = (v: number) => `${v.toLocaleString('pt-BR')} px`;
 
 /**
- * bw-painel-leitura: os 10 controles de RN-02.16d em três instrumentos (direcao-visual.md §9),
- * em meia tela, com o texto real à vista e cada ajuste aplicado na hora (RN-02.16e).
+ * bw-painel-leitura: os 10 controles de RN-02.16d em três instrumentos (direcao-visual.md §9).
+ * Cada ícone do cabeçalho abre um deles numa persiana que desce de baixo do título, com o texto
+ * real à vista embaixo e cada ajuste aplicado na hora (RN-02.16e).
  */
-export function BwPainelLeitura({ preferencias: p, onMudar }: Props) {
+export function BwPainelLeitura({ aba, preferencias: p, onMudar }: Props) {
   const { theme } = useUnistyles();
-  const { bottom } = useSafeAreaInsets();
-  const [aba, setAba] = useState<Aba>('luz');
+  const { height } = useWindowDimensions();
   const mudar = (m: Partial<PreferenciasLeitura>) => onMudar(aplicar(p, m));
   const corpo = corpoEfetivo(p);
   const entrelinha = entrelinhaEfetiva(p);
   const face = FACES[p.face];
 
   return (
-    <View style={[estilos.painel, { paddingBottom: bottom }]} accessibilityViewIsModal>
-      <View style={estilos.abas}>
-        <BwEscolha rotulo="Painel de leitura" opcoes={ABAS} valor={aba} onMudar={setAba} />
-      </View>
-
+    <View style={[estilos.painel, { maxHeight: height * ALTURA_MAXIMA }]} accessibilityViewIsModal>
       <ScrollView key={aba} contentContainerStyle={estilos.controles}>
         {aba === 'luz' && (
           <>
@@ -184,7 +177,7 @@ export function BwPainelLeitura({ preferencias: p, onMudar }: Props) {
 
       <View style={estilos.rodape}>
         <View style={estilos.botao}>
-          <BwBotao rotulo="↺ esta aba" onPress={() => onMudar(restaurarAba(p, aba))} />
+          <BwBotao rotulo="↺ só esta parte" onPress={() => onMudar(restaurarAba(p, aba))} />
         </View>
         <View style={estilos.botao}>
           <BwBotao rotulo="↺ tudo ao padrão" onPress={() => onMudar(restaurarTudo())} />
@@ -199,19 +192,13 @@ export function BwPainelLeitura({ preferencias: p, onMudar }: Props) {
 
 const estilos = StyleSheet.create((theme) => ({
   painel: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: '52%',
     backgroundColor: theme.sup.papel.fundo,
-    borderTopWidth: 1,
-    borderTopColor: theme.sup.papel.borda,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.sup.papel.borda,
+    borderBottomLeftRadius: theme.esp[3],
+    borderBottomRightRadius: theme.esp[3],
     boxShadow: theme.sup.papel.sombra.flutuante,
-  },
-  abas: {
-    paddingHorizontal: theme.esp[5],
-    paddingTop: theme.esp[4],
+    paddingBottom: theme.esp[2],
   },
   controles: {
     paddingHorizontal: theme.esp[5],

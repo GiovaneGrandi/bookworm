@@ -9,6 +9,8 @@ const NO_LEITOR = [
   'app/leitor/[id].tsx',
   'src/componentes/BwBarraDeNavegacao.tsx',
   'src/componentes/BwPainelLeitura.tsx',
+  'src/componentes/BwIconesDoLeitor.tsx',
+  'src/componentes/iconeEmImagem.ts',
   'src/componentes/BwDeslizante.tsx',
   'src/componentes/BwEscolha.tsx',
   'src/componentes/BwAncora.tsx',

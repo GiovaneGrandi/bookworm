@@ -1,4 +1,5 @@
 import {
+  type Aba,
   corDaTemperatura,
   type PreferenciasLeitura,
   paginaCanonica,
@@ -22,6 +23,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { BwAncora } from '../../src/componentes/BwAncora';
 import { BwBarraDeNavegacao } from '../../src/componentes/BwBarraDeNavegacao';
+import { BwIconesDoLeitor } from '../../src/componentes/BwIconesDoLeitor';
 import { BwPainelLeitura } from '../../src/componentes/BwPainelLeitura';
 import { useTransicaoDaMesa } from '../../src/componentes/BwTransicaoDaMesa';
 import { usePousarNaMesa } from '../../src/componentes/usePousarNaMesa';
@@ -34,7 +36,7 @@ import {
 } from '../../src/dados/leitura';
 import { useObra } from '../../src/dados/obras';
 import type { Obra } from '../../src/dados/schema';
-import { ALVO_MINIMO } from '../../src/tema/geometria';
+import { tocarIcone } from '../../src/leitor';
 import { corDaCamadaDeBrilho, corDaCamadaDeLuz } from '../../src/tema/leitura';
 import { tipo } from '../../src/tema/tipografia';
 
@@ -67,7 +69,8 @@ function LeitorDaObra({ obra }: { obra: Obra }) {
   const pousar = usePousarNaMesa(theme.leitura[p.tema].fundo);
   const { chegou } = useTransicaoDaMesa();
   const [controles, setControles] = useState(false);
-  const [painel, setPainel] = useState(false);
+  // O grupo do painel aberto pelo ícone do cabeçalho; null com a persiana recolhida.
+  const [painel, setPainel] = useState<Aba | null>(null);
   const [locator, setLocator] = useState<Locator | undefined>(() => lerLocator(obra.locator));
   const [progresso, setProgresso] = useState(obra.progresso);
   const [paginasPdf, setPaginasPdf] = useState(0);
@@ -120,7 +123,7 @@ function LeitorDaObra({ obra }: { obra: Obra }) {
     useCallback(() => {
       if (!painel) return undefined;
       const assinatura = BackHandler.addEventListener('hardwareBackPress', () => {
-        setPainel(false);
+        setPainel(null);
         return true;
       });
       return () => assinatura.remove();
@@ -142,7 +145,7 @@ function LeitorDaObra({ obra }: { obra: Obra }) {
     });
 
   function fecharControles() {
-    setPainel(false);
+    setPainel(null);
     setControles(false);
   }
 
@@ -240,6 +243,8 @@ function LeitorDaObra({ obra }: { obra: Obra }) {
         style={[estilos.camada, { backgroundColor: corDaCamadaDeBrilho(p.brilho) }]}
       />
 
+      {/* Toque fora dos controles volta ao texto. A camada cobre a tela inteira, então o alvo
+          é sempre maior que ALVO_MINIMO. */}
       {(controles || painel) && (
         <Pressable
           style={estilos.camada}
@@ -251,29 +256,27 @@ function LeitorDaObra({ obra }: { obra: Obra }) {
 
       {controles && (
         <>
-          <View style={[estilos.topo, { paddingTop: top + theme.esp[3] }]}>
-            <Text style={estilos.tituloObra} numberOfLines={1}>
-              {obra.titulo}
-            </Text>
-          </View>
-          {!painel && (
-            <View style={estilos.base}>
-              <Pressable
-                onPress={() => setPainel(true)}
-                accessibilityRole="button"
-                accessibilityLabel="Abrir o painel de leitura: luz, letra e página"
-                style={({ pressed }) => [estilos.abrirPainel, pressed && estilos.pressionado]}
-              >
-                <Text style={estilos.abrirPainelTexto}>Aa · luz, letra e página</Text>
-              </Pressable>
-              {/* RN-DV.11: no leitor, a barra só aparece junto do menu. */}
-              <BwBarraDeNavegacao atual="ler" onMesa={pousar} />
+          {/* O título com os ícones; a persiana do painel desce logo abaixo dele. */}
+          <View style={estilos.alto}>
+            <View style={[estilos.topo, { paddingTop: top + theme.esp[1] }]}>
+              <Text style={estilos.tituloObra} numberOfLines={1}>
+                {obra.titulo}
+              </Text>
+              <BwIconesDoLeitor
+                aberta={painel}
+                onTocar={(aba) => setPainel((aberta) => tocarIcone(aberta, aba))}
+              />
             </View>
-          )}
+            {painel && (
+              <BwPainelLeitura aba={painel} preferencias={p} onMudar={mudarPreferencias} />
+            )}
+          </View>
+          {/* RN-DV.11: no leitor, a barra só aparece junto do menu. */}
+          <View style={estilos.base}>
+            <BwBarraDeNavegacao atual="ler" onMesa={pousar} />
+          </View>
         </>
       )}
-
-      {painel && <BwPainelLeitura preferencias={p} onMudar={mudarPreferencias} />}
     </View>
   );
 }
@@ -295,20 +298,27 @@ const estilos = StyleSheet.create((theme) => ({
     top: 0,
     bottom: 0,
   },
-  topo: {
+  alto: {
     position: 'absolute',
     left: 0,
     right: 0,
     top: 0,
+  },
+  topo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.esp[3],
+    paddingLeft: theme.esp[5],
+    paddingRight: theme.esp[3],
+    paddingBottom: theme.esp[1],
     backgroundColor: theme.sup.mesa.fundo,
-    paddingBottom: theme.esp[3],
     boxShadow: theme.sup.mesa.sombra.erguido,
+    zIndex: 1,
   },
   tituloObra: {
     ...tipo.microcopy,
-    textAlign: 'center',
+    flex: 1,
     color: theme.sup.mesa.tinta,
-    paddingHorizontal: theme.esp[7],
   },
   base: {
     position: 'absolute',
@@ -317,17 +327,5 @@ const estilos = StyleSheet.create((theme) => ({
     bottom: 0,
     backgroundColor: theme.sup.mesa.fundo,
     boxShadow: theme.sup.mesa.sombra.erguido,
-  },
-  abrirPainel: {
-    minHeight: ALVO_MINIMO + 6,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  pressionado: {
-    backgroundColor: theme.semantico.mesa.selecionadoFundo,
-  },
-  abrirPainelTexto: {
-    ...tipo.kickerAbertura,
-    color: theme.sup.mesa.tinta,
   },
 }));
