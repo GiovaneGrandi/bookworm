@@ -10,6 +10,10 @@ export type Peso = 'fina' | 'normal' | 'grossa';
 export type Espaco = 'normal' | 'aberto' | 'largo';
 export type EspacoParagrafos = 'colados' | 'meia' | 'linha';
 export type Recuo = 'nenhum' | 'curto' | 'longo';
+/** Como a página passa: deslizando para o lado ou de uma vez. */
+export type Virada = 'deslizar' | 'instantanea';
+/** O que um toque nas bordas faz: volta e avança, avança dos dois lados, ou nada. */
+export type ZonasDeToque = 'bordas' | 'dois_lados' | 'nenhuma';
 
 export type PreferenciasLeitura = {
   /** Kelvin (RN-02.16a). */
@@ -48,6 +52,14 @@ export type PreferenciasLeitura = {
   temaSegueCelular: boolean;
   /** Imagens mais apagadas nos temas escuro e preto. */
   imagensSuaves: boolean;
+  virada: Virada;
+  zonasDeToque: ZonasDeToque;
+  /** Os botões de volume viram a página: abaixar avança, aumentar volta. */
+  viraComVolume: boolean;
+  /** RN-02.17b: o som de papel na virada, desligado por padrão. */
+  somDoPapel: boolean;
+  /** A tela não apaga sozinha enquanto o livro está aberto. */
+  telaAcesa: boolean;
 };
 
 export const TEMPERATURA_LUZ = { min: 2700, max: 6500, padrao: 4200 } as const;
@@ -90,6 +102,11 @@ export const PADRAO_LEITURA: PreferenciasLeitura = {
   temperaturaPeloHorario: false,
   temaSegueCelular: false,
   imagensSuaves: true,
+  virada: 'deslizar',
+  zonasDeToque: 'bordas',
+  viraComVolume: false,
+  somDoPapel: false,
+  telaAcesa: false,
 };
 
 export type Aba = 'luz' | 'letra' | 'pagina';
@@ -109,7 +126,16 @@ export const ABAS_DO_PAINEL: Record<Aba, Controle[]> = {
 export const MAIS_DO_PAINEL: Record<Aba, Controle[]> = {
   luz: ['temperaturaPeloHorario', 'temaSegueCelular', 'imagensSuaves', 'grao'],
   letra: ['peso', 'espacoLetras', 'espacoPalavras'],
-  pagina: ['espacoParagrafos', 'recuo', 'rolagem'],
+  pagina: [
+    'espacoParagrafos',
+    'recuo',
+    'rolagem',
+    'virada',
+    'zonasDeToque',
+    'viraComVolume',
+    'somDoPapel',
+    'telaAcesa',
+  ],
 };
 
 export const CORPO = { min: 12, max: 20 } as const;
@@ -125,6 +151,8 @@ const PESOS: readonly Peso[] = ['fina', 'normal', 'grossa'];
 const ESPACOS: readonly Espaco[] = ['normal', 'aberto', 'largo'];
 const ESPACOS_PARAGRAFOS: readonly EspacoParagrafos[] = ['colados', 'meia', 'linha'];
 const RECUOS: readonly Recuo[] = ['nenhum', 'curto', 'longo'];
+const VIRADAS: readonly Virada[] = ['deslizar', 'instantanea'];
+const ZONAS: readonly ZonasDeToque[] = ['bordas', 'dois_lados', 'nenhuma'];
 
 const entre = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
 const numero = (v: unknown, padrao: number) =>
@@ -163,6 +191,11 @@ export function aplicar(
     temperaturaPeloHorario: p.temperaturaPeloHorario,
     temaSegueCelular: p.temaSegueCelular,
     imagensSuaves: p.imagensSuaves,
+    virada: p.virada,
+    zonasDeToque: p.zonasDeToque,
+    viraComVolume: p.viraComVolume,
+    somDoPapel: p.somDoPapel,
+    telaAcesa: p.telaAcesa,
   };
 }
 
@@ -191,6 +224,11 @@ export function normalizarPreferencias(bruto: unknown): PreferenciasLeitura {
     temperaturaPeloHorario: chave(b.temperaturaPeloHorario, d.temperaturaPeloHorario),
     temaSegueCelular: chave(b.temaSegueCelular, d.temaSegueCelular),
     imagensSuaves: chave(b.imagensSuaves, d.imagensSuaves),
+    virada: umDe(b.virada, VIRADAS, d.virada),
+    zonasDeToque: umDe(b.zonasDeToque, ZONAS, d.zonasDeToque),
+    viraComVolume: chave(b.viraComVolume, d.viraComVolume),
+    somDoPapel: chave(b.somDoPapel, d.somDoPapel),
+    telaAcesa: chave(b.telaAcesa, d.telaAcesa),
   });
 }
 
@@ -340,4 +378,30 @@ export function normalizarPredefinicoes(bruto: unknown): Predefinicao[] {
     if (typeof id !== 'string' || !limpo) return [];
     return [{ id, nome: limpo, ajustes: normalizarPreferencias(ajustes) }];
   });
+}
+
+/** Quanto da largura, no meio, é "área central": abre os controles (RN-02.13). */
+export const FAIXA_CENTRAL = [0.3, 0.7] as const;
+
+export type AcaoDoToque = 'voltar' | 'avancar' | 'controles';
+
+/**
+ * O que um toque na página faz, pela fração da largura em que caiu. O meio sempre abre os
+ * controles; as bordas seguem as zonas escolhidas, e rolando nenhuma borda vira página.
+ */
+export function acaoDoToque(x: number, zonas: ZonasDeToque, rolando = false): AcaoDoToque | null {
+  if (x >= FAIXA_CENTRAL[0] && x <= FAIXA_CENTRAL[1]) return 'controles';
+  if (rolando || zonas === 'nenhuma') return null;
+  if (zonas === 'dois_lados') return 'avancar';
+  return x < FAIXA_CENTRAL[0] ? 'voltar' : 'avancar';
+}
+
+/** A virada desliza só se a leitora quer e se o retorno sensorial está ligado (RN-02.17f). */
+export function viradaAnimada(p: PreferenciasLeitura): boolean {
+  return p.virada === 'deslizar' && p.retornoSensorial;
+}
+
+/** O som de papel: escolhido pela leitora e calado pela chave única (RN-02.17b, RN-02.17f). */
+export function tocaSomDoPapel(p: PreferenciasLeitura): boolean {
+  return p.somDoPapel && p.retornoSensorial;
 }

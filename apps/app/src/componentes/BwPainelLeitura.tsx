@@ -267,6 +267,33 @@ export function BwPainelLeitura({ aba, preferencias: p, onMudar, temperaturaAgor
                     { valor: 'rolar', rotulo: 'Rolar' },
                   ]}
                 />
+                {/* Rolando não há página a virar: o jeito e as zonas somem até voltar às páginas. */}
+                {!p.rolagem && (
+                  <>
+                    <BwEscolha
+                      rotulo="Jeito de virar"
+                      valor={p.virada}
+                      onMudar={(virada) => mudar({ virada })}
+                      opcoes={[
+                        { valor: 'deslizar', rotulo: 'Deslizando' },
+                        { valor: 'instantanea', rotulo: 'De uma vez' },
+                      ]}
+                    />
+                    <BwEscolha
+                      rotulo="Toque nas bordas"
+                      valor={p.zonasDeToque}
+                      onMudar={(zonasDeToque) => mudar({ zonasDeToque })}
+                      opcoes={[
+                        { valor: 'bordas', rotulo: 'Volta e avança' },
+                        { valor: 'dois_lados', rotulo: 'Só avança' },
+                        { valor: 'nenhuma', rotulo: 'Só arrastando' },
+                      ]}
+                    />
+                  </>
+                )}
+                {chave('viraComVolume', 'Botões de volume viram a página')}
+                {chave('somDoPapel', 'Som do papel')}
+                {chave('telaAcesa', 'Manter a tela acesa')}
               </>
             )}
           </>

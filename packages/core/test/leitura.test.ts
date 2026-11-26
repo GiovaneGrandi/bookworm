@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   ABAS_DO_PAINEL,
+  acaoDoToque,
   aplicar,
   corDaTemperatura,
   corpoEfetivo,
@@ -19,6 +20,8 @@ import {
   TEMPERATURA_LUZ,
   temaEfetivo,
   temperaturaDoHorario,
+  tocaSomDoPapel,
+  viradaAnimada,
 } from '../src/index';
 
 describe('RN-02.16d · inventário mínimo do painel', () => {
@@ -222,7 +225,16 @@ describe('Segunda camada do painel ("Mais")', () => {
     expect(MAIS_DO_PAINEL).toEqual({
       luz: ['temperaturaPeloHorario', 'temaSegueCelular', 'imagensSuaves', 'grao'],
       letra: ['peso', 'espacoLetras', 'espacoPalavras'],
-      pagina: ['espacoParagrafos', 'recuo', 'rolagem'],
+      pagina: [
+        'espacoParagrafos',
+        'recuo',
+        'rolagem',
+        'virada',
+        'zonasDeToque',
+        'viraComVolume',
+        'somDoPapel',
+        'telaAcesa',
+      ],
     });
     const todos = [
       ...Object.values(ABAS_DO_PAINEL).flat(),
@@ -244,6 +256,11 @@ describe('Segunda camada do painel ("Mais")', () => {
       temperaturaPeloHorario: false,
       temaSegueCelular: false,
       imagensSuaves: true,
+      virada: 'deslizar',
+      zonasDeToque: 'bordas',
+      viraComVolume: false,
+      somDoPapel: false,
+      telaAcesa: false,
     });
   });
 
@@ -361,5 +378,55 @@ describe('Predefinições', () => {
 
   it('o que não é lista vira lista vazia', () => {
     expect(normalizarPredefinicoes(null)).toEqual([]);
+  });
+});
+
+describe('Virar a página: zonas de toque, jeito de virar e som', () => {
+  it('nas bordas: a esquerda volta, a direita avança e o meio abre os controles', () => {
+    expect(acaoDoToque(0.1, 'bordas')).toBe('voltar');
+    expect(acaoDoToque(0.9, 'bordas')).toBe('avancar');
+    expect(acaoDoToque(0.5, 'bordas')).toBe('controles');
+  });
+
+  it('para ler com uma mão, os dois lados avançam', () => {
+    expect(acaoDoToque(0.1, 'dois_lados')).toBe('avancar');
+    expect(acaoDoToque(0.9, 'dois_lados')).toBe('avancar');
+    expect(acaoDoToque(0.5, 'dois_lados')).toBe('controles');
+  });
+
+  it('só arrastando, as bordas não fazem nada e o meio continua abrindo os controles', () => {
+    expect(acaoDoToque(0.1, 'nenhuma')).toBeNull();
+    expect(acaoDoToque(0.9, 'nenhuma')).toBeNull();
+    expect(acaoDoToque(0.5, 'nenhuma')).toBe('controles');
+  });
+
+  it('rolando, nenhum toque vira página', () => {
+    expect(acaoDoToque(0.9, 'bordas', true)).toBeNull();
+    expect(acaoDoToque(0.5, 'bordas', true)).toBe('controles');
+  });
+
+  it('a virada só desliza com o retorno sensorial ligado (RN-02.17f)', () => {
+    expect(viradaAnimada(PADRAO_LEITURA)).toBe(true);
+    expect(viradaAnimada(aplicar(PADRAO_LEITURA, { virada: 'instantanea' }))).toBe(false);
+    expect(viradaAnimada(aplicar(PADRAO_LEITURA, { retornoSensorial: false }))).toBe(false);
+  });
+
+  it('o som do papel vem desligado e se cala junto da chave única (RN-02.17b, RN-02.17f)', () => {
+    expect(tocaSomDoPapel(PADRAO_LEITURA)).toBe(false);
+    expect(tocaSomDoPapel(aplicar(PADRAO_LEITURA, { somDoPapel: true }))).toBe(true);
+    expect(
+      tocaSomDoPapel(aplicar(PADRAO_LEITURA, { somDoPapel: true, retornoSensorial: false }))
+    ).toBe(false);
+  });
+
+  it('valores desconhecidos voltam ao padrão', () => {
+    const p = normalizarPreferencias({
+      virada: 'dobrar',
+      zonasDeToque: 'dois_lados',
+      telaAcesa: 1,
+    });
+    expect(p.virada).toBe('deslizar');
+    expect(p.zonasDeToque).toBe('dois_lados');
+    expect(p.telaAcesa).toBe(false);
   });
 });

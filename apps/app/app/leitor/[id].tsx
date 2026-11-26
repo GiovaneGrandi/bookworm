@@ -1,5 +1,6 @@
 import {
   type Aba,
+  acaoDoToque,
   aplicar,
   corDaTemperatura,
   type PreferenciasLeitura,
@@ -37,6 +38,7 @@ import { BwBarraDeNavegacao } from '../../src/componentes/BwBarraDeNavegacao';
 import { BwIconesDoLeitor } from '../../src/componentes/BwIconesDoLeitor';
 import { BwPainelLeitura } from '../../src/componentes/BwPainelLeitura';
 import { useTransicaoDaMesa } from '../../src/componentes/BwTransicaoDaMesa';
+import { useAparelhoDoLeitor } from '../../src/componentes/useAparelhoDoLeitor';
 import { usePousarNaMesa } from '../../src/componentes/usePousarNaMesa';
 import {
   carregarIndice,
@@ -60,8 +62,6 @@ const RECOLHER_EM_MS = 3000;
  */
 const REPAGINACAO_MS = 500;
 const JANELA_DO_RETORNO_MS = 1500;
-/** Quanto da largura, no meio, é "área central" para revelar os controles (RN-02.13). */
-const FAIXA_CENTRAL = [0.3, 0.7] as const;
 /** De quanto em quanto tempo a temperatura pelo horário (RN-02.16c) se atualiza. */
 const HORARIO_A_CADA_MS = 5 * 60 * 1000;
 /** O grão do papel: um ladrilho de pontinhos, repetido por cima da página nos temas claros. */
@@ -118,6 +118,7 @@ function LeitorDaObra({ obra }: { obra: Obra }) {
   const [paginasPdf, setPaginasPdf] = useState(0);
   const primeiraPosicao = useRef(true);
   const readium = useRef<ReadiumViewRef>(null);
+  const somDaVirada = useAparelhoDoLeitor(p, readium);
   // A posição da leitora (RN-02.9): só muda quando ela vira a página. Um ajuste do painel
   // repagina o texto, e o Readium se reposiciona a partir da página corrente, já deslocada; em
   // vários ajustes seguidos o erro acumula. Guardar a posição de antes e voltar a ela depois de
@@ -179,18 +180,20 @@ function LeitorDaObra({ obra }: { obra: Obra }) {
     }, [painel])
   );
 
-  // O toque no centro só é ouvido com os controles recolhidos: ele roda junto do toque nativo
-  // (que vira a página nas bordas) e, se ficasse ativo com os controles à vista, cancelaria os
-  // botões por cima da página. Com eles à vista, quem recolhe é a camada `fecharControles`.
+  // O toque na página só é ouvido com os controles recolhidos: se ficasse ativo com eles à vista,
+  // cancelaria os botões por cima da página, e quem recolhe é a camada `fecharControles`. O meio
+  // abre os controles; as bordas viram a página conforme as zonas escolhidas no painel (o
+  // Readium não vira mais sozinho nas bordas: ver o patch em `patches/`).
   const toque = Gesture.Tap()
     .enabled(!controles && !painel)
     .maxDuration(300)
     .runOnJS(true)
     .onEnd((e, ok) => {
       if (!ok) return;
-      const x = e.x / width;
-      if (x < FAIXA_CENTRAL[0] || x > FAIXA_CENTRAL[1]) return; // as bordas viram a página
-      setControles(true);
+      const acao = acaoDoToque(e.x / width, p.zonasDeToque, p.rolagem);
+      if (acao === 'controles') setControles(true);
+      else if (acao === 'avancar') readium.current?.goForward();
+      else if (acao === 'voltar') readium.current?.goBackward();
     });
 
   // Abrir ou fechar dois dedos sobre a página muda o corpo da letra, meio pixel por degrau,
@@ -225,6 +228,7 @@ function LeitorDaObra({ obra }: { obra: Obra }) {
     setLocator(novo);
     setProgresso(salvarPosicao(obra.id, novo, indice));
     if (virou && p.retornoSensorial) Haptics.selectionAsync(); // RN-02.17a, RN-02.17f
+    if (virou) somDaVirada(); // RN-02.17b
   }
 
   // RN-02.16e: depois de cada ajuste, a leitora volta exatamente para onde estava.

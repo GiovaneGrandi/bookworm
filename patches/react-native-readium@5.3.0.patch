@@ -1,5 +1,5 @@
 diff --git a/android/src/main/java/com/reactnativereadium/reader/BaseReaderFragment.kt b/android/src/main/java/com/reactnativereadium/reader/BaseReaderFragment.kt
-index 2f3fece..b93965e 100644
+index 2f3fecec2da207f4b4726f0d2f20a8495dd05639..9868ad41cbfcf5597ebace890776860e9407107f 100644
 --- a/android/src/main/java/com/reactnativereadium/reader/BaseReaderFragment.kt
 +++ b/android/src/main/java/com/reactnativereadium/reader/BaseReaderFragment.kt
 @@ -84,7 +84,7 @@ abstract class BaseReaderFragment : Fragment() {
@@ -32,8 +32,31 @@ index 2f3fece..b93965e 100644
    override fun onHiddenChanged(hidden: Boolean) {
      super.onHiddenChanged(hidden)
      setMenuVisibility(!hidden)
+@@ -133,15 +147,20 @@ abstract class BaseReaderFragment : Fragment() {
+   fun goForward(): Boolean {
+     if (!isNavigatorReady) return false
+     val overflowNav = navigator as? OverflowableNavigator ?: return false
+-    return overflowNav.goForward(animated = true)
++    return overflowNav.goForward(animated = viradaAnimada())
+   }
+ 
+   fun goBackward(): Boolean {
+     if (!isNavigatorReady) return false
+     val overflowNav = navigator as? OverflowableNavigator ?: return false
+-    return overflowNav.goBackward(animated = true)
++    return overflowNav.goBackward(animated = viradaAnimada())
+   }
+ 
++  // BookWorm: o jeito de virar do painel ("deslizando" ou "de uma vez"), definido pelo módulo
++  // local leitor-nativo do app. Sem a propriedade, a virada continua animada, como no original.
++  private fun viradaAnimada(): Boolean =
++    System.getProperty("bookworm.virada.animada") != "false"
++
+   /**
+    * Apply pre-converted Readium decoration groups directly (no JSON round-trip).
+    */
 diff --git a/android/src/main/java/com/reactnativereadium/reader/EpubReaderFragment.kt b/android/src/main/java/com/reactnativereadium/reader/EpubReaderFragment.kt
-index 3a0ea4c..2576353 100644
+index 3a0ea4c96d507871b482836e6a2c775ecb5ead3f..bb1d26d4ca5f1d09101beb08fa36b504239a3d4c 100644
 --- a/android/src/main/java/com/reactnativereadium/reader/EpubReaderFragment.kt
 +++ b/android/src/main/java/com/reactnativereadium/reader/EpubReaderFragment.kt
 @@ -24,6 +24,9 @@ import org.readium.r2.navigator.epub.EpubNavigatorFragment
@@ -80,8 +103,23 @@ index 3a0ea4c..2576353 100644
                }
              )
  
+@@ -248,11 +278,9 @@ class EpubReaderFragment : VisualReaderFragment() {
+         navigator = childFragmentManager.findFragmentByTag(navigatorFragmentTag) as Navigator
+         navigatorFragment = navigator as EpubNavigatorFragment
+ 
+-        // Turns pages on left/right edge taps and arrow/space keys, following the reading
+-        // progression. Taps are ignored in scroll mode. Animated to match iOS.
+-        val tapListener = DirectionalNavigationAdapter(navigatorFragment, animatedTransition = true)
+-        tapInputListener = tapListener
+-        navigatorFragment.addInputListener(tapListener)
++        // BookWorm: sem o DirectionalNavigationAdapter. Os toques nas bordas viram a página pelo
++        // gesto do próprio leitor (JS), que conhece as zonas de toque escolhidas no painel e
++        // chama goForward/goBackward; deixá-lo aqui viraria a página duas vezes.
+ 
+         applyPendingPreferencesIfNeeded()
+ 
 diff --git a/android/src/main/java/com/reactnativereadium/reader/VisualReaderFragment.kt b/android/src/main/java/com/reactnativereadium/reader/VisualReaderFragment.kt
-index 5c97294..a6f0c5e 100644
+index 5c97294f296c85e08a5296147d552cb594a19463..a6f0c5e21ca7555d69ca27ed3592a64819258077 100644
 --- a/android/src/main/java/com/reactnativereadium/reader/VisualReaderFragment.kt
 +++ b/android/src/main/java/com/reactnativereadium/reader/VisualReaderFragment.kt
 @@ -42,21 +42,10 @@ abstract class VisualReaderFragment : BaseReaderFragment() {
