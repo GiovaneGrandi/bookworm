@@ -1,15 +1,15 @@
-import { acoesDaGaveta, type OrdemDaEstante, obrasNaEstante } from '@bookworm/core';
+import {
+  acoesDaGaveta,
+  type CorDeParede,
+  contarPorEstado,
+  type FiltroDeEstado,
+  type OrdemDaEstante,
+  obrasNaEstante,
+} from '@bookworm/core';
 import { Canvas, Circle, Line, vec } from '@shopify/react-native-skia';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { type ReactNode, useState } from 'react';
-import {
-  type GestureResponderEvent,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { useState } from 'react';
+import { type GestureResponderEvent, ScrollView, Text, TextInput, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
@@ -17,29 +17,31 @@ import { BwBarraDeNavegacao } from '../src/componentes/BwBarraDeNavegacao';
 import { BwBotao } from '../src/componentes/BwBotao';
 import { BwMenuRapido, type ItemDoMenu, type MenuRapido } from '../src/componentes/BwMenuRapido';
 import { useParedeDaCamera, useTransicaoDaMesa } from '../src/componentes/BwTransicaoDaMesa';
+import { BwFichario, BwGavetaDoFichario } from '../src/componentes/estante/BwFichario';
+import { ALTURA_DA_JIBOIA, BwJiboia, LARGURA_DA_JIBOIA } from '../src/componentes/estante/BwJiboia';
+import { BwParedeNova } from '../src/componentes/estante/BwParedeNova';
+import { BwCapaNaParede, BwPrateleiras } from '../src/componentes/estante/BwPrateleiras';
 import { usePousarNaMesa } from '../src/componentes/usePousarNaMesa';
 import { marcarAberta, pausar, tirarDaGaveta, useObras } from '../src/dados/obras';
+import { porNaParede, tirarDaParede, tirarParede, useParedes } from '../src/dados/paredes';
 import type { Obra } from '../src/dados/schema';
-import { corDaCapa, marcaDaCapa, rodapeDaEstante, rotuloDaCapa } from '../src/estante';
-import { ALVO_MINIMO, raio } from '../src/tema/geometria';
-import { tipo, tipoMiniatura } from '../src/tema/tipografia';
+import { fichaDaFrente, marcaDaCapa, rodapeDaEstante } from '../src/estante';
+import { espelhar, giro } from '../src/tema/geometria';
+import { tipo } from '../src/tema/tipografia';
 
-const ORDENS: { ordem: OrdemDaEstante; rotulo: string; falado: string }[] = [
-  { ordem: 'az', rotulo: 'A–Z', falado: 'Ordenar de A a Z' },
-  { ordem: 'recentes', rotulo: 'Recentes', falado: 'Ordenar pelos mais recentes' },
-  { ordem: 'autor', rotulo: 'Autor', falado: 'Ordenar por autor' },
-];
-const POR_PRATELEIRA = 3;
-/** Os lugares vazios da última prateleira, para as capas não esticarem. */
-const VAOS = ['vao-1', 'vao-2'] as const;
-
-type Segurada = { obra: Obra; x: number; y: number; confirmando: boolean };
+type Segurada = {
+  obra: Obra;
+  x: number;
+  y: number;
+  confirmando: boolean;
+  escolhendoParede: boolean;
+};
 
 /**
- * A estante (v2): o fichário abre uma estante expositora, com as capas de frente atrás de ripas,
- * busca e ordem no alto e a contagem no rodapé. Junta lendo, em pausa, quero ler e lidos por
- * decisão de 22/11/2026, contra RN-02.6a (a spec muda depois). Segurar uma capa pausa ou tira
- * o livro (Q15).
+ * A estante como parede (direção B, 26/11/2026): as capas de frente em prateleiras presas na
+ * parede, a busca numa tira de papel e, no chão, o fichário (jeito 2) e a jiboia no vaso. O
+ * fichário guarda o estado, a ordem e as paredes próprias; a parede escolhida pinta o fundo.
+ * Segurar uma capa pausa, põe numa parede, tira da parede ou tira da estante (Q15).
  */
 export default function Gaveta() {
   const router = useRouter();
@@ -49,20 +51,24 @@ export default function Gaveta() {
   const virada = erguido === 'virada';
   const { chegou, desvirar } = useTransicaoDaMesa();
   const obras = useObras();
+  const paredes = useParedes();
   const [ordem, setOrdem] = useState<OrdemDaEstante>('az');
+  const [estado, setEstado] = useState<FiltroDeEstado>('todos');
+  const [paredeId, setParedeId] = useState<string | null>(null);
   const [termo, setTermo] = useState('');
+  const [fichario, setFichario] = useState(false);
+  const [criando, setCriando] = useState(false);
   const [segurada, setSegurada] = useState<Segurada | null>(null);
   const estiloDaParede = useParedeDaCamera('estante');
 
   // Aberta pela mesa, a estante é a parede da esquerda e volta com a câmera girando de volta.
   const pousar = usePousarNaMesa(theme.sup.papel.fundo, virada ? desvirar : undefined);
 
-  const naEstante = obrasNaEstante(obras, ordem, termo);
+  const parede = paredes.find((p) => p.id === paredeId) ?? null;
+  const naParede = parede?.obras ?? null;
+  const naEstante = obrasNaEstante(obras, ordem, termo, { estado, naParede });
+  const contagem = contarPorEstado(parede ? obras.filter((o) => naParede?.includes(o.id)) : obras);
   const vazia = obras.every((o) => o.estado === 'abandonado');
-  const prateleiras: Obra[][] = [];
-  for (let i = 0; i < naEstante.length; i += POR_PRATELEIRA) {
-    prateleiras.push(naEstante.slice(i, i + POR_PRATELEIRA));
-  }
 
   function abrir(o: Obra) {
     marcarAberta(o.id);
@@ -70,162 +76,178 @@ export default function Gaveta() {
   }
 
   const segurar = (obra: Obra) => (e: GestureResponderEvent) =>
-    setSegurada({ obra, x: e.nativeEvent.pageX, y: e.nativeEvent.pageY, confirmando: false });
+    setSegurada({
+      obra,
+      x: e.nativeEvent.pageX,
+      y: e.nativeEvent.pageY,
+      confirmando: false,
+      escolhendoParede: false,
+    });
 
-  const itensDe = (s: Segurada): ItemDoMenu[] => [
-    { rotulo: 'Abrir no leitor', primario: true, aoTocar: () => abrir(s.obra) },
-    ...(acoesDaGaveta(s.obra.estado).includes('pausar')
-      ? [{ rotulo: 'Pôr em pausa', aoTocar: () => pausar(s.obra.id) }]
-      : []),
-    s.confirmando
-      ? { rotulo: 'Tirar mesmo', aoTocar: () => tirarDaGaveta(s.obra.id) }
-      : {
-          rotulo: 'Tirar da estante',
-          manterAberto: true,
-          aoTocar: () => setSegurada({ ...s, confirmando: true }),
-        },
-  ];
+  const itensDe = (s: Segurada): ItemDoMenu[] => {
+    const outras = paredes.filter((p) => !p.obras.includes(s.obra.id));
+    if (s.escolhendoParede) {
+      return outras.map((p) => ({
+        rotulo: `Pôr em “${p.nome}”`,
+        aoTocar: () => porNaParede(p.id, s.obra.id),
+      }));
+    }
+    return [
+      { rotulo: 'Abrir no leitor', primario: true, aoTocar: () => abrir(s.obra) },
+      ...(acoesDaGaveta(s.obra.estado).includes('pausar')
+        ? [{ rotulo: 'Pôr em pausa', aoTocar: () => pausar(s.obra.id) }]
+        : []),
+      ...(outras.length > 0
+        ? [
+            {
+              rotulo: 'Pôr numa parede',
+              manterAberto: true,
+              aoTocar: () => setSegurada({ ...s, escolhendoParede: true }),
+            },
+          ]
+        : []),
+      ...(parede
+        ? [{ rotulo: 'Tirar desta parede', aoTocar: () => tirarDaParede(parede.id, s.obra.id) }]
+        : []),
+      s.confirmando
+        ? { rotulo: 'Tirar mesmo', aoTocar: () => tirarDaGaveta(s.obra.id) }
+        : {
+            rotulo: 'Tirar da estante',
+            manterAberto: true,
+            aoTocar: () => setSegurada({ ...s, confirmando: true }),
+          },
+    ];
+  };
 
   const menu: MenuRapido | null = segurada && {
     titulo: segurada.obra.titulo.replace(/\s+/g, ' ').trim(),
-    sub: marcaDaCapa(segurada.obra),
+    sub: segurada.escolhendoParede ? 'Pôr numa parede' : marcaDaCapa(segurada.obra),
     itens: itensDe(segurada),
     aviso: segurada.confirmando
       ? 'O arquivo sai do aparelho junto. Toque de novo para confirmar.'
-      : undefined,
+      : parede && !segurada.escolhendoParede
+        ? 'Tirar desta parede não tira da estante.'
+        : undefined,
     x: segurada.x,
     y: segurada.y,
   };
 
+  const recado = vazia
+    ? null
+    : parede && parede.obras.length === 0
+      ? 'Esta parede ainda está vazia. Em “Toda a estante”, segure um livro para pendurá-lo aqui.'
+      : naEstante.length === 0
+        ? 'Nenhum livro aqui.'
+        : null;
+
   return (
-    <Animated.View onLayout={chegou} style={[estilos.feltro, virada && estiloDaParede]}>
-      <View style={[estilos.folha, { paddingTop: top + theme.esp[3] }]}>
-        <View style={estilos.cabeca}>
-          <View style={estilos.busca}>
-            <Lupa />
-            <TextInput
-              value={termo}
-              onChangeText={setTermo}
-              placeholder="buscar…"
-              placeholderTextColor={theme.sup.papelFundo.tintaFraca}
-              accessibilityLabel="Buscar na estante, por título ou autor"
-              autoFocus={buscar === '1'}
-              returnKeyType="search"
-              style={estilos.campo}
+    <Animated.View
+      onLayout={chegou}
+      style={[estilos.parede(parede?.cor ?? 'mesa'), virada && estiloDaParede]}
+    >
+      <View style={[estilos.cabeca, { paddingTop: top + theme.esp[5] }]}>
+        <View style={estilos.tira}>
+          <View style={[estilos.fita, estilos.fitaEsquerda]} />
+          <View style={[estilos.fita, estilos.fitaDireita]} />
+          <Lupa />
+          <TextInput
+            value={termo}
+            onChangeText={setTermo}
+            placeholder="buscar título ou autor…"
+            placeholderTextColor={theme.sup.papelFundo.tintaFraca}
+            accessibilityLabel="Buscar na estante, por título ou autor"
+            autoFocus={buscar === '1'}
+            returnKeyType="search"
+            style={estilos.campo}
+          />
+        </View>
+        {parede && (
+          <Text numberOfLines={1} style={estilos.placa}>
+            {parede.nome}
+          </Text>
+        )}
+      </View>
+
+      <View style={estilos.vao}>
+        <ScrollView
+          accessibilityLabel="Prateleiras da estante"
+          contentContainerStyle={estilos.trilho}
+        >
+          {vazia ? (
+            <View style={estilos.convite}>
+              <Text style={estilos.lapis}>
+                A estante está vazia. Os livros entram pela bandeja.
+              </Text>
+              <BwBotao onPress={() => router.push('/bandeja')} rotulo="Ir à bandeja" />
+            </View>
+          ) : recado ? (
+            <Text style={estilos.lapis}>{recado}</Text>
+          ) : (
+            <>
+              <BwPrateleiras
+                obras={naEstante}
+                capa={(o) => (
+                  <BwCapaNaParede obra={o} onAbrir={() => abrir(o)} onSegurar={segurar(o)} />
+                )}
+              />
+              <Text style={estilos.contagem}>
+                {rodapeDaEstante(naEstante.length, parede !== null)}
+              </Text>
+            </>
+          )}
+        </ScrollView>
+
+        <View pointerEvents="box-none" style={estilos.pe}>
+          <View style={estilos.chao} />
+          <View style={estilos.lugarDaJiboia}>
+            <BwJiboia />
+          </View>
+          <View style={estilos.lugarDoFichario}>
+            <BwFichario
+              ficha={fichaDaFrente({ estado, ordem, parede: parede?.nome ?? null })}
+              onAbrir={() => setFichario(true)}
             />
           </View>
-          <View accessibilityRole="radiogroup" style={estilos.filtros}>
-            {ORDENS.map((o) => {
-              const escolhida = ordem === o.ordem;
-              return (
-                <Pressable
-                  key={o.ordem}
-                  onPress={() => setOrdem(o.ordem)}
-                  accessibilityRole="radio"
-                  accessibilityState={{ checked: escolhida }}
-                  accessibilityLabel={o.falado}
-                  hitSlop={{ top: 11, bottom: 11 }}
-                  style={[estilos.filtro, escolhida && estilos.filtroEscolhido]}
-                >
-                  <Text style={[estilos.textoFiltro, escolhida && estilos.textoEscolhido]}>
-                    {o.rotulo}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
         </View>
-
-        <View style={estilos.expositora}>
-          <ScrollView
-            accessibilityLabel="Prateleiras da estante"
-            contentContainerStyle={estilos.trilho}
-          >
-            {vazia ? (
-              <Prateleira>
-                <View style={estilos.convite}>
-                  <Text style={estilos.lapis}>
-                    A estante está vazia. Os livros entram pela bandeja.
-                  </Text>
-                  <BwBotao onPress={() => router.push('/bandeja')} rotulo="Ir à bandeja" />
-                </View>
-              </Prateleira>
-            ) : prateleiras.length === 0 ? (
-              <Prateleira>
-                <Text style={estilos.nenhum}>Nenhum livro encontrado.</Text>
-              </Prateleira>
-            ) : (
-              prateleiras.map((livros) => (
-                <Prateleira key={livros.map((o) => o.id).join()}>
-                  <View style={estilos.grade}>
-                    {livros.map((o) => (
-                      <Capa key={o.id} obra={o} onAbrir={() => abrir(o)} onSegurar={segurar(o)} />
-                    ))}
-                    {VAOS.slice(0, POR_PRATELEIRA - livros.length).map((v) => (
-                      <View key={v} style={estilos.vao} />
-                    ))}
-                  </View>
-                </Prateleira>
-              ))
-            )}
-          </ScrollView>
-          <View style={estilos.rodape}>
-            <Text style={estilos.contagem}>{rodapeDaEstante(naEstante.length)}</Text>
-          </View>
-        </View>
-        <BwBarraDeNavegacao atual="biblioteca" onMesa={pousar} />
       </View>
+
+      <BwBarraDeNavegacao atual="biblioteca" onMesa={pousar} />
+
       <BwMenuRapido menu={menu} onFechar={() => setSegurada(null)} />
+      <BwGavetaDoFichario
+        aberta={fichario}
+        onFechar={() => setFichario(false)}
+        estado={estado}
+        onEstado={setEstado}
+        contagem={contagem}
+        ordem={ordem}
+        onOrdem={setOrdem}
+        paredes={paredes}
+        paredeId={paredeId}
+        onParede={(id) => {
+          setParedeId(id);
+          setFichario(false);
+        }}
+        onNovaParede={() => {
+          setFichario(false);
+          setCriando(true);
+        }}
+        onTirarParede={(id) => {
+          if (id === paredeId) setParedeId(null);
+          tirarParede(id);
+        }}
+      />
+      <BwParedeNova
+        aberta={criando}
+        obras={obras}
+        onCancelar={() => setCriando(false)}
+        onPendurada={(id) => {
+          setCriando(false);
+          setEstado('todos');
+          setParedeId(id);
+        }}
+      />
     </Animated.View>
-  );
-}
-
-function Prateleira({ children }: { children: ReactNode }) {
-  return (
-    <View>
-      <View style={estilos.prateleira}>{children}</View>
-      <View style={estilos.ripa} />
-    </View>
-  );
-}
-
-function Capa({
-  obra,
-  onAbrir,
-  onSegurar,
-}: {
-  obra: Obra;
-  onAbrir: () => void;
-  onSegurar: (e: GestureResponderEvent) => void;
-}) {
-  const cor = corDaCapa(obra.id);
-  const autor = obra.autor ?? (obra.formato === 'pdf' ? 'PDF' : '');
-  return (
-    <View style={estilos.lugarDaCapa}>
-      <Pressable
-        onPress={onAbrir}
-        onLongPress={onSegurar}
-        delayLongPress={420}
-        accessibilityRole="button"
-        accessibilityLabel={rotuloDaCapa(obra)}
-        accessibilityHint="Segure para pausar ou tirar da estante"
-        style={({ pressed }) => [
-          estilos.capa,
-          { backgroundColor: cor.fundo },
-          pressed && estilos.capaErguida,
-        ]}
-      >
-        <Text numberOfLines={3} style={[estilos.tituloCapa, { color: cor.tinta }]}>
-          {obra.titulo}
-        </Text>
-        <View style={estilos.peDaCapa}>
-          <Text numberOfLines={1} style={[estilos.autorCapa, { color: cor.tinta }]}>
-            {autor}
-          </Text>
-          <Text style={[estilos.marcaCapa, { color: cor.tinta }]}>{marcaDaCapa(obra)}</Text>
-        </View>
-      </Pressable>
-    </View>
   );
 }
 
@@ -240,166 +262,108 @@ function Lupa() {
   );
 }
 
+/** Quanto do pé da parede o fichário ocupa: a última prateleira rola até acima dele. */
+const ALTURA_DO_PE = 162;
+
 const estilos = StyleSheet.create((theme) => ({
-  feltro: {
+  parede: (cor: CorDeParede) => ({
     flex: 1,
-    backgroundColor: theme.sup.mesa.fundo,
-  },
-  folha: {
-    flex: 1,
-    overflow: 'hidden',
-    backgroundColor: theme.sup.papel.fundo,
-    boxShadow: theme.sup.mesa.sombra.flutuante,
-  },
+    backgroundColor: theme.arte.parede.tintas[cor],
+  }),
   cabeca: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: theme.esp[2],
-    paddingHorizontal: theme.esp[3],
-    marginBottom: theme.esp[3],
+    gap: theme.esp[4],
+    paddingHorizontal: theme.esp[6],
+    paddingBottom: theme.esp[4],
   },
-  busca: {
+  tira: {
     flex: 1,
     minWidth: 0,
-    minHeight: 30,
+    minHeight: 36,
     flexDirection: 'row',
     alignItems: 'center',
     gap: theme.esp[2],
-    paddingHorizontal: theme.esp[3],
-    borderWidth: 1,
-    borderColor: theme.sup.papelFundo.borda,
-    ...raio.irregularP,
+    paddingHorizontal: theme.esp[4],
     backgroundColor: theme.sup.papelFundo.fundo,
+    transform: [{ rotate: espelhar(giro.plaqueta) }],
+    boxShadow: `0 6px 12px ${theme.arte.parede.sombra}`,
   },
+  fita: {
+    position: 'absolute',
+    top: -6,
+    width: 32,
+    height: 12,
+    backgroundColor: theme.arte.parede.fita,
+  },
+  fitaEsquerda: { left: -9, transform: [{ rotate: giro.carimbo }] },
+  fitaDireita: { right: -9, transform: [{ rotate: espelhar(giro.carimbo) }] },
   lupa: { width: 12, height: 12 },
   campo: {
     ...tipo.corpoPequeno,
     flex: 1,
-    minHeight: 30,
+    minHeight: 36,
     paddingVertical: 0,
     color: theme.sup.papelFundo.tinta,
   },
-  filtros: {
-    flexDirection: 'row',
-    gap: theme.esp[1],
+  placa: {
+    ...tipo.microcopy,
+    maxWidth: '40%',
+    paddingHorizontal: theme.esp[3],
+    borderWidth: 2,
+    borderColor: theme.arte.fichario.latao,
+    color: theme.sup.mesa.tinta,
   },
-  filtro: {
-    minHeight: 27,
-    justifyContent: 'center',
-    paddingHorizontal: theme.esp[2],
-    borderWidth: 1,
-    borderColor: theme.sup.papelFundo.borda,
-    ...raio.irregularP,
-    backgroundColor: theme.sup.papelFundo.fundo,
-  },
-  filtroEscolhido: {
-    backgroundColor: theme.semantico.papel.acaoPrimaria,
-    borderColor: theme.semantico.papel.acaoPrimaria,
-  },
-  textoFiltro: {
-    ...tipoMiniatura.aba,
-    color: theme.sup.papelFundo.tinta,
-  },
-  textoEscolhido: { color: theme.semantico.papel.acaoPrimariaTinta },
-  expositora: {
-    flex: 1,
-    experimental_backgroundImage: `linear-gradient(180deg, ${theme.arte.estante.fundo.claro}, ${theme.arte.estante.fundo.escuro})`,
-    borderTopWidth: 6,
-    borderTopColor: theme.arte.estante.topo,
-    boxShadow: `inset 0 10px 20px ${theme.arte.estante.sombra}`,
-  },
-  trilho: {
-    paddingTop: theme.esp[3],
-    paddingHorizontal: theme.esp[4],
-    paddingBottom: theme.esp[3],
-    gap: theme.esp[4],
-  },
-  prateleira: {
-    paddingTop: theme.esp[3],
-    paddingHorizontal: theme.esp[2],
-    paddingBottom: theme.esp[3],
-    experimental_backgroundImage: `linear-gradient(180deg, ${theme.arte.estante.vao.claro}, ${theme.arte.estante.vao.meio} 65%, ${theme.arte.estante.vao.escuro})`,
-    borderLeftWidth: 5,
-    borderRightWidth: 5,
-    borderLeftColor: theme.arte.estante.lateral.esquerda,
-    borderRightColor: theme.arte.estante.lateral.direita,
-  },
-  ripa: {
-    zIndex: 3,
-    height: 18,
-    experimental_backgroundImage: `linear-gradient(180deg, ${theme.arte.estante.ripa.claro}, ${theme.arte.estante.ripa.meio} 72%, ${theme.arte.estante.ripa.escuro})`,
-    borderBottomWidth: 2,
-    borderBottomColor: theme.arte.estante.ripa.filete,
-    boxShadow: `0 4px 8px ${theme.arte.estante.sombra}`,
-  },
-  grade: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    gap: theme.esp[3],
-  },
-  lugarDaCapa: { flex: 1 },
   vao: { flex: 1 },
-  capa: {
-    aspectRatio: 3 / 4,
-    minHeight: ALVO_MINIMO,
-    justifyContent: 'space-between',
-    paddingTop: theme.esp[3],
-    paddingHorizontal: theme.esp[2],
-    paddingBottom: theme.esp[4],
-    borderTopLeftRadius: 2,
-    borderTopRightRadius: 4,
-    borderBottomRightRadius: 2,
-    borderBottomLeftRadius: 2,
-    borderWidth: 1,
-    borderColor: theme.arte.estante.sombraCapa,
-    boxShadow: `-3px 4px 8px ${theme.arte.estante.sombraCapa}`,
-    overflow: 'hidden',
+  trilho: {
+    paddingTop: theme.esp[7],
+    paddingLeft: theme.esp[5],
+    paddingRight: LARGURA_DA_JIBOIA,
+    paddingBottom: ALTURA_DO_PE,
+    gap: theme.esp[6],
   },
-  capaErguida: { transform: [{ translateY: -4 }] },
-  tituloCapa: {
-    ...tipoMiniatura.tituloEstante,
+  pe: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: ALTURA_DA_JIBOIA,
   },
-  peDaCapa: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    justifyContent: 'space-between',
-    gap: theme.esp[1],
+  chao: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 27,
+    backgroundColor: theme.arte.parede.chao,
+    borderTopWidth: 9,
+    borderTopColor: theme.arte.parede.rodape,
   },
-  autorCapa: {
-    ...tipoMiniatura.rodapeCapa,
-    flex: 1,
-    minWidth: 0,
-    opacity: 0.82,
+  lugarDaJiboia: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
   },
-  marcaCapa: {
-    ...tipoMiniatura.rodapeCapa,
-    opacity: 0.75,
+  lugarDoFichario: {
+    position: 'absolute',
+    left: 18,
+    bottom: 9,
   },
   convite: {
     gap: theme.esp[5],
     paddingVertical: theme.esp[5],
-    paddingHorizontal: theme.esp[3],
   },
   lapis: {
     ...tipo.etiquetaManuscrita,
-    color: theme.sup.kraft.tinta,
-  },
-  nenhum: {
-    ...tipo.microcopy,
-    color: theme.sup.kraft.tinta,
-    paddingVertical: theme.esp[5],
-    paddingHorizontal: theme.esp[2],
-  },
-  rodape: {
-    alignItems: 'center',
-    paddingTop: theme.esp[3],
-    paddingHorizontal: theme.esp[5],
-    borderTopWidth: 1,
-    borderTopColor: theme.arte.estante.vao.escuro,
-    backgroundColor: theme.arte.estante.rodape,
+    color: theme.sup.mesa.tinta,
   },
   contagem: {
     ...tipo.kicker,
-    color: theme.arte.estante.rodapeTinta,
+    alignSelf: 'flex-start',
+    paddingHorizontal: theme.esp[3],
+    paddingVertical: theme.esp[1],
+    backgroundColor: theme.arte.parede.chao,
+    color: theme.sup.mesa.tinta,
+    transform: [{ rotate: giro.rotulo }],
   },
 }));

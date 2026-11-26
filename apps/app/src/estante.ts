@@ -1,4 +1,4 @@
-import type { EstadoObra } from '@bookworm/core';
+import type { EstadoObra, FiltroDeEstado, OrdemDaEstante } from '@bookworm/core';
 import { arte } from './tema/arte';
 
 // Os textos e a cor das capas da estante (v2, tela 6). A capa é desenho de objeto: não há
@@ -44,9 +44,10 @@ export function corDaCapa(id: string): CorDeCapa {
   return CAPAS[h % CAPAS.length] as CorDeCapa;
 }
 
-export function rodapeDaEstante(n: number): string {
-  if (n === 0) return 'Nenhum livro na estante';
-  return `${n} ${n === 1 ? 'livro' : 'livros'} na estante`;
+export function rodapeDaEstante(n: number, naParedePropria = false): string {
+  const onde = naParedePropria ? 'nesta parede' : 'na estante';
+  if (n === 0) return `Nenhum livro ${onde}`;
+  return `${n} ${n === 1 ? 'livro' : 'livros'} ${onde}`;
 }
 
 /** O que o leitor de tela anuncia numa capa (RN-DS.12). */
@@ -56,4 +57,35 @@ export function rotuloDaCapa(obra: NaCapa & { titulo: string; autor: string | nu
     ? `${ESTADO_FALADO[obra.estado]}, ${pct(obra.progresso)}% lido`
     : ESTADO_FALADO[obra.estado];
   return `${obra.titulo.replace(/\s+/g, ' ').trim()}${quem}. ${estado}. Abrir no leitor`;
+}
+
+/** As fichas de estado do fichário, na ordem em que aparecem. */
+export const ROTULO_DO_ESTADO: Record<FiltroDeEstado, string> = {
+  todos: 'Todos',
+  lendo: 'Lendo',
+  quero_ler: 'Quero ler',
+  concluido: 'Lidos',
+  em_pausa: 'Em pausa',
+};
+
+export const ROTULO_DA_ORDEM: Record<OrdemDaEstante, string> = {
+  az: 'A–Z',
+  recentes: 'Recentes',
+  autor: 'Autor',
+};
+
+/** O que a ficha da frente do fichário mostra: a parede, o estado e a ordem escolhidos. */
+export function fichaDaFrente({
+  estado,
+  ordem,
+  parede,
+}: {
+  estado: FiltroDeEstado;
+  ordem: OrdemDaEstante;
+  parede: string | null;
+}): string {
+  const partes = parede
+    ? [parede, ...(estado === 'todos' ? [] : [ROTULO_DO_ESTADO[estado]])]
+    : [ROTULO_DO_ESTADO[estado]];
+  return [...partes, ROTULO_DA_ORDEM[ordem]].join(' · ');
 }

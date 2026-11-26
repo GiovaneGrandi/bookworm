@@ -40,6 +40,20 @@ export const MIGRACOES: readonly string[] = [
     atualizado_em INTEGER NOT NULL
   );
   `,
+  `
+  CREATE TABLE parede (
+    id TEXT PRIMARY KEY NOT NULL,
+    nome TEXT NOT NULL,
+    cor TEXT NOT NULL
+      CHECK (cor IN ('mesa', 'vinho', 'prussia', 'terra', 'grafite')),
+    criada_em INTEGER NOT NULL
+  );
+  CREATE TABLE parede_obra (
+    parede_id TEXT NOT NULL REFERENCES parede(id) ON DELETE CASCADE,
+    obra_id TEXT NOT NULL REFERENCES obra(id) ON DELETE CASCADE,
+    PRIMARY KEY (parede_id, obra_id)
+  );
+  `,
 ];
 
 export function migrar(banco: SQLiteDatabase): void {

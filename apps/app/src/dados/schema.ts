@@ -1,4 +1,4 @@
-import type { EstadoObra, Formato } from '@bookworm/core';
+import type { CorDeParede, EstadoObra, Formato } from '@bookworm/core';
 import { integer, primaryKey, real, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
 // Tudo local, em SQLite (Q8). A forma das tabelas acompanha `migracoes.ts`; mudar uma exige
@@ -52,6 +52,27 @@ export const preferenciasLeitura = sqliteTable('preferencias_leitura', {
   dados: text('dados').notNull(),
   atualizadoEm: integer('atualizado_em').notNull(),
 });
+
+/** As paredes próprias da estante (fichário): nome, tinta e os livros pendurados nelas. */
+export const parede = sqliteTable('parede', {
+  id: text('id').primaryKey(), // ULID
+  nome: text('nome').notNull(),
+  cor: text('cor').$type<CorDeParede>().notNull(),
+  criadaEm: integer('criada_em').notNull(),
+});
+
+export const paredeObra = sqliteTable(
+  'parede_obra',
+  {
+    paredeId: text('parede_id')
+      .notNull()
+      .references(() => parede.id, { onDelete: 'cascade' }),
+    obraId: text('obra_id')
+      .notNull()
+      .references(() => obra.id, { onDelete: 'cascade' }),
+  },
+  (t) => [primaryKey({ columns: [t.paredeId, t.obraId] })]
+);
 
 export type Obra = typeof obra.$inferSelect;
 export type NovaObra = typeof obra.$inferInsert;

@@ -4,6 +4,7 @@ export const NUCLEO = '@bookworm/core';
 export * from './biblioteca/arquivo';
 export * from './biblioteca/estados';
 export * from './biblioteca/estante';
+export * from './biblioteca/paredes';
 export * from './biblioteca/titulo';
 export * from './biblioteca/ulid';
 export * from './indice/epub';

@@ -59,6 +59,48 @@ export const arte = {
     ],
     sombra: [comAlfa('#000000', 0.55), comAlfa('#000000', 0)] as [string, string],
   },
+  /**
+   * A estante como parede (direção B, 26/11/2026): a tinta de cada parede, as prateleiras de
+   * madeira presas nela e o chão. A tinta da parede própria é escolha da leitora.
+   */
+  parede: {
+    tintas: {
+      mesa: '#212824',
+      vinho: '#3a2626',
+      prussia: '#1d2a36',
+      terra: '#2e261c',
+      grafite: '#2a2a28',
+    },
+    chao: '#161917',
+    rodape: '#2b322d',
+    prateleira: '#6e4a2e',
+    filete: '#a9854f',
+    sombra: 'rgba(0,0,0,0.5)',
+    /** A fita adesiva que segura a tira de busca na parede. */
+    fita: 'rgba(230,217,195,0.75)',
+    /** O papel que marca a capa: a tira de "pausa" e o marcador da escolha. */
+    marcador: pigmento.papel,
+    /** A folha prensada de quem já leu: o herbário. */
+    folhaPrensada: pigmento.pigOliva,
+  },
+  /** A jiboia no vaso de chão, subindo pelo tutor: o jardim ao pé da estante. */
+  jiboia: {
+    folha: '#3a6e46',
+    folhaEscura: '#2f5d3a',
+    caule: '#24492d',
+    tutor: '#5f5949',
+    vasoBorda: '#c0714d',
+    vaso: '#b2603f',
+  },
+  /** O fichário de chão: caixa de madeira, frente com porta-etiqueta de latão e as fichas. */
+  fichario: {
+    caixa: '#6e4a2e',
+    frente: '#7d5636',
+    fundo: '#3c2a1c',
+    filete: '#a9854f',
+    latao: '#c9a650',
+    fichas: ['#e6d9c3', '#efe3ce'] as [string, string],
+  },
   /** A estante expositora da v2: madeira clara, ripas e as capas de frente. */
   estante: {
     fundo: { claro: '#cbb89b', escuro: '#b9a382' },
