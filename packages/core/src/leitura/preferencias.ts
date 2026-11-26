@@ -6,6 +6,14 @@ export type TemaLeitura = 'claro' | 'sepia' | 'escuro' | 'preto';
 export type Margem = 'estreita' | 'media' | 'larga';
 export type Alinhamento = 'justificado' | 'esquerda';
 export type Ancora = 'nenhuma' | 'posicao' | 'posicao_numero';
+export type Peso = 'fina' | 'normal' | 'grossa';
+export type Espaco = 'normal' | 'aberto' | 'largo';
+export type EspacoParagrafos = 'colados' | 'meia' | 'linha';
+export type Recuo = 'nenhum' | 'curto' | 'longo';
+/** Como a página passa: deslizando para o lado ou de uma vez. */
+export type Virada = 'deslizar' | 'instantanea';
+/** O que um toque nas bordas faz: volta e avança, avança dos dois lados, ou nada. */
+export type ZonasDeToque = 'bordas' | 'dois_lados' | 'nenhuma';
 
 export type PreferenciasLeitura = {
   /** Kelvin (RN-02.16a). */
@@ -27,6 +35,31 @@ export type PreferenciasLeitura = {
   ancora: Ancora;
   /** A chave única de RN-02.17f. */
   retornoSensorial: boolean;
+
+  // A segunda camada do painel ("Mais"): ajustes além do inventário mínimo de RN-02.16d.
+  peso: Peso;
+  espacoLetras: Espaco;
+  espacoPalavras: Espaco;
+  espacoParagrafos: EspacoParagrafos;
+  recuo: Recuo;
+  /** Ler descendo o texto, em vez de virar páginas. */
+  rolagem: boolean;
+  /** A textura de papel sob o texto, nos temas claros. */
+  grao: boolean;
+  /** RN-02.16c: a temperatura acompanha a hora do dia. Opt-in. */
+  temperaturaPeloHorario: boolean;
+  /** Escuro quando o celular está escuro; claro quando está claro. */
+  temaSegueCelular: boolean;
+  /** Imagens mais apagadas nos temas escuro e preto. */
+  imagensSuaves: boolean;
+  virada: Virada;
+  zonasDeToque: ZonasDeToque;
+  /** Os botões de volume viram a página: abaixar avança, aumentar volta. */
+  viraComVolume: boolean;
+  /** RN-02.17b: o som de papel na virada, desligado por padrão. */
+  somDoPapel: boolean;
+  /** A tela não apaga sozinha enquanto o livro está aberto. */
+  telaAcesa: boolean;
 };
 
 export const TEMPERATURA_LUZ = { min: 2700, max: 6500, padrao: 4200 } as const;
@@ -59,6 +92,21 @@ export const PADRAO_LEITURA: PreferenciasLeitura = {
   alinhamento: 'justificado',
   ancora: 'posicao_numero', // ANCORA_POSICAO_PADRAO
   retornoSensorial: true,
+  peso: 'normal',
+  espacoLetras: 'normal',
+  espacoPalavras: 'normal',
+  espacoParagrafos: 'colados',
+  recuo: 'curto',
+  rolagem: false,
+  grao: false,
+  temperaturaPeloHorario: false,
+  temaSegueCelular: false,
+  imagensSuaves: true,
+  virada: 'deslizar',
+  zonasDeToque: 'bordas',
+  viraComVolume: false,
+  somDoPapel: false,
+  telaAcesa: false,
 };
 
 export type Aba = 'luz' | 'letra' | 'pagina';
@@ -71,6 +119,25 @@ export const ABAS_DO_PAINEL: Record<Aba, Controle[]> = {
   pagina: ['margem', 'alinhamento', 'ancora', 'retornoSensorial'],
 };
 
+/**
+ * A segunda camada de cada instrumento, atrás de "Mais": o painel não vira cabine (Q-02.8), e o
+ * inventário mínimo de RN-02.16d continua na primeira camada.
+ */
+export const MAIS_DO_PAINEL: Record<Aba, Controle[]> = {
+  luz: ['temperaturaPeloHorario', 'temaSegueCelular', 'imagensSuaves', 'grao'],
+  letra: ['peso', 'espacoLetras', 'espacoPalavras'],
+  pagina: [
+    'espacoParagrafos',
+    'recuo',
+    'rolagem',
+    'virada',
+    'zonasDeToque',
+    'viraComVolume',
+    'somDoPapel',
+    'telaAcesa',
+  ],
+};
+
 export const CORPO = { min: 12, max: 20 } as const;
 const AJUSTE_CORPO = { min: -6, max: 6 };
 const AJUSTE_ENTRELINHA = { min: -8, max: 12 };
@@ -80,12 +147,19 @@ const TEMAS: readonly TemaLeitura[] = ['claro', 'sepia', 'escuro', 'preto'];
 const MARGENS: readonly Margem[] = ['estreita', 'media', 'larga'];
 const ALINHAMENTOS: readonly Alinhamento[] = ['justificado', 'esquerda'];
 const ANCORAS: readonly Ancora[] = ['nenhuma', 'posicao', 'posicao_numero'];
+const PESOS: readonly Peso[] = ['fina', 'normal', 'grossa'];
+const ESPACOS: readonly Espaco[] = ['normal', 'aberto', 'largo'];
+const ESPACOS_PARAGRAFOS: readonly EspacoParagrafos[] = ['colados', 'meia', 'linha'];
+const RECUOS: readonly Recuo[] = ['nenhum', 'curto', 'longo'];
+const VIRADAS: readonly Virada[] = ['deslizar', 'instantanea'];
+const ZONAS: readonly ZonasDeToque[] = ['bordas', 'dois_lados', 'nenhuma'];
 
 const entre = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
 const numero = (v: unknown, padrao: number) =>
   typeof v === 'number' && Number.isFinite(v) ? v : padrao;
 const umDe = <T extends string>(v: unknown, opcoes: readonly T[], padrao: T): T =>
   opcoes.includes(v as T) ? (v as T) : padrao;
+const chave = (v: unknown, padrao: boolean) => (typeof v === 'boolean' ? v : padrao);
 
 /** Aplica uma mudança e devolve preferências válidas: cada campo preso à sua faixa. */
 export function aplicar(
@@ -107,6 +181,21 @@ export function aplicar(
     alinhamento: p.alinhamento,
     ancora: p.ancora,
     retornoSensorial: p.retornoSensorial,
+    peso: p.peso,
+    espacoLetras: p.espacoLetras,
+    espacoPalavras: p.espacoPalavras,
+    espacoParagrafos: p.espacoParagrafos,
+    recuo: p.recuo,
+    rolagem: p.rolagem,
+    grao: p.grao,
+    temperaturaPeloHorario: p.temperaturaPeloHorario,
+    temaSegueCelular: p.temaSegueCelular,
+    imagensSuaves: p.imagensSuaves,
+    virada: p.virada,
+    zonasDeToque: p.zonasDeToque,
+    viraComVolume: p.viraComVolume,
+    somDoPapel: p.somDoPapel,
+    telaAcesa: p.telaAcesa,
   };
 }
 
@@ -124,14 +213,29 @@ export function normalizarPreferencias(bruto: unknown): PreferenciasLeitura {
     margem: umDe(b.margem, MARGENS, d.margem),
     alinhamento: umDe(b.alinhamento, ALINHAMENTOS, d.alinhamento),
     ancora: umDe(b.ancora, ANCORAS, d.ancora),
-    retornoSensorial:
-      typeof b.retornoSensorial === 'boolean' ? b.retornoSensorial : d.retornoSensorial,
+    retornoSensorial: chave(b.retornoSensorial, d.retornoSensorial),
+    peso: umDe(b.peso, PESOS, d.peso),
+    espacoLetras: umDe(b.espacoLetras, ESPACOS, d.espacoLetras),
+    espacoPalavras: umDe(b.espacoPalavras, ESPACOS, d.espacoPalavras),
+    espacoParagrafos: umDe(b.espacoParagrafos, ESPACOS_PARAGRAFOS, d.espacoParagrafos),
+    recuo: umDe(b.recuo, RECUOS, d.recuo),
+    rolagem: chave(b.rolagem, d.rolagem),
+    grao: chave(b.grao, d.grao),
+    temperaturaPeloHorario: chave(b.temperaturaPeloHorario, d.temperaturaPeloHorario),
+    temaSegueCelular: chave(b.temaSegueCelular, d.temaSegueCelular),
+    imagensSuaves: chave(b.imagensSuaves, d.imagensSuaves),
+    virada: umDe(b.virada, VIRADAS, d.virada),
+    zonasDeToque: umDe(b.zonasDeToque, ZONAS, d.zonasDeToque),
+    viraComVolume: chave(b.viraComVolume, d.viraComVolume),
+    somDoPapel: chave(b.somDoPapel, d.somDoPapel),
+    telaAcesa: chave(b.telaAcesa, d.telaAcesa),
   });
 }
 
-/** ↺ esta aba (RN-02.16f). */
+/** ↺ esta aba (RN-02.16f): as duas camadas daquele instrumento. */
 export function restaurarAba(atual: PreferenciasLeitura, aba: Aba): PreferenciasLeitura {
-  const padrao = Object.fromEntries(ABAS_DO_PAINEL[aba].map((c) => [c, PADRAO_LEITURA[c]]));
+  const campos = [...ABAS_DO_PAINEL[aba], ...MAIS_DO_PAINEL[aba]];
+  const padrao = Object.fromEntries(campos.map((c) => [c, PADRAO_LEITURA[c]]));
   return aplicar(atual, padrao);
 }
 
@@ -155,14 +259,22 @@ export function entrelinhaEfetiva(p: PreferenciasLeitura): number {
 }
 
 const MARGEM_READIUM: Record<Margem, number> = { estreita: 0.75, media: 1.25, larga: 2 };
+/** Peso em fração do normal (1 = 400). */
+const PESO_READIUM: Record<Peso, number> = { fina: 0.75, normal: 1, grossa: 1.5 };
+const LETRAS_READIUM: Record<Espaco, number> = { normal: 0, aberto: 0.05, largo: 0.1 };
+const PALAVRAS_READIUM: Record<Espaco, number> = { normal: 0, aberto: 0.15, largo: 0.3 };
+/** Em linhas da entrelinha: o espaço entre parágrafos anda na pauta. */
+const PARAGRAFOS_EM_LINHAS: Record<EspacoParagrafos, number> = { colados: 0, meia: 0.5, linha: 1 };
+const RECUO_READIUM: Record<Recuo, number> = { nenhum: 0, curto: 1, longo: 2 };
 
 /**
  * O que o navegador EPUB do Readium recebe. Tema, cores e luz não entram aqui: as cores são
  * tokens do app, e temperatura e brilho são camadas por cima da página (stack.md, Q-ST.2).
  */
-export function paraReadium(p: PreferenciasLeitura) {
+export function paraReadium(p: PreferenciasLeitura, tema: TemaLeitura = p.tema) {
   const corpo = corpoEfetivo(p);
   const justificado = p.alinhamento === 'justificado';
+  const escuro = tema === 'escuro' || tema === 'preto';
   return {
     fontFamily: FACES[p.face].familia,
     fontSize: corpo / 16,
@@ -172,6 +284,13 @@ export function paraReadium(p: PreferenciasLeitura) {
     hyphens: justificado,
     // Sem isso o Readium respeita o CSS da editora e ignora entrelinha e alinhamento.
     publisherStyles: false,
+    fontWeight: PESO_READIUM[p.peso],
+    letterSpacing: LETRAS_READIUM[p.espacoLetras],
+    wordSpacing: PALAVRAS_READIUM[p.espacoPalavras],
+    paragraphSpacing: (PARAGRAFOS_EM_LINHAS[p.espacoParagrafos] * entrelinhaEfetiva(p)) / 16,
+    paragraphIndent: RECUO_READIUM[p.recuo],
+    scroll: p.rolagem,
+    ...(escuro && p.imagensSuaves ? { imageFilter: 'darken' as const } : {}),
   };
 }
 
@@ -203,4 +322,86 @@ export function corDaTemperatura(
   const [r = 1, g = 1, b = 1] = razao.map((v) => v / maior);
   const misturar = (v: number) => Math.round(255 * (1 - intensidade * (1 - v)));
   return { r: misturar(r), g: misturar(g), b: misturar(b) };
+}
+
+/**
+ * RN-02.16c: a temperatura pela hora do dia (0 a 24, com fração). Fria de dia, quente à noite,
+ * mudando aos poucos entre 17h e 21h e entre 5h e 7h.
+ */
+const DIA = 5000;
+const NOITE = 2900;
+export function temperaturaDoHorario(horas: number): number {
+  const h = ((horas % 24) + 24) % 24;
+  const meio = (de: number, ate: number, inicio: number, fim: number) =>
+    de + ((ate - de) * (h - inicio)) / (fim - inicio);
+  let k: number;
+  if (h >= 7 && h < 17) k = DIA;
+  else if (h >= 17 && h < 21) k = meio(DIA, NOITE, 17, 21);
+  else if (h >= 5 && h < 7) k = meio(NOITE, DIA, 5, 7);
+  else k = NOITE;
+  return Math.round(entre(k, TEMPERATURA_LUZ.min, TEMPERATURA_LUZ.max) / 50) * 50;
+}
+
+/**
+ * O tema que vale agora. Seguindo o celular: escuro quando ele está escuro (ou preto, para quem
+ * escolheu preto), claro quando está claro (ou sépia, para quem escolheu sépia).
+ */
+export function temaEfetivo(p: PreferenciasLeitura, celularEscuro: boolean): TemaLeitura {
+  if (!p.temaSegueCelular) return p.tema;
+  if (celularEscuro) return p.tema === 'preto' ? 'preto' : 'escuro';
+  return p.tema === 'sepia' ? 'sepia' : 'claro';
+}
+
+export type Predefinicao = { id: string; nome: string; ajustes: Partial<PreferenciasLeitura> };
+
+/** Atalhos de fábrica: mexem só na luz, para não desfazer a letra e a página de ninguém. */
+export const PREDEFINICOES_DE_FABRICA: readonly Predefinicao[] = [
+  { id: 'dia', nome: 'Dia', ajustes: { temperatura: 4200, brilho: 1, tema: 'claro' } },
+  { id: 'noite', nome: 'Noite', ajustes: { temperatura: 2900, brilho: 0.6, tema: 'escuro' } },
+];
+
+export const NOME_DE_PREDEFINICAO_MAX = 24;
+
+/** Nome de predefinição: espaços colapsados; null se vazio ou longo demais. */
+export function limparNomeDePredefinicao(nome: string): string | null {
+  const limpo = nome.replace(/\s+/g, ' ').trim();
+  return limpo && limpo.length <= NOME_DE_PREDEFINICAO_MAX ? limpo : null;
+}
+
+/** As predefinições da leitora, vindas do banco: nome limpo e ajustes válidos; o resto sai. */
+export function normalizarPredefinicoes(bruto: unknown): Predefinicao[] {
+  if (!Array.isArray(bruto)) return [];
+  return bruto.flatMap((item) => {
+    if (!item || typeof item !== 'object') return [];
+    const { id, nome, ajustes } = item as Record<string, unknown>;
+    const limpo = typeof nome === 'string' ? limparNomeDePredefinicao(nome) : null;
+    if (typeof id !== 'string' || !limpo) return [];
+    return [{ id, nome: limpo, ajustes: normalizarPreferencias(ajustes) }];
+  });
+}
+
+/** Quanto da largura, no meio, é "área central": abre os controles (RN-02.13). */
+export const FAIXA_CENTRAL = [0.3, 0.7] as const;
+
+export type AcaoDoToque = 'voltar' | 'avancar' | 'controles';
+
+/**
+ * O que um toque na página faz, pela fração da largura em que caiu. O meio sempre abre os
+ * controles; as bordas seguem as zonas escolhidas, e rolando nenhuma borda vira página.
+ */
+export function acaoDoToque(x: number, zonas: ZonasDeToque, rolando = false): AcaoDoToque | null {
+  if (x >= FAIXA_CENTRAL[0] && x <= FAIXA_CENTRAL[1]) return 'controles';
+  if (rolando || zonas === 'nenhuma') return null;
+  if (zonas === 'dois_lados') return 'avancar';
+  return x < FAIXA_CENTRAL[0] ? 'voltar' : 'avancar';
+}
+
+/** A virada desliza só se a leitora quer e se o retorno sensorial está ligado (RN-02.17f). */
+export function viradaAnimada(p: PreferenciasLeitura): boolean {
+  return p.virada === 'deslizar' && p.retornoSensorial;
+}
+
+/** O som de papel: escolhido pela leitora e calado pela chave única (RN-02.17b, RN-02.17f). */
+export function tocaSomDoPapel(p: PreferenciasLeitura): boolean {
+  return p.somDoPapel && p.retornoSensorial;
 }

@@ -1,5 +1,9 @@
 import {
+  gerarUlid,
+  limparNomeDePredefinicao,
+  normalizarPredefinicoes,
   normalizarPreferencias,
+  type Predefinicao,
   type PreferenciasLeitura,
   progressoPercentual,
   type RecursoIndice,
@@ -28,12 +32,50 @@ function lerJson(texto: string): unknown {
 }
 
 export function salvarPreferencias(p: PreferenciasLeitura): void {
-  const dados = JSON.stringify(p);
+  gravarLinha(LINHA_DAS_PREFERENCIAS, p);
+}
+
+// A mesma tabela guarda, numa segunda linha, as predefinições da leitora: são preferências
+// também, e assim nenhuma migração nova é preciso.
+const LINHA_DAS_PREFERENCIAS = 1;
+const LINHA_DAS_PREDEFINICOES = 2;
+
+function gravarLinha(id: number, valor: unknown): void {
+  const dados = JSON.stringify(valor);
   const agora = Date.now();
   db.insert(preferenciasLeitura)
-    .values({ id: 1, dados, atualizadoEm: agora })
+    .values({ id, dados, atualizadoEm: agora })
     .onConflictDoUpdate({ target: preferenciasLeitura.id, set: { dados, atualizadoEm: agora } })
     .run();
+}
+
+/** As predefinições guardadas pela leitora, ao vivo (as de fábrica não moram no banco). */
+export function usePredefinicoes(): Predefinicao[] {
+  const { data } = useLiveQuery(
+    db.select().from(preferenciasLeitura).where(eq(preferenciasLeitura.id, LINHA_DAS_PREDEFINICOES))
+  );
+  const linha = data?.[0];
+  return normalizarPredefinicoes(linha ? lerJson(linha.dados) : null);
+}
+
+/** Guarda as preferências de agora com um nome. Devolve false se o nome não serve. */
+export function guardarPredefinicao(
+  atuais: Predefinicao[],
+  nome: string,
+  p: PreferenciasLeitura
+): boolean {
+  const limpo = limparNomeDePredefinicao(nome);
+  if (!limpo) return false;
+  const nova: Predefinicao = { id: gerarUlid(Date.now(), Math.random), nome: limpo, ajustes: p };
+  gravarLinha(LINHA_DAS_PREDEFINICOES, [...atuais, nova]);
+  return true;
+}
+
+export function tirarPredefinicao(atuais: Predefinicao[], id: string): void {
+  gravarLinha(
+    LINHA_DAS_PREDEFINICOES,
+    atuais.filter((p) => p.id !== id)
+  );
 }
 
 /** O índice de caracteres da obra, como foi gravado na importação (RN-ST.8). */
