@@ -16,6 +16,7 @@ import { BwLivroAberto, LIVRO } from '../src/componentes/mesa/BwLivroAberto';
 import { BwLugarReservado } from '../src/componentes/mesa/BwLugarReservado';
 import { BwLuminaria } from '../src/componentes/mesa/BwLuminaria';
 import { BwFeixe, BwPenumbra } from '../src/componentes/mesa/BwLuzDaMesa';
+import { BwMarcadorDeFita } from '../src/componentes/mesa/BwMarcadorDeFita';
 import { BwMesaEmLista, type ItemDaLista } from '../src/componentes/mesa/BwMesaEmLista';
 import { BwTresLombadas, LOMBADAS } from '../src/componentes/mesa/BwTresLombadas';
 import { BwVizinhoNaBorda, PONTA_NA_BORDA } from '../src/componentes/mesa/BwVizinhoNaBorda';
@@ -288,10 +289,7 @@ export default function Mesa() {
               style={estilos.marcadores}
             >
               {mesa.livros.map((o, i) => (
-                <View
-                  key={o.id}
-                  style={[estilos.marcador, i === carrossel.indice && estilos.marcadorAtual]}
-                />
+                <BwMarcadorDeFita key={o.id} atual={i === carrossel.indice} />
               ))}
             </View>
           )}
@@ -490,15 +488,7 @@ const estilos = StyleSheet.create((theme) => ({
     zIndex: 4,
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: theme.esp[3],
-  },
-  marcador: {
-    width: 6,
-    height: 12,
-    backgroundColor: theme.sup.mesa.borda,
-  },
-  marcadorAtual: {
-    backgroundColor: theme.arte.barra.ativo,
+    gap: theme.esp[2],
   },
   saudacao: {
     ...tipo.etiquetaManuscrita,

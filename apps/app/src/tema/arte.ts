@@ -44,6 +44,11 @@ export const arte = {
     latao: ['#e2c06a', '#a88334'] as [string, string],
     sombra: '0 -6px 12px rgba(0,0,0,0.35)',
   },
+  /** O carrossel da mesa: os marcadores acima do livro aberto, o dele em latão. */
+  carrossel: {
+    atual: '#e2c06a',
+    apagado: 'rgba(232,220,196,0.3)',
+  },
   /** A biblioteca na mesa: três lombadas em pé, cada uma com uma faixa (rodada de ícones, 22/11). */
   lombadas: {
     livros: [
