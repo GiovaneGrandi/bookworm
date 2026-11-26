@@ -30,15 +30,56 @@ const COMPARAR: Record<OrdemDaEstante, (a: ObraNaEstante, b: ObraNaEstante) => n
   },
 };
 
-/** O que a estante mostra, na ordem escolhida e filtrado pela busca por título ou autor. */
+/** As fichas de estado do fichário: "todos" e os quatro estados que ficam na estante. */
+export type FiltroDeEstado = 'todos' | 'lendo' | 'quero_ler' | 'concluido' | 'em_pausa';
+export const FILTROS_DE_ESTADO: readonly FiltroDeEstado[] = [
+  'todos',
+  'lendo',
+  'quero_ler',
+  'concluido',
+  'em_pausa',
+];
+
+/** O recorte escolhido no fichário: um estado e, se houver, a parede própria. */
+export type RecorteDaEstante = {
+  estado?: FiltroDeEstado;
+  /** Os ids pendurados na parede escolhida; null é a estante inteira. */
+  naParede?: readonly string[] | null;
+};
+
+const naEstante = (o: ObraNaBiblioteca) => o.estado !== 'abandonado';
+
+/** O que a estante mostra: o recorte do fichário, a busca por título ou autor e a ordem. */
 export function obrasNaEstante<T extends ObraNaEstante>(
   obras: readonly T[],
   ordem: OrdemDaEstante,
-  termo = ''
+  termo = '',
+  { estado = 'todos', naParede = null }: RecorteDaEstante = {}
 ): T[] {
   const busca = semAcento(termo.trim());
+  const parede = naParede ? new Set(naParede) : null;
   return obras
-    .filter((o) => o.estado !== 'abandonado')
+    .filter(naEstante)
+    .filter((o) => estado === 'todos' || o.estado === estado)
+    .filter((o) => !parede || parede.has(o.id))
     .filter((o) => !busca || semAcento(`${o.titulo} ${o.autor ?? ''}`).includes(busca))
     .sort(COMPARAR[ordem]);
+}
+
+/** Quantos livros cada ficha de estado mostra. */
+export function contarPorEstado(
+  obras: readonly ObraNaBiblioteca[]
+): Record<FiltroDeEstado, number> {
+  const conta: Record<FiltroDeEstado, number> = {
+    todos: 0,
+    lendo: 0,
+    quero_ler: 0,
+    concluido: 0,
+    em_pausa: 0,
+  };
+  for (const o of obras.filter(naEstante)) {
+    conta.todos++;
+    if (o.estado !== 'abandonado') conta[o.estado]++;
+  }
+  return conta;
 }

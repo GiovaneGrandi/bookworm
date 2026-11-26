@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { CAPAS, corDaCapa, marcaDaCapa, rodapeDaEstante, rotuloDaCapa } from '../src/estante';
+import {
+  CAPAS,
+  corDaCapa,
+  fichaDaFrente,
+  marcaDaCapa,
+  ROTULO_DA_ORDEM,
+  ROTULO_DO_ESTADO,
+  rodapeDaEstante,
+  rotuloDaCapa,
+} from '../src/estante';
 
 describe('Estante · a marca no pé de cada capa', () => {
   it('o estado da obra, com o percentual de quem já começou', () => {
@@ -42,5 +51,42 @@ describe('Estante · rodapé e leitor de tela', () => {
     expect(rotuloDaCapa({ titulo: 'Tese', autor: null, estado: 'quero_ler', progresso: 0 })).toBe(
       'Tese. Quero ler. Abrir no leitor'
     );
+  });
+});
+
+describe('Fichário · a ficha da frente diz o que está na parede', () => {
+  it('estado e ordem, datilografados', () => {
+    expect(fichaDaFrente({ estado: 'todos', ordem: 'az', parede: null })).toBe('Todos · A–Z');
+    expect(fichaDaFrente({ estado: 'concluido', ordem: 'recentes', parede: null })).toBe(
+      'Lidos · Recentes'
+    );
+  });
+
+  it('numa parede própria, o nome dela vem primeiro; "todos" não precisa ser dito', () => {
+    expect(fichaDaFrente({ estado: 'todos', ordem: 'autor', parede: 'Machado' })).toBe(
+      'Machado · Autor'
+    );
+    expect(fichaDaFrente({ estado: 'lendo', ordem: 'az', parede: 'Machado' })).toBe(
+      'Machado · Lendo · A–Z'
+    );
+  });
+
+  it('cada ficha de estado e de ordem tem rótulo', () => {
+    expect(Object.values(ROTULO_DO_ESTADO)).toEqual([
+      'Todos',
+      'Lendo',
+      'Quero ler',
+      'Lidos',
+      'Em pausa',
+    ]);
+    expect(Object.values(ROTULO_DA_ORDEM)).toEqual(['A–Z', 'Recentes', 'Autor']);
+  });
+});
+
+describe('Estante · rodapé de um recorte', () => {
+  it('numa parede própria, a contagem fala da parede', () => {
+    expect(rodapeDaEstante(1, true)).toBe('1 livro nesta parede');
+    expect(rodapeDaEstante(3, true)).toBe('3 livros nesta parede');
+    expect(rodapeDaEstante(3)).toBe('3 livros na estante');
   });
 });

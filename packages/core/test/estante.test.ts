@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { type EstadoObra, obrasNaEstante } from '../src/index';
+import { contarPorEstado, type EstadoObra, obrasNaEstante } from '../src/index';
 
 type Obra = {
   id: string;
@@ -66,5 +66,46 @@ describe('Estante · buscar', () => {
   it('busca em branco mostra tudo; busca sem resultado, nada', () => {
     expect(obrasNaEstante(acervo, 'az', '   ')).toHaveLength(4);
     expect(obrasNaEstante(acervo, 'az', 'xyz')).toEqual([]);
+  });
+});
+
+describe('Estante · filtrar pelo estado (fichário)', () => {
+  it('cada filtro mostra só o seu estado; "todos" é a estante inteira', () => {
+    expect(ids(obrasNaEstante(acervo, 'az', '', { estado: 'lendo' }))).toEqual(['a']);
+    expect(ids(obrasNaEstante(acervo, 'az', '', { estado: 'concluido' }))).toEqual(['b']);
+    expect(ids(obrasNaEstante(acervo, 'az', '', { estado: 'em_pausa' }))).toEqual(['c']);
+    expect(ids(obrasNaEstante(acervo, 'az', '', { estado: 'quero_ler' }))).toEqual(['d']);
+    expect(obrasNaEstante(acervo, 'az', '', { estado: 'todos' })).toHaveLength(4);
+  });
+
+  it('o filtro soma com a busca e respeita a ordem', () => {
+    const mais = [...acervo, obra('f', 'Helena', 'Machado de Assis', 'concluido', 50)];
+    expect(ids(obrasNaEstante(mais, 'recentes', 'machado', { estado: 'concluido' }))).toEqual([
+      'f',
+      'b',
+    ]);
+  });
+
+  it('a contagem de cada ficha deixa a abandonada de fora', () => {
+    expect(contarPorEstado(acervo)).toEqual({
+      todos: 4,
+      lendo: 1,
+      quero_ler: 1,
+      concluido: 1,
+      em_pausa: 1,
+    });
+  });
+});
+
+describe('Estante · parede própria', () => {
+  it('mostra só os livros pendurados nela, com filtro e ordem por cima', () => {
+    const naParede = ['b', 'c', 'e'];
+    expect(ids(obrasNaEstante(acervo, 'az', '', { naParede }))).toEqual(['b', 'c']);
+    expect(ids(obrasNaEstante(acervo, 'az', '', { naParede, estado: 'em_pausa' }))).toEqual(['c']);
+  });
+
+  it('parede vazia não mostra nada; sem parede, a estante inteira', () => {
+    expect(obrasNaEstante(acervo, 'az', '', { naParede: [] })).toEqual([]);
+    expect(obrasNaEstante(acervo, 'az', '', { naParede: null })).toHaveLength(4);
   });
 });
