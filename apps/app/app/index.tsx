@@ -2,6 +2,7 @@ import { objetosNaMesa, totalDePaginas } from '@bookworm/core';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
 import { type GestureResponderEvent, Text, useWindowDimensions, View } from 'react-native';
+import { GestureDetector } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
@@ -9,28 +10,36 @@ import { BwMenuRapido, type ItemDoMenu, type MenuRapido } from '../src/component
 import { BwObjetoMesa } from '../src/componentes/BwObjetoMesa';
 import { useGiroDaMesa, useTransicaoDaMesa } from '../src/componentes/BwTransicaoDaMesa';
 import { BANDEJA, BwBandejaDeArame } from '../src/componentes/mesa/BwBandejaDeArame';
-import { BwCapaFechada, CAPA } from '../src/componentes/mesa/BwCapaFechada';
+import { CAPA } from '../src/componentes/mesa/BwCapaFechada';
 import { BwFeltro } from '../src/componentes/mesa/BwFeltro';
 import { BwLivroAberto, LIVRO } from '../src/componentes/mesa/BwLivroAberto';
 import { BwLugarReservado } from '../src/componentes/mesa/BwLugarReservado';
 import { BwLuminaria } from '../src/componentes/mesa/BwLuminaria';
 import { BwFeixe, BwPenumbra } from '../src/componentes/mesa/BwLuzDaMesa';
+import { BwMarcadorDeFita } from '../src/componentes/mesa/BwMarcadorDeFita';
 import { BwMesaEmLista, type ItemDaLista } from '../src/componentes/mesa/BwMesaEmLista';
 import { BwTresLombadas, LOMBADAS } from '../src/componentes/mesa/BwTresLombadas';
+import { BwVizinhoNaBorda, PONTA_NA_BORDA } from '../src/componentes/mesa/BwVizinhoNaBorda';
+import { type Direcao, useDeslizarOLivro } from '../src/componentes/mesa/useDeslizarOLivro';
 import { carregarIndice, usePreferencias } from '../src/dados/leitura';
 import { marcarAberta, pausar, useObras } from '../src/dados/obras';
 import type { Obra } from '../src/dados/schema';
 import {
   COMPOSICAO,
+  carrosselDaMesa,
   encaixarComposicao,
   mesaEmLista,
   textosDaBandeja,
   textosDaBiblioteca,
+  textosDaPosicao,
   textosDoLivro,
-  textosDoSegundoLivro,
+  textosDoVizinho,
 } from '../src/mesa';
 import { espelhar, giro } from '../src/tema/geometria';
 import { tipo } from '../src/tema/tipografia';
+
+/** Onde o livro aberto fica na prancha; as capas vizinhas ficam nas bordas, na altura dele. */
+const LUGAR_DO_LIVRO = { left: 30, top: 198 } as const;
 
 /** Na mesa vazia, a bandeja cresce, vai para o lugar do livro, sob a luz, e é o convite (Q13). */
 const BANDEJA_EM_DESTAQUE = 1.35;
@@ -42,8 +51,8 @@ type Abertura = { menu: Omit<MenuRapido, 'x' | 'y'> };
 
 /**
  * A mesa: tela inicial e único hub (RN-DV.1), na composição da Direção B v2. Cada objeto é porta
- * e mostra o estado da função (RN-DV.3); só os 2 livros em leitura mais recentes ficam pousados
- * (RN-DV.4). A mesa é desenhada numa prancha de 390 × 836 escalada entre as áreas seguras. A
+ * e mostra o estado da função (RN-DV.3). Dos livros em leitura, um fica aberto; deslizar o livro
+ * para os lados troca qual, e os vizinhos aparecem pela metade nas bordas (RN-DV.4). A mesa é desenhada numa prancha de 390 × 836 escalada entre as áreas seguras. A
  * ordem dos objetos na árvore é a ordem de leitura do TalkBack; quem fica por cima é a `camada`.
  */
 export default function Mesa() {
@@ -55,7 +64,17 @@ export default function Mesa() {
   const { estilo: estiloDoGiro, desvirar } = useGiroDaMesa();
   const preferencias = usePreferencias();
   const mesa = objetosNaMesa(useObras());
-  const [principal, segundo] = mesa.livros;
+  // Qual livro em leitura fica aberto: null é o lido mais recentemente.
+  const [escolhido, setEscolhido] = useState<string | null>(null);
+  const carrossel = carrosselDaMesa(mesa.livros, escolhido);
+  const { atual: principal, anterior, proximo } = carrossel;
+  const deslizar = useDeslizarOLivro(
+    { anterior: anterior !== null, proximo: proximo !== null },
+    (direcao: Direcao) => {
+      const vizinho = direcao === 1 ? proximo : anterior;
+      if (vizinho) setEscolhido(vizinho.id);
+    }
+  );
   const [acesa, setAcesa] = useState(true);
   const [menu, setMenu] = useState<MenuRapido | null>(null);
   const corDaLeitura = theme.leitura[preferencias.tema].fundo;
@@ -102,19 +121,27 @@ export default function Mesa() {
   const bandeja = textosDaBandeja(mesa.vazia);
   const biblioteca = textosDaBiblioteca(mesa.gaveta);
   const livro = principal ? textosDoLivro(principal, totalDoPrincipal) : null;
-  const fechado = segundo ? textosDoSegundoLivro(segundo) : null;
+  const vizinhos = [
+    anterior && { obra: anterior, lado: 'anterior' as const, direcao: -1 as const },
+    proximo && { obra: proximo, lado: 'proximo' as const, direcao: 1 as const },
+  ].flatMap((v) => (v ? [{ ...v, textos: textosDoVizinho(v.obra, v.lado) }] : []));
   const pct = (o: Obra) => `${Math.round(o.progresso * 100)}% lido`;
   const paginaDoPrincipal =
     livro?.pagina != null
       ? `p. ${livro.pagina}${totalDoPrincipal ? ` de ${totalDePaginas(totalDoPrincipal)}` : ''}`
       : null;
 
-  // Os menus de toque longo (v2): só atalhos que já levam a algum lugar.
+  // Os menus de toque longo (v2): só atalhos que já levam a algum lugar. O do livro aberto também
+  // troca de livro: é o caminho de quem não arrasta, e chega ao leitor de tela como ação.
   const menuDoLivro = (o: Obra, sub: string, abrir: string): Abertura['menu'] => ({
     titulo: o.titulo.replace(/\s+/g, ' ').trim(),
     sub,
     itens: [
       { rotulo: abrir, primario: true, aoTocar: () => continuar(o) },
+      ...vizinhos.map((v) => ({
+        rotulo: v.textos.menu,
+        aoTocar: () => deslizar.passar(v.direcao),
+      })),
       { rotulo: 'Pôr em pausa', aoTocar: () => pausar(o.id) },
       { rotulo: 'Ver na estante', aoTocar: () => abrirEstante() },
     ],
@@ -127,7 +154,6 @@ export default function Mesa() {
           'Continuar lendo'
         )
       : null,
-    segundo: segundo ? menuDoLivro(segundo, `${pct(segundo)} · na mesa`, 'Abrir no leitor') : null,
     gaveta: {
       titulo: 'Biblioteca',
       sub: `${mesa.gaveta.lendo} lendo · ${mesa.gaveta.em_pausa} em pausa · ${mesa.gaveta.quero_ler} quero ler`,
@@ -177,15 +203,9 @@ export default function Mesa() {
             },
           ]
         : []),
-      ...(segundo
-        ? [
-            {
-              titulo: segundo.titulo,
-              sub: `lendo · ${pct(segundo)}`,
-              aoTocar: () => continuar(segundo),
-            },
-          ]
-        : []),
+      ...mesa.livros
+        .filter((o) => o.id !== principal?.id)
+        .map((o) => ({ titulo: o.titulo, sub: `lendo · ${pct(o)}`, aoTocar: () => continuar(o) })),
       { titulo: 'Jardim', sub: 'em breve' },
       { titulo: 'Meu desempenho', sub: 'em breve' },
       {
@@ -244,49 +264,63 @@ export default function Mesa() {
             rotacaoEtiqueta={espelhar(giro.fita)}
           />
 
-          {segundo && fechado && (
-            <BwObjetoMesa
-              chave={`/leitor/${segundo.id}`}
-              etiqueta={fechado.etiqueta}
-              rotuloAcessivel={fechado.rotulo}
-              onAbrir={() => continuar(segundo)}
-              onSegurar={segurar(menus.segundo as Abertura['menu'])}
-              {...acoesDe(menus.segundo as Abertura['menu'])}
-              posicao={{ left: 190, top: 96 }}
-              largura={CAPA.largura}
-              altura={CAPA.altura}
-              camada={4}
-              rotacao="9deg"
-              etiquetaEm={{ left: -28, top: -14 }}
-              rotacaoEtiqueta={giro.carimbo}
+          {vizinhos.map((v) => (
+            <BwVizinhoNaBorda
+              key={v.lado}
+              titulo={v.obra.titulo}
+              rotulo={v.textos.rotulo}
+              onTrazer={() => deslizar.passar(v.direcao)}
+              posicao={{
+                left:
+                  v.lado === 'anterior'
+                    ? PONTA_NA_BORDA - CAPA.largura
+                    : COMPOSICAO.largura - PONTA_NA_BORDA,
+                top: LUGAR_DO_LIVRO.top + (LIVRO.altura - CAPA.altura) / 2,
+                zIndex: 3,
+              }}
+              rotacao={v.lado === 'anterior' ? '6deg' : '-5deg'}
+            />
+          ))}
+
+          {carrossel.total > 1 && (
+            <View
+              accessible
+              accessibilityLabel={textosDaPosicao(carrossel.indice, carrossel.total)}
+              style={estilos.marcadores}
             >
-              <BwCapaFechada titulo={segundo.titulo} />
-            </BwObjetoMesa>
+              {mesa.livros.map((o, i) => (
+                <BwMarcadorDeFita key={o.id} atual={i === carrossel.indice} />
+              ))}
+            </View>
           )}
 
           {principal && livro && (
-            <BwObjetoMesa
-              chave={`/leitor/${principal.id}`}
-              etiqueta={livro.etiqueta}
-              etiquetaEmDestaque
-              rotuloAcessivel={livro.rotulo}
-              onAbrir={() => continuar(principal)}
-              onSegurar={segurar(menus.principal as Abertura['menu'])}
-              {...acoesDe(menus.principal as Abertura['menu'])}
-              posicao={{ left: 30, top: 198 }}
-              largura={LIVRO.largura}
-              altura={LIVRO.altura}
-              camada={10}
-              rotacao="-2deg"
-              etiquetaEm={{ left: 18, bottom: -14 }}
-              rotacaoEtiqueta={espelhar(giro.rotulo)}
-            >
-              <BwLivroAberto
-                autor={principal.autor ?? 'lendo'}
-                titulo={principal.titulo}
-                folios={livro.folios}
-              />
-            </BwObjetoMesa>
+            <GestureDetector gesture={deslizar.gesto}>
+              <Animated.View style={[estilos.lugarDoLivro, deslizar.estilo]}>
+                <BwObjetoMesa
+                  chave={`/leitor/${principal.id}`}
+                  etiqueta={livro.etiqueta}
+                  etiquetaEmDestaque
+                  rotuloAcessivel={livro.rotulo}
+                  onAbrir={() => continuar(principal)}
+                  onSegurar={segurar(menus.principal as Abertura['menu'])}
+                  {...acoesDe(menus.principal as Abertura['menu'])}
+                  posicao={{ left: 0, top: 0 }}
+                  largura={LIVRO.largura}
+                  altura={LIVRO.altura}
+                  camada={10}
+                  rotacao="-2deg"
+                  etiquetaEm={{ left: 18, bottom: -14 }}
+                  rotacaoEtiqueta={espelhar(giro.rotulo)}
+                >
+                  <BwLivroAberto
+                    autor={principal.autor ?? 'lendo'}
+                    titulo={principal.titulo}
+                    folios={livro.folios}
+                  />
+                </BwObjetoMesa>
+              </Animated.View>
+            </GestureDetector>
           )}
 
           <BwLugarReservado
@@ -436,6 +470,25 @@ const estilos = StyleSheet.create((theme) => ({
     paddingHorizontal: theme.esp[3],
     transform: [{ rotate: giro.rotulo }],
     boxShadow: theme.sup.mesa.sombra.pousado,
+  },
+  lugarDoLivro: {
+    position: 'absolute',
+    ...LUGAR_DO_LIVRO,
+    width: LIVRO.largura,
+    height: LIVRO.altura,
+    zIndex: 10,
+  },
+  // Os marcadores dizem quantos livros estão em leitura e qual está aberto: fitinhas de pano
+  // presas acima do livro, a do aberto em latão.
+  marcadores: {
+    position: 'absolute',
+    left: LUGAR_DO_LIVRO.left,
+    width: LIVRO.largura,
+    top: LUGAR_DO_LIVRO.top - 27,
+    zIndex: 4,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: theme.esp[2],
   },
   saudacao: {
     ...tipo.etiquetaManuscrita,
