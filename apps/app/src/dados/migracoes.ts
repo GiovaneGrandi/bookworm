@@ -54,6 +54,9 @@ export const MIGRACOES: readonly string[] = [
     PRIMARY KEY (parede_id, obra_id)
   );
   `,
+  `
+  ALTER TABLE parede ADD COLUMN favorita INTEGER NOT NULL DEFAULT 0;
+  `,
 ];
 
 export function migrar(banco: SQLiteDatabase): void {

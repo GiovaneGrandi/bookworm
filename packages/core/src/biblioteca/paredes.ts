@@ -24,3 +24,13 @@ export function limparNomeDeParede(nome: string): string | null {
 export function alternarNaEscolha(escolha: readonly string[], id: string): string[] {
   return escolha.includes(id) ? escolha.filter((x) => x !== id) : [...escolha, id];
 }
+
+/**
+ * A parede que a estante mostra ao ser aberta pelo menu: a favorita, se houver; senão, a estante
+ * inteira (null). Só uma parede é favorita por vez.
+ */
+export function paredeAoEntrar(
+  paredes: readonly { id: string; favorita: boolean }[]
+): string | null {
+  return paredes.find((p) => p.favorita)?.id ?? null;
+}

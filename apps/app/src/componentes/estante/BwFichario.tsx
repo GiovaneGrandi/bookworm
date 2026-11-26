@@ -58,16 +58,19 @@ type Gaveta = {
   paredeId: string | null;
   onParede: (id: string | null) => void;
   onNovaParede: () => void;
+  onEditarParede: (id: string) => void;
+  onFavoritarParede: (id: string | null) => void;
   onTirarParede: (id: string) => void;
 };
 
 /** A gaveta puxada: três fichas, uma atrás da outra, cada uma com a sua aba. */
 export function BwGavetaDoFichario(g: Gaveta) {
   const { bottom } = useSafeAreaInsets();
-  const [tirando, setTirando] = useState<string | null>(null);
+  // A parede segurada mostra as suas ações; "tirando" pede a confirmação antes de tirar.
+  const [segurada, setSegurada] = useState<{ id: string; tirando: boolean } | null>(null);
 
   function fechar() {
-    setTirando(null);
+    setSegurada(null);
     g.onFechar();
   }
 
@@ -136,36 +139,69 @@ export function BwGavetaDoFichario(g: Gaveta) {
               escolhida={g.paredeId === null}
               onEscolher={() => g.onParede(null)}
             />
-            {g.paredes.map((p) =>
-              tirando === p.id ? (
-                <View key={p.id} style={estilos.confirmar}>
-                  <Text style={estilos.aviso}>
-                    Tirar a parede “{p.nome}”? Os livros ficam na estante.
-                  </Text>
-                  <View style={estilos.botoes}>
-                    <BwBotao rotulo="Manter" onPress={() => setTirando(null)} />
-                    <BwBotao
-                      variante="primario"
-                      rotulo="Tirar"
-                      onPress={() => {
-                        setTirando(null);
-                        g.onTirarParede(p.id);
-                      }}
-                    />
-                  </View>
-                </View>
-              ) : (
+            {g.paredes.map((p) => (
+              <View key={p.id}>
                 <LinhaDeParede
-                  key={p.id}
                   nome={p.nome}
                   cor={p.cor}
                   conta={p.obras.length}
+                  favorita={p.favorita}
                   escolhida={g.paredeId === p.id}
                   onEscolher={() => g.onParede(p.id)}
-                  onSegurar={() => setTirando(p.id)}
+                  onSegurar={() => setSegurada({ id: p.id, tirando: false })}
                 />
-              )
-            )}
+                {segurada?.id === p.id &&
+                  (segurada.tirando ? (
+                    <View style={estilos.confirmar}>
+                      <Text style={estilos.aviso}>
+                        Tirar a parede “{p.nome}”? Os livros ficam na estante.
+                      </Text>
+                      <View style={estilos.botoes}>
+                        <BwBotao rotulo="Manter" onPress={() => setSegurada(null)} />
+                        <BwBotao
+                          variante="primario"
+                          rotulo="Tirar"
+                          onPress={() => {
+                            setSegurada(null);
+                            g.onTirarParede(p.id);
+                          }}
+                        />
+                      </View>
+                    </View>
+                  ) : (
+                    <View style={estilos.confirmar}>
+                      <View style={estilos.botoes}>
+                        <BwBotao
+                          rotulo="Editar"
+                          onPress={() => {
+                            setSegurada(null);
+                            g.onEditarParede(p.id);
+                          }}
+                        />
+                        <BwBotao
+                          rotulo={p.favorita ? 'Desfavoritar' : 'Favoritar'}
+                          rotuloAcessivel={
+                            p.favorita
+                              ? 'Deixar de ser a favorita'
+                              : 'Favoritar: a estante abre nesta parede'
+                          }
+                          onPress={() => {
+                            setSegurada(null);
+                            g.onFavoritarParede(p.favorita ? null : p.id);
+                          }}
+                        />
+                        <BwBotao
+                          rotulo="Tirar"
+                          onPress={() => setSegurada({ id: p.id, tirando: true })}
+                        />
+                      </View>
+                      <Text style={estilos.lapisPapel}>
+                        a favorita é a que abre quando você entra na estante
+                      </Text>
+                    </View>
+                  ))}
+              </View>
+            ))}
             <Pressable
               onPress={g.onNovaParede}
               accessibilityRole="button"
@@ -175,7 +211,9 @@ export function BwGavetaDoFichario(g: Gaveta) {
             </Pressable>
           </Ficha>
 
-          {g.paredes.length > 0 && <Text style={estilos.dica}>segure uma parede para tirá-la</Text>}
+          {g.paredes.length > 0 && (
+            <Text style={estilos.dica}>segure uma parede para editar, favoritar ou tirar</Text>
+          )}
           <BwBotao rotulo="Fechar a gaveta" onPress={fechar} />
         </ScrollView>
       </View>
@@ -200,6 +238,7 @@ function LinhaDeParede({
   nome,
   cor,
   conta,
+  favorita = false,
   escolhida,
   onEscolher,
   onSegurar,
@@ -207,6 +246,7 @@ function LinhaDeParede({
   nome: string;
   cor?: ParedePropria['cor'];
   conta?: number;
+  favorita?: boolean;
   escolhida: boolean;
   onEscolher: () => void;
   onSegurar?: () => void;
@@ -218,8 +258,10 @@ function LinhaDeParede({
       delayLongPress={420}
       accessibilityRole="radio"
       accessibilityState={{ checked: escolhida }}
-      accessibilityLabel={conta === undefined ? nome : `${nome}, ${conta} livros`}
-      accessibilityHint={onSegurar ? 'Segure para tirar a parede' : undefined}
+      accessibilityLabel={
+        conta === undefined ? nome : `${nome}, ${conta} livros${favorita ? ', favorita' : ''}`
+      }
+      accessibilityHint={onSegurar ? 'Segure para editar, favoritar ou tirar' : undefined}
       style={({ pressed }) => [estilos.linha, pressed && estilos.tocada]}
     >
       <View style={estilos.nomeDaParede}>
@@ -227,6 +269,7 @@ function LinhaDeParede({
         <Text numberOfLines={1} style={estilos.textoLinha}>
           {nome}
         </Text>
+        {favorita && <Text style={estilos.favorita}>★ favorita</Text>}
       </View>
       <Text style={[estilos.conta, escolhida && estilos.aqui]}>
         {escolhida ? 'aqui' : (conta ?? '')}
@@ -456,7 +499,16 @@ const estilos = StyleSheet.create((theme) => ({
   },
   botoes: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: theme.esp[3],
+  },
+  favorita: {
+    ...tipo.kicker,
+    color: theme.sup.papel.acento,
+  },
+  lapisPapel: {
+    ...tipo.marginalia,
+    color: theme.sup.papel.tintaFraca,
   },
   dica: {
     ...tipo.marginalia,

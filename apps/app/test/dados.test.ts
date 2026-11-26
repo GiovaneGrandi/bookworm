@@ -21,6 +21,9 @@ function colunasDasMigracoes(): Map<string, string[]> {
         .map((l) => l.split(' ')[0] ?? '');
       tabelas.set(m[1] ?? '', colunas);
     }
+    for (const m of sql.matchAll(/ALTER TABLE (\w+) ADD COLUMN (\w+)/g)) {
+      tabelas.get(m[1] ?? '')?.push(m[2] ?? '');
+    }
   }
   return tabelas;
 }
@@ -42,6 +45,9 @@ describe('paredes próprias (fichário)', () => {
     expect(sql).toMatch(
       /cor TEXT NOT NULL[\s\S]*CHECK \(cor IN \('mesa', 'vinho', 'prussia', 'terra', 'grafite'\)\)/
     );
+  });
+  it('a favorita nasce desmarcada', () => {
+    expect(sql).toMatch(/ALTER TABLE parede ADD COLUMN favorita INTEGER NOT NULL DEFAULT 0/);
   });
   it('tirar a obra ou a parede leva junto o vínculo, nunca o livro', () => {
     expect(sql).toMatch(/parede_id TEXT NOT NULL REFERENCES parede\(id\) ON DELETE CASCADE/);

@@ -10,7 +10,7 @@ import { useState } from 'react';
 import { Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
-import { criarParede } from '../../dados/paredes';
+import { criarParede, editarParede, type ParedePropria } from '../../dados/paredes';
 import type { Obra } from '../../dados/schema';
 import { ALVO_MINIMO, raio } from '../../tema/geometria';
 import { tipo } from '../../tema/tipografia';
@@ -28,23 +28,27 @@ const NOME_DA_TINTA: Record<CorDeParede, string> = {
 /**
  * Pendurar uma parede nova, em dois passos: o nome numa placa e a tinta da parede; depois, a
  * estante inteira para marcar os livros que vão nela. A parede pintada aparece desde o começo.
+ * Com `editando`, é só o primeiro passo, já preenchido: trocar o nome e a tinta e salvar.
+ * Quem usa dá uma `key` por parede, para o estado nascer dela.
  */
 export function BwParedeNova({
   aberta,
   obras,
+  editando = null,
   onCancelar,
   onPendurada,
 }: {
   aberta: boolean;
   obras: readonly Obra[];
+  editando?: ParedePropria | null;
   onCancelar: () => void;
   onPendurada: (id: string) => void;
 }) {
   const { theme } = useUnistyles();
   const { top, bottom } = useSafeAreaInsets();
   const [passo, setPasso] = useState<'nome' | 'livros'>('nome');
-  const [nome, setNome] = useState('');
-  const [cor, setCor] = useState<CorDeParede>('vinho');
+  const [nome, setNome] = useState(editando?.nome ?? '');
+  const [cor, setCor] = useState<CorDeParede>(editando?.cor ?? 'vinho');
   const [termo, setTermo] = useState('');
   const [escolha, setEscolha] = useState<string[]>([]);
 
@@ -62,6 +66,12 @@ export function BwParedeNova({
   function cancelar() {
     recomecar();
     onCancelar();
+  }
+
+  function salvar() {
+    if (!nomeLimpo || !editando) return;
+    editarParede(editando.id, nomeLimpo, cor);
+    onPendurada(editando.id);
   }
 
   function pendurar() {
@@ -88,7 +98,9 @@ export function BwParedeNova({
           >
             <Text style={estilos.kicker}>{passo === 'livros' ? '← Voltar' : 'Cancelar'}</Text>
           </Pressable>
-          <Text style={estilos.kickerFraco}>Nova parede · {passo === 'nome' ? 1 : 2} de 2</Text>
+          <Text style={estilos.kickerFraco}>
+            {editando ? 'Editar parede' : `Nova parede · ${passo === 'nome' ? 1 : 2} de 2`}
+          </Text>
         </View>
 
         {passo === 'nome' ? (
@@ -107,7 +119,11 @@ export function BwParedeNova({
                 maxLength={NOME_DE_PAREDE_MAX}
                 autoFocus
                 returnKeyType="next"
-                onSubmitEditing={() => nomeLimpo && setPasso('livros')}
+                onSubmitEditing={() => {
+                  if (!nomeLimpo) return;
+                  if (editando) salvar();
+                  else setPasso('livros');
+                }}
                 style={estilos.campoNome}
               />
             </View>
@@ -115,7 +131,11 @@ export function BwParedeNova({
             <View style={estilos.giz}>
               <View style={estilos.prateleiraDeGiz} />
               <View style={estilos.prateleiraDeGiz} />
-              <Text style={estilos.lapis}>os livros entram no próximo passo</Text>
+              <Text style={estilos.lapis}>
+                {editando
+                  ? 'os livros continuam; para trocá-los, segure um livro na estante'
+                  : 'os livros entram no próximo passo'}
+              </Text>
             </View>
 
             <Text style={estilos.kicker}>Cor da parede</Text>
@@ -171,7 +191,14 @@ export function BwParedeNova({
         )}
 
         <View style={[estilos.chao, { paddingBottom: bottom + 18 }]}>
-          {passo === 'nome' ? (
+          {editando ? (
+            <BwBotao
+              variante="primario"
+              rotulo="Salvar a parede"
+              estado={nomeLimpo ? 'repouso' : 'desabilitado'}
+              onPress={salvar}
+            />
+          ) : passo === 'nome' ? (
             <BwBotao
               variante="primario"
               rotulo="Escolher os livros →"

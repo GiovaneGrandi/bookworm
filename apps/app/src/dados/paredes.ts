@@ -10,6 +10,7 @@ export type ParedePropria = {
   id: string;
   nome: string;
   cor: CorDeParede;
+  favorita: boolean;
   obras: string[];
 };
 
@@ -23,6 +24,7 @@ export function useParedes(): ParedePropria[] {
         id: p.id,
         nome: p.nome,
         cor: p.cor,
+        favorita: p.favorita,
         obras: (vinculos ?? []).filter((v) => v.paredeId === p.id).map((v) => v.obraId),
       })),
     [paredes, vinculos]
@@ -60,4 +62,19 @@ export function tirarDaParede(paredeId: string, obraId: string): void {
 /** Tira a parede inteira; os livros ficam na estante. */
 export function tirarParede(paredeId: string): void {
   db.delete(parede).where(eq(parede.id, paredeId)).run();
+}
+
+/** Troca o nome e a tinta da parede; os livros pendurados ficam como estão. */
+export function editarParede(id: string, nome: string, cor: CorDeParede): void {
+  const limpo = limparNomeDeParede(nome);
+  if (!limpo) throw new Error('A parede precisa de um nome.');
+  db.update(parede).set({ nome: limpo, cor }).where(eq(parede.id, id)).run();
+}
+
+/** Marca a parede como favorita, desmarcando a anterior; null deixa a estante sem favorita. */
+export function favoritarParede(id: string | null): void {
+  db.transaction((tx) => {
+    tx.update(parede).set({ favorita: false }).where(eq(parede.favorita, true)).run();
+    if (id) tx.update(parede).set({ favorita: true }).where(eq(parede.id, id)).run();
+  });
 }

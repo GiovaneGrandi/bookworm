@@ -5,6 +5,7 @@ import {
   type FiltroDeEstado,
   type OrdemDaEstante,
   obrasNaEstante,
+  paredeAoEntrar,
 } from '@bookworm/core';
 import { Canvas, Circle, Line, vec } from '@shopify/react-native-skia';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -23,7 +24,13 @@ import { BwParedeNova } from '../src/componentes/estante/BwParedeNova';
 import { BwCapaNaParede, BwPrateleiras } from '../src/componentes/estante/BwPrateleiras';
 import { usePousarNaMesa } from '../src/componentes/usePousarNaMesa';
 import { marcarAberta, pausar, tirarDaGaveta, useObras } from '../src/dados/obras';
-import { porNaParede, tirarDaParede, tirarParede, useParedes } from '../src/dados/paredes';
+import {
+  favoritarParede,
+  porNaParede,
+  tirarDaParede,
+  tirarParede,
+  useParedes,
+} from '../src/dados/paredes';
 import type { Obra } from '../src/dados/schema';
 import { fichaDaFrente, marcaDaCapa, rodapeDaEstante } from '../src/estante';
 import { espelhar, giro } from '../src/tema/geometria';
@@ -54,7 +61,9 @@ export default function Gaveta() {
   const paredes = useParedes();
   const [ordem, setOrdem] = useState<OrdemDaEstante>('az');
   const [estado, setEstado] = useState<FiltroDeEstado>('todos');
-  const [paredeId, setParedeId] = useState<string | null>(null);
+  // undefined: a leitora ainda não escolheu parede nesta visita, então vale a favorita.
+  const [paredeId, setParedeId] = useState<string | null | undefined>(undefined);
+  const [editandoId, setEditandoId] = useState<string | null>(null);
   const [termo, setTermo] = useState('');
   const [fichario, setFichario] = useState(false);
   const [criando, setCriando] = useState(false);
@@ -64,7 +73,9 @@ export default function Gaveta() {
   // Aberta pela mesa, a estante é a parede da esquerda e volta com a câmera girando de volta.
   const pousar = usePousarNaMesa(theme.sup.papel.fundo, virada ? desvirar : undefined);
 
-  const parede = paredes.find((p) => p.id === paredeId) ?? null;
+  const escolhida = paredeId === undefined ? paredeAoEntrar(paredes) : paredeId;
+  const parede = paredes.find((p) => p.id === escolhida) ?? null;
+  const editando = paredes.find((p) => p.id === editandoId) ?? null;
   const naParede = parede?.obras ?? null;
   const naEstante = obrasNaEstante(obras, ordem, termo, { estado, naParede });
   const contagem = contarPorEstado(parede ? obras.filter((o) => naParede?.includes(o.id)) : obras);
@@ -223,7 +234,7 @@ export default function Gaveta() {
         ordem={ordem}
         onOrdem={setOrdem}
         paredes={paredes}
-        paredeId={paredeId}
+        paredeId={escolhida}
         onParede={(id) => {
           setParedeId(id);
           setFichario(false);
@@ -232,8 +243,13 @@ export default function Gaveta() {
           setFichario(false);
           setCriando(true);
         }}
+        onEditarParede={(id) => {
+          setFichario(false);
+          setEditandoId(id);
+        }}
+        onFavoritarParede={favoritarParede}
         onTirarParede={(id) => {
-          if (id === paredeId) setParedeId(null);
+          if (id === escolhida) setParedeId(null);
           tirarParede(id);
         }}
       />
@@ -247,6 +263,16 @@ export default function Gaveta() {
           setParedeId(id);
         }}
       />
+      {editando && (
+        <BwParedeNova
+          key={editando.id}
+          aberta
+          obras={obras}
+          editando={editando}
+          onCancelar={() => setEditandoId(null)}
+          onPendurada={() => setEditandoId(null)}
+        />
+      )}
     </Animated.View>
   );
 }

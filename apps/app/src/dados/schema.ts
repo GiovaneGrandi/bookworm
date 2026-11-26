@@ -59,6 +59,8 @@ export const parede = sqliteTable('parede', {
   nome: text('nome').notNull(),
   cor: text('cor').$type<CorDeParede>().notNull(),
   criadaEm: integer('criada_em').notNull(),
+  /** A parede que abre quando se entra na estante pelo menu; só uma por vez. */
+  favorita: integer('favorita', { mode: 'boolean' }).notNull().default(false),
 });
 
 export const paredeObra = sqliteTable(

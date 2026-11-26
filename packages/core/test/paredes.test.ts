@@ -4,6 +4,7 @@ import {
   CORES_DE_PAREDE,
   limparNomeDeParede,
   NOME_DE_PAREDE_MAX,
+  paredeAoEntrar,
 } from '../src/index';
 
 describe('Parede própria · nome', () => {
@@ -34,5 +35,21 @@ describe('Parede própria · cor e escolha dos livros', () => {
     expect(duas).toEqual(['a', 'b']);
     expect(alternarNaEscolha(duas, 'a')).toEqual(['b']);
     expect(uma).toEqual(['a']);
+  });
+});
+
+describe('Parede própria · a favorita é a que abre', () => {
+  const paredes = [
+    { id: 'a', favorita: false },
+    { id: 'b', favorita: true },
+  ];
+
+  it('entrar na estante abre a parede favorita', () => {
+    expect(paredeAoEntrar(paredes)).toBe('b');
+  });
+
+  it('sem favorita, abre a estante inteira', () => {
+    expect(paredeAoEntrar([{ id: 'a', favorita: false }])).toBeNull();
+    expect(paredeAoEntrar([])).toBeNull();
   });
 });
