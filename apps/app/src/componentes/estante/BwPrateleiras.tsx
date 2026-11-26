@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { type ReactNode, useState } from 'react';
 import { type GestureResponderEvent, Pressable, Text, View } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 import type { Obra } from '../../dados/schema';
@@ -9,6 +9,10 @@ import { tipo, tipoMiniatura } from '../../tema/tipografia';
 export const POR_PRATELEIRA = 3;
 /** Os lugares vazios da última prateleira, para as capas não esticarem. */
 const VAOS = ['vao-1', 'vao-2'] as const;
+/** Antes de medir a fileira, quem cai começa bem acima, fora de vista. */
+const QUEDA_SEM_MEDIDA = 2000;
+/** Folga acima do alto da estante, para a capa começar inteira fora de vista. */
+const FOLGA_DA_QUEDA = 54;
 
 /**
  * As prateleiras presas na parede (direção B): três capas de frente por prateleira, cada fileira
@@ -19,29 +23,41 @@ export function BwPrateleiras({
   capa,
 }: {
   obras: readonly Obra[];
-  capa: (obra: Obra) => ReactNode;
+  /** `queda`: de quanto a capa sobe para ficar acima do alto da estante (ver BwChegada). */
+  capa: (obra: Obra, queda: number) => ReactNode;
 }) {
+  const [fundos, setFundos] = useState<Record<string, number>>({});
   const fileiras: Obra[][] = [];
   for (let i = 0; i < obras.length; i += POR_PRATELEIRA) {
     fileiras.push(obras.slice(i, i + POR_PRATELEIRA));
   }
   return (
     <View style={estilos.prateleiras}>
-      {fileiras.map((livros) => (
-        <View key={livros.map((o) => o.id).join()}>
-          <View style={estilos.fileira}>
-            {livros.map((o) => (
-              <View key={o.id} style={estilos.lugar}>
-                {capa(o)}
-              </View>
-            ))}
-            {VAOS.slice(0, POR_PRATELEIRA - livros.length).map((v) => (
-              <View key={v} style={estilos.lugar} />
-            ))}
+      {fileiras.map((livros) => {
+        const chave = livros.map((o) => o.id).join();
+        const queda = fundos[chave] ?? QUEDA_SEM_MEDIDA;
+        return (
+          <View
+            key={chave}
+            onLayout={({ nativeEvent: { layout } }) => {
+              const fundo = layout.y + layout.height + FOLGA_DA_QUEDA;
+              setFundos((f) => (f[chave] === fundo ? f : { ...f, [chave]: fundo }));
+            }}
+          >
+            <View style={estilos.fileira}>
+              {livros.map((o) => (
+                <View key={o.id} style={estilos.lugar}>
+                  {capa(o, queda)}
+                </View>
+              ))}
+              {VAOS.slice(0, POR_PRATELEIRA - livros.length).map((v) => (
+                <View key={v} style={estilos.lugar} />
+              ))}
+            </View>
+            <View style={estilos.tabua} />
           </View>
-          <View style={estilos.tabua} />
-        </View>
-      ))}
+        );
+      })}
     </View>
   );
 }

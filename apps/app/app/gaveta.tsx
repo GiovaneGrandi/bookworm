@@ -9,15 +9,17 @@ import {
 } from '@bookworm/core';
 import { Canvas, Circle, Line, vec } from '@shopify/react-native-skia';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { type GestureResponderEvent, ScrollView, Text, TextInput, View } from 'react-native';
-import Animated from 'react-native-reanimated';
+import Animated, { useReducedMotion } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
+import { CHEGADA, horariosDaChegada } from '../src/chegada';
 import { BwBarraDeNavegacao } from '../src/componentes/BwBarraDeNavegacao';
 import { BwBotao } from '../src/componentes/BwBotao';
 import { BwMenuRapido, type ItemDoMenu, type MenuRapido } from '../src/componentes/BwMenuRapido';
 import { useParedeDaCamera, useTransicaoDaMesa } from '../src/componentes/BwTransicaoDaMesa';
+import { BwChegada } from '../src/componentes/estante/BwChegada';
 import { BwFichario, BwGavetaDoFichario } from '../src/componentes/estante/BwFichario';
 import { ALTURA_DA_JIBOIA, BwJiboia, LARGURA_DA_JIBOIA } from '../src/componentes/estante/BwJiboia';
 import { BwParedeNova } from '../src/componentes/estante/BwParedeNova';
@@ -80,6 +82,24 @@ export default function Gaveta() {
   const naEstante = obrasNaEstante(obras, ordem, termo, { estado, naParede });
   const contagem = contarPorEstado(parede ? obras.filter((o) => naParede?.includes(o.id)) : obras);
   const vazia = obras.every((o) => o.estado === 'abandonado');
+
+  // Ao abrir, os livros chegam caindo, uma vez só: quando a primeira leva aparece. Trocar
+  // filtro, ordem ou parede depois disso reorganiza sem queda. Com o movimento reduzido, não caem.
+  const reduzir = useReducedMotion();
+  const [montada] = useState(() => Date.now());
+  const chegada = useRef<Map<string, number> | null>(null);
+  if (chegada.current === null && naEstante.length > 0) {
+    const agora = Date.now();
+    const tarde = agora - montada > CHEGADA.prazo;
+    const espera = virada ? CHEGADA.esperaDoGiro : CHEGADA.esperaDaFolha;
+    chegada.current =
+      reduzir || tarde
+        ? new Map()
+        : horariosDaChegada(
+            naEstante.map((o) => o.id),
+            agora + espera
+          );
+  }
 
   function abrir(o: Obra) {
     marcarAberta(o.id);
@@ -197,8 +217,10 @@ export default function Gaveta() {
             <>
               <BwPrateleiras
                 obras={naEstante}
-                capa={(o) => (
-                  <BwCapaNaParede obra={o} onAbrir={() => abrir(o)} onSegurar={segurar(o)} />
+                capa={(o, queda) => (
+                  <BwChegada hora={chegada.current?.get(o.id)} queda={queda}>
+                    <BwCapaNaParede obra={o} onAbrir={() => abrir(o)} onSegurar={segurar(o)} />
+                  </BwChegada>
                 )}
               />
               <Text style={estilos.contagem}>
