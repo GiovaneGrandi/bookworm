@@ -74,14 +74,14 @@ describe('RN-02.6a · a gaveta mostra o que ainda vai ser lido', () => {
 });
 
 describe('RN-DV.4 · a mesa guarda só o que está em uso', () => {
-  it('pousa no máximo os 2 livros "lendo" abertos mais recentemente', () => {
+  it('traz todos os livros "lendo", do aberto mais recentemente ao mais antigo', () => {
     const mesa = objetosNaMesa([
       obra('l1', 'lendo', 10),
       obra('l2', 'lendo', 30),
       obra('l3', 'lendo', 20),
       obra('p1', 'em_pausa', 99),
     ]);
-    expect(mesa.livros.map((o) => o.id)).toEqual(['l2', 'l3']);
+    expect(mesa.livros.map((o) => o.id)).toEqual(['l2', 'l3', 'l1']);
   });
 
   it('conta a gaveta por grupo', () => {

@@ -46,12 +46,13 @@ export function agruparGaveta<T extends ObraNaBiblioteca>(
   }));
 }
 
-export const LIVROS_NA_MESA = 2;
-
-/** O que está pousado na mesa (RN-DV.4) e o que a gaveta conta. */
+/**
+ * O que está na mesa (RN-DV.4) e o que a gaveta conta. `livros` são todos os "lendo", do aberto
+ * mais recentemente ao mais antigo: um fica aberto e os outros se alcançam deslizando o livro.
+ */
 export function objetosNaMesa<T extends ObraNaBiblioteca>(obras: readonly T[]) {
   const [lendo, emPausa, queroLer] = agruparGaveta(obras).map((g) => g.obras);
-  const livros = (lendo ?? []).slice(0, LIVROS_NA_MESA);
+  const livros = lendo ?? [];
   return {
     livros,
     vazia: livros.length === 0,

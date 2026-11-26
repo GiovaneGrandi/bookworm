@@ -1,11 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import {
+  carrosselDaMesa,
   encaixarComposicao,
   mesaEmLista,
   textosDaBandeja,
   textosDaBiblioteca,
+  textosDaPosicao,
   textosDoLivro,
-  textosDoSegundoLivro,
+  textosDoVizinho,
 } from '../src/mesa';
 import { corDaPoca } from '../src/tema/luz';
 
@@ -77,7 +79,6 @@ describe('RN-DV.3 · o livro aberto mostra título e página corrente', () => {
 describe('RN-DV.10 · o leitor de tela anuncia a etiqueta, seguida do estado', () => {
   const casos = [
     textosDoLivro(domCasmurro, 375_549),
-    textosDoSegundoLivro({ titulo: 'O cortiço', progresso: 0.12 }),
     textosDaBiblioteca({ lendo: 2, em_pausa: 1, quero_ler: 3, total: 6 }),
     textosDaBiblioteca({ lendo: 0, em_pausa: 0, quero_ler: 0, total: 0 }),
     textosDaBandeja(true),
@@ -126,11 +127,56 @@ describe('v2 · a composição da mesa cabe entre as áreas seguras', () => {
   });
 });
 
-describe('v2 · o segundo livro convida a abrir direto no leitor', () => {
-  it('a etiqueta ganha a seta', () => {
-    expect(textosDoSegundoLivro({ titulo: 'O médico e o monstro', progresso: 0.12 }).etiqueta).toBe(
-      'lendo · 12% ▸'
-    );
+describe('Deslizar o livro · qual dos livros em leitura fica aberto na mesa', () => {
+  const livros = ['a', 'b', 'c', 'd'].map((id) => ({ id }));
+  const ids = (c: {
+    anterior: { id: string } | null;
+    atual: { id: string } | null;
+    proximo: { id: string } | null;
+  }) => [c.anterior?.id ?? null, c.atual?.id ?? null, c.proximo?.id ?? null];
+
+  it('sem escolha, fica aberto o lido mais recentemente', () => {
+    const c = carrosselDaMesa(livros, null);
+    expect(c.atual?.id).toBe('a');
+    expect(c.indice).toBe(0);
+    expect(c.total).toBe(4);
+  });
+
+  it('o escolhido fica aberto, entre os vizinhos', () => {
+    expect(ids(carrosselDaMesa(livros, 'b'))).toEqual(['a', 'b', 'c']);
+  });
+
+  it('com 3 ou mais, dá a volta nas pontas', () => {
+    expect(ids(carrosselDaMesa(livros, 'a'))).toEqual(['d', 'a', 'b']);
+    expect(ids(carrosselDaMesa(livros, 'd'))).toEqual(['c', 'd', 'a']);
+  });
+
+  it('com 2, não dá a volta: o outro fica só de um lado', () => {
+    const dois = livros.slice(0, 2);
+    expect(ids(carrosselDaMesa(dois, 'a'))).toEqual([null, 'a', 'b']);
+    expect(ids(carrosselDaMesa(dois, 'b'))).toEqual(['a', 'b', null]);
+  });
+
+  it('com 1, não há vizinhos; sem nenhum, a mesa está vazia', () => {
+    expect(ids(carrosselDaMesa(livros.slice(0, 1), null))).toEqual([null, 'a', null]);
+    expect(ids(carrosselDaMesa([], null))).toEqual([null, null, null]);
+  });
+
+  it('se o escolhido saiu da leitura (pausado, concluído), volta ao mais recente', () => {
+    expect(carrosselDaMesa(livros, 'sumiu').atual?.id).toBe('a');
+  });
+
+  it('o leitor de tela ouve qual livro é e quantos são', () => {
+    expect(textosDaPosicao(1, 4)).toBe('Livro 2 de 4 em leitura');
+  });
+
+  it('a capa na borda diz para onde leva', () => {
+    const o = { titulo: 'O  cortiço', progresso: 0.12 };
+    expect(textosDoVizinho(o, 'proximo')).toEqual({
+      menu: 'Próximo: O cortiço',
+      rotulo: 'Próximo livro em leitura: O cortiço, 12% lido. Toque para pôr na mesa',
+    });
+    expect(textosDoVizinho(o, 'anterior').menu).toBe('Anterior: O cortiço');
   });
 });
 

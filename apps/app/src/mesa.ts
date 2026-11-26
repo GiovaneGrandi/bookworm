@@ -59,11 +59,42 @@ export function textosDoLivro(
   };
 }
 
-/** O segundo livro em leitura, fechado sobre a mesa (RN-DV.4). */
-export function textosDoSegundoLivro(obra: { titulo: string; progresso: number }): Textos {
+/**
+ * Deslizar o livro: entre os livros em leitura, qual fica aberto na mesa e quem aparece pela
+ * metade em cada borda. Com 3 ou mais, as pontas se encontram; com 2, o outro fica de um lado só.
+ * Se o escolhido saiu da leitura, volta ao lido mais recentemente.
+ */
+export function carrosselDaMesa<T extends { id: string }>(
+  livros: readonly T[],
+  escolhido: string | null
+): { atual: T | null; indice: number; total: number; anterior: T | null; proximo: T | null } {
+  const total = livros.length;
+  const achado = livros.findIndex((o) => o.id === escolhido);
+  const indice = Math.max(achado, 0);
+  const em = (i: number) => livros[(i + total) % total] ?? null;
+  const daVolta = total >= 3;
   return {
-    etiqueta: `lendo · ${pct(obra.progresso)}% ▸`,
-    rotulo: `Lendo ${umaLinha(obra.titulo)}, ${pct(obra.progresso)}% lido. Continuar lendo`,
+    atual: livros[indice] ?? null,
+    indice,
+    total,
+    anterior: total < 2 || (!daVolta && indice === 0) ? null : em(indice - 1),
+    proximo: total < 2 || (!daVolta && indice === total - 1) ? null : em(indice + 1),
+  };
+}
+
+export const textosDaPosicao = (indice: number, total: number) =>
+  `Livro ${indice + 1} de ${total} em leitura`;
+
+/** A capa que aparece pela metade na borda da mesa, e o atalho no menu do livro aberto. */
+export function textosDoVizinho(
+  obra: { titulo: string; progresso: number },
+  lado: 'anterior' | 'proximo'
+): { menu: string; rotulo: string } {
+  const titulo = umaLinha(obra.titulo);
+  const nome = lado === 'proximo' ? 'Próximo' : 'Anterior';
+  return {
+    menu: `${nome}: ${titulo}`,
+    rotulo: `${nome} livro em leitura: ${titulo}, ${pct(obra.progresso)}% lido. Toque para pôr na mesa`,
   };
 }
 
