@@ -1,5 +1,5 @@
 import { type ReactNode, useCallback } from 'react';
-import { Pressable, View, type ViewStyle } from 'react-native';
+import { type GestureResponderEvent, Pressable, View, type ViewStyle } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 import { ALVO_MINIMO, type Giro } from '../tema/geometria';
 import { BwEtiqueta } from './BwEtiqueta';
@@ -15,6 +15,11 @@ type Props = {
   /** O que o leitor de tela anuncia: a etiqueta e o estado da função (RN-DS.12, RN-DV.3). */
   rotuloAcessivel: string;
   onAbrir: () => void;
+  /** Toque longo (v2): o menu rápido do objeto. */
+  onSegurar?: (e: GestureResponderEvent) => void;
+  /** Os atalhos do menu rápido, também oferecidos como ações ao leitor de tela. */
+  acoes?: { nome: string; rotulo: string }[];
+  onAcao?: (nome: string) => void;
   /** Posição e tamanho sobre o feltro: composição livre, fora da escala tônica (RN-DV.8). */
   posicao: ViewStyle;
   largura: number;
@@ -22,6 +27,8 @@ type Props = {
   /** Ordem de empilhamento do mockup B: quem fica por cima de quem. */
   camada: number;
   rotacao?: string;
+  /** O objeto desenhado em outra escala (v2: a bandeja e o fichário encolhem). */
+  escala?: number;
   /** Onde a etiqueta fica presa ao objeto, como no mockup B. */
   etiquetaEm: ViewStyle;
   rotacaoEtiqueta?: Giro | string;
@@ -35,11 +42,15 @@ export function BwObjetoMesa({
   etiquetaEmDestaque = false,
   rotuloAcessivel,
   onAbrir,
+  onSegurar,
+  acoes,
+  onAcao,
   posicao,
   largura,
   altura,
   camada,
   rotacao = '0deg',
+  escala = 1,
   etiquetaEm,
   rotacaoEtiqueta,
   children,
@@ -51,13 +62,29 @@ export function BwObjetoMesa({
     <Pressable
       ref={lugar}
       onPress={onAbrir}
+      onLongPress={onSegurar}
+      delayLongPress={420}
       accessibilityRole="button"
       accessibilityLabel={rotuloAcessivel}
-      style={[estilos.objeto, posicao, { width: largura, height: altura, zIndex: camada }]}
+      accessibilityActions={acoes?.map((a) => ({ name: a.nome, label: a.rotulo }))}
+      onAccessibilityAction={(e) => onAcao?.(e.nativeEvent.actionName)}
+      style={[
+        estilos.objeto,
+        posicao,
+        { width: largura * escala, height: altura * escala, zIndex: camada },
+      ]}
     >
       {({ pressed }) => (
         <View style={[estilos.giro, { transform: [{ rotate: rotacao }] }]}>
-          <View style={pressed ? estilos.pressionado : undefined}>{children}</View>
+          <View style={pressed ? estilos.pressionado : undefined}>
+            <View
+              style={
+                escala === 1 ? undefined : [estilos.escala, { transform: [{ scale: escala }] }]
+              }
+            >
+              {children}
+            </View>
+          </View>
           <View style={[estilos.etiqueta, etiquetaEm]}>
             <BwEtiqueta rotacao={rotacaoEtiqueta} destaque={etiquetaEmDestaque}>
               {etiqueta}
@@ -77,5 +104,6 @@ const estilos = StyleSheet.create({
   },
   giro: { flex: 1 },
   pressionado: { transform: [{ translateY: 2 }, { scale: 0.99 }] },
+  escala: { transformOrigin: 'left top' },
   etiqueta: { position: 'absolute' },
 });

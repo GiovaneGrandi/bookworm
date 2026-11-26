@@ -3,14 +3,13 @@ import { useWindowDimensions, type View } from 'react-native';
 import Animated, {
   Easing,
   runOnJS,
+  type SharedValue,
   useAnimatedStyle,
   useReducedMotion,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
-import { ALVO_MINIMO } from '../tema/geometria';
 
 /**
  * Erguer e pousar (RN-DV.2, mockup B): ao tocar um objeto da mesa, uma folha cresce do lugar
@@ -18,16 +17,25 @@ import { ALVO_MINIMO } from '../tema/geometria';
  * reduzido (RN-DS.14) a troca é imediata, como no mockup.
  */
 
-/** A folha ocupa a tela abaixo da faixa de feltro; o leitor, a tela inteira. */
-export type Alvo = 'folha' | 'tela';
 type Retangulo = { x: number; y: number; w: number; h: number };
 
 type Transicao = {
   registrar: (chave: string, objeto: View | null) => void;
   /** A tela erguida avisa que já foi desenhada por baixo da folha: só então a folha some. */
   chegou: () => void;
-  erguer: (chave: string, cor: string, alvo: Alvo, navegar: () => void) => void;
-  pousar: (chave: string, cor: string, alvo: Alvo, voltar: () => void) => void;
+  erguer: (chave: string, cor: string, navegar: () => void) => void;
+  pousar: (chave: string, cor: string, voltar: () => void) => void;
+  /**
+   * A virada de câmera da v2, só para a estante. Mesa e estante são duas paredes que se
+   * encontram num canto: a câmera gira para a esquerda e as duas andam juntas, num movimento
+   * só, até a estante ficar de frente. A estante abre por cima da mesa, transparente, para a
+   * mesa continuar à vista durante o giro.
+   */
+  virar: (navegar: () => void) => void;
+  /** A câmera volta para a mesa; `fim` roda quando ela estiver de frente. */
+  desvirar: (fim: () => void) => void;
+  /** 0 com a câmera na mesa, 1 com ela na estante. */
+  giro: SharedValue<number>;
 };
 
 const Contexto = createContext<Transicao | null>(null);
@@ -35,6 +43,11 @@ const Contexto = createContext<Transicao | null>(null);
 const ERGUER = { duration: 440, easing: Easing.bezier(0.2, 0.75, 0.2, 1) };
 const POUSAR = { duration: 380, easing: Easing.bezier(0.4, 0, 0.6, 1) };
 const SUMIR = { duration: 180 };
+// O giro da câmera: começa e termina devagar, como uma cabeça que vira.
+const GIRAR = { duration: 820, easing: Easing.bezier(0.45, 0, 0.2, 1) };
+/** Quanto cada parede gira em torno do canto, em graus, enquanto sai de quadro. */
+const ANGULO_DO_CANTO = 35;
+const PERSPECTIVA = 900;
 /** Se a tela nova não avisar que chegou, a folha some mesmo assim, para nunca ficar presa. */
 const ESPERA_MAXIMA_MS = 900;
 
@@ -43,7 +56,6 @@ export function BwTransicaoDaMesa({ children }: { children: ReactNode }) {
   const objetos = useRef(new Map<string, View>());
   const reduzir = useReducedMotion();
   const { width, height } = useWindowDimensions();
-  const { top } = useSafeAreaInsets();
 
   const x = useSharedValue(0);
   const y = useSharedValue(0);
@@ -51,6 +63,7 @@ export function BwTransicaoDaMesa({ children }: { children: ReactNode }) {
   const h = useSharedValue(0);
   const opacidade = useSharedValue(0);
   const cor = useSharedValue('transparent');
+  const giro = useSharedValue(0);
 
   const estilo = useAnimatedStyle(() => ({
     left: x.value,
@@ -61,13 +74,8 @@ export function BwTransicaoDaMesa({ children }: { children: ReactNode }) {
     backgroundColor: cor.value,
   }));
 
-  const alvoDe = useCallback(
-    (alvo: Alvo): Retangulo =>
-      alvo === 'tela'
-        ? { x: 0, y: 0, w: width, h: height }
-        : { x: 0, y: top + ALVO_MINIMO, w: width, h: height - top - ALVO_MINIMO },
-    [width, height, top]
-  );
+  // Toda folha erguida ocupa a tela inteira, como o leitor.
+  const tela = useMemo<Retangulo>(() => ({ x: 0, y: 0, w: width, h: height }), [width, height]);
 
   const medir = useCallback(
     (chave: string) =>
@@ -109,6 +117,31 @@ export function BwTransicaoDaMesa({ children }: { children: ReactNode }) {
     };
 
     return {
+      giro,
+
+      virar(navegar) {
+        if (reduzir) {
+          giro.value = 1;
+          return navegar();
+        }
+        giro.value = 0;
+        navegar();
+        // Um quadro para a estante montar fora de quadro, à esquerda; então a câmera gira.
+        requestAnimationFrame(() => {
+          giro.value = withTiming(1, GIRAR);
+        });
+      },
+
+      desvirar(fim) {
+        if (reduzir) {
+          giro.value = 0;
+          return fim();
+        }
+        giro.value = withTiming(0, GIRAR, (terminou) => {
+          if (terminou) runOnJS(fim)();
+        });
+      },
+
       chegou() {
         if (!esperando.current) return;
         clearTimeout(esperando.current);
@@ -122,24 +155,24 @@ export function BwTransicaoDaMesa({ children }: { children: ReactNode }) {
         else objetos.current.delete(chave);
       },
 
-      erguer(chave, c, alvo, navegar) {
+      erguer(chave, c, navegar) {
         if (reduzir) return navegar();
         medir(chave).then((origem) => {
           if (!origem) return navegar();
           cor.value = c;
           colocar(origem);
           opacidade.value = 0.4;
-          animar(alvoDe(alvo), 1, ERGUER, () => {
+          animar(tela, 1, ERGUER, () => {
             navegar();
             esperando.current = setTimeout(sumir, ESPERA_MAXIMA_MS);
           });
         });
       },
 
-      pousar(chave, c, alvo, voltar) {
+      pousar(chave, c, voltar) {
         if (reduzir) return voltar();
         cor.value = c;
-        colocar(alvoDe(alvo));
+        colocar(tela);
         opacidade.value = 1;
         voltar();
         // A mesa volta a ser desenhada por baixo da folha; só então o objeto tem lugar na tela.
@@ -153,7 +186,7 @@ export function BwTransicaoDaMesa({ children }: { children: ReactNode }) {
         }, 0);
       },
     };
-  }, [reduzir, medir, colocar, alvoDe, sumir, x, y, w, h, opacidade, cor]);
+  }, [reduzir, medir, colocar, tela, sumir, x, y, w, h, opacidade, cor, giro]);
 
   return (
     <Contexto.Provider value={transicao}>
@@ -165,6 +198,52 @@ export function BwTransicaoDaMesa({ children }: { children: ReactNode }) {
       />
     </Contexto.Provider>
   );
+}
+
+/**
+ * As duas paredes vistas pela câmera (o "canto" da virada). A mesa é a parede da frente, presa
+ * ao canto pela borda esquerda; a estante é a parede da esquerda, presa pela borda direita. O
+ * canto anda da borda esquerda da tela (câmera na mesa) até a direita (câmera na estante), e
+ * cada parede gira em torno dele, com o canto mais fundo que as bordas, como dentro de um cômodo.
+ */
+export function useParedeDaCamera(parede: 'mesa' | 'estante') {
+  const { giro } = useTransicaoDaMesa();
+  const { width } = useWindowDimensions();
+  return useAnimatedStyle(() => {
+    const g = giro.value;
+    if (parede === 'mesa') {
+      return {
+        transformOrigin: 'left center',
+        transform: [
+          { perspective: PERSPECTIVA },
+          { translateX: width * g },
+          { rotateY: `${-ANGULO_DO_CANTO * g}deg` },
+        ],
+      };
+    }
+    const r = 1 - g;
+    return {
+      transformOrigin: 'right center',
+      transform: [
+        { perspective: PERSPECTIVA },
+        { translateX: -width * r },
+        { rotateY: `${ANGULO_DO_CANTO * r}deg` },
+      ],
+    };
+  });
+}
+
+/**
+ * A mesa vista pela câmera. Se a mesa ganhar o foco com a câmera ainda na estante (voltando do
+ * leitor aberto pela estante, por exemplo), a câmera gira de volta.
+ */
+export function useGiroDaMesa() {
+  const { giro, desvirar: girarDeVolta } = useTransicaoDaMesa();
+  const estilo = useParedeDaCamera('mesa');
+  const desvirar = useCallback(() => {
+    if (giro.value !== 0) girarDeVolta(() => {});
+  }, [giro, girarDeVolta]);
+  return { estilo, desvirar };
 }
 
 export function useTransicaoDaMesa(): Transicao {

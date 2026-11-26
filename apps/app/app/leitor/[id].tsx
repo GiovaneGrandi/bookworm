@@ -21,7 +21,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { BwAncora } from '../../src/componentes/BwAncora';
-import { BwFeltroRetorno } from '../../src/componentes/BwFeltroRetorno';
+import { BwBarraDeNavegacao } from '../../src/componentes/BwBarraDeNavegacao';
 import { BwPainelLeitura } from '../../src/componentes/BwPainelLeitura';
 import { useTransicaoDaMesa } from '../../src/componentes/BwTransicaoDaMesa';
 import { usePousarNaMesa } from '../../src/componentes/usePousarNaMesa';
@@ -64,7 +64,7 @@ function LeitorDaObra({ obra }: { obra: Obra }) {
   const { width } = useWindowDimensions();
   const salvas = usePreferencias();
   const [p, setP] = useState<PreferenciasLeitura>(salvas);
-  const pousar = usePousarNaMesa(theme.leitura[p.tema].fundo, 'tela');
+  const pousar = usePousarNaMesa(theme.leitura[p.tema].fundo);
   const { chegou } = useTransicaoDaMesa();
   const [controles, setControles] = useState(false);
   const [painel, setPainel] = useState(false);
@@ -251,14 +251,13 @@ function LeitorDaObra({ obra }: { obra: Obra }) {
 
       {controles && (
         <>
-          <View style={[estilos.topo, { paddingTop: top }]}>
-            <BwFeltroRetorno onPousar={pousar} />
+          <View style={[estilos.topo, { paddingTop: top + theme.esp[3] }]}>
             <Text style={estilos.tituloObra} numberOfLines={1}>
               {obra.titulo}
             </Text>
           </View>
           {!painel && (
-            <View style={[estilos.base, { paddingBottom: bottom }]}>
+            <View style={estilos.base}>
               <Pressable
                 onPress={() => setPainel(true)}
                 accessibilityRole="button"
@@ -267,6 +266,8 @@ function LeitorDaObra({ obra }: { obra: Obra }) {
               >
                 <Text style={estilos.abrirPainelTexto}>Aa · luz, letra e página</Text>
               </Pressable>
+              {/* RN-DV.11: no leitor, a barra só aparece junto do menu. */}
+              <BwBarraDeNavegacao atual="ler" onMesa={pousar} />
             </View>
           )}
         </>

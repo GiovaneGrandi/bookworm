@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { textosDaBandeja, textosDaGaveta, textosDoLivro, textosDoSegundoLivro } from '../src/mesa';
+import {
+  encaixarComposicao,
+  mesaEmLista,
+  textosDaBandeja,
+  textosDaBiblioteca,
+  textosDoLivro,
+  textosDoSegundoLivro,
+} from '../src/mesa';
 import { corDaPoca } from '../src/tema/luz';
 
 describe('RN-DV.6 · a temperatura da leitora tinge a poça de luz da mesa', () => {
@@ -71,8 +78,8 @@ describe('RN-DV.10 · o leitor de tela anuncia a etiqueta, seguida do estado', (
   const casos = [
     textosDoLivro(domCasmurro, 375_549),
     textosDoSegundoLivro({ titulo: 'O cortiço', progresso: 0.12 }),
-    textosDaGaveta({ lendo: 2, em_pausa: 1, quero_ler: 3, total: 6 }),
-    textosDaGaveta({ lendo: 0, em_pausa: 0, quero_ler: 0, total: 0 }),
+    textosDaBiblioteca({ lendo: 2, em_pausa: 1, quero_ler: 3, total: 6 }),
+    textosDaBiblioteca({ lendo: 0, em_pausa: 0, quero_ler: 0, total: 0 }),
     textosDaBandeja(true),
     textosDaBandeja(false),
   ];
@@ -84,25 +91,54 @@ describe('RN-DV.10 · o leitor de tela anuncia a etiqueta, seguida do estado', (
     });
   }
 
-  it('gaveta: as três contagens (RN-DV.4)', () => {
-    const t = textosDaGaveta({ lendo: 2, em_pausa: 1, quero_ler: 3, total: 6 });
-    expect(t.etiqueta).toBe('Gaveta');
-    expect(t.rotulo).toBe('Gaveta do fichário: 2 lendo, 1 em pausa, 3 quero ler');
-    expect(t.abas).toEqual([
-      { rotulo: 'LENDO', n: 2 },
-      { rotulo: 'PAUSA', n: 1 },
-      { rotulo: 'QUERO', n: 3 },
-    ]);
+  it('biblioteca: o total na etiqueta, as três contagens para o leitor de tela (RN-DV.4)', () => {
+    const t = textosDaBiblioteca({ lendo: 2, em_pausa: 1, quero_ler: 3, total: 6 });
+    expect(t.etiqueta).toBe('Biblioteca · 6 livros');
+    expect(t.rotulo).toBe('Biblioteca: 2 lendo, 1 em pausa, 3 quero ler');
   });
 
-  it('gaveta vazia (Q13): sem abas', () => {
-    const t = textosDaGaveta({ lendo: 0, em_pausa: 0, quero_ler: 0, total: 0 });
-    expect(t.etiqueta).toBe('Gaveta · vazia');
-    expect(t.abas).toEqual([]);
+  it('biblioteca com um livro: singular', () => {
+    expect(textosDaBiblioteca({ lendo: 1, em_pausa: 0, quero_ler: 0, total: 1 }).etiqueta).toBe(
+      'Biblioteca · 1 livro'
+    );
   });
 
-  it('a aba de um grupo vazio não aparece', () => {
-    const t = textosDaGaveta({ lendo: 1, em_pausa: 0, quero_ler: 2, total: 3 });
-    expect(t.abas.map((a) => a.rotulo)).toEqual(['LENDO', 'QUERO']);
+  it('biblioteca vazia (Q13)', () => {
+    const t = textosDaBiblioteca({ lendo: 0, em_pausa: 0, quero_ler: 0, total: 0 });
+    expect(t.etiqueta).toBe('Biblioteca · vazia');
+    expect(t.rotulo).toBe('Biblioteca, vazia');
+  });
+});
+
+describe('v2 · a composição da mesa cabe entre as áreas seguras', () => {
+  it('390 × 844 com barras do Android: encolhe pela altura e centraliza na largura', () => {
+    const c = encaixarComposicao({ largura: 390, altura: 844 }, { topo: 32, baixo: 24 });
+    expect(c.escala).toBeCloseTo(788 / 836, 4);
+    expect(c.x).toBeCloseTo((390 - 390 * c.escala) / 2, 4);
+    expect(c.y).toBe(32);
+  });
+
+  it('tela mais larga do que alta: encolhe pela largura e centraliza na altura', () => {
+    const c = encaixarComposicao({ largura: 360, altura: 1000 }, { topo: 24, baixo: 48 });
+    expect(c.escala).toBeCloseTo(360 / 390, 4);
+    expect(c.x).toBeCloseTo(0, 4);
+    expect(c.y).toBeCloseTo(24 + (928 - 836 * c.escala) / 2, 4);
+  });
+});
+
+describe('v2 · o segundo livro convida a abrir direto no leitor', () => {
+  it('a etiqueta ganha a seta', () => {
+    expect(textosDoSegundoLivro({ titulo: 'O médico e o monstro', progresso: 0.12 }).etiqueta).toBe(
+      'lendo · 12% ▸'
+    );
+  });
+});
+
+describe('v2 · texto grande: a mesa vira lista', () => {
+  it('a partir de 150% de fonte', () => {
+    expect(mesaEmLista(1)).toBe(false);
+    expect(mesaEmLista(1.3)).toBe(false);
+    expect(mesaEmLista(1.5)).toBe(true);
+    expect(mesaEmLista(2)).toBe(true);
   });
 });

@@ -1,6 +1,6 @@
 import { obraComMesmoArquivo } from '@bookworm/core';
-import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { BwBotao } from '../src/componentes/BwBotao';
@@ -23,6 +23,7 @@ const RECUSA = {
 /** A bandeja de entrada: pôr um livro na mesa, do aparelho ou do acervo (RN-02.1a, Q5, Q7). */
 export default function Bandeja() {
   const router = useRouter();
+  const { escolher } = useLocalSearchParams<{ escolher?: string }>();
   const { theme } = useUnistyles();
   const pousar = usePousarNaMesa(theme.sup.papel.fundo);
   const obras = useObras();
@@ -47,13 +48,19 @@ export default function Bandeja() {
     }
   }
 
+  // O atalho "Escolher arquivo" do menu rápido da mesa (v2) já chega abrindo o seletor.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: só na chegada
+  useEffect(() => {
+    if (escolher === '1') receber('aparelho', importarDoAparelho);
+  }, []);
+
   function abrirAgora(obraId: string) {
     marcarAberta(obraId);
     router.replace(`/leitor/${obraId}`);
   }
 
   return (
-    <BwFolha kicker="Bandeja de entrada" titulo="Pôr um livro na mesa">
+    <BwFolha kicker="Bandeja de entrada" titulo="Pôr um livro na mesa" navegacao="importar">
       <View style={estilos.soltar}>
         <Text style={estilos.micro}>Um arquivo seu, EPUB ou PDF, sem DRM.</Text>
         <BwBotao

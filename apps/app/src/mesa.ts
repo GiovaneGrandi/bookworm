@@ -62,27 +62,24 @@ export function textosDoLivro(
 /** O segundo livro em leitura, fechado sobre a mesa (RN-DV.4). */
 export function textosDoSegundoLivro(obra: { titulo: string; progresso: number }): Textos {
   return {
-    etiqueta: `lendo · ${pct(obra.progresso)}%`,
+    etiqueta: `lendo · ${pct(obra.progresso)}% ▸`,
     rotulo: `Lendo ${umaLinha(obra.titulo)}, ${pct(obra.progresso)}% lido. Continuar lendo`,
   };
 }
 
 type Contagens = { lendo: number; em_pausa: number; quero_ler: number; total: number };
 
-/** A gaveta do fichário: as abas mostram as três contagens da biblioteca (RN-DV.4, §9.4). */
-export function textosDaGaveta(c: Contagens): Textos & { abas: { rotulo: string; n: number }[] } {
+/**
+ * A biblioteca, desenhada como três lombadas: o total de livros vai na etiqueta, e o leitor de
+ * tela ouve as três contagens (RN-DV.3, RN-DV.4).
+ */
+export function textosDaBiblioteca(c: Contagens): Textos {
   if (c.total === 0) {
-    return { etiqueta: 'Gaveta · vazia', rotulo: 'Gaveta do fichário, vazia', abas: [] };
+    return { etiqueta: 'Biblioteca · vazia', rotulo: 'Biblioteca, vazia' };
   }
-  const abas = [
-    { rotulo: 'LENDO', n: c.lendo },
-    { rotulo: 'PAUSA', n: c.em_pausa },
-    { rotulo: 'QUERO', n: c.quero_ler },
-  ].filter((a) => a.n > 0);
   return {
-    etiqueta: 'Gaveta',
-    rotulo: `Gaveta do fichário: ${c.lendo} lendo, ${c.em_pausa} em pausa, ${c.quero_ler} quero ler`,
-    abas,
+    etiqueta: `Biblioteca · ${c.total} ${c.total === 1 ? 'livro' : 'livros'}`,
+    rotulo: `Biblioteca: ${c.lendo} lendo, ${c.em_pausa} em pausa, ${c.quero_ler} quero ler`,
   };
 }
 
@@ -98,3 +95,26 @@ export function textosDaBandeja(mesaVazia: boolean): Textos {
         rotulo: 'Importar: adicionar EPUB, PDF ou um livro do acervo',
       };
 }
+
+/**
+ * A composição da mesa (v2): o mockup desenha a mesa numa prancha de 390 × 836, e ela é escalada
+ * para caber entre a barra de status e a de gestos, centrada na sobra.
+ */
+export const COMPOSICAO = { largura: 390, altura: 836 } as const;
+
+export function encaixarComposicao(
+  tela: { largura: number; altura: number },
+  seguro: { topo: number; baixo: number }
+): { escala: number; x: number; y: number } {
+  const util = tela.altura - seguro.topo - seguro.baixo;
+  const escala = Math.min(tela.largura / COMPOSICAO.largura, util / COMPOSICAO.altura);
+  return {
+    escala,
+    x: (tela.largura - COMPOSICAO.largura * escala) / 2,
+    y: seguro.topo + (util - COMPOSICAO.altura * escala) / 2,
+  };
+}
+
+/** Texto grande (v2): acima de 150% de fonte, a mesa vira uma lista ordenada. */
+export const FONTE_DA_MESA_EM_LISTA = 1.5;
+export const mesaEmLista = (escalaDaFonte: number) => escalaDaFonte >= FONTE_DA_MESA_EM_LISTA;

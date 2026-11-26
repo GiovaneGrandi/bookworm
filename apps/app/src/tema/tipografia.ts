@@ -44,4 +44,7 @@ export const tipoMiniatura = {
   tituloCapa: voz('Spectral_400Regular_Italic', 10, 13),
   aba: voz('CourierPrime_700Bold', 7.5, 15, 0.12, { textTransform: 'uppercase' }),
   placa: voz('CourierPrime_700Bold', 7.5, 12, 0.2, { textTransform: 'uppercase' }),
+  /** As capas de frente da estante (v2): título em itálico e o pé datilografado. */
+  tituloEstante: voz('Spectral_400Regular_Italic', 11.5, 14),
+  rodapeCapa: voz('CourierPrime_400Regular', 6.8, 9, 0.05, { textTransform: 'uppercase' }),
 } satisfies Record<string, Estilo>;

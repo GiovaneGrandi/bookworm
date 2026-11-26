@@ -47,6 +47,7 @@ O `build` compila e instala o app (a primeira vez leva de 5 a 15 minutos). O scr
 - **Windows:** `testar-no-emulador.bat` · **macOS:** `./testar-no-emulador.sh`
 - Sem `build`, ele só abre o app já instalado e carrega o código pelo Metro. Na janela do Metro, `r` recarrega depois de mudar o código.
 - Use `build` de novo depois de mudar código nativo: um plugin em `apps/app/plugins/`, o `app.json`, um patch ou uma dependência nativa.
+- **Windows:** o script liga o emulador com renderização por software (`-gpu swiftshader_indirect`). Com a GPU do PC (modo `host`), o emulador caía de vez em quando ao trocar de tela, sem erro no app. Para testar com a GPU mesmo assim: `set BOOKWORM_GPU=host` antes de rodar o script.
 
 ### Testes e qualidade
 

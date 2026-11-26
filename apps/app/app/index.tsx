@@ -1,43 +1,71 @@
-import { objetosNaMesa } from '@bookworm/core';
-import { useRouter } from 'expo-router';
-import { useMemo } from 'react';
-import { Text, View } from 'react-native';
+import { objetosNaMesa, totalDePaginas } from '@bookworm/core';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useMemo, useState } from 'react';
+import { type GestureResponderEvent, Text, useWindowDimensions, View } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
+import { BwMenuRapido, type ItemDoMenu, type MenuRapido } from '../src/componentes/BwMenuRapido';
 import { BwObjetoMesa } from '../src/componentes/BwObjetoMesa';
-import { useTransicaoDaMesa } from '../src/componentes/BwTransicaoDaMesa';
+import { useGiroDaMesa, useTransicaoDaMesa } from '../src/componentes/BwTransicaoDaMesa';
 import { BANDEJA, BwBandejaDeArame } from '../src/componentes/mesa/BwBandejaDeArame';
 import { BwCapaFechada, CAPA } from '../src/componentes/mesa/BwCapaFechada';
 import { BwFeltro } from '../src/componentes/mesa/BwFeltro';
-import { BwFichario, FICHARIO } from '../src/componentes/mesa/BwFichario';
 import { BwLivroAberto, LIVRO } from '../src/componentes/mesa/BwLivroAberto';
+import { BwLugarReservado } from '../src/componentes/mesa/BwLugarReservado';
 import { BwLuminaria } from '../src/componentes/mesa/BwLuminaria';
+import { BwFeixe, BwPenumbra } from '../src/componentes/mesa/BwLuzDaMesa';
+import { BwMesaEmLista, type ItemDaLista } from '../src/componentes/mesa/BwMesaEmLista';
+import { BwTresLombadas, LOMBADAS } from '../src/componentes/mesa/BwTresLombadas';
 import { carregarIndice, usePreferencias } from '../src/dados/leitura';
-import { marcarAberta, useObras } from '../src/dados/obras';
+import { marcarAberta, pausar, useObras } from '../src/dados/obras';
 import type { Obra } from '../src/dados/schema';
-import { textosDaBandeja, textosDaGaveta, textosDoLivro, textosDoSegundoLivro } from '../src/mesa';
+import {
+  COMPOSICAO,
+  encaixarComposicao,
+  mesaEmLista,
+  textosDaBandeja,
+  textosDaBiblioteca,
+  textosDoLivro,
+  textosDoSegundoLivro,
+} from '../src/mesa';
 import { espelhar, giro } from '../src/tema/geometria';
 import { tipo } from '../src/tema/tipografia';
 
-/** Na mesa vazia, a bandeja cresce e é o convite (Q13); o lugar do livro fica livre. */
+/** Na mesa vazia, a bandeja cresce, vai para o lugar do livro, sob a luz, e é o convite (Q13). */
 const BANDEJA_EM_DESTAQUE = 1.35;
+/** A v2 encolhe a bandeja e a biblioteca para as duas caberem embaixo, ao alcance do polegar. */
+const ESCALA_DA_BANDEJA = 0.94;
+const ESCALA_DA_BIBLIOTECA = 0.93;
+
+type Abertura = { menu: Omit<MenuRapido, 'x' | 'y'> };
 
 /**
- * A mesa: tela inicial e único hub (RN-DV.1), na composição do mockup B. Cada objeto é porta e
- * mostra o estado da função (RN-DV.3); só os 2 livros em leitura mais recentes ficam pousados
- * (RN-DV.4). A ordem dos objetos na árvore é a ordem de leitura do TalkBack, de cima para baixo;
- * quem fica por cima de quem é a `camada`.
+ * A mesa: tela inicial e único hub (RN-DV.1), na composição da Direção B v2. Cada objeto é porta
+ * e mostra o estado da função (RN-DV.3); só os 2 livros em leitura mais recentes ficam pousados
+ * (RN-DV.4). A mesa é desenhada numa prancha de 390 × 836 escalada entre as áreas seguras. A
+ * ordem dos objetos na árvore é a ordem de leitura do TalkBack; quem fica por cima é a `camada`.
  */
 export default function Mesa() {
   const router = useRouter();
   const { theme } = useUnistyles();
-  const { top } = useSafeAreaInsets();
-  const { erguer } = useTransicaoDaMesa();
+  const { width, height, fontScale } = useWindowDimensions();
+  const { top, bottom } = useSafeAreaInsets();
+  const { erguer, virar } = useTransicaoDaMesa();
+  const { estilo: estiloDoGiro, desvirar } = useGiroDaMesa();
   const preferencias = usePreferencias();
   const mesa = objetosNaMesa(useObras());
   const [principal, segundo] = mesa.livros;
+  const [acesa, setAcesa] = useState(true);
+  const [menu, setMenu] = useState<MenuRapido | null>(null);
   const corDaLeitura = theme.leitura[preferencias.tema].fundo;
   const papel = theme.sup.papel.fundo;
+  const prancha = encaixarComposicao(
+    { largura: width, altura: height },
+    { topo: top, baixo: bottom }
+  );
+
+  useFocusEffect(desvirar);
 
   const totalDoPrincipal = useMemo(
     () => (principal?.formato === 'epub' ? carregarIndice(principal.id).total : null),
@@ -45,112 +73,303 @@ export default function Mesa() {
   );
 
   function continuar(o: Obra) {
-    erguer(`/leitor/${o.id}`, corDaLeitura, 'tela', () => {
+    erguer(`/leitor/${o.id}`, corDaLeitura, () => {
       marcarAberta(o.id);
       router.push({ pathname: '/leitor/[id]', params: { id: o.id, erguido: '1' } });
     });
   }
 
-  function abrirFolha(rota: '/bandeja' | '/gaveta') {
-    erguer(rota, papel, 'folha', () => router.push({ pathname: rota, params: { erguido: '1' } }));
+  function abrirBandeja(escolher = false) {
+    erguer('/bandeja', papel, () =>
+      router.push({
+        pathname: '/bandeja',
+        params: escolher ? { erguido: '1', escolher: '1' } : { erguido: '1' },
+      })
+    );
   }
 
+  function abrirEstante(buscar = false) {
+    virar(() =>
+      router.push({
+        pathname: '/gaveta',
+        params: buscar ? { erguido: 'virada', buscar: '1' } : { erguido: 'virada' },
+      })
+    );
+  }
+
+  const alternarLuz = useCallback(() => setAcesa((a) => !a), []);
+
   const bandeja = textosDaBandeja(mesa.vazia);
-  const gaveta = textosDaGaveta(mesa.gaveta);
-  const escalaBandeja = mesa.vazia ? BANDEJA_EM_DESTAQUE : 1;
+  const biblioteca = textosDaBiblioteca(mesa.gaveta);
   const livro = principal ? textosDoLivro(principal, totalDoPrincipal) : null;
   const fechado = segundo ? textosDoSegundoLivro(segundo) : null;
+  const pct = (o: Obra) => `${Math.round(o.progresso * 100)}% lido`;
+  const paginaDoPrincipal =
+    livro?.pagina != null
+      ? `p. ${livro.pagina}${totalDoPrincipal ? ` de ${totalDePaginas(totalDoPrincipal)}` : ''}`
+      : null;
+
+  // Os menus de toque longo (v2): só atalhos que já levam a algum lugar.
+  const menuDoLivro = (o: Obra, sub: string, abrir: string): Abertura['menu'] => ({
+    titulo: o.titulo.replace(/\s+/g, ' ').trim(),
+    sub,
+    itens: [
+      { rotulo: abrir, primario: true, aoTocar: () => continuar(o) },
+      { rotulo: 'Pôr em pausa', aoTocar: () => pausar(o.id) },
+      { rotulo: 'Ver na estante', aoTocar: () => abrirEstante() },
+    ],
+  });
+  const menus = {
+    principal: principal
+      ? menuDoLivro(
+          principal,
+          `${paginaDoPrincipal ?? pct(principal)} · na mesa`,
+          'Continuar lendo'
+        )
+      : null,
+    segundo: segundo ? menuDoLivro(segundo, `${pct(segundo)} · na mesa`, 'Abrir no leitor') : null,
+    gaveta: {
+      titulo: 'Biblioteca',
+      sub: `${mesa.gaveta.lendo} lendo · ${mesa.gaveta.em_pausa} em pausa · ${mesa.gaveta.quero_ler} quero ler`,
+      itens: [
+        { rotulo: 'Abrir a estante', primario: true, aoTocar: () => abrirEstante() },
+        { rotulo: 'Buscar livro', aoTocar: () => abrirEstante(true) },
+      ],
+    },
+    bandeja: {
+      titulo: 'Bandeja de entrada',
+      sub: 'EPUB ou PDF sem DRM',
+      itens: [
+        { rotulo: 'Escolher arquivo', primario: true, aoTocar: () => abrirBandeja(true) },
+        { rotulo: 'Acervo de domínio público', aoTocar: () => abrirBandeja() },
+      ],
+    },
+    luminaria: {
+      titulo: 'Luminária da mesa',
+      sub: acesa
+        ? `luz acesa · ${preferencias.temperatura.toLocaleString('pt-BR')} K`
+        : 'luz apagada',
+      itens: [
+        { rotulo: acesa ? 'Apagar a luz' : 'Acender a luz', primario: true, aoTocar: alternarLuz },
+        ...(principal
+          ? [{ rotulo: 'Ajustar a temperatura no leitor', aoTocar: () => continuar(principal) }]
+          : []),
+      ] as ItemDoMenu[],
+    },
+  } satisfies Record<string, Abertura['menu'] | null>;
+
+  const segurar = (m: Abertura['menu']) => (e: GestureResponderEvent) =>
+    setMenu({ ...m, x: e.nativeEvent.pageX, y: e.nativeEvent.pageY });
+  const acoesDe = (m: Abertura['menu']) => ({
+    acoes: m.itens.map((it, i) => ({ nome: `atalho${i}`, rotulo: it.rotulo })),
+    onAcao: (nome: string) => m.itens[Number(nome.replace('atalho', ''))]?.aoTocar(),
+  });
+
+  if (mesaEmLista(fontScale)) {
+    const itens: ItemDaLista[] = [
+      ...(principal && livro
+        ? [
+            {
+              titulo: `Continuar ${principal.titulo.replace(/\s+/g, ' ').trim()}`,
+              sub: paginaDoPrincipal ?? pct(principal),
+              primario: true,
+              aoTocar: () => continuar(principal),
+            },
+          ]
+        : []),
+      ...(segundo
+        ? [
+            {
+              titulo: segundo.titulo,
+              sub: `lendo · ${pct(segundo)}`,
+              aoTocar: () => continuar(segundo),
+            },
+          ]
+        : []),
+      { titulo: 'Jardim', sub: 'em breve' },
+      { titulo: 'Meu desempenho', sub: 'em breve' },
+      {
+        titulo: 'Biblioteca',
+        sub: mesa.gaveta.total === 0 ? 'vazia' : menus.gaveta.sub,
+        aoTocar: () => router.push('/gaveta'),
+      },
+      {
+        titulo: 'Pôr um livro na mesa',
+        sub: 'EPUB ou PDF',
+        aoTocar: () => router.push('/bandeja'),
+      },
+      { titulo: 'Ajustes', sub: 'em breve' },
+    ];
+    return (
+      <View style={estilos.mesa}>
+        <BwFeltro acesa={false} />
+        <BwMesaEmLista data={hoje()} saudacao={saudacao()} itens={itens} />
+      </View>
+    );
+  }
 
   return (
     <View style={estilos.mesa}>
-      <BwFeltro temperatura={preferencias.temperatura} topo={top} />
+      <Animated.View style={[estilos.mesa, estiloDoGiro]}>
+        <BwFeltro acesa={acesa} />
 
-      <View
-        accessible
-        accessibilityLabel={`${hojePorExtenso()}. ${saudacao()}`}
-        style={[estilos.cabeca, { top: top + 27 }]}
-      >
-        <Text style={estilos.slip}>{hoje()}</Text>
-        <Text style={estilos.saudacao}>{saudacao()}</Text>
-      </View>
-
-      <BwObjetoMesa
-        chave="/bandeja"
-        etiqueta={bandeja.etiqueta}
-        etiquetaEmDestaque={mesa.vazia}
-        rotuloAcessivel={bandeja.rotulo}
-        onAbrir={() => abrirFolha('/bandeja')}
-        posicao={{ left: 18, top: top + 94 }}
-        largura={BANDEJA.largura * escalaBandeja}
-        altura={BANDEJA.altura * escalaBandeja}
-        camada={7}
-        rotacao="-3deg"
-        etiquetaEm={{ left: 12, bottom: -12 }}
-        rotacaoEtiqueta={espelhar(giro.etiqueta)}
-      >
-        <View style={{ transform: [{ scale: escalaBandeja }], transformOrigin: 'left top' }}>
-          <BwBandejaDeArame />
-        </View>
-      </BwObjetoMesa>
-
-      {segundo && fechado && (
-        <BwObjetoMesa
-          chave={`/leitor/${segundo.id}`}
-          etiqueta={fechado.etiqueta}
-          rotuloAcessivel={fechado.rotulo}
-          onAbrir={() => continuar(segundo)}
-          posicao={{ left: 190, top: top + 96 }}
-          largura={CAPA.largura}
-          altura={CAPA.altura}
-          camada={4}
-          rotacao="9deg"
-          etiquetaEm={{ left: -14, top: -12 }}
-          rotacaoEtiqueta={giro.carimbo}
+        <View
+          style={[
+            estilos.prancha,
+            { left: prancha.x, top: prancha.y, transform: [{ scale: prancha.escala }] },
+          ]}
         >
-          <BwCapaFechada titulo={segundo.titulo} />
-        </BwObjetoMesa>
-      )}
+          <BwPenumbra acesa={acesa} />
+          <BwFeixe acesa={acesa} temperatura={preferencias.temperatura} />
 
-      {principal && livro && (
-        <BwObjetoMesa
-          chave={`/leitor/${principal.id}`}
-          etiqueta={livro.etiqueta}
-          etiquetaEmDestaque
-          rotuloAcessivel={livro.rotulo}
-          onAbrir={() => continuar(principal)}
-          posicao={{ left: 30, top: top + 198 }}
-          largura={LIVRO.largura}
-          altura={LIVRO.altura}
-          camada={6}
-          rotacao="-2deg"
-          etiquetaEm={{ left: 18, bottom: -14 }}
-          rotacaoEtiqueta={espelhar(giro.rotulo)}
-        >
-          <BwLivroAberto
-            autor={principal.autor ?? 'lendo'}
-            titulo={principal.titulo}
-            folios={livro.folios}
+          <View
+            accessible
+            accessibilityLabel={`${hojePorExtenso()}. ${saudacao()}`}
+            style={estilos.cabeca}
+          >
+            <Text style={estilos.slip}>{hoje()}</Text>
+            <Text style={estilos.saudacao}>{saudacao()}</Text>
+          </View>
+
+          <BwLugarReservado
+            etiqueta="Ajustes"
+            descricao="meta diária, lembrete e conta"
+            forma="retangulo"
+            posicao={{ left: 20, top: 88 }}
+            largura={138}
+            altura={52}
+            camada={6}
+            rotacao="-2deg"
+            etiquetaEm={{ left: -10, bottom: -10 }}
+            rotacaoEtiqueta={espelhar(giro.fita)}
           />
-        </BwObjetoMesa>
-      )}
 
-      <BwObjetoMesa
-        chave="/gaveta"
-        etiqueta={gaveta.etiqueta}
-        rotuloAcessivel={gaveta.rotulo}
-        onAbrir={() => abrirFolha('/gaveta')}
-        posicao={{ left: 16, top: top + 640 }}
-        largura={FICHARIO.largura}
-        altura={FICHARIO.altura}
-        camada={5}
-        rotacao="-1.5deg"
-        etiquetaEm={{ left: 9, top: -14 }}
-        rotacaoEtiqueta={giro.etiqueta}
-      >
-        <BwFichario abas={gaveta.abas} />
-      </BwObjetoMesa>
+          {segundo && fechado && (
+            <BwObjetoMesa
+              chave={`/leitor/${segundo.id}`}
+              etiqueta={fechado.etiqueta}
+              rotuloAcessivel={fechado.rotulo}
+              onAbrir={() => continuar(segundo)}
+              onSegurar={segurar(menus.segundo as Abertura['menu'])}
+              {...acoesDe(menus.segundo as Abertura['menu'])}
+              posicao={{ left: 190, top: 96 }}
+              largura={CAPA.largura}
+              altura={CAPA.altura}
+              camada={4}
+              rotacao="9deg"
+              etiquetaEm={{ left: -28, top: -14 }}
+              rotacaoEtiqueta={giro.carimbo}
+            >
+              <BwCapaFechada titulo={segundo.titulo} />
+            </BwObjetoMesa>
+          )}
 
-      <BwLuminaria />
+          {principal && livro && (
+            <BwObjetoMesa
+              chave={`/leitor/${principal.id}`}
+              etiqueta={livro.etiqueta}
+              etiquetaEmDestaque
+              rotuloAcessivel={livro.rotulo}
+              onAbrir={() => continuar(principal)}
+              onSegurar={segurar(menus.principal as Abertura['menu'])}
+              {...acoesDe(menus.principal as Abertura['menu'])}
+              posicao={{ left: 30, top: 198 }}
+              largura={LIVRO.largura}
+              altura={LIVRO.altura}
+              camada={10}
+              rotacao="-2deg"
+              etiquetaEm={{ left: 18, bottom: -14 }}
+              rotacaoEtiqueta={espelhar(giro.rotulo)}
+            >
+              <BwLivroAberto
+                autor={principal.autor ?? 'lendo'}
+                titulo={principal.titulo}
+                folios={livro.folios}
+              />
+            </BwObjetoMesa>
+          )}
+
+          <BwLugarReservado
+            etiqueta="Jardim"
+            descricao="a sequência de dias de leitura"
+            forma="circulo"
+            posicao={{ left: 24, top: 452 }}
+            largura={156}
+            altura={156}
+            camada={5}
+            etiquetaEm={{ left: 84, top: 118 }}
+            rotacaoEtiqueta={giro.marginalia}
+          />
+
+          <BwLugarReservado
+            etiqueta="Desempenho"
+            descricao="a semana e o mapa de constância"
+            forma="retangulo"
+            posicao={{ left: 214, top: 454 }}
+            largura={146}
+            altura={176}
+            camada={5}
+            rotacao="2deg"
+            etiquetaEm={{ left: -6, bottom: 2 }}
+            rotacaoEtiqueta={giro.marginalia}
+          />
+
+          <BwObjetoMesa
+            chave="/gaveta"
+            etiqueta={biblioteca.etiqueta}
+            rotuloAcessivel={biblioteca.rotulo}
+            onAbrir={() => abrirEstante()}
+            onSegurar={segurar(menus.gaveta)}
+            {...acoesDe(menus.gaveta)}
+            posicao={{ left: 16, top: 636 }}
+            largura={LOMBADAS.largura}
+            altura={LOMBADAS.altura}
+            escala={ESCALA_DA_BIBLIOTECA}
+            camada={5}
+            rotacao="-1.5deg"
+            etiquetaEm={{ left: 4, top: 124 }}
+            rotacaoEtiqueta={giro.etiqueta}
+          >
+            <BwTresLombadas />
+          </BwObjetoMesa>
+
+          <BwObjetoMesa
+            chave="/bandeja"
+            etiqueta={bandeja.etiqueta}
+            etiquetaEmDestaque={mesa.vazia}
+            rotuloAcessivel={bandeja.rotulo}
+            onAbrir={() => abrirBandeja()}
+            onSegurar={segurar(menus.bandeja)}
+            {...acoesDe(menus.bandeja)}
+            posicao={
+              mesa.vazia
+                ? {
+                    left: (COMPOSICAO.largura - BANDEJA.largura * BANDEJA_EM_DESTAQUE) / 2,
+                    top: 230,
+                  }
+                : { left: 212, top: 654 }
+            }
+            largura={BANDEJA.largura}
+            altura={BANDEJA.altura}
+            escala={mesa.vazia ? BANDEJA_EM_DESTAQUE : ESCALA_DA_BANDEJA}
+            camada={mesa.vazia ? 10 : 7}
+            rotacao={mesa.vazia ? '-2deg' : '2deg'}
+            etiquetaEm={{ left: 12, bottom: -12 }}
+            rotacaoEtiqueta={giro.etiqueta}
+          >
+            <BwBandejaDeArame />
+          </BwObjetoMesa>
+
+          <BwLuminaria
+            acesa={acesa}
+            temperatura={preferencias.temperatura}
+            onAlternar={alternarLuz}
+            onSegurar={segurar(menus.luminaria)}
+          />
+        </View>
+      </Animated.View>
+
+      <BwMenuRapido menu={menu} onFechar={() => setMenu(null)} />
     </View>
   );
 }
@@ -192,9 +411,16 @@ const estilos = StyleSheet.create((theme) => ({
     backgroundColor: theme.sup.mesa.fundo,
     overflow: 'hidden',
   },
+  prancha: {
+    position: 'absolute',
+    width: COMPOSICAO.largura,
+    height: COMPOSICAO.altura,
+    transformOrigin: 'left top',
+  },
   cabeca: {
     position: 'absolute',
     left: 18,
+    top: 18,
     right: 120,
     zIndex: 4,
     flexDirection: 'row',

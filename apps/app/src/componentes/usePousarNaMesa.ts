@@ -1,26 +1,30 @@
 import { useFocusEffect, usePathname, useRouter } from 'expo-router';
 import { useCallback } from 'react';
 import { BackHandler } from 'react-native';
-import { type Alvo, useTransicaoDaMesa } from './BwTransicaoDaMesa';
+import { useTransicaoDaMesa } from './BwTransicaoDaMesa';
 
 /**
  * Devolve a folha à mesa (RN-DV.1, RN-DV.2). Toda tela volta para a mesa, não para a tela
- * anterior, e o gesto de voltar do sistema faz o mesmo que a faixa de feltro. A folha encolhe
+ * anterior, e o gesto de voltar do sistema faz o mesmo que o item Mesa da barra. A folha encolhe
  * até o objeto que abre esta tela, que a mesa registra pela mesma rota.
  *
  * @param cor o papel desta tela, para a folha que encolhe ter a cor dela.
+ * @param sair uma saída própria no lugar da folha que encolhe (v2: a estante sai girando); ela
+ *   chama `fim` quando terminar, e só então a mesa volta.
  */
-export function usePousarNaMesa(cor: string, alvo: Alvo = 'folha'): () => void {
+export function usePousarNaMesa(cor: string, sair?: (fim: () => void) => void): () => void {
   const router = useRouter();
   const caminho = usePathname();
   const { pousar: pousarComArte } = useTransicaoDaMesa();
 
   const pousar = useCallback(() => {
-    pousarComArte(caminho, cor, alvo, () => {
+    const voltar = () => {
       if (router.canDismiss()) router.dismissAll();
       else router.replace('/');
-    });
-  }, [router, caminho, cor, alvo, pousarComArte]);
+    };
+    if (sair) sair(voltar);
+    else pousarComArte(caminho, cor, voltar);
+  }, [router, caminho, cor, sair, pousarComArte]);
 
   useFocusEffect(
     useCallback(() => {
