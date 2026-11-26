@@ -1,17 +1,28 @@
 import {
   type Aba,
+  aplicar,
   corDaTemperatura,
   type PreferenciasLeitura,
   paginaCanonica,
   paraReadium,
   posicaoEmCaracteres,
+  temaEfetivo,
+  temperaturaDoHorario,
   totalDePaginas,
 } from '@bookworm/core';
 import * as Haptics from 'expo-haptics';
 import { useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { BackHandler, Pressable, Text, useWindowDimensions, View } from 'react-native';
+import {
+  BackHandler,
+  Image,
+  Pressable,
+  Text,
+  useColorScheme,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import {
   type File as ArquivoReadium,
@@ -51,6 +62,15 @@ const REPAGINACAO_MS = 500;
 const JANELA_DO_RETORNO_MS = 1500;
 /** Quanto da largura, no meio, é "área central" para revelar os controles (RN-02.13). */
 const FAIXA_CENTRAL = [0.3, 0.7] as const;
+/** De quanto em quanto tempo a temperatura pelo horário (RN-02.16c) se atualiza. */
+const HORARIO_A_CADA_MS = 5 * 60 * 1000;
+/** O grão do papel: um ladrilho de pontinhos, repetido por cima da página nos temas claros. */
+const GRAO = require('../../assets/leitor/grao.png');
+
+const horaDeAgora = () => {
+  const d = new Date();
+  return d.getHours() + d.getMinutes() / 60;
+};
 
 export default function Leitor() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -63,10 +83,32 @@ export default function Leitor() {
 function LeitorDaObra({ obra }: { obra: Obra }) {
   const { theme } = useUnistyles();
   const { top, bottom } = useSafeAreaInsets();
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   const salvas = usePreferencias();
   const [p, setP] = useState<PreferenciasLeitura>(salvas);
-  const pousar = usePousarNaMesa(theme.leitura[p.tema].fundo);
+  // As preferências salvas chegam do banco um instante depois de o leitor montar. Até a leitora
+  // mexer no painel, o leitor acompanha o que está salvo; sem isso ele ficava com o padrão e, no
+  // primeiro ajuste, gravava o padrão por cima do que ela tinha escolhido.
+  const mexeu = useRef(false);
+  const salvasEmTexto = JSON.stringify(salvas);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: o texto é a identidade de `salvas`, que nasce de novo a cada render.
+  useEffect(() => {
+    if (!mexeu.current) setP(salvas);
+  }, [salvasEmTexto]);
+  // O tema que vale agora: o escolhido, ou o do celular quando a leitora pediu para seguir.
+  const temaAgora = temaEfetivo(p, useColorScheme() === 'dark');
+  // RN-02.16c: com o horário ligado, a temperatura acompanha a hora; mexer no controle vale
+  // até o fim desta sessão de leitura.
+  const [temperaturaManual, setTemperaturaManual] = useState(false);
+  const [hora, setHora] = useState(horaDeAgora);
+  useEffect(() => {
+    if (!p.temperaturaPeloHorario) return undefined;
+    const relogio = setInterval(() => setHora(horaDeAgora()), HORARIO_A_CADA_MS);
+    return () => clearInterval(relogio);
+  }, [p.temperaturaPeloHorario]);
+  const temperaturaAgora =
+    p.temperaturaPeloHorario && !temperaturaManual ? temperaturaDoHorario(hora) : p.temperatura;
+  const pousar = usePousarNaMesa(theme.leitura[temaAgora].fundo);
   const { chegou } = useTransicaoDaMesa();
   const [controles, setControles] = useState(false);
   // O grupo do painel aberto pelo ícone do cabeçalho; null com a persiana recolhida.
@@ -94,6 +136,13 @@ function LeitorDaObra({ obra }: { obra: Obra }) {
 
   // Preferências: aplicadas na hora (RN-02.16e) e gravadas um instante depois.
   function mudarPreferencias(novas: PreferenciasLeitura) {
+    mexeu.current = true;
+    if (novas.temperaturaPeloHorario && !p.temperaturaPeloHorario) {
+      setTemperaturaManual(false);
+      setHora(horaDeAgora());
+    } else if (novas.temperatura !== p.temperatura) {
+      setTemperaturaManual(true);
+    }
     setP(novas);
     if (gravar.current) clearTimeout(gravar.current);
     gravar.current = setTimeout(() => salvarPreferencias(novas), 250);
@@ -144,6 +193,23 @@ function LeitorDaObra({ obra }: { obra: Obra }) {
       setControles(true);
     });
 
+  // Abrir ou fechar dois dedos sobre a página muda o corpo da letra, meio pixel por degrau,
+  // aplicado ao soltar: repaginar a cada quadro do gesto seria pesado demais.
+  const pinca = Gesture.Pinch()
+    .runOnJS(true)
+    .onEnd((e) => {
+      const degraus = Math.round(Math.log2(e.scale) * 4);
+      if (degraus !== 0) {
+        mudarPreferencias(aplicar(p, { ajusteCorpo: p.ajusteCorpo + degraus * 0.5 }));
+      }
+    });
+
+  // Paginado, o gesto nativo deixa o Readium virar a página por arrasto junto do toque no meio.
+  // Rolando, esse mesmo gesto segura a rolagem vertical da página; o toque e a pinça bastam.
+  const gestosDaPagina = p.rolagem
+    ? Gesture.Simultaneous(toque, pinca, Gesture.Native().disallowInterruption(true))
+    : Gesture.Simultaneous(toque, pinca, Gesture.Native());
+
   function fecharControles() {
     setPainel(null);
     setControles(false);
@@ -178,18 +244,18 @@ function LeitorDaObra({ obra }: { obra: Obra }) {
     return () => clearTimeout(espera);
   }, [p]);
 
-  const tema = theme.leitura[p.tema];
+  const tema = theme.leitura[temaAgora];
   const preferenciasReadium = useMemo(
     () =>
       epub
         ? {
-            ...paraReadium(p),
+            ...paraReadium(p, temaAgora),
             theme: tema.escuro ? ('dark' as const) : ('light' as const),
             backgroundColor: tema.fundo,
             textColor: tema.tinta,
           }
         : { backgroundColor: tema.fundo },
-    [epub, p, tema]
+    [epub, p, tema, temaAgora]
   );
 
   const rotuloDaAncora = (() => {
@@ -210,7 +276,7 @@ function LeitorDaObra({ obra }: { obra: Obra }) {
     >
       <StatusBar hidden={!controles} style={tema.escuro || controles ? 'light' : 'dark'} />
 
-      <GestureDetector gesture={Gesture.Simultaneous(toque, Gesture.Native())}>
+      <GestureDetector gesture={gestosDaPagina}>
         <View style={estilos.pagina} collapsable={false}>
           <ReadiumView
             ref={readium}
@@ -224,8 +290,21 @@ function LeitorDaObra({ obra }: { obra: Obra }) {
       </GestureDetector>
 
       <View style={{ paddingBottom: bottom }}>
-        <BwAncora nivel={p.ancora} tema={p.tema} fracao={progresso} rotulo={rotuloDaAncora} />
+        <BwAncora nivel={p.ancora} tema={temaAgora} fracao={progresso} rotulo={rotuloDaAncora} />
       </View>
+
+      {/* O grão do papel, só nos temas claros: no escuro ele viraria poeira. */}
+      {p.grao && !tema.escuro && (
+        <View
+          pointerEvents="none"
+          accessibilityElementsHidden
+          importantForAccessibility="no-hide-descendants"
+          style={estilos.camada}
+        >
+          {/* No Android, repetir exige tamanho explícito: esticada por `absolute`, não desenha. */}
+          <Image source={GRAO} resizeMode="repeat" style={{ width, height }} />
+        </View>
+      )}
 
       {/* A luz da leitora (RN-02.16a) e o brilho in-app (RN-02.16b): camadas sobre a página. */}
       <View
@@ -233,7 +312,7 @@ function LeitorDaObra({ obra }: { obra: Obra }) {
         style={[
           estilos.camada,
           {
-            backgroundColor: corDaCamadaDeLuz(corDaTemperatura(p.temperatura, 0.7)),
+            backgroundColor: corDaCamadaDeLuz(corDaTemperatura(temperaturaAgora, 0.7)),
             mixBlendMode: 'multiply',
           },
         ]}
@@ -268,7 +347,13 @@ function LeitorDaObra({ obra }: { obra: Obra }) {
               />
             </View>
             {painel && (
-              <BwPainelLeitura aba={painel} preferencias={p} onMudar={mudarPreferencias} />
+              <BwPainelLeitura
+                key={painel}
+                aba={painel}
+                preferencias={p}
+                onMudar={mudarPreferencias}
+                temperaturaAgora={temperaturaAgora}
+              />
             )}
           </View>
           {/* RN-DV.11: no leitor, a barra só aparece junto do menu. */}

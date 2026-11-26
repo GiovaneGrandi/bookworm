@@ -6,14 +6,19 @@ import {
   corpoEfetivo,
   entrelinhaEfetiva,
   FACES,
+  MAIS_DO_PAINEL,
+  normalizarPredefinicoes,
   normalizarPreferencias,
   PADRAO_LEITURA,
   PAGINA_CANONICA_CARACTERES,
+  PREDEFINICOES_DE_FABRICA,
   paginaCanonica,
   paraReadium,
   restaurarAba,
   restaurarTudo,
   TEMPERATURA_LUZ,
+  temaEfetivo,
+  temperaturaDoHorario,
 } from '../src/index';
 
 describe('RN-02.16d · inventário mínimo do painel', () => {
@@ -90,6 +95,12 @@ describe('RN-02.16f · reversibilidade', () => {
     expect(p.tema).toBe('claro');
     expect(p.face).toBe('atkinson');
     expect(p.margem).toBe('larga');
+  });
+
+  it('↺ esta aba também restaura a segunda camada ("Mais") daquela aba', () => {
+    const p = restaurarAba(aplicar(mexido, { peso: 'grossa', grao: true }), 'letra');
+    expect(p.peso).toBe('normal');
+    expect(p.grao).toBe(true);
   });
 
   it('↺ tudo ao padrão restaura os 10', () => {
@@ -183,6 +194,12 @@ describe('paraReadium · tradução para as preferências do navegador EPUB', ()
       textAlign: 'justify',
       hyphens: true,
       publisherStyles: false,
+      fontWeight: 1,
+      letterSpacing: 0,
+      wordSpacing: 0,
+      paragraphSpacing: 0,
+      paragraphIndent: 1,
+      scroll: false,
     });
     const esquerda = paraReadium(
       aplicar(PADRAO_LEITURA, { alinhamento: 'esquerda', margem: 'estreita' })
@@ -197,5 +214,152 @@ describe('RN-02.12 · página canônica', () => {
     expect(paginaCanonica(0)).toBe(1);
     expect(paginaCanonica(1499)).toBe(1);
     expect(paginaCanonica(1500)).toBe(2);
+  });
+});
+
+describe('Segunda camada do painel ("Mais")', () => {
+  it('os ajustes novos ficam fora do inventário mínimo, cada um num instrumento', () => {
+    expect(MAIS_DO_PAINEL).toEqual({
+      luz: ['temperaturaPeloHorario', 'temaSegueCelular', 'imagensSuaves', 'grao'],
+      letra: ['peso', 'espacoLetras', 'espacoPalavras'],
+      pagina: ['espacoParagrafos', 'recuo', 'rolagem'],
+    });
+    const todos = [
+      ...Object.values(ABAS_DO_PAINEL).flat(),
+      ...Object.values(MAIS_DO_PAINEL).flat(),
+    ];
+    expect(new Set(todos).size).toBe(todos.length);
+    for (const campo of todos) expect(PADRAO_LEITURA).toHaveProperty(campo);
+  });
+
+  it('os padrões não mudam a leitura de quem nunca mexeu', () => {
+    expect(PADRAO_LEITURA).toMatchObject({
+      peso: 'normal',
+      espacoLetras: 'normal',
+      espacoPalavras: 'normal',
+      espacoParagrafos: 'colados',
+      recuo: 'curto',
+      rolagem: false,
+      grao: false,
+      temperaturaPeloHorario: false,
+      temaSegueCelular: false,
+      imagensSuaves: true,
+    });
+  });
+
+  it('valores desconhecidos vindos do banco voltam ao padrão', () => {
+    const p = normalizarPreferencias({ peso: 'ultra', rolagem: 'sim', recuo: 'longo' });
+    expect(p.peso).toBe('normal');
+    expect(p.rolagem).toBe(false);
+    expect(p.recuo).toBe('longo');
+  });
+
+  it('cada ajuste chega ao Readium', () => {
+    const r = paraReadium(
+      aplicar(PADRAO_LEITURA, {
+        peso: 'grossa',
+        espacoLetras: 'largo',
+        espacoPalavras: 'aberto',
+        espacoParagrafos: 'linha',
+        recuo: 'nenhum',
+        rolagem: true,
+      })
+    );
+    expect(r).toMatchObject({
+      fontWeight: 1.5,
+      letterSpacing: 0.1,
+      wordSpacing: 0.15,
+      paragraphSpacing: 27 / 16,
+      paragraphIndent: 0,
+      scroll: true,
+    });
+  });
+
+  it('o espaço entre parágrafos anda na pauta: meia linha ou uma linha da entrelinha', () => {
+    const meia = paraReadium(aplicar(PADRAO_LEITURA, { espacoParagrafos: 'meia' }));
+    expect(meia.paragraphSpacing).toBeCloseTo(27 / 2 / 16, 5);
+  });
+});
+
+describe('RN-02.16c · temperatura acompanha o horário', () => {
+  it('fria de dia, quente à noite', () => {
+    expect(temperaturaDoHorario(12)).toBe(5000);
+    expect(temperaturaDoHorario(23)).toBe(2900);
+    expect(temperaturaDoHorario(3)).toBe(2900);
+  });
+
+  it('muda aos poucos no fim da tarde e no começo da manhã', () => {
+    const tarde = [17, 18, 19, 20, 21].map(temperaturaDoHorario);
+    for (let i = 1; i < tarde.length; i++) expect(tarde[i]).toBeLessThan(tarde[i - 1] as number);
+    const manha = [5, 6, 7].map(temperaturaDoHorario);
+    expect(manha[0]).toBeLessThan(manha[1] as number);
+    expect(manha[1]).toBeLessThan(manha[2] as number);
+  });
+
+  it('fica dentro da faixa e em passos de 50 K', () => {
+    for (let h = 0; h < 24; h += 0.25) {
+      const k = temperaturaDoHorario(h);
+      expect(k % 50).toBe(0);
+      expect(k).toBeGreaterThanOrEqual(TEMPERATURA_LUZ.min);
+      expect(k).toBeLessThanOrEqual(TEMPERATURA_LUZ.max);
+    }
+  });
+
+  it('é opt-in: desligada por padrão', () => {
+    expect(PADRAO_LEITURA.temperaturaPeloHorario).toBe(false);
+  });
+});
+
+describe('Tema segue o celular', () => {
+  const com = (tema: 'claro' | 'sepia' | 'escuro' | 'preto') =>
+    aplicar(PADRAO_LEITURA, { tema, temaSegueCelular: true });
+
+  it('desligado, vale o tema escolhido', () => {
+    expect(temaEfetivo(aplicar(PADRAO_LEITURA, { tema: 'sepia' }), true)).toBe('sepia');
+  });
+
+  it('celular escuro: escuro, ou preto para quem escolheu preto', () => {
+    expect(temaEfetivo(com('claro'), true)).toBe('escuro');
+    expect(temaEfetivo(com('sepia'), true)).toBe('escuro');
+    expect(temaEfetivo(com('preto'), true)).toBe('preto');
+  });
+
+  it('celular claro: claro, ou sépia para quem escolheu sépia', () => {
+    expect(temaEfetivo(com('escuro'), false)).toBe('claro');
+    expect(temaEfetivo(com('sepia'), false)).toBe('sepia');
+  });
+
+  it('imagens suavizadas só no tema escuro ou preto', () => {
+    expect(paraReadium(PADRAO_LEITURA, 'escuro').imageFilter).toBe('darken');
+    expect(paraReadium(PADRAO_LEITURA, 'claro').imageFilter).toBeUndefined();
+    const sem = aplicar(PADRAO_LEITURA, { imagensSuaves: false });
+    expect(paraReadium(sem, 'preto').imageFilter).toBeUndefined();
+  });
+});
+
+describe('Predefinições', () => {
+  it('de fábrica: Dia e Noite, que mexem só na luz', () => {
+    expect(PREDEFINICOES_DE_FABRICA.map((p) => p.nome)).toEqual(['Dia', 'Noite']);
+    for (const p of PREDEFINICOES_DE_FABRICA) {
+      expect(Object.keys(p.ajustes).every((c) => ABAS_DO_PAINEL.luz.includes(c as never))).toBe(
+        true
+      );
+    }
+  });
+
+  it('as da leitora vêm do banco limpas: nome curto, ajustes válidos, sem lixo', () => {
+    const lista = normalizarPredefinicoes([
+      { id: 'a', nome: '  Noite   na cama ', ajustes: { temperatura: 2900, face: 'comic' } },
+      { id: 'b', nome: '', ajustes: {} },
+      'lixo',
+    ]);
+    expect(lista).toHaveLength(1);
+    expect(lista[0]?.nome).toBe('Noite na cama');
+    expect(lista[0]?.ajustes.temperatura).toBe(2900);
+    expect(lista[0]?.ajustes.face).toBe('spectral');
+  });
+
+  it('o que não é lista vira lista vazia', () => {
+    expect(normalizarPredefinicoes(null)).toEqual([]);
   });
 });
